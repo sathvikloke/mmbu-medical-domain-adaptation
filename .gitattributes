@@ -1,0 +1,9 @@
+* -text
+*.py diff=python
+*.md diff
+*.json diff
+*.jsonl diff
+*.yml diff
+*.yaml diff
+*.csv diff
+# Historical evidence must retain exact bytes across operating systems.

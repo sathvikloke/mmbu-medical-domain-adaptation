@@ -1,0 +1,14 @@
+test_aspect_filter (test_duplicates.DuplicateTests.test_aspect_filter) ... ok
+test_bounds (test_duplicates.DuplicateTests.test_bounds) ... ok
+test_change_after_inspection_fails (test_duplicates.DuplicateTests.test_change_after_inspection_fails) ... ok
+test_hash_tampering_fails (test_duplicates.DuplicateTests.test_hash_tampering_fails) ... ok
+test_inclusive_aspect_boundary (test_duplicates.DuplicateTests.test_inclusive_aspect_boundary) ... ok
+test_native16_rejected (test_duplicates.DuplicateTests.test_native16_rejected) ... ok
+test_readonly_deterministic (test_duplicates.DuplicateTests.test_readonly_deterministic) ... ok
+test_resize_brightness_candidates_without_merge (test_duplicates.DuplicateTests.test_resize_brightness_candidates_without_merge) ... ok
+test_uniform_hash_collision_is_marked_weak (test_duplicates.DuplicateTests.test_uniform_hash_collision_is_marked_weak) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.020s
+
+OK

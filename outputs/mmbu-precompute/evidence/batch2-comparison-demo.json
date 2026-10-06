@@ -1,0 +1,104 @@
+{
+  "comparison": {
+    "bootstrap": {
+      "confidence": 0.95,
+      "estimand": "pairwise_adaptation_score_difference_conditional_on_fixed_sources_and_supplied_grades",
+      "groups_per_source": {
+        "toy-a": 5,
+        "toy-b": 5
+      },
+      "interval_type": "unadjusted_percentile",
+      "iterations": 1000,
+      "multiplicity_adjusted": false,
+      "seed": 17
+    },
+    "candidate_names": [
+      "toy_same_A",
+      "toy_same_B"
+    ],
+    "candidates": {
+      "toy_same_A": {
+        "C": 0.6000000000000001,
+        "S": 0.12000000000000005,
+        "T": 0.6000000000000001,
+        "T_base": 0.4,
+        "task_gain": 0.20000000000000007
+      },
+      "toy_same_B": {
+        "C": 0.6000000000000001,
+        "S": 0.12000000000000005,
+        "T": 0.6000000000000001,
+        "T_base": 0.4,
+        "task_gain": 0.20000000000000007
+      }
+    },
+    "inference": "exploratory_pairwise_comparison",
+    "label": "joint_comparison_over_supplied_grades_not_official_evaluation",
+    "n_candidates": 2,
+    "n_examples": 20,
+    "normalized_weights": {
+      "toy-a-0": 0.05,
+      "toy-a-1": 0.05,
+      "toy-a-2": 0.05,
+      "toy-a-3": 0.05,
+      "toy-a-4": 0.05,
+      "toy-a-5": 0.05,
+      "toy-a-6": 0.05,
+      "toy-a-7": 0.05,
+      "toy-a-8": 0.05,
+      "toy-a-9": 0.05,
+      "toy-b-0": 0.05,
+      "toy-b-1": 0.05,
+      "toy-b-2": 0.05,
+      "toy-b-3": 0.05,
+      "toy-b-4": 0.05,
+      "toy-b-5": 0.05,
+      "toy-b-6": 0.05,
+      "toy-b-7": 0.05,
+      "toy-b-8": 0.05,
+      "toy-b-9": 0.05
+    },
+    "official_evaluation": false,
+    "pairwise": [
+      {
+        "delta_S": 0.0,
+        "interval": [
+          0.0,
+          0.0
+        ],
+        "left": "toy_same_A",
+        "right": "toy_same_B"
+      }
+    ],
+    "record_ids": [
+      "toy-a-0",
+      "toy-a-1",
+      "toy-a-2",
+      "toy-a-3",
+      "toy-a-4",
+      "toy-a-5",
+      "toy-a-6",
+      "toy-a-7",
+      "toy-a-8",
+      "toy-a-9",
+      "toy-b-0",
+      "toy-b-1",
+      "toy-b-2",
+      "toy-b-3",
+      "toy-b-4",
+      "toy-b-5",
+      "toy-b-6",
+      "toy-b-7",
+      "toy-b-8",
+      "toy-b-9"
+    ],
+    "warnings": [
+      "Conditional fixed-source group bootstrap; not unseen-source or training-seed uncertainty.",
+      "Pairwise intervals are exploratory and unadjusted for multiplicity; confirmatory use requires predeclared comparisons and a separately justified multiplicity procedure.",
+      "Supplied grades do not verify baseline/candidate identity, judge calibration, or grouping independence.",
+      "Few groups: percentile coverage may be poor; intervals are exploratory."
+    ],
+    "weighting": "uniform"
+  },
+  "official_evaluation": false
+}

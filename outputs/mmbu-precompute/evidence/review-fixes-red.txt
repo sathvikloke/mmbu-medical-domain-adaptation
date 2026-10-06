@@ -1,0 +1,191 @@
+test_arithmetic_command_retains_failed_predictions (test_cli.CliTests.test_arithmetic_command_retains_failed_predictions) ... ok
+test_demo_is_engineering_only_and_does_not_train (test_cli.CliTests.test_demo_is_engineering_only_and_does_not_train) ... ok
+test_dev_only_split_does_not_require_training_permission (test_cli.CliTests.test_dev_only_split_does_not_require_training_permission) ... FAIL
+test_duplicate_json_keys_and_nonfinite_values_fail_closed (test_cli.CliTests.test_duplicate_json_keys_and_nonfinite_values_fail_closed) ... FAIL
+test_missing_input_is_actionable_nonzero_without_traceback (test_cli.CliTests.test_missing_input_is_actionable_nonzero_without_traceback) ... ok
+test_split_refuses_to_overwrite_existing_manifest (test_cli.CliTests.test_split_refuses_to_overwrite_existing_manifest) ... ok
+test_status_keeps_protocol_and_gpu_unresolved (test_cli.CliTests.test_status_keeps_protocol_and_gpu_unresolved) ... ok
+test_unapproved_real_source_returns_structured_failure (test_cli.CliTests.test_unapproved_real_source_returns_structured_failure) ... ok
+test_dimensions_must_be_positive_finite_numbers_not_booleans (test_contracts.GeometryTests.test_dimensions_must_be_positive_finite_numbers_not_booleans) ... ok
+test_invalid_boxes_are_rejected_without_clamping (test_contracts.GeometryTests.test_invalid_boxes_are_rejected_without_clamping) ... ok
+test_iou_identity_touching_and_disjoint_boxes (test_contracts.GeometryTests.test_iou_identity_touching_and_disjoint_boxes) ... ok
+test_iou_of_large_finite_boxes_avoids_area_overflow (test_contracts.GeometryTests.test_iou_of_large_finite_boxes_avoids_area_overflow) ... ok
+test_iou_rejects_invalid_boxes_even_when_they_would_not_overlap (test_contracts.GeometryTests.test_iou_rejects_invalid_boxes_even_when_they_would_not_overlap) ... ok
+test_iou_uses_xywh_and_hand_derived_half_threshold (test_contracts.GeometryTests.test_iou_uses_xywh_and_hand_derived_half_threshold) ... ok
+test_valid_pixel_boxes_are_preserved_without_rounding (test_contracts.GeometryTests.test_valid_pixel_boxes_are_preserved_without_rounding) ... ok
+test_builders_do_not_mutate_record_or_reuse_output_dict (test_contracts.InputContractTests.test_builders_do_not_mutate_record_or_reuse_output_dict) ... ok
+test_context_does_not_require_task_question_or_reference_metadata (test_contracts.InputContractTests.test_context_does_not_require_task_question_or_reference_metadata) ... ok
+test_context_is_invariant_to_question_answer_options_and_previous_state (test_contracts.InputContractTests.test_context_is_invariant_to_question_answer_options_and_previous_state) ... ok
+test_context_rejects_duplicate_unknown_and_empty_fields (test_contracts.InputContractTests.test_context_rejects_duplicate_unknown_and_empty_fields) ... ok
+test_context_requested_fields_are_fresh_and_keep_caller_order (test_contracts.InputContractTests.test_context_requested_fields_are_fresh_and_keep_caller_order) ... ok
+test_judge_deep_copies_nested_references (test_contracts.InputContractTests.test_judge_deep_copies_nested_references) ... ok
+test_judge_handles_optional_options_context_but_requires_answer_and_raw_text (test_contracts.InputContractTests.test_judge_handles_optional_options_context_but_requires_answer_and_raw_text) ... ok
+test_judge_receives_reference_data_but_no_history_or_model_prompt (test_contracts.InputContractTests.test_judge_receives_reference_data_but_no_history_or_model_prompt) ... ok
+test_model_builders_reject_missing_or_empty_caller_prompt (test_contracts.InputContractTests.test_model_builders_reject_missing_or_empty_caller_prompt) ... ok
+test_model_builders_validate_only_their_required_input_fields (test_contracts.InputContractTests.test_model_builders_validate_only_their_required_input_fields) ... ok
+test_task_contains_only_current_question_image_and_caller_prompt (test_contracts.InputContractTests.test_task_contains_only_current_question_image_and_caller_prompt) ... ok
+test_brief_does_not_extract_or_repair_json (test_contracts.ParserTests.test_brief_does_not_extract_or_repair_json) ... ok
+test_brief_preserves_answer_rationale_and_raw_without_semantic_grading (test_contracts.ParserTests.test_brief_preserves_answer_rationale_and_raw_without_semantic_grading) ... ok
+test_brief_rationale_is_optional_in_engineering_convention (test_contracts.ParserTests.test_brief_rationale_is_optional_in_engineering_convention) ... ok
+test_configuration_errors_raise_instead_of_becoming_model_failures (test_contracts.ParserTests.test_configuration_errors_raise_instead_of_becoming_model_failures) ... ok
+test_duplicate_json_keys_are_rejected_including_nested_keys (test_contracts.ParserTests.test_duplicate_json_keys_are_rejected_including_nested_keys) ... ok
+test_missing_empty_or_null_answer_is_invalid (test_contracts.ParserTests.test_missing_empty_or_null_answer_is_invalid) ... ok
+test_multiple_json_objects_are_rejected_in_both_profiles (test_contracts.ParserTests.test_multiple_json_objects_are_rejected_in_both_profiles) ... ok
+test_nonfinite_constants_and_overflowing_json_numbers_are_rejected (test_contracts.ParserTests.test_nonfinite_constants_and_overflowing_json_numbers_are_rejected) ... ok
+test_nonobject_top_level_boolean_or_object_answer_rejected (test_contracts.ParserTests.test_nonobject_top_level_boolean_or_object_answer_rejected) ... ok
+test_public_card_accepts_json_only (test_contracts.ParserTests.test_public_card_accepts_json_only) ... ok
+test_public_card_allows_rationale_prefix_and_preserves_boxes (test_contracts.ParserTests.test_public_card_allows_rationale_prefix_and_preserves_boxes) ... ok
+test_public_card_does_not_accept_prose_after_or_multiline_final_object (test_contracts.ParserTests.test_public_card_does_not_accept_prose_after_or_multiline_final_object) ... ok
+test_unknown_keys_and_nonstring_rationale_are_invalid (test_contracts.ParserTests.test_unknown_keys_and_nonstring_rationale_are_invalid) ... ok
+test_approved_external_has_counts_and_honest_limits (test_data.ManifestTests.test_approved_external_has_counts_and_honest_limits) ... ok
+test_approved_source_needs_evidence_and_reviewer (test_data.ManifestTests.test_approved_source_needs_evidence_and_reviewer) ... ok
+test_candidate_and_quarantined_sources_are_ineligible (test_data.ManifestTests.test_candidate_and_quarantined_sources_are_ineligible) ... ok
+test_classification_rejects_missing_or_structured_labels (test_data.ManifestTests.test_classification_rejects_missing_or_structured_labels) ... ok
+test_counting_requires_canonical_nonnegative_integer (test_data.ManifestTests.test_counting_requires_canonical_nonnegative_integer) ... ok
+test_detection_needs_positive_finite_image_dimensions (test_data.ManifestTests.test_detection_needs_positive_finite_image_dimensions) ... ok
+test_detection_rejects_unsafe_or_ambiguous_geometry (test_data.ManifestTests.test_detection_rejects_unsafe_or_ambiguous_geometry) ... ok
+test_detection_supports_one_or_multiple_boxes_without_mutation (test_data.ManifestTests.test_detection_supports_one_or_multiple_boxes_without_mutation) ... ok
+test_duplicate_image_hash_cannot_cross_splits (test_data.ManifestTests.test_duplicate_image_hash_cannot_cross_splits) ... ok
+test_duplicate_record_ids_are_rejected_even_same_split (test_data.ManifestTests.test_duplicate_record_ids_are_rejected_even_same_split) ... ok
+test_duplicate_registry_ids_and_unknown_status_are_rejected (test_data.ManifestTests.test_duplicate_registry_ids_and_unknown_status_are_rejected) ... ok
+test_empty_manifest_is_not_reported_as_ready (test_data.ManifestTests.test_empty_manifest_is_not_reported_as_ready) ... ok
+test_engineering_only_must_be_synthetic_and_engineering (test_data.ManifestTests.test_engineering_only_must_be_synthetic_and_engineering) ... ok
+test_explicit_official_dev_permission_supports_diagnostic_validation (test_data.ManifestTests.test_explicit_official_dev_permission_supports_diagnostic_validation) ... ok
+test_file_hash_is_checked_and_mismatch_is_not_repaired (test_data.ManifestTests.test_file_hash_is_checked_and_mismatch_is_not_repaired) ... ok
+test_group_namespace_is_family_not_source_id (test_data.ManifestTests.test_group_namespace_is_family_not_source_id) ... ok
+test_invalid_containers_return_structured_errors (test_data.ManifestTests.test_invalid_containers_return_structured_errors) ... ok
+test_lineage_is_transitive_through_absent_parent_and_group (test_data.ManifestTests.test_lineage_is_transitive_through_absent_parent_and_group) ... ok
+test_malformed_record_fields_return_errors (test_data.ManifestTests.test_malformed_record_fields_return_errors) ... ok
+test_mask_classification_allows_single_or_multiple_nonblank_labels (test_data.ManifestTests.test_mask_classification_allows_single_or_multiple_nonblank_labels) ... ok
+test_missing_id_does_not_get_fabricated (test_data.ManifestTests.test_missing_id_does_not_get_fabricated) ... ok
+test_missing_provenance_fields_are_rejected (test_data.ManifestTests.test_missing_provenance_fields_are_rejected) ... ok
+test_official_dev_purpose_also_requires_official_role (test_data.ManifestTests.test_official_dev_purpose_also_requires_official_role) ... ok
+test_official_dev_requires_official_role (test_data.ManifestTests.test_official_dev_requires_official_role) ... ok
+test_official_source_cannot_be_relabelled_train (test_data.ManifestTests.test_official_source_cannot_be_relabelled_train) ... ok
+test_only_canonical_context_fields_with_nonblank_values_are_allowed (test_data.ManifestTests.test_only_canonical_context_fields_with_nonblank_values_are_allowed) ... ok
+test_parent_hash_links_to_original_across_source_families (test_data.ManifestTests.test_parent_hash_links_to_original_across_source_families) ... ok
+test_paths_reject_absolute_traversal_and_windows_forms_without_root (test_data.ManifestTests.test_paths_reject_absolute_traversal_and_windows_forms_without_root) ... ok
+test_purpose_and_record_split_both_need_permission (test_data.ManifestTests.test_purpose_and_record_split_both_need_permission) ... ok
+test_source_version_and_family_must_match_registry (test_data.ManifestTests.test_source_version_and_family_must_match_registry) ... ok
+test_symlink_escape_and_missing_files_are_rejected (test_data.ManifestTests.test_symlink_escape_and_missing_files_are_rejected) ... ok
+test_synthetic_engineering_fixture_is_allowed (test_data.ManifestTests.test_synthetic_engineering_fixture_is_allowed) ... ok
+test_synthetic_role_and_record_flag_must_agree (test_data.ManifestTests.test_synthetic_role_and_record_flag_must_agree) ... ok
+test_synthetic_training_is_forbidden_even_with_approval (test_data.ManifestTests.test_synthetic_training_is_forbidden_even_with_approval) ... ok
+test_training_needs_item_approval (test_data.ManifestTests.test_training_needs_item_approval) ... ok
+test_unknown_source_is_rejected (test_data.ManifestTests.test_unknown_source_is_rejected) ... ok
+test_unused_candidates_do_not_block_valid_fixture (test_data.ManifestTests.test_unused_candidates_do_not_block_valid_fixture) ... ok
+test_validation_does_not_mutate_caller_data (test_data.ManifestTests.test_validation_does_not_mutate_caller_data) ... ok
+test_whitespace_answer_is_missing_label (test_data.ManifestTests.test_whitespace_answer_is_missing_label) ... ok
+test_all_target_split_permissions_are_required (test_data.SplitTests.test_all_target_split_permissions_are_required) ... ok
+test_candidate_quarantined_unreviewed_synthetic_and_official_cannot_split (test_data.SplitTests.test_candidate_quarantined_unreviewed_synthetic_and_official_cannot_split) ... ok
+test_existing_leakage_is_rejected_instead_of_silently_repaired (test_data.SplitTests.test_existing_leakage_is_rejected_instead_of_silently_repaired) ... ok
+test_invalid_seed_and_duplicate_ids_are_rejected (test_data.SplitTests.test_invalid_seed_and_duplicate_ids_are_rejected) ... ok
+test_outsized_integer_ratio_rejects_without_overflow (test_data.SplitTests.test_outsized_integer_ratio_rejects_without_overflow) ... ok
+test_parent_group_component_stays_together (test_data.SplitTests.test_parent_group_component_stays_together) ... ok
+test_ratios_reject_invalid_totals_values_and_unknown_targets (test_data.SplitTests.test_ratios_reject_invalid_totals_values_and_unknown_targets) ... ok
+test_registry_is_mandatory_for_authorization (test_data.SplitTests.test_registry_is_mandatory_for_authorization) ... ok
+test_reordering_records_and_ratio_keys_preserves_assignment (test_data.SplitTests.test_reordering_records_and_ratio_keys_preserves_assignment) ... ok
+test_returned_records_are_deep_copies (test_data.SplitTests.test_returned_records_are_deep_copies) ... ok
+test_zero_ratio_target_is_never_assigned (test_data.SplitTests.test_zero_ratio_target_is_never_assigned) ... ok
+test_bootstrap_parameters_are_validated (test_metrics.MetricTests.test_bootstrap_parameters_are_validated) ... ok
+test_cluster_bootstrap_keeps_correlated_rows_together (test_metrics.MetricTests.test_cluster_bootstrap_keeps_correlated_rows_together) ... ok
+test_counting_shares_global_group_and_sources_are_balanced (test_metrics.MetricTests.test_counting_shares_global_group_and_sources_are_balanced) ... ok
+test_four_task_proxy_cannot_hide_missing_groups (test_metrics.MetricTests.test_four_task_proxy_cannot_hide_missing_groups) ... ok
+test_huge_integer_grade_has_a_validation_error (test_metrics.MetricTests.test_huge_integer_grade_has_a_validation_error) ... ERROR
+test_invalid_grades_and_duplicate_ids_are_rejected (test_metrics.MetricTests.test_invalid_grades_and_duplicate_ids_are_rejected) ... ok
+test_large_finite_weights_are_normalized_without_overflow (test_metrics.MetricTests.test_large_finite_weights_are_normalized_without_overflow) ... ERROR
+test_metadata_is_averaged_within_example_before_examples (test_metrics.MetricTests.test_metadata_is_averaged_within_example_before_examples) ... ok
+test_missing_grades_are_not_silently_dropped (test_metrics.MetricTests.test_missing_grades_are_not_silently_dropped) ... ok
+test_negative_adaptation_is_not_clipped (test_metrics.MetricTests.test_negative_adaptation_is_not_clipped) ... ok
+test_one_group_per_source_cannot_produce_a_precision_claim (test_metrics.MetricTests.test_one_group_per_source_cannot_produce_a_precision_claim) ... ok
+test_repeated_image_rows_are_not_deduplicated (test_metrics.MetricTests.test_repeated_image_rows_are_not_deduplicated) ... ok
+test_unknown_or_incomplete_task_weights_fail (test_metrics.MetricTests.test_unknown_or_incomplete_task_weights_fail) ... ok
+test_unknown_zero_metadata_policy_requires_explicit_resolution (test_metrics.MetricTests.test_unknown_zero_metadata_policy_requires_explicit_resolution) ... ok
+test_weighted_aggregates_precede_nonlinear_product (test_metrics.MetricTests.test_weighted_aggregates_precede_nonlinear_product) ... ok
+test_weights_require_one_finite_positive_entry_per_row (test_metrics.MetricTests.test_weights_require_one_finite_positive_entry_per_row) ... ok
+
+======================================================================
+ERROR: test_huge_integer_grade_has_a_validation_error (test_metrics.MetricTests.test_huge_integer_grade_has_a_validation_error)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_metrics.py", line 60, in test_huge_integer_grade_has_a_validation_error
+    with self.assertRaises(ValueError): score_rows([row(1, adapted=10 ** 400)])
+                                        ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/src/mmbu_prep/metrics.py", line 75, in score_rows
+    values = _validate(rows)
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/src/mmbu_prep/metrics.py", line 43, in _validate
+    values.append((_grade(row.get("adapted_correct")),
+                   ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/src/mmbu_prep/metrics.py", line 17, in _grade
+    if not isinstance(value, (int, float)) or not isfinite(value) or value not in (0, 1):
+                                                  ~~~~~~~~^^^^^^^
+OverflowError: int too large to convert to float
+
+======================================================================
+ERROR: test_large_finite_weights_are_normalized_without_overflow (test_metrics.MetricTests.test_large_finite_weights_are_normalized_without_overflow)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_metrics.py", line 56, in test_large_finite_weights_are_normalized_without_overflow
+    result = score_rows([row(1), row(2, adapted=0)], weights=[1e308, 1e308])
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/src/mmbu_prep/metrics.py", line 76, in score_rows
+    result = _aggregate(values, _weights(len(rows), weights))
+                                ~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/src/mmbu_prep/metrics.py", line 56, in _weights
+    total = fsum(weights)
+OverflowError: intermediate overflow in fsum
+
+======================================================================
+FAIL: test_dev_only_split_does_not_require_training_permission (test_cli.CliTests.test_dev_only_split_does_not_require_training_permission)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_cli.py", line 93, in test_dev_only_split_does_not_require_training_permission
+    self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 2 != 0 : {
+  "counts": {
+    "by_split": {
+      "dev": 1
+    },
+    "by_task": {
+      "global_classification": 1
+    },
+    "components": 1,
+    "files_checked": 0,
+    "records": 1,
+    "sources": 1
+  },
+  "errors": [
+    {
+      "code": "purpose_not_permitted",
+      "message": "Requested purpose has no recorded source permission.",
+      "record_id": "a",
+      "record_index": 0
+    }
+  ],
+  "ok": false,
+  "warnings": [
+    {
+      "code": "files_unchecked",
+      "message": "No image_root supplied: file existence and SHA-256 were not checked."
+    },
+    {
+      "code": "semantic_checks_not_performed",
+      "message": "Byte hashes do not establish image decoding, coordinate-frame correctness, label validity, visual support, near-duplicate absence, correct grouping, or legal/official authorization."
+    }
+  ]
+}
+
+
+======================================================================
+FAIL: test_duplicate_json_keys_and_nonfinite_values_fail_closed (test_cli.CliTests.test_duplicate_json_keys_and_nonfinite_values_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_cli.py", line 41, in test_duplicate_json_keys_and_nonfinite_values_fail_closed
+    self.assertEqual(result.returncode, 2)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 2
+
+----------------------------------------------------------------------
+Ran 105 tests in 0.453s
+
+FAILED (failures=2, errors=2)

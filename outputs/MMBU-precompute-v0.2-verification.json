@@ -1,0 +1,246 @@
+{
+  "version": "0.2.0",
+  "recorded_at_utc": "2026-10-04T05:19:12.590006+00:00",
+  "archive": "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute-v0.2.zip",
+  "archive_bytes": 314593,
+  "archive_sha256": "2e80e161c04f2aa5222c748c3d38ae94def7c3f4fdba18ffc9e0d7727a780ad3",
+  "manifest_files": 126,
+  "roundtrip_hashes_match": true,
+  "clean_extraction_commands": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "mmbu_prep",
+        "demo"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "mmbu_prep",
+        "status"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "mmbu_prep",
+        "compare",
+        "examples/candidate-grades-toy.json",
+        "--bootstrap",
+        "200",
+        "--seed",
+        "17"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "mmbu_prep",
+        "inspect-images",
+        "examples/engineering-manifest.jsonl",
+        "--image-root",
+        "examples"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "test_runs": {
+    "at_utc": "2026-10-04T05:15:38.503730+00:00",
+    "version": "0.2.0",
+    "runs": [
+      {
+        "command": [
+          "/Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "python_version": "Python 3.12.14",
+        "exit_code": 0,
+        "tests": 178,
+        "skipped": 0,
+        "log": "evidence/batch2-final-python312-pillow-tests.txt",
+        "log_sha256": "b25985966caddcfe38dc7a76204cee11216200533fffb1031fe7c5fee095aaed"
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "python_version": "Python 3.14.7",
+        "exit_code": 0,
+        "tests": 178,
+        "skipped": 32,
+        "log": "evidence/batch2-final-python314-core-tests.txt",
+        "log_sha256": "7bffbf4cfd1eca4da904749a70ce776c0c730b434019ffd0a88767f99ea810da"
+      }
+    ],
+    "python311_syntax_files": [
+      "src/mmbu_prep/__init__.py",
+      "src/mmbu_prep/__main__.py",
+      "src/mmbu_prep/bbbc039.py",
+      "src/mmbu_prep/comparison.py",
+      "src/mmbu_prep/contracts.py",
+      "src/mmbu_prep/data.py",
+      "src/mmbu_prep/images.py",
+      "src/mmbu_prep/metrics.py",
+      "tests/test_bbbc039.py",
+      "tests/test_cli.py",
+      "tests/test_cli_batch2.py",
+      "tests/test_comparison.py",
+      "tests/test_contracts.py",
+      "tests/test_data.py",
+      "tests/test_images.py",
+      "tests/test_metrics.py"
+    ],
+    "python311_runtime_executed": false
+  },
+  "reviews": {
+    "version": "0.2.0",
+    "recorded_at_utc": "2026-10-04T05:18:18.589184+00:00",
+    "scope": "Bounded CPU implementation and deterministic source-data conversion, not a scientific-performance or clinical audit",
+    "module_review_receipts": {
+      "src/mmbu_prep/bbbc039.py": {
+        "sha256": "7aba9689dc44d0b6139d3eb8024efe31555802d6a6a23d69880696c38ab6438a",
+        "review": "evidence/bbbc039-conversion-review.md",
+        "review_sha256": "b42780ffa711120ad3a3fe94d5f62aa24644667a992f54952d877ea43b00dc35"
+      },
+      "src/mmbu_prep/images.py": {
+        "sha256": "2b6fd50003d659204806b354f5da2a1502bc85a7a8dde9f5b6475bde65b58b51",
+        "review": "evidence/images-review.md",
+        "review_sha256": "64bf463bb7e9c7d9f1ecc01a01e10debe09cff9674de7af43cb741f8930eca4e"
+      },
+      "src/mmbu_prep/comparison.py": {
+        "sha256": "4c9c1d1cdb3d9c227c9c23baebbec9f78ebac3da0d3249ee80d6790f24500dd4",
+        "review": "evidence/batch2-comparison-cli-review.md",
+        "review_sha256": "6c0c08ca931fe6b145792a7cbd2930c7d5416547dacc3821582bb61c55b144af"
+      },
+      "src/mmbu_prep/__main__.py": {
+        "sha256": "5ce6775283308b6a8d0618860709cdd726dbb3fc5dcf462a2971cf8b1484c766",
+        "review": "evidence/batch2-comparison-cli-review.md",
+        "review_sha256": "6c0c08ca931fe6b145792a7cbd2930c7d5416547dacc3821582bb61c55b144af"
+      }
+    },
+    "findings": [
+      {
+        "id": "BBBC039-CONV-01",
+        "status": "closed",
+        "scope": "RGB transparency metadata"
+      },
+      {
+        "id": "BBBC039-CONV-02",
+        "status": "closed",
+        "scope": "16-bit mask precision reduction"
+      },
+      {
+        "id": "BBBC039-CONV-03",
+        "status": "closed",
+        "scope": "Big-endian TIFF statistics"
+      },
+      {
+        "id": "IMG-001",
+        "status": "closed",
+        "scope": "Portable-map precision and rescaling"
+      },
+      {
+        "id": "BOOTSTRAP-UNDERFLOW-01",
+        "status": "closed",
+        "scope": "Source-weight multiplication order; hand-derived regression and final suite"
+      }
+    ],
+    "model_metadata_review": "evidence/model-metadata-review.md",
+    "training_ready": false,
+    "protocol_ready": false,
+    "gpu_executed": false,
+    "real_sources_approved_for_model_use": 0,
+    "metrics_fixed_sha256": "2af7036a70132102910c6a30cf68270a32db094b207723a7e1fa40677bdca799",
+    "metrics_regression_evidence": [
+      "evidence/comparison-source-mass-red.txt",
+      "evidence/comparison-source-mass-green.txt"
+    ]
+  },
+  "source_reproduction": {
+    "command_scope": "Fresh final-code CPU conversion of source training only, full output byte-hash comparison to original intake",
+    "exit_code": 0,
+    "reproduced_files": 303,
+    "all_hashes_match": true,
+    "elapsed_seconds": 14.590588542007026,
+    "source_code_sha256": "7aba9689dc44d0b6139d3eb8024efe31555802d6a6a23d69880696c38ab6438a",
+    "report": {
+      "kind": "quarantined_source_training_conversion",
+      "training_ready": false,
+      "model_executed": false,
+      "images_inspected": 100,
+      "pending_records": 198,
+      "nucleus_instances": 11999,
+      "instance_count_range": [
+        0,
+        194
+      ],
+      "border_touching_instances": 1997,
+      "source_split_sizes": {
+        "training": 100,
+        "validation": 50,
+        "test": 50
+      },
+      "source_training_plates": 20,
+      "plates_shared_across_source_splits": [
+        "20585",
+        "20586",
+        "20589",
+        "20590",
+        "20591",
+        "20592",
+        "20593",
+        "20594",
+        "20595",
+        "20596",
+        "20607",
+        "20608",
+        "20625",
+        "20626",
+        "20630",
+        "20633",
+        "20639",
+        "20640",
+        "20641",
+        "20646"
+      ],
+      "decoder": "bbbc039-red-equal-8-v1",
+      "heldout_image_and_mask_contents_opened": false,
+      "archive_sha256": {
+        "images.zip": "6f30a5d4fe38c928ded972704f085975f8dc0d65d9aa366df00e5a9d449fddd7",
+        "masks.zip": "f9e6043d8ca56344a4886f96a700d804d6ee982f31e2b2cd3194af2a053c2710",
+        "metadata.zip": "a2c1f900bed9ba92a99553efd4c2ae98598433691c7401d818653ab61110deb2"
+      },
+      "remaining_checks": [
+        "MMBU source eligibility/overlap disposition",
+        "independent nucleus label review",
+        "16-bit display/model processor policy",
+        "task and context ontology review",
+        "correlation-aware split design"
+      ],
+      "warning": "Source plate groups are conservative lineage identifiers, not certified independent biological samples."
+    }
+  },
+  "v01_archive_unchanged": true,
+  "raw_source_archives_and_images_included": false,
+  "no_model_execution": true,
+  "no_training_data_approval": true
+}

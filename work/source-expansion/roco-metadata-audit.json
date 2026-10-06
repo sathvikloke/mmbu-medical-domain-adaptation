@@ -1,0 +1,139 @@
+{
+  "counts": {
+    "license_rows": 79789,
+    "license_unique_ids": 79789,
+    "manual_rows": 59958,
+    "manual_unique_ids": 59958,
+    "caption_rows": 59958,
+    "caption_unique_ids": 59958
+  },
+  "train_join_sets_equal": true,
+  "blank_fields": {
+    "ID": 0,
+    "PMCID": 0,
+    "Attribution": 0,
+    "Link": 0
+  },
+  "licenses_all": {
+    "BY": 60980,
+    "BY-NC": 18793,
+    "DOMAIN": 14,
+    "": 1,
+    "CC-BY": 1
+  },
+  "licenses_train": {
+    "BY": 46627,
+    "BY-NC": 13315,
+    "DOMAIN": 14,
+    "": 1,
+    "CC-BY": 1
+  },
+  "pmcid_counts": {
+    "train": 33814,
+    "valid": 7759,
+    "test": 7819
+  },
+  "pmcid_intersections": {
+    "train__valid": 0,
+    "train__test": 0,
+    "valid__test": 4417
+  },
+  "train_pmcid_unseen_in_both_heldout_metadata": 33814,
+  "manual_concepts": [
+    {
+      "CUI": "",
+      "name": null,
+      "count": 493
+    },
+    {
+      "CUI": "C0000726",
+      "name": "Abdomen",
+      "count": 1747
+    },
+    {
+      "CUI": "C0002978",
+      "name": "angiogram",
+      "count": 3958
+    },
+    {
+      "CUI": "C0006141",
+      "name": "Breast",
+      "count": 56
+    },
+    {
+      "CUI": "C0023216",
+      "name": "Lower Extremity",
+      "count": 2293
+    },
+    {
+      "CUI": "C0024485",
+      "name": "Magnetic Resonance Imaging",
+      "count": 9790
+    },
+    {
+      "CUI": "C0030797",
+      "name": "Pelvis",
+      "count": 1257
+    },
+    {
+      "CUI": "C0032743",
+      "name": "Positron-Emission Tomography",
+      "count": 350
+    },
+    {
+      "CUI": "C0037303",
+      "name": "Bone structure of cranium",
+      "count": 3216
+    },
+    {
+      "CUI": "C0037949",
+      "name": "Vertebral column",
+      "count": 1073
+    },
+    {
+      "CUI": "C0040405",
+      "name": "X-Ray Computed Tomography",
+      "count": 20459
+    },
+    {
+      "CUI": "C0041618",
+      "name": "Ultrasonography",
+      "count": 8305
+    },
+    {
+      "CUI": "C0205106",
+      "name": "Transverse - anatomical location",
+      "count": 29
+    },
+    {
+      "CUI": "C0205129",
+      "name": "Sagittal",
+      "count": 1868
+    },
+    {
+      "CUI": "C0817096",
+      "name": "Chest",
+      "count": 5463
+    },
+    {
+      "CUI": "C1140618",
+      "name": "Upper Extremity",
+      "count": 1119
+    },
+    {
+      "CUI": "C1306645",
+      "name": "Plain x-ray",
+      "count": 16603
+    },
+    {
+      "CUI": "C1996865",
+      "name": "Postero-Anterior",
+      "count": 3393
+    },
+    {
+      "CUI": "C1999039",
+      "name": "Anterior-Posterior",
+      "count": 7111
+    }
+  ]
+}

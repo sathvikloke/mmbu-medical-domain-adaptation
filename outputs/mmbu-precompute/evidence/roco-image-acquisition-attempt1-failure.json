@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "status": "failed",
+  "error_type": "TimeoutError",
+  "error": "The read operation timed out",
+  "failure_location": "HTTPRangeReader._block response.read(count) while opening a selected ZIP member",
+  "source_url": "https://zenodo.org/api/records/10821435/files/train_images.zip/content",
+  "block_size": 1048576,
+  "timeout_seconds": 30,
+  "configured_transfer_cap_bytes": 67108864,
+  "measured_transfer_bytes": null,
+  "reason_measurement_unavailable": "Initial caller did not persist the reader on exception; received bytes cannot be reconstructed from the traceback.",
+  "final_output_directory_present_after_failure": false,
+  "model_use_approved": false,
+  "note": "Failure receipt reconstructed from the preserved tool traceback after process exit. It is not a successful acquisition receipt. A second bounded attempt uses smaller blocks and a 60-second socket timeout."
+}

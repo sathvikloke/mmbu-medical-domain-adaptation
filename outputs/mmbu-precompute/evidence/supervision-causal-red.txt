@@ -1,0 +1,20 @@
+test_batch_padding_masks_padding_but_retains_supervised_eos (test_supervision.SupervisionTests.test_batch_padding_masks_padding_but_retains_supervised_eos) ... ok
+test_empty_targets_oversize_and_special_target_tokens_rejected (test_supervision.SupervisionTests.test_empty_targets_oversize_and_special_target_tokens_rejected) ... ok
+test_inconsistent_labels_missing_supervision_and_rounding_over_cap_rejected (test_supervision.SupervisionTests.test_inconsistent_labels_missing_supervision_and_rounding_over_cap_rejected) ... ok
+test_only_exact_native_suffix_gets_loss (test_supervision.SupervisionTests.test_only_exact_native_suffix_gets_loss) ... ok
+test_thinking_prefix_mismatch_never_guesses_target_boundary (test_supervision.SupervisionTests.test_thinking_prefix_mismatch_never_guesses_target_boundary) ... ok
+test_unmasked_first_position_cannot_count_as_causal_target (test_supervision.SupervisionTests.test_unmasked_first_position_cannot_count_as_causal_target) ... FAIL
+
+======================================================================
+FAIL: test_unmasked_first_position_cannot_count_as_causal_target (test_supervision.SupervisionTests.test_unmasked_first_position_cannot_count_as_causal_target)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_supervision.py", line 42, in test_unmasked_first_position_cannot_count_as_causal_target
+    with self.assertRaises(ValueError):pad([{'input_ids':[7,9],'labels':[7,-100]}],pad_token_id=0,max_length=2)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.002s
+
+FAILED (failures=1)

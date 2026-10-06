@@ -1,0 +1,312 @@
+mmbu/mmbu-public · Datasets at Hugging Face
+Hugging Face
+Models
+Datasets
+Spaces
+Buckets
+new
+Docs
+Enterprise
+Pricing
+Website
+Tasks
+HuggingChat
+Collections
+Languages
+Organizations
+Community
+Blog
+Posts
+Daily Papers
+Hardware
+Learn
+Discord
+Forum
+GitHub
+Solutions
+Team & Enterprise
+Hugging Face PRO
+Enterprise Support
+Inference Providers
+Inference Endpoints
+Storage Buckets
+Log In
+Sign Up
+Datasets:
+mmbu
+/
+mmbu-public
+Like
+5
+Follow
+mmbu
+5
+Modalities:
+Image
+Text
+Formats:
+imagefolder
+Size:
+1K - 10K
+Libraries:
+Datasets
+Croissant
+License:
+other
+Dataset card
+Data Studio
+Files
+Files and versions
+xet
+Community
+1
+You need to agree to share your contact information to access this dataset
+This repository is publicly accessible, but
+you have to accept the conditions to access its files and content
+.
+Log in
+or
+Sign Up
+to review the conditions and access this dataset content.
+Prompt
+Scoring
+Loading
+Files
+MMBU-public
+The official
+public
+split of the released MMBU benchmark, serving as the public set for the
+MMBU challenge
+.
+Open-ended VQA only
+for full context MMBU questions. Ground-truth
+answer
+is included.
+Contents: 3,147 open-ended rows across 3,147 images. 
+For every task except object detection,
+options
+lists the paired closed-VQA choices for the same question (for LLM-judge grading). Object detection rows have an empty
+options
+list; those answers are scored by box IoU.
+Released metadata columns:
+question, file_name, question_type, options, metadata_medical_domain, metadata_modality, metadata_submodality, metadata_specimen, metadata_body_part, metadata_topic, microns_per_pixel, metadata_stain, task, unique_id, VQA_type, answer
+.
+There are 5 main categories of tasks present:
+object detection
+fine-grained classification (from detection)
+fine-grained classification (from segmentation)
+classification
+counting
+Each task contains multiple topics stemming from the 5 main categories, delineated by '|'.
+Prompt
+Send the image with the
+question
+text. Do not send
+options
+or
+answer
+.
+options
+is only for the judge.
+Route on
+task
+, then append that suffix after the question.
+If
+task
+…
+Suffix
+starts with
+object detection
+Object detection
+contains
+from segmentation
+Multi-label classification
+contains
+from detection
+Single-label classification
+starts with
+counting
+, or any other
+classification…
+Single-answer classification
+from detection
+and
+from segmentation
+images already show the region (a drawn box or mask). Only
+object detection
+asks for coordinates.
+System message
+You are a medical vision-language assistant evaluating biomedical images.
+Analyze the image and question carefully and provide a concise rationale.
+After the rationale, put your final committed answer in one JSON object on
+its own line: {"answer": ...}. Put only that object after the rationale—no
+reasoning, explanation, or surrounding text inside or after it. Follow the
+answer-format instructions in the user message.
+User message:
+{question}
+, a blank line, then the suffix.
+Single-answer classification
+— plain
+classification
+,
+classification | …
+, and
+counting | …
+. Counting uses this same suffix; the value should contain only the integer, for example
+{"answer": "339"}
+.
+Output format: After your rationale, output only the concise class label
+as JSON, for example {"answer": "glioblastoma"}. Do not
+include a letter, rationale, or additional explanation in the JSON.
+Fine-grained classification from a bounding box
+(
+from detection
+) uses that same single-label suffix.
+Fine-grained classification from a segmentation mask
+(
+from segmentation
+)
+Output format: After your rationale, output the applicable class label or
+labels as JSON. If multiple labels apply, separate them with a
+comma and a space, for example {"answer": "effusion, cardiomegaly"}. Do
+not include rationale or additional explanation in the JSON.
+Object detection
+Output format: After your rationale, output the bounding box or boxes as JSON
+using pixel coordinates from the image shown and the format
+[x, y, width, height]. Do not use normalized 0–1 coordinates. For one box,
+use {"answer": [x, y, width, height]}. For multiple boxes, use
+{"answer": [[x1, y1, width1, height1], [x2, y2, width2, height2]]}.
+Do not include rationale or additional text in the JSON.
+x, y
+is the top-left corner in pixels of the image as shown, then width and height.
+Scoring
+Parse the committed answer from the JSON
+"answer"
+field before scoring. If the JSON object is missing or invalid, score the raw reply.
+Object detection
+(
+task
+starts with
+object detection
+) is not judged. Parse boxes as
+[x, y, width, height]
+in pixels. IoU is the intersection area divided by the union area. Compare every predicted box with every ground-truth box and keep the maximum IoU. A row is correct when that IoU is at least 0.5.
+All other tasks
+— classification, fine-grained classification from detection or segmentation, and counting — use an LLM judge (
+open_per_dataset_v3
+). The judge scores 1 only when both gates pass. Fill the prompt from that row’s
+options
+:
+{label_set}
+: option texts with the leading
+A)
+/
+B.
+prefix removed, one
+- label
+per line.
+{question}
+: the row question.
+{true_answer}
+: the row
+answer
+.
+{model_answer}
+: the parsed model answer.
+Judge prompt
+You are a conservative biomedical answer-equivalence judge for open-ended VQA.
+
+You are grading, not answering. Never supply an answer yourself. Grade only the text given.
+
+Valid labels are the paired closed-VQA options for this same question:
+{label_set}
+
+Output rules:
+- Output exactly one line.
+- Format: Rationale: <brief rationale naming the grounded concept> [RESULT] <0 or 1>
+- No markdown, JSON, or extra text.
+
+TWO-GATE DECISION (both gates must pass for [RESULT] 1):
+
+GATE 1 — Grounding (apply first):
+Does the MODEL ANSWER actually and unambiguously assert ONE specific concept from the
+label set above (or a clear, unambiguous synonym of exactly one listed label)?
+- Empty, whitespace-only, or no answer -> [RESULT] 0
+- Vague category only ("some pigmented lesion", "an eye disease", "abnormal scan") -> [RESULT] 0
+- Off-taxonomy or unrelated to the label set -> [RESULT] 0
+- Hedged across multiple labels ("melanoma or nevus", "A or B") -> [RESULT] 0
+- Only "closest" to a label without stating that label -> [RESULT] 0
+If Gate 1 fails, stop with [RESULT] 0. Do NOT force-map to the nearest label.
+
+GATE 2 — Equivalence (only if Gate 1 passes):
+Is the grounded concept the same as the TRUE ANSWER under the equivalence policy above
+(same specificity)?
+- Broader/narrower, parent/subtype, related-but-distinct -> [RESULT] 0
+- Same specific label or unambiguous synonym -> [RESULT] 1
+
+Examples:
+TRUE: "melanoma"  MODEL: "some pigmented skin lesion"
+Rationale: Vague; no committed label from set. [RESULT] 0
+TRUE: "no tumor"  MODEL: "normal brain, no mass"
+Rationale: Grounded to no-tumor side; equivalent under binary policy. [RESULT] 1
+TRUE: "benign keratosis"  MODEL: "normal skin"
+Rationale: Distinct multiclass labels; not equivalent. [RESULT] 0
+
+Question/context:
+{question}
+
+TRUE ANSWER:
+{true_answer}
+
+MODEL ANSWER:
+{model_answer}
+
+Now output exactly one line:
+Rationale:
+A row is correct when that line ends in
+[RESULT] 1
+. Official scores use
+claude-sonnet-5
+with this user prompt.
+Loading
+from
+datasets
+import
+load_dataset
+
+ds = load_dataset(
+"mmbu/mmbu-public"
+)
+print
+(ds)
+print
+(ds[
+"train"
+][
+0
+].keys())
+Files
+metadata.jsonl
+: Hugging Face
+ImageFolder
+metadata.
+metadata.tsv
+: TSV metadata mirror.
+Copy to bucket
+new
+Downloads last month
+277
+Total file size:
+136 MB
+System theme
+Company
+TOS
+Privacy
+About
+Careers
+Website
+Models
+Datasets
+Spaces
+Pricing
+Docs

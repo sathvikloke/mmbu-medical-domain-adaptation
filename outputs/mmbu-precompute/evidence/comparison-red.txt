@@ -1,0 +1,212 @@
+Joint comparison: initial RED
+2026-10-04T05:00:07.468983+00:00
+cwd: /Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute
+command: PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python3 -m unittest discover -s tests -p test_comparison.py -v
+python: 3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]
+exit_code: 1
+
+test_at_least_two_nonblank_candidate_names_are_required (test_comparison.ComparisonTests.test_at_least_two_nonblank_candidate_names_are_required) ... FAIL
+test_bootstrap_configuration_rejects_invalid_values (test_comparison.ComparisonTests.test_bootstrap_configuration_rejects_invalid_values) ... FAIL
+test_candidate_and_record_order_do_not_change_seeded_results (test_comparison.ComparisonTests.test_candidate_and_record_order_do_not_change_seeded_results) ... FAIL
+test_candidates_keep_their_own_baselines_and_signed_scores (test_comparison.ComparisonTests.test_candidates_keep_their_own_baselines_and_signed_scores) ... FAIL
+test_context_is_averaged_per_example_not_per_annotated_field (test_comparison.ComparisonTests.test_context_is_averaged_per_example_not_per_annotated_field) ... FAIL
+test_delta_is_not_clipped_to_unit_interval (test_comparison.ComparisonTests.test_delta_is_not_clipped_to_unit_interval) ... FAIL
+test_duplicate_record_with_conflicting_baseline_is_rejected (test_comparison.ComparisonTests.test_duplicate_record_with_conflicting_baseline_is_rejected) ... FAIL
+test_every_pair_is_reported_in_stable_order_without_winner_claim (test_comparison.ComparisonTests.test_every_pair_is_reported_in_stable_order_without_winner_claim) ... FAIL
+test_few_groups_and_draws_are_flagged_as_exploratory (test_comparison.ComparisonTests.test_few_groups_and_draws_are_flagged_as_exploratory) ... FAIL
+test_finite_large_weights_are_normalized_consistently (test_comparison.ComparisonTests.test_finite_large_weights_are_normalized_consistently) ... FAIL
+test_identical_candidates_have_zero_difference_on_every_shared_draw (test_comparison.ComparisonTests.test_identical_candidates_have_zero_difference_on_every_shared_draw) ... FAIL
+test_invalid_or_missing_grades_and_zero_fields_reuse_metric_validation (test_comparison.ComparisonTests.test_invalid_or_missing_grades_and_zero_fields_reuse_metric_validation) ... FAIL
+test_missing_or_extra_record_ids_fail_instead_of_intersecting (test_comparison.ComparisonTests.test_missing_or_extra_record_ids_fail_instead_of_intersecting) ... FAIL
+test_named_weights_follow_record_ids_and_apply_to_every_candidate (test_comparison.ComparisonTests.test_named_weights_follow_record_ids_and_apply_to_every_candidate) ... FAIL
+test_one_underpowered_source_withholds_every_pairwise_interval (test_comparison.ComparisonTests.test_one_underpowered_source_withholds_every_pairwise_interval) ... FAIL
+test_opposing_correlated_rows_stay_in_whole_groups (test_comparison.ComparisonTests.test_opposing_correlated_rows_stay_in_whole_groups) ... FAIL
+test_source_group_task_and_context_field_coverage_must_align_per_record (test_comparison.ComparisonTests.test_source_group_task_and_context_field_coverage_must_align_per_record) ... FAIL
+test_source_mass_stays_fixed_despite_unequal_group_sizes (test_comparison.ComparisonTests.test_source_mass_stays_fixed_despite_unequal_group_sizes) ... FAIL
+test_uniform_weights_are_explicit_and_keep_repeated_group_rows (test_comparison.ComparisonTests.test_uniform_weights_are_explicit_and_keep_repeated_group_rows) ... FAIL
+test_weights_must_name_exactly_the_aligned_ids_and_remain_positive (test_comparison.ComparisonTests.test_weights_must_name_exactly_the_aligned_ids_and_remain_positive) ... FAIL
+
+======================================================================
+FAIL: test_at_least_two_nonblank_candidate_names_are_required (test_comparison.ComparisonTests.test_at_least_two_nonblank_candidate_names_are_required)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_comparison.py", line 26, in setUp
+    self.assertIsNotNone(comparison, "The joint comparison module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The joint comparison module is not implemented yet
+
+======================================================================
+FAIL: test_bootstrap_configuration_rejects_invalid_values (test_comparison.ComparisonTests.test_bootstrap_configuration_rejects_invalid_values)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_comparison.py", line 26, in setUp
+    self.assertIsNotNone(comparison, "The joint comparison module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The joint comparison module is not implemented yet
+
+======================================================================
+FAIL: test_candidate_and_record_order_do_not_change_seeded_results (test_comparison.ComparisonTests.test_candidate_and_record_order_do_not_change_seeded_results)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_comparison.py", line 26, in setUp
+    self.assertIsNotNone(comparison, "The joint comparison module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The joint comparison module is not implemented yet
+
+======================================================================
+FAIL: test_candidates_keep_their_own_baselines_and_signed_scores (test_comparison.ComparisonTests.test_candidates_keep_their_own_baselines_and_signed_scores)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_comparison.py", line 26, in setUp
+    self.assertIsNotNone(comparison, "The joint comparison module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The joint comparison module is not implemented yet
+
+======================================================================
+FAIL: test_context_is_averaged_per_example_not_per_annotated_field (test_comparison.ComparisonTests.test_context_is_averaged_per_example_not_per_annotated_field)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_comparison.py", line 26, in setUp
+    self.assertIsNotNone(comparison, "The joint comparison module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The joint comparison module is not implemented yet
+
+======================================================================
+FAIL: test_delta_is_not_clipped_to_unit_interval (test_comparison.ComparisonTests.test_delta_is_not_clipped_to_unit_interval)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_comparison.py", line 26, in setUp
+    self.assertIsNotNone(comparison, "The joint comparison module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The joint comparison module is not implemented yet
+
+======================================================================
+FAIL: test_duplicate_record_with_conflicting_baseline_is_rejected (test_comparison.ComparisonTests.test_duplicate_record_with_conflicting_baseline_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_comparison.py", line 26, in setUp
+    self.assertIsNotNone(comparison, "The joint comparison module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The joint comparison module is not implemented yet
+
+======================================================================
+FAIL: test_every_pair_is_reported_in_stable_order_without_winner_claim (test_comparison.ComparisonTests.test_every_pair_is_reported_in_stable_order_without_winner_claim)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_comparison.py", line 26, in setUp
+    self.assertIsNotNone(comparison, "The joint comparison module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The joint comparison module is not implemented yet
+
+======================================================================
+FAIL: test_few_groups_and_draws_are_flagged_as_exploratory (test_comparison.ComparisonTests.test_few_groups_and_draws_are_flagged_as_exploratory)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_comparison.py", line 26, in setUp
+    self.assertIsNotNone(comparison, "The joint comparison module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The joint comparison module is not implemented yet
+
+======================================================================
+FAIL: test_finite_large_weights_are_normalized_consistently (test_comparison.ComparisonTests.test_finite_large_weights_are_normalized_consistently)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_comparison.py", line 26, in setUp
+    self.assertIsNotNone(comparison, "The joint comparison module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The joint comparison module is not implemented yet
+
+======================================================================
+FAIL: test_identical_candidates_have_zero_difference_on_every_shared_draw (test_comparison.ComparisonTests.test_identical_candidates_have_zero_difference_on_every_shared_draw)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_comparison.py", line 26, in setUp
+    self.assertIsNotNone(comparison, "The joint comparison module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The joint comparison module is not implemented yet
+
+======================================================================
+FAIL: test_invalid_or_missing_grades_and_zero_fields_reuse_metric_validation (test_comparison.ComparisonTests.test_invalid_or_missing_grades_and_zero_fields_reuse_metric_validation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_comparison.py", line 26, in setUp
+    self.assertIsNotNone(comparison, "The joint comparison module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The joint comparison module is not implemented yet
+
+======================================================================
+FAIL: test_missing_or_extra_record_ids_fail_instead_of_intersecting (test_comparison.ComparisonTests.test_missing_or_extra_record_ids_fail_instead_of_intersecting)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_comparison.py", line 26, in setUp
+    self.assertIsNotNone(comparison, "The joint comparison module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The joint comparison module is not implemented yet
+
+======================================================================
+FAIL: test_named_weights_follow_record_ids_and_apply_to_every_candidate (test_comparison.ComparisonTests.test_named_weights_follow_record_ids_and_apply_to_every_candidate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_comparison.py", line 26, in setUp
+    self.assertIsNotNone(comparison, "The joint comparison module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The joint comparison module is not implemented yet
+
+======================================================================
+FAIL: test_one_underpowered_source_withholds_every_pairwise_interval (test_comparison.ComparisonTests.test_one_underpowered_source_withholds_every_pairwise_interval)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_comparison.py", line 26, in setUp
+    self.assertIsNotNone(comparison, "The joint comparison module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The joint comparison module is not implemented yet
+
+======================================================================
+FAIL: test_opposing_correlated_rows_stay_in_whole_groups (test_comparison.ComparisonTests.test_opposing_correlated_rows_stay_in_whole_groups)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_comparison.py", line 26, in setUp
+    self.assertIsNotNone(comparison, "The joint comparison module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The joint comparison module is not implemented yet
+
+======================================================================
+FAIL: test_source_group_task_and_context_field_coverage_must_align_per_record (test_comparison.ComparisonTests.test_source_group_task_and_context_field_coverage_must_align_per_record)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_comparison.py", line 26, in setUp
+    self.assertIsNotNone(comparison, "The joint comparison module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The joint comparison module is not implemented yet
+
+======================================================================
+FAIL: test_source_mass_stays_fixed_despite_unequal_group_sizes (test_comparison.ComparisonTests.test_source_mass_stays_fixed_despite_unequal_group_sizes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_comparison.py", line 26, in setUp
+    self.assertIsNotNone(comparison, "The joint comparison module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The joint comparison module is not implemented yet
+
+======================================================================
+FAIL: test_uniform_weights_are_explicit_and_keep_repeated_group_rows (test_comparison.ComparisonTests.test_uniform_weights_are_explicit_and_keep_repeated_group_rows)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_comparison.py", line 26, in setUp
+    self.assertIsNotNone(comparison, "The joint comparison module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The joint comparison module is not implemented yet
+
+======================================================================
+FAIL: test_weights_must_name_exactly_the_aligned_ids_and_remain_positive (test_comparison.ComparisonTests.test_weights_must_name_exactly_the_aligned_ids_and_remain_positive)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_comparison.py", line 26, in setUp
+    self.assertIsNotNone(comparison, "The joint comparison module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The joint comparison module is not implemented yet
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.003s
+
+FAILED (failures=20)

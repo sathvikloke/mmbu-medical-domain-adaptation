@@ -1,0 +1,22 @@
+test_invalid_seek_size_or_budget_rejected (test_acquisition.RangeTests.test_invalid_seek_size_or_budget_rejected) ... ok
+test_seek_read_cache_budget_and_eof (test_acquisition.RangeTests.test_seek_read_cache_budget_and_eof) ... ok
+test_server_must_honor_exact_range_and_length (test_acquisition.RangeTests.test_server_must_honor_exact_range_and_length) ... ok
+test_aliases_and_case_collisions_are_rejected_before_publication (test_acquisition.ZipTests.test_aliases_and_case_collisions_are_rejected_before_publication) ... ok
+test_conflicting_chunked_framing_cannot_exceed_byte_cap (test_acquisition.ZipTests.test_conflicting_chunked_framing_cannot_exceed_byte_cap) ... FAIL
+test_missing_unsafe_duplicate_or_oversized_selection_never_publishes (test_acquisition.ZipTests.test_missing_unsafe_duplicate_or_oversized_selection_never_publishes) ... ok
+test_only_explicit_safe_members_are_copied_with_crc_and_hashes (test_acquisition.ZipTests.test_only_explicit_safe_members_are_copied_with_crc_and_hashes) ... ok
+test_unbounded_response_is_rejected_without_consuming_budget (test_acquisition.ZipTests.test_unbounded_response_is_rejected_without_consuming_budget) ... ok
+
+======================================================================
+FAIL: test_conflicting_chunked_framing_cannot_exceed_byte_cap (test_acquisition.ZipTests.test_conflicting_chunked_framing_cannot_exceed_byte_cap)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_acquisition.py", line 107, in test_conflicting_chunked_framing_cannot_exceed_byte_cap
+    self.assertLessEqual(reader.transferred_bytes,4)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 5 not less than or equal to 4
+
+----------------------------------------------------------------------
+Ran 8 tests in 7.571s
+
+FAILED (failures=1)

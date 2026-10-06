@@ -1,0 +1,36 @@
+{
+  "example": {
+    "input_ids": [
+      7,
+      9
+    ],
+    "labels": [
+      7,
+      -100
+    ]
+  },
+  "actual_return": {
+    "input_ids": [
+      [
+        7,
+        9
+      ]
+    ],
+    "labels": [
+      [
+        7,
+        -100
+      ]
+    ],
+    "attention_mask": [
+      [
+        1,
+        1
+      ]
+    ],
+    "supervised_tokens": 1
+  },
+  "causal_shift_effective_target_count": 0,
+  "claimed_supervised_tokens": 1,
+  "note": "For standard causal next-token training, label at index zero is outside shifted targets. assistant_labels produces a masked prefix, so its outputs do not trigger this direct pad API gap."
+}

@@ -1,0 +1,65 @@
+{
+  "hand_checked_iou": 0.5,
+  "kind": "synthetic_engineering_demo",
+  "manifest": {
+    "counts": {
+      "by_split": {
+        "engineering": 5
+      },
+      "by_task": {
+        "box_classification": 1,
+        "counting": 1,
+        "detection": 1,
+        "global_classification": 1,
+        "mask_classification": 1
+      },
+      "components": 5,
+      "files_checked": 5,
+      "records": 5,
+      "sources": 1
+    },
+    "errors": [],
+    "ok": true,
+    "warnings": [
+      {
+        "code": "semantic_checks_not_performed",
+        "message": "Byte hashes do not establish image decoding, coordinate-frame correctness, label validity, visual support, near-duplicate absence, correct grouping, or legal/official authorization."
+      }
+    ]
+  },
+  "model_executed": false,
+  "official_evaluation": false,
+  "ok": true,
+  "parser_diagnostics": {
+    "brief_json": {
+      "diagnostics": [],
+      "ok": true,
+      "parsed": {
+        "answer": "shape",
+        "rationale": "Engineering fixture."
+      },
+      "profile": "brief_json",
+      "raw": "{\"answer\":\"shape\",\"rationale\":\"Engineering fixture.\"}"
+    },
+    "public_card": {
+      "diagnostics": [],
+      "ok": true,
+      "parsed": {
+        "answer": "shape"
+      },
+      "profile": "public_card",
+      "raw": "Engineering fixture.\n{\"answer\":\"shape\"}"
+    }
+  },
+  "pregraded_toy_score": {
+    "C": 0.6000000000000001,
+    "S": 0.12000000000000005,
+    "T": 0.6000000000000001,
+    "T_base": 0.4,
+    "label": "arithmetic_over_supplied_grades_not_official_evaluation",
+    "n_examples": 20,
+    "n_groups": 10,
+    "n_sources": 2,
+    "task_gain": 0.20000000000000007
+  }
+}

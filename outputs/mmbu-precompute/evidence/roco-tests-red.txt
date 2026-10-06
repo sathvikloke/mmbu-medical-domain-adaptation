@@ -1,0 +1,189 @@
+EEEEEEEEEEEEEEEEE
+======================================================================
+ERROR: test_changed_modality_mapping_fails_semantic_relabeling (test_roco.ROCOInventoryTests.test_changed_modality_mapping_fails_semantic_relabeling)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 174, in test_changed_modality_mapping_fails_semantic_relabeling
+    self.build()
+    ~~~~~~~~~~^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 50, in build
+    from mmbu_prep.roco import build_roco_inventory
+ModuleNotFoundError: No module named 'mmbu_prep.roco'
+
+======================================================================
+ERROR: test_duplicate_ids_fail_in_every_joined_table (test_roco.ROCOInventoryTests.test_duplicate_ids_fail_in_every_joined_table) (table='manual')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 83, in test_duplicate_ids_fail_in_every_joined_table
+    self.build()
+    ~~~~~~~~~~^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 50, in build
+    from mmbu_prep.roco import build_roco_inventory
+ModuleNotFoundError: No module named 'mmbu_prep.roco'
+
+======================================================================
+ERROR: test_duplicate_ids_fail_in_every_joined_table (test_roco.ROCOInventoryTests.test_duplicate_ids_fail_in_every_joined_table) (table='captions')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 83, in test_duplicate_ids_fail_in_every_joined_table
+    self.build()
+    ~~~~~~~~~~^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 50, in build
+    from mmbu_prep.roco import build_roco_inventory
+ModuleNotFoundError: No module named 'mmbu_prep.roco'
+
+======================================================================
+ERROR: test_duplicate_ids_fail_in_every_joined_table (test_roco.ROCOInventoryTests.test_duplicate_ids_fail_in_every_joined_table) (table='licenses')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 83, in test_duplicate_ids_fail_in_every_joined_table
+    self.build()
+    ~~~~~~~~~~^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 50, in build
+    from mmbu_prep.roco import build_roco_inventory
+ModuleNotFoundError: No module named 'mmbu_prep.roco'
+
+======================================================================
+ERROR: test_file_aliases_do_not_create_ambiguous_acquisition_identity (test_roco.ROCOInventoryTests.test_file_aliases_do_not_create_ambiguous_acquisition_identity)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 162, in test_file_aliases_do_not_create_ambiguous_acquisition_identity
+    from mmbu_prep.roco import build_roco_inventory
+ModuleNotFoundError: No module named 'mmbu_prep.roco'
+
+======================================================================
+ERROR: test_heldout_labels_rejected_but_license_metadata_allowed (test_roco.ROCOInventoryTests.test_heldout_labels_rejected_but_license_metadata_allowed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 109, in test_heldout_labels_rejected_but_license_metadata_allowed
+    inventory, audit = self.build(per_modality=1)
+                       ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 50, in build
+    from mmbu_prep.roco import build_roco_inventory
+ModuleNotFoundError: No module named 'mmbu_prep.roco'
+
+======================================================================
+ERROR: test_join_and_semicolon_labels_preserve_unapproved_provenance (test_roco.ROCOInventoryTests.test_join_and_semicolon_labels_preserve_unapproved_provenance)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 56, in test_join_and_semicolon_labels_preserve_unapproved_provenance
+    inventory, audit = self.build(per_modality=1, seed=17)
+                       ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 50, in build
+    from mmbu_prep.roco import build_roco_inventory
+ModuleNotFoundError: No module named 'mmbu_prep.roco'
+
+======================================================================
+ERROR: test_malformed_pmcid_or_mismatching_article_link_fail (test_roco.ROCOInventoryTests.test_malformed_pmcid_or_mismatching_article_link_fail) (pmcid='PMC')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 99, in test_malformed_pmcid_or_mismatching_article_link_fail
+    self.build()
+    ~~~~~~~~~~^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 50, in build
+    from mmbu_prep.roco import build_roco_inventory
+ModuleNotFoundError: No module named 'mmbu_prep.roco'
+
+======================================================================
+ERROR: test_malformed_pmcid_or_mismatching_article_link_fail (test_roco.ROCOInventoryTests.test_malformed_pmcid_or_mismatching_article_link_fail) (pmcid='PMC1/../2')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 99, in test_malformed_pmcid_or_mismatching_article_link_fail
+    self.build()
+    ~~~~~~~~~~^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 50, in build
+    from mmbu_prep.roco import build_roco_inventory
+ModuleNotFoundError: No module named 'mmbu_prep.roco'
+
+======================================================================
+ERROR: test_malformed_pmcid_or_mismatching_article_link_fail (test_roco.ROCOInventoryTests.test_malformed_pmcid_or_mismatching_article_link_fail) (pmcid='pmc100')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 99, in test_malformed_pmcid_or_mismatching_article_link_fail
+    self.build()
+    ~~~~~~~~~~^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 50, in build
+    from mmbu_prep.roco import build_roco_inventory
+ModuleNotFoundError: No module named 'mmbu_prep.roco'
+
+======================================================================
+ERROR: test_malformed_pmcid_or_mismatching_article_link_fail (test_roco.ROCOInventoryTests.test_malformed_pmcid_or_mismatching_article_link_fail) (pmcid=' PMC100')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 99, in test_malformed_pmcid_or_mismatching_article_link_fail
+    self.build()
+    ~~~~~~~~~~^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 50, in build
+    from mmbu_prep.roco import build_roco_inventory
+ModuleNotFoundError: No module named 'mmbu_prep.roco'
+
+======================================================================
+ERROR: test_malformed_pmcid_or_mismatching_article_link_fail (test_roco.ROCOInventoryTests.test_malformed_pmcid_or_mismatching_article_link_fail) (pmcid='PMC0')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 99, in test_malformed_pmcid_or_mismatching_article_link_fail
+    self.build()
+    ~~~~~~~~~~^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 50, in build
+    from mmbu_prep.roco import build_roco_inventory
+ModuleNotFoundError: No module named 'mmbu_prep.roco'
+
+======================================================================
+ERROR: test_malformed_pmcid_or_mismatching_article_link_fail (test_roco.ROCOInventoryTests.test_malformed_pmcid_or_mismatching_article_link_fail)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 103, in test_malformed_pmcid_or_mismatching_article_link_fail
+    self.build()
+    ~~~~~~~~~~^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 50, in build
+    from mmbu_prep.roco import build_roco_inventory
+ModuleNotFoundError: No module named 'mmbu_prep.roco'
+
+======================================================================
+ERROR: test_missing_or_extra_training_join_ids_fail (test_roco.ROCOInventoryTests.test_missing_or_extra_training_join_ids_fail)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 89, in test_missing_or_extra_training_join_ids_fail
+    self.build()
+    ~~~~~~~~~~^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 50, in build
+    from mmbu_prep.roco import build_roco_inventory
+ModuleNotFoundError: No module named 'mmbu_prep.roco'
+
+======================================================================
+ERROR: test_missing_unknown_ambiguous_and_repeated_labels_stay_flagged (test_roco.ROCOInventoryTests.test_missing_unknown_ambiguous_and_repeated_labels_stay_flagged)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 122, in test_missing_unknown_ambiguous_and_repeated_labels_stay_flagged
+    inventory, audit = self.build(per_modality=1)
+                       ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 50, in build
+    from mmbu_prep.roco import build_roco_inventory
+ModuleNotFoundError: No module named 'mmbu_prep.roco'
+
+======================================================================
+ERROR: test_rights_prefix_and_heldout_article_overlap_exclude_from_shortlist (test_roco.ROCOInventoryTests.test_rights_prefix_and_heldout_article_overlap_exclude_from_shortlist)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 136, in test_rights_prefix_and_heldout_article_overlap_exclude_from_shortlist
+    inventory, audit = self.build(per_modality=1)
+                       ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 50, in build
+    from mmbu_prep.roco import build_roco_inventory
+ModuleNotFoundError: No module named 'mmbu_prep.roco'
+
+======================================================================
+ERROR: test_shortlist_deterministic_under_row_order_and_unique_articles (test_roco.ROCOInventoryTests.test_shortlist_deterministic_under_row_order_and_unique_articles)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 151, in test_shortlist_deterministic_under_row_order_and_unique_articles
+    first, audit_first = self.build(per_modality=2, seed=1729)
+                         ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_roco.py", line 50, in build
+    from mmbu_prep.roco import build_roco_inventory
+ModuleNotFoundError: No module named 'mmbu_prep.roco'
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.005s
+
+FAILED (errors=17)

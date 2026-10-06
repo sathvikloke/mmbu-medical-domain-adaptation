@@ -1,0 +1,209 @@
+Command: PYTHONPATH=src /opt/homebrew/opt/python@3.14/bin/python3.14 -m unittest discover -s tests -p test_serialization.py -v
+Interpreter: 3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]
+test_all_six_explicit_context_fields_and_optional_rationale_are_supported (test_serialization.ContextSerializationTests.test_all_six_explicit_context_fields_and_optional_rationale_are_supported) ... FAIL
+test_context_matches_requested_keys_preserves_values_and_request_order (test_serialization.ContextSerializationTests.test_context_matches_requested_keys_preserves_values_and_request_order) ... FAIL
+test_context_profile_is_required_explicitly_local_and_never_auto_inferred (test_serialization.ContextSerializationTests.test_context_profile_is_required_explicitly_local_and_never_auto_inferred) ... FAIL
+test_context_rejects_missing_extra_blank_or_nonstrings_without_guessing (test_serialization.ContextSerializationTests.test_context_rejects_missing_extra_blank_or_nonstrings_without_guessing) ... FAIL
+test_context_rejects_spaced_unknown_duplicate_and_invalid_requested_fields (test_serialization.ContextSerializationTests.test_context_rejects_spaced_unknown_duplicate_and_invalid_requested_fields) ... FAIL
+test_serialized_references_do_not_enter_independent_model_inputs (test_serialization.ContextSerializationTests.test_serialized_references_do_not_enter_independent_model_inputs) ... FAIL
+test_brief_rationale_is_optional_explicit_and_exact_even_with_json_text (test_serialization.TaskSerializationTests.test_brief_rationale_is_optional_explicit_and_exact_even_with_json_text) ... FAIL
+test_classification_preserves_labels_without_rewriting_options_or_whitespace (test_serialization.TaskSerializationTests.test_classification_preserves_labels_without_rewriting_options_or_whitespace) ... FAIL
+test_classification_rejects_nontext_and_blank_labels (test_serialization.TaskSerializationTests.test_classification_rejects_nontext_and_blank_labels) ... FAIL
+test_counting_preserves_nonnegative_integers_and_canonical_ascii_strings (test_serialization.TaskSerializationTests.test_counting_preserves_nonnegative_integers_and_canonical_ascii_strings) ... FAIL
+test_counting_rejects_boolean_negative_float_and_noncanonical_text (test_serialization.TaskSerializationTests.test_counting_rejects_boolean_negative_float_and_noncanonical_text) ... FAIL
+test_detection_preserves_one_box_multi_box_and_numeric_types_without_clamping (test_serialization.TaskSerializationTests.test_detection_preserves_one_box_multi_box_and_numeric_types_without_clamping) ... FAIL
+test_detection_rejects_empty_negative_out_of_bounds_nonfinite_and_ambiguous_shapes (test_serialization.TaskSerializationTests.test_detection_rejects_empty_negative_out_of_bounds_nonfinite_and_ambiguous_shapes) ... FAIL
+test_detection_requires_explicit_positive_finite_image_dimensions (test_serialization.TaskSerializationTests.test_detection_requires_explicit_positive_finite_image_dimensions) ... FAIL
+test_mask_preserves_scalar_vs_one_label_vs_multi_label_and_order (test_serialization.TaskSerializationTests.test_mask_preserves_scalar_vs_one_label_vs_multi_label_and_order) ... FAIL
+test_mask_rejects_empty_duplicate_or_nonstring_lists (test_serialization.TaskSerializationTests.test_mask_rejects_empty_duplicate_or_nonstring_lists) ... FAIL
+test_nonstring_rationale_is_rejected_without_fabrication (test_serialization.TaskSerializationTests.test_nonstring_rationale_is_rejected_without_fabrication) ... FAIL
+test_profile_is_required_and_unknown_profiles_or_tasks_are_rejected (test_serialization.TaskSerializationTests.test_profile_is_required_and_unknown_profiles_or_tasks_are_rejected) ... FAIL
+test_public_rationale_is_exact_prefix_and_never_inserted_into_answer_object (test_serialization.TaskSerializationTests.test_public_rationale_is_exact_prefix_and_never_inserted_into_answer_object) ... FAIL
+test_public_rationale_rejects_ambiguous_objects_without_repairing_them (test_serialization.TaskSerializationTests.test_public_rationale_rejects_ambiguous_objects_without_repairing_them) ... FAIL
+
+======================================================================
+FAIL: test_all_six_explicit_context_fields_and_optional_rationale_are_supported (test_serialization.ContextSerializationTests.test_all_six_explicit_context_fields_and_optional_rationale_are_supported)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_serialization.py", line 130, in setUp
+    self.assertIsNotNone(serialization, "The explicit target serializer is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The explicit target serializer is not implemented
+
+======================================================================
+FAIL: test_context_matches_requested_keys_preserves_values_and_request_order (test_serialization.ContextSerializationTests.test_context_matches_requested_keys_preserves_values_and_request_order)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_serialization.py", line 130, in setUp
+    self.assertIsNotNone(serialization, "The explicit target serializer is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The explicit target serializer is not implemented
+
+======================================================================
+FAIL: test_context_profile_is_required_explicitly_local_and_never_auto_inferred (test_serialization.ContextSerializationTests.test_context_profile_is_required_explicitly_local_and_never_auto_inferred)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_serialization.py", line 130, in setUp
+    self.assertIsNotNone(serialization, "The explicit target serializer is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The explicit target serializer is not implemented
+
+======================================================================
+FAIL: test_context_rejects_missing_extra_blank_or_nonstrings_without_guessing (test_serialization.ContextSerializationTests.test_context_rejects_missing_extra_blank_or_nonstrings_without_guessing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_serialization.py", line 130, in setUp
+    self.assertIsNotNone(serialization, "The explicit target serializer is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The explicit target serializer is not implemented
+
+======================================================================
+FAIL: test_context_rejects_spaced_unknown_duplicate_and_invalid_requested_fields (test_serialization.ContextSerializationTests.test_context_rejects_spaced_unknown_duplicate_and_invalid_requested_fields)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_serialization.py", line 130, in setUp
+    self.assertIsNotNone(serialization, "The explicit target serializer is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The explicit target serializer is not implemented
+
+======================================================================
+FAIL: test_serialized_references_do_not_enter_independent_model_inputs (test_serialization.ContextSerializationTests.test_serialized_references_do_not_enter_independent_model_inputs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_serialization.py", line 130, in setUp
+    self.assertIsNotNone(serialization, "The explicit target serializer is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The explicit target serializer is not implemented
+
+======================================================================
+FAIL: test_brief_rationale_is_optional_explicit_and_exact_even_with_json_text (test_serialization.TaskSerializationTests.test_brief_rationale_is_optional_explicit_and_exact_even_with_json_text)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_serialization.py", line 20, in setUp
+    self.assertIsNotNone(serialization, "The explicit target serializer is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The explicit target serializer is not implemented
+
+======================================================================
+FAIL: test_classification_preserves_labels_without_rewriting_options_or_whitespace (test_serialization.TaskSerializationTests.test_classification_preserves_labels_without_rewriting_options_or_whitespace)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_serialization.py", line 20, in setUp
+    self.assertIsNotNone(serialization, "The explicit target serializer is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The explicit target serializer is not implemented
+
+======================================================================
+FAIL: test_classification_rejects_nontext_and_blank_labels (test_serialization.TaskSerializationTests.test_classification_rejects_nontext_and_blank_labels)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_serialization.py", line 20, in setUp
+    self.assertIsNotNone(serialization, "The explicit target serializer is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The explicit target serializer is not implemented
+
+======================================================================
+FAIL: test_counting_preserves_nonnegative_integers_and_canonical_ascii_strings (test_serialization.TaskSerializationTests.test_counting_preserves_nonnegative_integers_and_canonical_ascii_strings)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_serialization.py", line 20, in setUp
+    self.assertIsNotNone(serialization, "The explicit target serializer is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The explicit target serializer is not implemented
+
+======================================================================
+FAIL: test_counting_rejects_boolean_negative_float_and_noncanonical_text (test_serialization.TaskSerializationTests.test_counting_rejects_boolean_negative_float_and_noncanonical_text)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_serialization.py", line 20, in setUp
+    self.assertIsNotNone(serialization, "The explicit target serializer is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The explicit target serializer is not implemented
+
+======================================================================
+FAIL: test_detection_preserves_one_box_multi_box_and_numeric_types_without_clamping (test_serialization.TaskSerializationTests.test_detection_preserves_one_box_multi_box_and_numeric_types_without_clamping)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_serialization.py", line 20, in setUp
+    self.assertIsNotNone(serialization, "The explicit target serializer is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The explicit target serializer is not implemented
+
+======================================================================
+FAIL: test_detection_rejects_empty_negative_out_of_bounds_nonfinite_and_ambiguous_shapes (test_serialization.TaskSerializationTests.test_detection_rejects_empty_negative_out_of_bounds_nonfinite_and_ambiguous_shapes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_serialization.py", line 20, in setUp
+    self.assertIsNotNone(serialization, "The explicit target serializer is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The explicit target serializer is not implemented
+
+======================================================================
+FAIL: test_detection_requires_explicit_positive_finite_image_dimensions (test_serialization.TaskSerializationTests.test_detection_requires_explicit_positive_finite_image_dimensions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_serialization.py", line 20, in setUp
+    self.assertIsNotNone(serialization, "The explicit target serializer is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The explicit target serializer is not implemented
+
+======================================================================
+FAIL: test_mask_preserves_scalar_vs_one_label_vs_multi_label_and_order (test_serialization.TaskSerializationTests.test_mask_preserves_scalar_vs_one_label_vs_multi_label_and_order)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_serialization.py", line 20, in setUp
+    self.assertIsNotNone(serialization, "The explicit target serializer is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The explicit target serializer is not implemented
+
+======================================================================
+FAIL: test_mask_rejects_empty_duplicate_or_nonstring_lists (test_serialization.TaskSerializationTests.test_mask_rejects_empty_duplicate_or_nonstring_lists)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_serialization.py", line 20, in setUp
+    self.assertIsNotNone(serialization, "The explicit target serializer is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The explicit target serializer is not implemented
+
+======================================================================
+FAIL: test_nonstring_rationale_is_rejected_without_fabrication (test_serialization.TaskSerializationTests.test_nonstring_rationale_is_rejected_without_fabrication)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_serialization.py", line 20, in setUp
+    self.assertIsNotNone(serialization, "The explicit target serializer is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The explicit target serializer is not implemented
+
+======================================================================
+FAIL: test_profile_is_required_and_unknown_profiles_or_tasks_are_rejected (test_serialization.TaskSerializationTests.test_profile_is_required_and_unknown_profiles_or_tasks_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_serialization.py", line 20, in setUp
+    self.assertIsNotNone(serialization, "The explicit target serializer is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The explicit target serializer is not implemented
+
+======================================================================
+FAIL: test_public_rationale_is_exact_prefix_and_never_inserted_into_answer_object (test_serialization.TaskSerializationTests.test_public_rationale_is_exact_prefix_and_never_inserted_into_answer_object)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_serialization.py", line 20, in setUp
+    self.assertIsNotNone(serialization, "The explicit target serializer is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The explicit target serializer is not implemented
+
+======================================================================
+FAIL: test_public_rationale_rejects_ambiguous_objects_without_repairing_them (test_serialization.TaskSerializationTests.test_public_rationale_rejects_ambiguous_objects_without_repairing_them)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_serialization.py", line 20, in setUp
+    self.assertIsNotNone(serialization, "The explicit target serializer is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The explicit target serializer is not implemented
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.002s
+
+FAILED (failures=20)
+
+Exit code: 1

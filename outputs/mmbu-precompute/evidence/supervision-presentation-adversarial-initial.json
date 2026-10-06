@@ -1,0 +1,133 @@
+{
+  "python": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+  "results": [
+    {
+      "name": "supervision_adversarial_values",
+      "status": "passed",
+      "details": {
+        "adversarial_rejections": 31,
+        "eos_equal_pad_and_token_zero_preserved": true,
+        "input_lists_unchanged": true
+      }
+    },
+    {
+      "name": "presentation_full_uint16_domain",
+      "status": "passed",
+      "details": {
+        "uint16_cases": [
+          {
+            "mode": "I;16",
+            "window": [
+              0,
+              65535
+            ],
+            "checked_pixels": 65536
+          },
+          {
+            "mode": "I;16",
+            "window": [
+              1234,
+              54321
+            ],
+            "checked_pixels": 65536
+          },
+          {
+            "mode": "I;16",
+            "window": [
+              32767,
+              32769
+            ],
+            "checked_pixels": 65536
+          },
+          {
+            "mode": "I;16",
+            "window": [
+              0,
+              1
+            ],
+            "checked_pixels": 65536
+          },
+          {
+            "mode": "I;16",
+            "window": [
+              1,
+              2
+            ],
+            "checked_pixels": 65536
+          },
+          {
+            "mode": "I;16",
+            "window": [
+              100,
+              103
+            ],
+            "checked_pixels": 65536
+          },
+          {
+            "mode": "I;16B",
+            "window": [
+              0,
+              65535
+            ],
+            "checked_pixels": 65536
+          },
+          {
+            "mode": "I;16B",
+            "window": [
+              1234,
+              54321
+            ],
+            "checked_pixels": 65536
+          },
+          {
+            "mode": "I;16B",
+            "window": [
+              32767,
+              32769
+            ],
+            "checked_pixels": 65536
+          },
+          {
+            "mode": "I;16B",
+            "window": [
+              0,
+              1
+            ],
+            "checked_pixels": 65536
+          },
+          {
+            "mode": "I;16B",
+            "window": [
+              1,
+              2
+            ],
+            "checked_pixels": 65536
+          },
+          {
+            "mode": "I;16B",
+            "window": [
+              100,
+              103
+            ],
+            "checked_pixels": 65536
+          }
+        ],
+        "numeric_pixel_checks": 786432,
+        "asymmetric_rgb_and_gray_frames_preserved": true,
+        "source_bytes_unchanged": true
+      }
+    },
+    {
+      "name": "presentation_adversarial_images_and_paths",
+      "status": "failed",
+      "exception": "AssertionError",
+      "message": "Unexpected acceptance"
+    }
+  ],
+  "production_hashes": {
+    "supervision.py": "ed17c19a0c967925d97ca86ae2337509491b0366d5fef4a5f7e65168d53d1c12",
+    "presentation.py": "3fbb557efd9bdc375daa88599d6b7833f6b2135f1b877e675a9178007e97785a",
+    "images.py": "2b6fd50003d659204806b354f5da2a1502bc85a7a8dde9f5b6475bde65b58b51"
+  },
+  "script_sha256": "6ec51ace5414ebe4f10da1f03b4389ed420c8957e2513f9ac433aef083e19451"
+}

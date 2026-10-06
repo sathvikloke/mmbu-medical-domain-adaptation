@@ -1,0 +1,37 @@
+{
+  "scope": "Software cross-reviews by agents who did not author the reviewed modules; not empirical model or biomedical validation.",
+  "findings": [
+    {
+      "id": "MCLI-001",
+      "status": "closed",
+      "repair": "Split CLI honors dev-only permission; requested target permissions remain required."
+    },
+    {
+      "id": "MCLI-002",
+      "status": "closed",
+      "repair": "Finite JSON float decoding rejects exponent overflow in every field."
+    },
+    {
+      "id": "MCLI-003",
+      "status": "closed",
+      "repair": "Consistent numeric validation; scaled weight normalization rejects underflow; huge confidence rejects cleanly."
+    },
+    {
+      "id": "DATA-REVIEW-01",
+      "status": "closed",
+      "repair": "Operational purposes match record splits; assignment protects held-out data and retains full lineage checks."
+    }
+  ],
+  "reports": [
+    "evidence/contracts-review.md",
+    "evidence/metrics-cli-review.md",
+    "evidence/data-review.md"
+  ],
+  "remaining_external_gates": [
+    "Authoritative evaluation contract and dev-use policy",
+    "Real source/record eligibility and conversion QA",
+    "Einstein GPU and supported runtime",
+    "Native model load/export and measured training/evaluation cost",
+    "Semantic judge calibration and empirical paired candidate comparison"
+  ]
+}

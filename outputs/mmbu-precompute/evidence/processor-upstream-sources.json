@@ -1,0 +1,47 @@
+[
+  {
+    "path": "models/qwen2_vl/processing_qwen2_vl.py",
+    "sha256": "c92aaa75ac68fd5fd270eb3abe0a49ba32087ea948a0e8353ad04274f1a4ddf0",
+    "url": "https://github.com/huggingface/transformers/blob/v5.18.0/src/transformers/models/qwen2_vl/processing_qwen2_vl.py"
+  },
+  {
+    "path": "models/qwen2_vl/image_processing_qwen2_vl.py",
+    "sha256": "ebdb484798a6aefebc5dbe5431d3e4af8f460404d95d4cb67165fdff624ed333",
+    "url": "https://github.com/huggingface/transformers/blob/v5.18.0/src/transformers/models/qwen2_vl/image_processing_qwen2_vl.py"
+  },
+  {
+    "path": "models/qwen2_vl/image_processing_pil_qwen2_vl.py",
+    "sha256": "59375c46d4418d3c1dcee1b8905668ff598730f3ab9469de9e332c8f26ef5911",
+    "url": "https://github.com/huggingface/transformers/blob/v5.18.0/src/transformers/models/qwen2_vl/image_processing_pil_qwen2_vl.py"
+  },
+  {
+    "path": "models/qwen2_5_vl/processing_qwen2_5_vl.py",
+    "sha256": "dcecc3dff4ebb07c58e66923f1d62c73edee1edf572d27947c27ee5f5f2e654f",
+    "url": "https://github.com/huggingface/transformers/blob/v5.18.0/src/transformers/models/qwen2_5_vl/processing_qwen2_5_vl.py"
+  },
+  {
+    "path": "models/qwen3_vl/processing_qwen3_vl.py",
+    "sha256": "02d50224d9dc9ce38690cfa6a0106be897f619444ebe3ff7ba38cbcdda9e3ef2",
+    "url": "https://github.com/huggingface/transformers/blob/v5.18.0/src/transformers/models/qwen3_vl/processing_qwen3_vl.py"
+  },
+  {
+    "path": "models/auto/processing_auto.py",
+    "sha256": "3f29c881f41abe7b271112eed82300c3577a01b72ba8a464467830ea66d64321",
+    "url": "https://github.com/huggingface/transformers/blob/v5.18.0/src/transformers/models/auto/processing_auto.py"
+  },
+  {
+    "path": "processing_utils.py",
+    "sha256": "85f16a673749a52532efe424eea8f9f1580097ca274ee2f55bdfaceff401f76c",
+    "url": "https://github.com/huggingface/transformers/blob/v5.18.0/src/transformers/processing_utils.py"
+  },
+  {
+    "path": "image_processing_backends.py",
+    "sha256": "539d3001944fa7d51e43336a86e800f2e3c5dd6512709f26e2d39884a052f18a",
+    "url": "https://github.com/huggingface/transformers/blob/v5.18.0/src/transformers/image_processing_backends.py"
+  },
+  {
+    "path": "image_transforms.py",
+    "sha256": "f61a1985247f094e960e7ccae54ec763f5fd5ea23e877d19fd32040600f6bf84",
+    "url": "https://github.com/huggingface/transformers/blob/v5.18.0/src/transformers/image_transforms.py"
+  }
+]

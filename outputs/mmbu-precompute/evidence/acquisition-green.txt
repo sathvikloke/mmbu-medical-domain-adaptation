@@ -1,0 +1,13 @@
+test_invalid_seek_size_or_budget_rejected (test_acquisition.RangeTests.test_invalid_seek_size_or_budget_rejected) ... ok
+test_seek_read_cache_budget_and_eof (test_acquisition.RangeTests.test_seek_read_cache_budget_and_eof) ... ok
+test_server_must_honor_exact_range_and_length (test_acquisition.RangeTests.test_server_must_honor_exact_range_and_length) ... ok
+test_aliases_and_case_collisions_are_rejected_before_publication (test_acquisition.ZipTests.test_aliases_and_case_collisions_are_rejected_before_publication) ... ok
+test_conflicting_chunked_framing_cannot_exceed_byte_cap (test_acquisition.ZipTests.test_conflicting_chunked_framing_cannot_exceed_byte_cap) ... ok
+test_missing_unsafe_duplicate_or_oversized_selection_never_publishes (test_acquisition.ZipTests.test_missing_unsafe_duplicate_or_oversized_selection_never_publishes) ... ok
+test_only_explicit_safe_members_are_copied_with_crc_and_hashes (test_acquisition.ZipTests.test_only_explicit_safe_members_are_copied_with_crc_and_hashes) ... ok
+test_unbounded_response_is_rejected_without_consuming_budget (test_acquisition.ZipTests.test_unbounded_response_is_rejected_without_consuming_budget) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 7.575s
+
+OK

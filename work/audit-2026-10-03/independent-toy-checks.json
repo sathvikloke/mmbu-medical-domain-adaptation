@@ -1,0 +1,43 @@
+{
+  "label": "Synthetic arithmetic fixtures, not model performance or estimated real uncertainty",
+  "mixture_reversal": [
+    {
+      "weights": [
+        0.8,
+        0.19999999999999996
+      ],
+      "A": 0.2059199999999999,
+      "B": 0.15087999999999993
+    },
+    {
+      "weights": [
+        0.2,
+        0.8
+      ],
+      "A": 0.08352000000000008,
+      "B": 0.18688000000000007
+    }
+  ],
+  "pooled_vs_average_products": {
+    "pooled": 0.11999999999999997,
+    "mean_of_source_scores": 0.09
+  },
+  "judge_bias_example": {
+    "true_A": 0.11999999999999997,
+    "true_B": 0.12381999999999997,
+    "A_with_optimistic_point01_T": 0.12768
+  },
+  "zero_errors_200_iid_one_sided_95_upper": 0.014867039231272083,
+  "context_repeated_image": {
+    "example_mean": 0.9,
+    "unique_image_mean": 0.5
+  },
+  "context_unequal_fields": {
+    "correct_example_mean": 0.5,
+    "incorrect_pooled_fields": 0.14285714285714285
+  },
+  "first_two_weeks_assumed_person_hours": [
+    50,
+    80
+  ]
+}

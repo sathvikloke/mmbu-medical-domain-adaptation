@@ -1,0 +1,87 @@
+Review-driven PNM precision regression
+Command: PYTHONPATH=src /Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest discover -s tests -p test_images.py -v
+test_16_bit_rgb_png_is_rejected_when_decoder_reduces_precision (test_images.ImageInspectionTests.test_16_bit_rgb_png_is_rejected_when_decoder_reduces_precision) ... ok
+test_16_bit_tiff_preserves_samples_and_flags_precision (test_images.ImageInspectionTests.test_16_bit_tiff_preserves_samples_and_flags_precision) ... ok
+test_ascii_and_bitmap_pnm_are_explicitly_out_of_scope (test_images.ImageInspectionTests.test_ascii_and_bitmap_pnm_are_explicitly_out_of_scope) ... 
+  test_ascii_and_bitmap_pnm_are_explicitly_out_of_scope (test_images.ImageInspectionTests.test_ascii_and_bitmap_pnm_are_explicitly_out_of_scope) (payload=b'P2\n1 1\n255\n7\n') ... FAIL
+  test_ascii_and_bitmap_pnm_are_explicitly_out_of_scope (test_images.ImageInspectionTests.test_ascii_and_bitmap_pnm_are_explicitly_out_of_scope) (payload=b'P1\n1 1\n0\n') ... FAIL
+test_binary_8bit_pnm_with_comments_retains_exact_samples (test_images.ImageInspectionTests.test_binary_8bit_pnm_with_comments_retains_exact_samples) ... FAIL
+test_corrupted_truncated_missing_and_nonimage_files_fail_individually (test_images.ImageInspectionTests.test_corrupted_truncated_missing_and_nonimage_files_fail_individually) ... ok
+test_decodes_pixels_reports_properties_and_raw_identity (test_images.ImageInspectionTests.test_decodes_pixels_reports_properties_and_raw_identity) ... ok
+test_duplicate_ids_missing_hash_and_malformed_rows_are_rejected (test_images.ImageInspectionTests.test_duplicate_ids_missing_hash_and_malformed_rows_are_rejected) ... ok
+test_duplicate_pixels_crossing_sources_and_splits_fail (test_images.ImageInspectionTests.test_duplicate_pixels_crossing_sources_and_splits_fail) ... ok
+test_duplicate_reporting_is_stable_under_input_order (test_images.ImageInspectionTests.test_duplicate_reporting_is_stable_under_input_order) ... ok
+test_exact_pixels_match_across_different_lossless_encodings (test_images.ImageInspectionTests.test_exact_pixels_match_across_different_lossless_encodings) ... ok
+test_high_depth_ppm_does_not_collapse_distinct_native_samples (test_images.ImageInspectionTests.test_high_depth_ppm_does_not_collapse_distinct_native_samples) ... FAIL
+test_large_header_dimensions_are_rejected_before_pixel_allocation (test_images.ImageInspectionTests.test_large_header_dimensions_are_rejected_before_pixel_allocation) ... ok
+test_manifest_hash_and_dimensions_are_compared_without_repair (test_images.ImageInspectionTests.test_manifest_hash_and_dimensions_are_compared_without_repair) ... ok
+test_missing_dimensions_are_visible_but_not_fabricated (test_images.ImageInspectionTests.test_missing_dimensions_are_visible_but_not_fabricated) ... ok
+test_modes_are_not_silently_converted_for_matching (test_images.ImageInspectionTests.test_modes_are_not_silently_converted_for_matching) ... ok
+test_multiframe_input_is_rejected_instead_of_using_first_frame (test_images.ImageInspectionTests.test_multiframe_input_is_rejected_instead_of_using_first_frame) ... ok
+test_nonidentity_png_exif_orientation_is_reported_not_applied (test_images.ImageInspectionTests.test_nonidentity_png_exif_orientation_is_reported_not_applied) ... ok
+test_nonidentity_tiff_is_rejected_before_automatic_decoder_rotation (test_images.ImageInspectionTests.test_nonidentity_tiff_is_rejected_before_automatic_decoder_rotation) ... ok
+test_palette_and_transparency_participate_in_pixel_identity (test_images.ImageInspectionTests.test_palette_and_transparency_participate_in_pixel_identity) ... ok
+test_pgm_nonstandard_maxval_is_not_silently_rescaled (test_images.ImageInspectionTests.test_pgm_nonstandard_maxval_is_not_silently_rescaled) ... 
+  test_pgm_nonstandard_maxval_is_not_silently_rescaled (test_images.ImageInspectionTests.test_pgm_nonstandard_maxval_is_not_silently_rescaled) (maximum=1023) ... FAIL
+  test_pgm_nonstandard_maxval_is_not_silently_rescaled (test_images.ImageInspectionTests.test_pgm_nonstandard_maxval_is_not_silently_rescaled) (maximum=100) ... FAIL
+test_pillow_bomb_warning_is_error_and_global_setting_is_untouched (test_images.ImageInspectionTests.test_pillow_bomb_warning_is_error_and_global_setting_is_untouched) ... ok
+test_pixel_and_compressed_file_limits_are_enforced (test_images.ImageInspectionTests.test_pixel_and_compressed_file_limits_are_enforced) ... ok
+test_same_dimensions_with_different_pixels_are_not_duplicates (test_images.ImageInspectionTests.test_same_dimensions_with_different_pixels_are_not_duplicates) ... ok
+test_source_root_confines_resolved_paths (test_images.ImageInspectionTests.test_source_root_confines_resolved_paths) ... ok
+test_core_import_and_missing_dependency_result_without_site_packages (test_images.OptionalDependencyTests.test_core_import_and_missing_dependency_result_without_site_packages) ... ok
+test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) ... ok
+
+======================================================================
+FAIL: test_ascii_and_bitmap_pnm_are_explicitly_out_of_scope (test_images.ImageInspectionTests.test_ascii_and_bitmap_pnm_are_explicitly_out_of_scope) (payload=b'P2\n1 1\n255\n7\n')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 251, in test_ascii_and_bitmap_pnm_are_explicitly_out_of_scope
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_ascii_and_bitmap_pnm_are_explicitly_out_of_scope (test_images.ImageInspectionTests.test_ascii_and_bitmap_pnm_are_explicitly_out_of_scope) (payload=b'P1\n1 1\n0\n')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 251, in test_ascii_and_bitmap_pnm_are_explicitly_out_of_scope
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_binary_8bit_pnm_with_comments_retains_exact_samples (test_images.ImageInspectionTests.test_binary_8bit_pnm_with_comments_retains_exact_samples)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 242, in test_binary_8bit_pnm_with_comments_retains_exact_samples
+    self.assertEqual(result["images"][0]["file_bits_per_sample"], [8])
+AssertionError: None != [8]
+
+======================================================================
+FAIL: test_high_depth_ppm_does_not_collapse_distinct_native_samples (test_images.ImageInspectionTests.test_high_depth_ppm_does_not_collapse_distinct_native_samples)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 221, in test_high_depth_ppm_does_not_collapse_distinct_native_samples
+    self.assertIn("pnm_requires_conversion", self.codes(result))
+AssertionError: 'pnm_requires_conversion' not found in {'decoded_split_leakage'}
+
+======================================================================
+FAIL: test_pgm_nonstandard_maxval_is_not_silently_rescaled (test_images.ImageInspectionTests.test_pgm_nonstandard_maxval_is_not_silently_rescaled) (maximum=1023)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 232, in test_pgm_nonstandard_maxval_is_not_silently_rescaled
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_pgm_nonstandard_maxval_is_not_silently_rescaled (test_images.ImageInspectionTests.test_pgm_nonstandard_maxval_is_not_silently_rescaled) (maximum=100)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 232, in test_pgm_nonstandard_maxval_is_not_silently_rescaled
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 26 tests in 0.095s
+
+FAILED (failures=6)
+
+Exit code: 1

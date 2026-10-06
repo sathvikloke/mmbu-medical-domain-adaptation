@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "source_script_sha256": "36032ca472594cae65aa6ad04a793a0ecc64a26a5217e200b097f5b544292e3b",
+  "strict_json_observations": [
+    {
+      "input": "1e309",
+      "rejected": false,
+      "observed_value": "inf"
+    },
+    {
+      "input": "-1e309",
+      "rejected": false,
+      "observed_value": "-inf"
+    }
+  ],
+  "bounded_read_static_observation": "Initial source used args.manifest.read_bytes() before checking the resulting length, and image_path.read_bytes() after inspection. Root had independently identified this before my review.",
+  "source_modified": false
+}

@@ -1,0 +1,446 @@
+{
+  "toy_same_A": [
+    {
+      "adapted_correct": 1,
+      "base_correct": 1,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-0",
+      "record_id": "toy-a-0",
+      "source_id": "toy-a",
+      "task": "global_classification"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 1,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-0",
+      "record_id": "toy-a-1",
+      "source_id": "toy-a",
+      "task": "box_classification"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 1,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-1",
+      "record_id": "toy-a-2",
+      "source_id": "toy-a",
+      "task": "mask_classification"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 1,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-1",
+      "record_id": "toy-a-3",
+      "source_id": "toy-a",
+      "task": "detection"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 1,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-2",
+      "record_id": "toy-a-4",
+      "source_id": "toy-a",
+      "task": "global_classification"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 1,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-2",
+      "record_id": "toy-a-5",
+      "source_id": "toy-a",
+      "task": "box_classification"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 1,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-3",
+      "record_id": "toy-a-6",
+      "source_id": "toy-a",
+      "task": "mask_classification"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 1,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-3",
+      "record_id": "toy-a-7",
+      "source_id": "toy-a",
+      "task": "detection"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-4",
+      "record_id": "toy-a-8",
+      "source_id": "toy-a",
+      "task": "global_classification"
+    },
+    {
+      "adapted_correct": 0,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 0
+      },
+      "group_id": "group-4",
+      "record_id": "toy-a-9",
+      "source_id": "toy-a",
+      "task": "box_classification"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-0",
+      "record_id": "toy-b-0",
+      "source_id": "toy-b",
+      "task": "global_classification"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-0",
+      "record_id": "toy-b-1",
+      "source_id": "toy-b",
+      "task": "box_classification"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-1",
+      "record_id": "toy-b-2",
+      "source_id": "toy-b",
+      "task": "mask_classification"
+    },
+    {
+      "adapted_correct": 0,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 0
+      },
+      "group_id": "group-1",
+      "record_id": "toy-b-3",
+      "source_id": "toy-b",
+      "task": "detection"
+    },
+    {
+      "adapted_correct": 0,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 0
+      },
+      "group_id": "group-2",
+      "record_id": "toy-b-4",
+      "source_id": "toy-b",
+      "task": "global_classification"
+    },
+    {
+      "adapted_correct": 0,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 0
+      },
+      "group_id": "group-2",
+      "record_id": "toy-b-5",
+      "source_id": "toy-b",
+      "task": "box_classification"
+    },
+    {
+      "adapted_correct": 0,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 0
+      },
+      "group_id": "group-3",
+      "record_id": "toy-b-6",
+      "source_id": "toy-b",
+      "task": "mask_classification"
+    },
+    {
+      "adapted_correct": 0,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 0
+      },
+      "group_id": "group-3",
+      "record_id": "toy-b-7",
+      "source_id": "toy-b",
+      "task": "detection"
+    },
+    {
+      "adapted_correct": 0,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 0
+      },
+      "group_id": "group-4",
+      "record_id": "toy-b-8",
+      "source_id": "toy-b",
+      "task": "global_classification"
+    },
+    {
+      "adapted_correct": 0,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 0
+      },
+      "group_id": "group-4",
+      "record_id": "toy-b-9",
+      "source_id": "toy-b",
+      "task": "box_classification"
+    }
+  ],
+  "toy_same_B": [
+    {
+      "adapted_correct": 0,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 0
+      },
+      "group_id": "group-4",
+      "record_id": "toy-b-9",
+      "source_id": "toy-b",
+      "task": "box_classification"
+    },
+    {
+      "adapted_correct": 0,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 0
+      },
+      "group_id": "group-4",
+      "record_id": "toy-b-8",
+      "source_id": "toy-b",
+      "task": "global_classification"
+    },
+    {
+      "adapted_correct": 0,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 0
+      },
+      "group_id": "group-3",
+      "record_id": "toy-b-7",
+      "source_id": "toy-b",
+      "task": "detection"
+    },
+    {
+      "adapted_correct": 0,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 0
+      },
+      "group_id": "group-3",
+      "record_id": "toy-b-6",
+      "source_id": "toy-b",
+      "task": "mask_classification"
+    },
+    {
+      "adapted_correct": 0,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 0
+      },
+      "group_id": "group-2",
+      "record_id": "toy-b-5",
+      "source_id": "toy-b",
+      "task": "box_classification"
+    },
+    {
+      "adapted_correct": 0,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 0
+      },
+      "group_id": "group-2",
+      "record_id": "toy-b-4",
+      "source_id": "toy-b",
+      "task": "global_classification"
+    },
+    {
+      "adapted_correct": 0,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 0
+      },
+      "group_id": "group-1",
+      "record_id": "toy-b-3",
+      "source_id": "toy-b",
+      "task": "detection"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-1",
+      "record_id": "toy-b-2",
+      "source_id": "toy-b",
+      "task": "mask_classification"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-0",
+      "record_id": "toy-b-1",
+      "source_id": "toy-b",
+      "task": "box_classification"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-0",
+      "record_id": "toy-b-0",
+      "source_id": "toy-b",
+      "task": "global_classification"
+    },
+    {
+      "adapted_correct": 0,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 0
+      },
+      "group_id": "group-4",
+      "record_id": "toy-a-9",
+      "source_id": "toy-a",
+      "task": "box_classification"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 0,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-4",
+      "record_id": "toy-a-8",
+      "source_id": "toy-a",
+      "task": "global_classification"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 1,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-3",
+      "record_id": "toy-a-7",
+      "source_id": "toy-a",
+      "task": "detection"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 1,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-3",
+      "record_id": "toy-a-6",
+      "source_id": "toy-a",
+      "task": "mask_classification"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 1,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-2",
+      "record_id": "toy-a-5",
+      "source_id": "toy-a",
+      "task": "box_classification"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 1,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-2",
+      "record_id": "toy-a-4",
+      "source_id": "toy-a",
+      "task": "global_classification"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 1,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-1",
+      "record_id": "toy-a-3",
+      "source_id": "toy-a",
+      "task": "detection"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 1,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-1",
+      "record_id": "toy-a-2",
+      "source_id": "toy-a",
+      "task": "mask_classification"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 1,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-0",
+      "record_id": "toy-a-1",
+      "source_id": "toy-a",
+      "task": "box_classification"
+    },
+    {
+      "adapted_correct": 1,
+      "base_correct": 1,
+      "context_correct": {
+        "modality": 1
+      },
+      "group_id": "group-0",
+      "record_id": "toy-a-0",
+      "source_id": "toy-a",
+      "task": "global_classification"
+    }
+  ]
+}

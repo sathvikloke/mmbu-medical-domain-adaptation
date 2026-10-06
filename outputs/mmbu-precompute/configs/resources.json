@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "gpu": {
+    "provider": "Einstein",
+    "status": "it_followup_pending",
+    "evidence": "User reports access to an Einstein GPU, currently unreliable; user will discuss with IT.",
+    "model": null,
+    "vram_gb": null,
+    "count": null,
+    "scheduler": null,
+    "reserved_hours": null,
+    "runtime_verified": false
+  },
+  "spending_ceiling": null,
+  "combined_person_hours_per_week": null,
+  "biomedical_review_owner": null,
+  "training_started": false,
+  "compute_reserve_fraction": 0.15
+}

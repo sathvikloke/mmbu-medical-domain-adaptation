@@ -1,0 +1,10 @@
+test_artifact_receipt_cli_detects_local_drift (test_cli_batch3.Batch3CliTests.test_artifact_receipt_cli_detects_local_drift) ... ok
+test_bad_calibration_is_structured_error (test_cli_batch3.Batch3CliTests.test_bad_calibration_is_structured_error) ... ok
+test_calibration_keeps_selected_disagreements_out_of_random_summary (test_cli_batch3.Batch3CliTests.test_calibration_keeps_selected_disagreements_out_of_random_summary) ... ok
+test_diagnostics_keep_partial_coverage_explicit (test_cli_batch3.Batch3CliTests.test_diagnostics_keep_partial_coverage_explicit) ... ok
+test_synthetic_confirmation_cli_lifecycle_and_retained_anchors (test_cli_batch3.Batch3CliTests.test_synthetic_confirmation_cli_lifecycle_and_retained_anchors) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.678s
+
+OK

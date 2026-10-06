@@ -1,0 +1,41 @@
+Python: 3.14.7
+Command: PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python3 -m unittest discover -s tests -p test_experiments.py -v
+test_backdated_transition_and_retirement_before_result_fail (test_experiments.ExperimentTests.test_backdated_transition_and_retirement_before_result_fail) ... ok
+test_bad_hash_seed_number_time_and_unknown_fields_fail (test_experiments.ExperimentTests.test_bad_hash_seed_number_time_and_unknown_fields_fail) ... ok
+test_complete_record_is_copied_without_defaults_or_mutation (test_experiments.ExperimentTests.test_complete_record_is_copied_without_defaults_or_mutation) ... ok
+test_development_record_can_verify_local_files_without_freezing_confirmation (test_experiments.ExperimentTests.test_development_record_can_verify_local_files_without_freezing_confirmation) ... ok
+test_freeze_checks_declared_hashes_before_creating_ledger (test_experiments.ExperimentTests.test_freeze_checks_declared_hashes_before_creating_ledger) ... ok
+test_freeze_rejects_undeclared_scope_files_and_nonconfirmation_purpose (test_experiments.ExperimentTests.test_freeze_rejects_undeclared_scope_files_and_nonconfirmation_purpose) ... ok
+test_frozen_unopened_record_has_fixed_candidate_and_cannot_be_overwritten (test_experiments.ExperimentTests.test_frozen_unopened_record_has_fixed_candidate_and_cannot_be_overwritten) ... ok
+test_latest_anchor_detects_rewritten_tail_and_deleted_history (test_experiments.ExperimentTests.test_latest_anchor_detects_rewritten_tail_and_deleted_history) ... ok
+test_ledger_tampering_extra_events_and_duplicate_json_keys_fail (test_experiments.ExperimentTests.test_ledger_tampering_extra_events_and_duplicate_json_keys_fail) ... ok
+test_missing_artifact_reference_and_duplicate_paths_fail (test_experiments.ExperimentTests.test_missing_artifact_reference_and_duplicate_paths_fail) ... ok
+test_missing_provenance_fields_and_identity_are_rejected (test_experiments.ExperimentTests.test_missing_provenance_fields_and_identity_are_rejected) ... ok
+test_mutations_require_latest_anchor_and_cannot_advance_rewritten_or_truncated_tail (test_experiments.ExperimentTests.test_mutations_require_latest_anchor_and_cannot_advance_rewritten_or_truncated_tail) ... FAIL
+test_open_checks_artifact_drift_and_preserves_unopened_state_on_failure (test_experiments.ExperimentTests.test_open_checks_artifact_drift_and_preserves_unopened_state_on_failure) ... ok
+test_open_requires_correct_anchor_and_cannot_reopen (test_experiments.ExperimentTests.test_open_requires_correct_anchor_and_cannot_reopen) ... ok
+test_receipt_is_deterministic_and_existing_output_is_preserved (test_experiments.ExperimentTests.test_receipt_is_deterministic_and_existing_output_is_preserved) ... ok
+test_receipt_reports_missing_extra_and_changed_artifacts (test_experiments.ExperimentTests.test_receipt_reports_missing_extra_and_changed_artifacts) ... ok
+test_receipt_uses_real_bytes_and_requires_external_digest (test_experiments.ExperimentTests.test_receipt_uses_real_bytes_and_requires_external_digest) ... ok
+test_result_informed_change_retires_set_and_forbids_reselection (test_experiments.ExperimentTests.test_result_informed_change_retires_set_and_forbids_reselection) ... ok
+test_results_require_open_state_and_preserve_exact_result_file (test_experiments.ExperimentTests.test_results_require_open_state_and_preserve_exact_result_file) ... ok
+test_symlinks_escape_duplicate_scope_and_self_receipt_are_rejected (test_experiments.ExperimentTests.test_symlinks_escape_duplicate_scope_and_self_receipt_are_rejected) ... ok
+test_tampered_receipt_cannot_be_reanchored_with_its_own_new_digest (test_experiments.ExperimentTests.test_tampered_receipt_cannot_be_reanchored_with_its_own_new_digest) ... ok
+test_templates_unresolved_revisions_and_implicit_weights_are_rejected (test_experiments.ExperimentTests.test_templates_unresolved_revisions_and_implicit_weights_are_rejected) ... ok
+test_verification_detects_changed_or_missing_result_bytes (test_experiments.ExperimentTests.test_verification_detects_changed_or_missing_result_bytes) ... ok
+
+======================================================================
+FAIL: test_mutations_require_latest_anchor_and_cannot_advance_rewritten_or_truncated_tail (test_experiments.ExperimentTests.test_mutations_require_latest_anchor_and_cannot_advance_rewritten_or_truncated_tail)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_experiments.py", line 372, in test_mutations_require_latest_anchor_and_cannot_advance_rewritten_or_truncated_tail
+    with self.assertRaises(ValueError):
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 23 tests in 0.133s
+
+FAILED (failures=1)
+
+Exit code: 1

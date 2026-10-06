@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "status": "documentation_review_only",
+  "prepared_at_utc": "2026-10-04T02:26:18.298248+00:00",
+  "review_date_local": "2026-10-03",
+  "timezone": "America/Chicago",
+  "retrieval_scope": "Primary public documentation and small public repository metadata; no archives, gated records, terms acceptance, model weights, or messages.",
+  "sources": [
+    {
+      "evidence_id": "SRC-01",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11208523/",
+      "locator": "Methods: dataset creation and concept extraction; Data Records",
+      "checked_date_local": "2026-10-03",
+      "checked_timezone": "America/Chicago"
+    },
+    {
+      "evidence_id": "SRC-02",
+      "url": "https://arxiv.org/html/2305.10415v6",
+      "locator": "v6, sections 4.1 and 7 Data Availability",
+      "checked_date_local": "2026-10-03",
+      "checked_timezone": "America/Chicago"
+    },
+    {
+      "evidence_id": "SRC-03",
+      "url": "https://bbbc.broadinstitute.org/BBBC039",
+      "locator": "Version 1; Images; Ground truth; Copyright",
+      "checked_date_local": "2026-10-03",
+      "checked_timezone": "America/Chicago"
+    },
+    {
+      "evidence_id": "SRC-04",
+      "url": "https://bbbc.broadinstitute.org/BBBC041",
+      "locator": "Version 1; Images; Ground truth; Copyright",
+      "checked_date_local": "2026-10-03",
+      "checked_timezone": "America/Chicago"
+    },
+    {
+      "evidence_id": "SRC-05",
+      "url": "https://physionet.org/content/chest-imagenome/1.0.0/",
+      "locator": "v1.0.0; Methods; Data Description; Usage Notes; Access",
+      "checked_date_local": "2026-10-03",
+      "checked_timezone": "America/Chicago"
+    },
+    {
+      "evidence_id": "SRC-06",
+      "url": "https://huggingface.co/datasets/RadGenome/PMC-VQA",
+      "locator": "Public repository redirect and dataset-viewer schema error; not archive inspection",
+      "checked_date_local": "2026-10-03",
+      "checked_timezone": "America/Chicago"
+    }
+  ],
+  "metadata_observations": [
+    {
+      "source_id": "pmc-vqa",
+      "url": "https://huggingface.co/api/datasets/RadGenome/PMC-VQA",
+      "retrieved_at_utc": "2026-10-04T02:22:50.435148+00:00",
+      "http_status": 200,
+      "response_sha256": "7653c09ec2b7f7333d795e6c7d4e5fafb1a66bb2c667e1df1caf153f7acf90d5",
+      "repository_sha": "b56ae594f794867893143b337b4118a835794647",
+      "gated": false,
+      "license_metadata": null,
+      "raw_response_retained": false
+    },
+    {
+      "source_id": "mmbu-public",
+      "url": "https://huggingface.co/api/datasets/mmbu/mmbu-public",
+      "retrieved_at_utc": "2026-10-04T02:22:50.668161+00:00",
+      "http_status": 200,
+      "response_sha256": "345df38e3becea6b2cc73b9288fa1e70e2aeae826fa4751da3cd3236b14a8d41",
+      "repository_sha": "069da7bbd6201a867039b548f3c02e103711ed4a",
+      "gated": "auto",
+      "license_metadata": "other",
+      "raw_response_retained": true,
+      "raw_response_path": "work/audit-2026-10-03/mmbu-public-api.json"
+    }
+  ],
+  "evidence_limits": [
+    "Web-rendered documents were rechecked; raw external HTML was not archived by this worker.",
+    "Repository SHA pins metadata state, not an inspected or approved data acquisition.",
+    "Paper version and dataset version are separate.",
+    "Rights summaries are source statements, not blanket legal determinations.",
+    "No record-level accuracy, independent-group inventory, perceptual duplicate check, or MMBU-overlap check was performed."
+  ],
+  "correction_note": "PMC-VQA v6 section 7 documents license filtering; do not repeat older cross-paper claims of no license filtering as current fact.",
+  "local_protocol_artifacts": [
+    {
+      "evidence_id": "PROTO-BRIEF",
+      "url": "https://akiranishii.github.io/mmbu-challenge/MMBU_challenge_update.pdf",
+      "workspace_relative_path": "work/audit-2026-10-03/brief-refetched.pdf",
+      "sha256": "72589a77da294da10e1e953b7bc93c62fc3d511685bdd290a0f046f67348d362",
+      "locator": "pages 3, 6-10",
+      "verification": "Local SHA-256 recomputed in this task; content capture predates this preparation batch."
+    },
+    {
+      "evidence_id": "PROTO-BRIEF-TEXT",
+      "url": "https://akiranishii.github.io/mmbu-challenge/MMBU_challenge_update.pdf",
+      "workspace_relative_path": "work/MMBU_challenge_update.txt",
+      "sha256": "55ce42b3890d44139523131e0a743843391750193c6e34895db0e368748a3d86",
+      "locator": "local text extraction with PAGE markers",
+      "verification": "Local SHA-256 recomputed in this task; content capture predates this preparation batch."
+    },
+    {
+      "evidence_id": "PROTO-CARD",
+      "url": "https://huggingface.co/datasets/mmbu/mmbu-public",
+      "workspace_relative_path": "work/audit-2026-10-03/mmbu-public-card-visible.txt",
+      "sha256": "5e072c7c5823bc9ce87f2086c2148b3885f97caf02b0ffaa1a5d4ce997a53ef7",
+      "locator": "visible-text snapshot, lines 71-287",
+      "verification": "Local SHA-256 recomputed in this task; content capture predates this preparation batch."
+    },
+    {
+      "evidence_id": "PROTO-CARD-HTML",
+      "url": "https://huggingface.co/datasets/mmbu/mmbu-public",
+      "workspace_relative_path": "work/audit-2026-10-03/mmbu-public-card.html",
+      "sha256": "4de94707131d8a05a97d5c91d3473657a304f9bb530e62ac6f6deec4c712f0f2",
+      "locator": "public HTML snapshot",
+      "verification": "Local SHA-256 recomputed in this task; content capture predates this preparation batch."
+    },
+    {
+      "evidence_id": "PROTO-CARD-API",
+      "url": "https://huggingface.co/api/datasets/mmbu/mmbu-public",
+      "workspace_relative_path": "work/audit-2026-10-03/mmbu-public-api.json",
+      "sha256": "345df38e3becea6b2cc73b9288fa1e70e2aeae826fa4751da3cd3236b14a8d41",
+      "locator": "public metadata only",
+      "verification": "Local SHA-256 recomputed in this task; content capture predates this preparation batch."
+    }
+  ],
+  "validation": {
+    "status": "passed",
+    "command": "python3 (stdlib JSON duplicate-key, registry/protocol invariant and evidence-hash checks)",
+    "exit_code": 0,
+    "checks": [
+      "Three JSON files parse with duplicate-key rejection",
+      "Registry identity/role/version/status invariants",
+      "Six real candidates grant no purposes",
+      "One synthetic source grants engineering only",
+      "All six protocol issues unresolved with no precedence chosen",
+      "Five pinned local evidence SHA-256 values match"
+    ],
+    "counts": {
+      "json_files": 3,
+      "real_candidate_sources": 6,
+      "synthetic_engineering_sources": 1,
+      "unresolved_protocol_items": 6,
+      "pinned_local_artifacts": 5
+    },
+    "limits": "No acquired data, clinical labels, official harness, GPU/model behavior or source approval validated."
+  }
+}

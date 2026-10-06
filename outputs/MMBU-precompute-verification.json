@@ -1,0 +1,98 @@
+{
+  "date_local": "2026-10-03",
+  "timezone": "America/Chicago",
+  "archive": "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute.zip",
+  "archive_bytes": 146013,
+  "archive_sha256": "85dd05407f1a64da7e7cb09aea8a032bcd9dfa4f2e6764f217b9fc4b58363f51",
+  "manifest_files": 66,
+  "archive_roundtrip_hashes_matched": true,
+  "extracted_demo_exit_code": 0,
+  "test_runs": {
+    "runs": [
+      {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "python": "Python 3.14.7",
+        "exit_code": 0,
+        "log": "evidence/final-python314-tests.txt",
+        "tail": [
+          "----------------------------------------------------------------------",
+          "Ran 114 tests in 0.504s",
+          "",
+          "OK"
+        ]
+      },
+      {
+        "command": [
+          "/Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "tests",
+          "-v"
+        ],
+        "python": "Python 3.12.14",
+        "exit_code": 0,
+        "log": "evidence/final-python312-tests.txt",
+        "tail": [
+          "----------------------------------------------------------------------",
+          "Ran 114 tests in 0.359s",
+          "",
+          "OK"
+        ]
+      }
+    ],
+    "python311": "syntax checked only; runtime unavailable",
+    "recorded_at_utc": "2026-10-04T02:45:21.017882+00:00"
+  },
+  "final_module_review_receipts": {
+    "src/mmbu_prep/contracts.py": {
+      "sha256": "7c2f4a417f946e41cc2c97705b4b7edf07ae4d932e0781f60a05fddc36689db3",
+      "review": "evidence/contracts-review.md"
+    },
+    "src/mmbu_prep/metrics.py": {
+      "sha256": "66a620a00606f806ba0c1b334b19c35e2f76807c7000d0079c015fa56742bfd6",
+      "review": "evidence/metrics-cli-review.md"
+    },
+    "src/mmbu_prep/__main__.py": {
+      "sha256": "37863468abe08984a0c62c5b6fdc1dbc12076e7acf944c56dcc85140ca98a3a5",
+      "review": "evidence/data-review.md"
+    },
+    "src/mmbu_prep/data.py": {
+      "sha256": "15bf5e2d6feeb84e84b34e74ca83170cc1ad782285c19ecfb2b9144c696a286d",
+      "review": "evidence/data-review.md"
+    }
+  },
+  "review_findings": [
+    {
+      "id": "MCLI-001",
+      "status": "closed",
+      "repair": "Split CLI honors dev-only permission; requested target permissions remain required."
+    },
+    {
+      "id": "MCLI-002",
+      "status": "closed",
+      "repair": "Finite JSON float decoding rejects exponent overflow in every field."
+    },
+    {
+      "id": "MCLI-003",
+      "status": "closed",
+      "repair": "Consistent numeric validation; scaled weight normalization rejects underflow; huge confidence rejects cleanly."
+    },
+    {
+      "id": "DATA-REVIEW-01",
+      "status": "closed",
+      "repair": "Operational purposes match record splits; assignment protects held-out data and retains full lineage checks."
+    }
+  ],
+  "scope": "CPU preparation complete within implementation plan; E00 GPU, real-data approval and official protocol remain incomplete.",
+  "historical_audited_plan_sha256": "7e4997da8fef7614ad057bbd910c15a585d354e7f2036cc6be8bd659f5afbe64"
+}

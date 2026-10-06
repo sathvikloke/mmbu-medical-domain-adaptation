@@ -1,0 +1,7 @@
+Qwen/Qwen2.5-VL-7B-Instruct / native_default: 24/24 encodings passed
+Qwen/Qwen2.5-VL-7B-Instruct / common_area_65536_262144: 24/24 encodings passed
+Qwen/Qwen3.5-9B / native_default: 24/24 encodings passed
+Qwen/Qwen3.5-9B / common_area_65536_262144: 24/24 encodings passed
+Qwen/Qwen3-VL-8B-Instruct / native_default: 24/24 encodings passed
+Qwen/Qwen3-VL-8B-Instruct / common_area_65536_262144: 24/24 encodings passed
+{"status": "passed", "records": 24, "models": 3, "network_attempts": 0, "source_use_approved": false}

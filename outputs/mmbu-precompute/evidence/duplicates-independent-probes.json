@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "results": [
+    {
+      "case": "strict_horizontal_order_and_hamming_boundary",
+      "status": "passed"
+    },
+    {
+      "case": "default_distance_four_inclusive_five_excluded",
+      "status": "passed"
+    },
+    {
+      "case": "aspect_exact_five_percent_inclusive",
+      "status": "passed",
+      "candidate_count": 1,
+      "expected_exact_relative_difference": 0.05,
+      "float_ratio_subtraction": 0.050000000000000044
+    },
+    {
+      "case": "same_split_reencoding_and_cross_split_exact_prerequisite_failure",
+      "status": "passed"
+    },
+    {
+      "case": "file_changed_after_inspection",
+      "status": "passed",
+      "rejection": "Image changed after inspection"
+    },
+    {
+      "case": "input_type_depth_alpha_orientation_path_and_bound_guards",
+      "status": "passed",
+      "rejections": 16
+    },
+    {
+      "case": "cli_cross_split_exact_error",
+      "status": "passed",
+      "exit_code": 2
+    },
+    {
+      "case": "real_24_image_replay_and_cli",
+      "status": "passed",
+      "images": 24,
+      "candidates": 0,
+      "exact_saved_json_reproduction": true,
+      "input_records_and_files_unchanged": true,
+      "cli_exit_code": 0
+    }
+  ],
+  "production_sha256": "03a832d3c2e325c04b26e7d10a0e855c0e891ea5227a12c870f505ac88665682",
+  "cli_sha256": "81695eaabc24043da9a6382fcf4f0e4c47f099b30b7cbb3217bf1b81478c1ef8",
+  "saved_triage_sha256": "c2f0ef593507ba6d87645099e063fbaf11baeec5af30f6384b47206e8463fc40",
+  "script_sha256": "99b9d16e998e108346e7d2fb881328afa0d71cf9935a5c35b21029885714b55a",
+  "production_modified": false,
+  "network_requests": 0,
+  "model_use_approval": false
+}

@@ -1,0 +1,7 @@
+{
+  "verified_files": 561,
+  "existing_identical": 167,
+  "restored_files": 0,
+  "dry_run": true,
+  "model_use_approved": false
+}

@@ -1,0 +1,30 @@
+test_invalid_seek_size_or_budget_rejected (test_acquisition.RangeTests.test_invalid_seek_size_or_budget_rejected) ... ok
+test_seek_read_cache_budget_and_eof (test_acquisition.RangeTests.test_seek_read_cache_budget_and_eof) ... ok
+test_server_must_honor_exact_range_and_length (test_acquisition.RangeTests.test_server_must_honor_exact_range_and_length) ... ok
+test_aliases_and_case_collisions_are_rejected_before_publication (test_acquisition.ZipTests.test_aliases_and_case_collisions_are_rejected_before_publication) ... FAIL
+test_missing_unsafe_duplicate_or_oversized_selection_never_publishes (test_acquisition.ZipTests.test_missing_unsafe_duplicate_or_oversized_selection_never_publishes) ... ok
+test_only_explicit_safe_members_are_copied_with_crc_and_hashes (test_acquisition.ZipTests.test_only_explicit_safe_members_are_copied_with_crc_and_hashes) ... ok
+test_unbounded_response_is_rejected_without_consuming_budget (test_acquisition.ZipTests.test_unbounded_response_is_rejected_without_consuming_budget) ... FAIL
+
+======================================================================
+FAIL: test_aliases_and_case_collisions_are_rejected_before_publication (test_acquisition.ZipTests.test_aliases_and_case_collisions_are_rejected_before_publication)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_acquisition.py", line 90, in test_aliases_and_case_collisions_are_rejected_before_publication
+    with self.assertRaises(ValueError):copy(reader,list(names),out)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_unbounded_response_is_rejected_without_consuming_budget (test_acquisition.ZipTests.test_unbounded_response_is_rejected_without_consuming_budget)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_acquisition.py", line 96, in test_unbounded_response_is_rejected_without_consuming_budget
+    with self.assertRaises(ValueError):reader.read(4)
+         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 7 tests in 6.070s
+
+FAILED (failures=2)

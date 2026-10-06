@@ -1,0 +1,18 @@
+test_background_and_interior_boxes (test_bbbc039.DecoderTests.test_background_and_interior_boxes) ... ok
+test_bad_planes_rejected (test_bbbc039.DecoderTests.test_bad_planes_rejected) ... ok
+test_equal_value_connectivity_not_unique_color_or_binary_foreground (test_bbbc039.DecoderTests.test_equal_value_connectivity_not_unique_color_or_binary_foreground) ... ok
+test_16_bit_mask_is_rejected_before_lossy_pillow_decode (test_bbbc039.IntakeTests.test_16_bit_mask_is_rejected_before_lossy_pillow_decode) ... ok
+test_big_endian_native_16bit_image_preserves_bytes_and_extrema (test_bbbc039.IntakeTests.test_big_endian_native_16bit_image_preserves_bytes_and_extrema) ... ok
+test_mismatch_and_nonblack_red_zero_fail_without_publishing_result (test_bbbc039.IntakeTests.test_mismatch_and_nonblack_red_zero_fail_without_publishing_result) ... ok
+test_only_source_training_is_copied_and_annotations_remain_quarantined (test_bbbc039.IntakeTests.test_only_source_training_is_copied_and_annotations_remain_quarantined) ... ok
+test_opaque_rgba_mask_preserves_red_semantics (test_bbbc039.IntakeTests.test_opaque_rgba_mask_preserves_red_semantics) ... ok
+test_rgb_transparency_metadata_cannot_bypass_opacity_check (test_bbbc039.IntakeTests.test_rgb_transparency_metadata_cannot_bypass_opacity_check) ... ok
+test_transparent_mask_fails_ambiguous_display (test_bbbc039.IntakeTests.test_transparent_mask_fails_ambiguous_display) ... ok
+test_duplicate_overlap_paths_or_missing_plate_rejected (test_bbbc039.MetadataTests.test_duplicate_overlap_paths_or_missing_plate_rejected) ... ok
+test_preserves_original_split_and_plate_mapping (test_bbbc039.MetadataTests.test_preserves_original_split_and_plate_mapping) ... ok
+test_unsafe_archive_member_or_duplicate_member_rejected (test_bbbc039.MetadataTests.test_unsafe_archive_member_or_duplicate_member_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.090s
+
+OK

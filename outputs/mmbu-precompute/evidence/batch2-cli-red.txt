@@ -1,0 +1,65 @@
+test_bad_comparison_alignment_returns_json_error (test_cli_batch2.Batch2CliTests.test_bad_comparison_alignment_returns_json_error) ... ERROR
+test_compare_aligned_supplied_grades_and_no_winner_claim (test_cli_batch2.Batch2CliTests.test_compare_aligned_supplied_grades_and_no_winner_claim) ... FAIL
+test_images_decodes_shipped_fixtures (test_cli_batch2.Batch2CliTests.test_images_decodes_shipped_fixtures) ... FAIL
+test_missing_intake_archive_returns_json_error (test_cli_batch2.Batch2CliTests.test_missing_intake_archive_returns_json_error) ... ERROR
+
+======================================================================
+ERROR: test_bad_comparison_alignment_returns_json_error (test_cli_batch2.Batch2CliTests.test_bad_comparison_alignment_returns_json_error)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_cli_batch2.py", line 34, in test_bad_comparison_alignment_returns_json_error
+    self.assertIn('error',json.loads(out.stderr))
+                          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+======================================================================
+ERROR: test_missing_intake_archive_returns_json_error (test_cli_batch2.Batch2CliTests.test_missing_intake_archive_returns_json_error)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_cli_batch2.py", line 46, in test_missing_intake_archive_returns_json_error
+    self.assertIn('error',json.loads(out.stderr))
+                          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/__init__.py", line 346, in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/decoder.py", line 338, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/json/decoder.py", line 356, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+======================================================================
+FAIL: test_compare_aligned_supplied_grades_and_no_winner_claim (test_cli_batch2.Batch2CliTests.test_compare_aligned_supplied_grades_and_no_winner_claim)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_cli_batch2.py", line 22, in test_compare_aligned_supplied_grades_and_no_winner_claim
+    self.assertEqual(out.returncode,0,out.stderr)
+AssertionError: 2 != 0 : usage: __main__.py [-h] [--workspace WORKSPACE]
+                   {status,demo,score,validate,split} ...
+__main__.py: error: argument command: invalid choice: 'compare' (choose from status, demo, score, validate, split)
+
+
+======================================================================
+FAIL: test_images_decodes_shipped_fixtures (test_cli_batch2.Batch2CliTests.test_images_decodes_shipped_fixtures)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_cli_batch2.py", line 39, in test_images_decodes_shipped_fixtures
+    self.assertEqual(out.returncode,0,out.stdout+out.stderr)
+AssertionError: 2 != 0 : usage: __main__.py [-h] [--workspace WORKSPACE]
+                   {status,demo,score,validate,split} ...
+__main__.py: error: argument command: invalid choice: 'inspect-images' (choose from status, demo, score, validate, split)
+
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.141s
+
+FAILED (failures=2, errors=2)

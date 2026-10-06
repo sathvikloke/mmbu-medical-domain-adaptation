@@ -1,0 +1,4867 @@
+{
+  "schema_version": 1,
+  "run_at_utc": "2026-10-04T17:40:56.298568+00:00",
+  "python": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+  "platform": "macOS-27.0-arm64-arm-64bit",
+  "dependency_versions": {
+    "transformers": "5.18.0",
+    "torch": "2.14.1",
+    "torchvision": "0.29.1",
+    "numpy": "2.5.3",
+    "Pillow": "12.3.0",
+    "tokenizers": "0.23.2",
+    "huggingface-hub": "1.33.0"
+  },
+  "script_sha256": "981e04e4d0be549bc68fb30868d8a68ad0f2bf55c8df2edeef6ed2b25e6d5fd8",
+  "registry_sha256": "bf72bacd517bd614a2af07d8576a4e7d95cbf38acf930096d75edb5e16e43c91",
+  "mode": "offline",
+  "weight_downloads_allowed": false,
+  "model_instantiation": false,
+  "trust_remote_code": false,
+  "missing_dependencies": [],
+  "models": [
+    {
+      "model_id": "Qwen/Qwen2.5-VL-7B-Instruct",
+      "revision": "cc594898137f460bfe9f0759e9844b3ce807cfb5",
+      "artifact_manifest": {
+        "model_id": "Qwen/Qwen2.5-VL-7B-Instruct",
+        "revision": "cc594898137f460bfe9f0759e9844b3ce807cfb5",
+        "retrieved_at_utc": "2026-10-04T17:28:04.576976+00:00",
+        "files": [
+          {
+            "filename": "config.json",
+            "url": "https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct/resolve/cc594898137f460bfe9f0759e9844b3ce807cfb5/config.json",
+            "bytes": 1374,
+            "sha256": "77d9ec7321cc572e3579e2c84799c9cadaded63c49ce93b101733349fc330c43",
+            "status": "downloaded"
+          },
+          {
+            "filename": "preprocessor_config.json",
+            "url": "https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct/resolve/cc594898137f460bfe9f0759e9844b3ce807cfb5/preprocessor_config.json",
+            "bytes": 350,
+            "sha256": "f2058c716eef96ccaed1cc1e2d0c08306b62586d535b28d9d08e691b2fab7ca0",
+            "status": "downloaded"
+          },
+          {
+            "filename": "video_preprocessor_config.json",
+            "url": "https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct/resolve/cc594898137f460bfe9f0759e9844b3ce807cfb5/video_preprocessor_config.json",
+            "status": "http_404"
+          },
+          {
+            "filename": "processor_config.json",
+            "url": "https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct/resolve/cc594898137f460bfe9f0759e9844b3ce807cfb5/processor_config.json",
+            "status": "http_404"
+          },
+          {
+            "filename": "tokenizer_config.json",
+            "url": "https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct/resolve/cc594898137f460bfe9f0759e9844b3ce807cfb5/tokenizer_config.json",
+            "bytes": 5702,
+            "sha256": "4abd3520120e266da84c0864fee064d1fb10806f02225911a47253dd38dc5f56",
+            "status": "downloaded"
+          },
+          {
+            "filename": "tokenizer.json",
+            "url": "https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct/resolve/cc594898137f460bfe9f0759e9844b3ce807cfb5/tokenizer.json",
+            "bytes": 7031645,
+            "sha256": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+            "status": "downloaded"
+          },
+          {
+            "filename": "vocab.json",
+            "url": "https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct/resolve/cc594898137f460bfe9f0759e9844b3ce807cfb5/vocab.json",
+            "bytes": 2776833,
+            "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910",
+            "status": "downloaded"
+          },
+          {
+            "filename": "merges.txt",
+            "url": "https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct/resolve/cc594898137f460bfe9f0759e9844b3ce807cfb5/merges.txt",
+            "bytes": 1671839,
+            "sha256": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3",
+            "status": "downloaded"
+          },
+          {
+            "filename": "special_tokens_map.json",
+            "url": "https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct/resolve/cc594898137f460bfe9f0759e9844b3ce807cfb5/special_tokens_map.json",
+            "status": "http_404"
+          },
+          {
+            "filename": "added_tokens.json",
+            "url": "https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct/resolve/cc594898137f460bfe9f0759e9844b3ce807cfb5/added_tokens.json",
+            "status": "http_404"
+          },
+          {
+            "filename": "chat_template.json",
+            "url": "https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct/resolve/cc594898137f460bfe9f0759e9844b3ce807cfb5/chat_template.json",
+            "bytes": 1050,
+            "sha256": "ad60d90252ed0b0705ba14e2d0ad0fec0beac1ea955642b54059b36052d8bc96",
+            "status": "downloaded"
+          },
+          {
+            "filename": "chat_template.jinja",
+            "url": "https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct/resolve/cc594898137f460bfe9f0759e9844b3ce807cfb5/chat_template.jinja",
+            "status": "http_404"
+          }
+        ]
+      },
+      "processor_class": "Qwen2_5_VLProcessor",
+      "tokenizer_class": "Qwen2Tokenizer",
+      "image_processor_class": "Qwen2VLImageProcessor",
+      "loader_warnings": {
+        "python_warnings": [],
+        "transformers_log": ""
+      },
+      "native_image_processor_config": {
+        "size": {
+          "longest_edge": 12845056,
+          "shortest_edge": 3136
+        },
+        "patch_size": 14,
+        "temporal_patch_size": 2,
+        "merge_size": 2,
+        "image_mean": [
+          0.48145466,
+          0.4578275,
+          0.40821073
+        ],
+        "image_std": [
+          0.26862954,
+          0.26130258,
+          0.27577711
+        ],
+        "image_processor_type": "Qwen2VLImageProcessor",
+        "do_convert_rgb": true,
+        "do_resize": true,
+        "resample": 3,
+        "do_rescale": true,
+        "rescale_factor": 0.00392156862745098,
+        "do_normalize": true
+      },
+      "native_template_variables": [
+        "add_generation_prompt",
+        "add_vision_id",
+        "messages"
+      ],
+      "enable_thinking_template_variable": false,
+      "native_chat_template_sha256": "a0bc6f6fc7a29a80017a433e8f03a1cc1236e838a944a2d034295a60c4f2fddb",
+      "chat": {
+        "checks": {
+          "task_reference_invariant": true,
+          "context_task_and_reference_invariant": true,
+          "context_excludes_task_question": true,
+          "both_exclude_poison_values": true,
+          "one_image_placeholder_each": true,
+          "generation_prompt_changes_render": true,
+          "render_and_tokenizer_repeat_deterministic": true
+        },
+        "task_rendered": "<|im_start|>system\nSynthetic task probe. Do not use prior requests.<|im_end|>\n<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>TASK_ONLY_517: Count the drawn squares.<|im_end|>\n<|im_start|>assistant\n",
+        "context_rendered": "<|im_start|>system\nSynthetic context probe.<|im_end|>\n<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>Describe these requested fields: modality, stain<|im_end|>\n<|im_start|>assistant\n",
+        "without_generation_prompt": "<|im_start|>system\nSynthetic task probe. Do not use prior requests.<|im_end|>\n<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>TASK_ONLY_517: Count the drawn squares.<|im_end|>\n",
+        "thinking_disabled_rendered": null,
+        "generation_suffix": "<|im_start|>assistant\n",
+        "task_text_token_ids": [
+          151644,
+          8948,
+          198,
+          37134,
+          17556,
+          3383,
+          21730,
+          13,
+          3155,
+          537,
+          990,
+          4867,
+          7388,
+          13,
+          151645,
+          198,
+          151644,
+          872,
+          198,
+          151652,
+          151655,
+          151653,
+          65813,
+          31263,
+          62,
+          20,
+          16,
+          22,
+          25,
+          4504,
+          279,
+          14764,
+          31340,
+          13,
+          151645,
+          198,
+          151644,
+          77091,
+          198
+        ],
+        "context_text_token_ids": [
+          151644,
+          8948,
+          198,
+          37134,
+          17556,
+          2266,
+          21730,
+          13,
+          151645,
+          198,
+          151644,
+          872,
+          198,
+          151652,
+          151655,
+          151653,
+          74785,
+          1493,
+          11223,
+          5043,
+          25,
+          1463,
+          2719,
+          11,
+          51964,
+          151645,
+          198,
+          151644,
+          77091,
+          198
+        ]
+      },
+      "assistant_alignment": {
+        "native_default": {
+          "status": "exact_prefix",
+          "template_kwargs": {},
+          "toy_response": "{\"answer\": \"synthetic\"}",
+          "prompt_rendered": "<|im_start|>system\nSynthetic task probe. Do not use prior requests.<|im_end|>\n<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>TASK_ONLY_517: Count the drawn squares.<|im_end|>\n<|im_start|>assistant\n",
+          "full_rendered": "<|im_start|>system\nSynthetic task probe. Do not use prior requests.<|im_end|>\n<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>TASK_ONLY_517: Count the drawn squares.<|im_end|>\n<|im_start|>assistant\n{\"answer\": \"synthetic\"}<|im_end|>\n",
+          "prompt_tokens": 42,
+          "full_tokens": 51,
+          "prompt_token_ids": [
+            151644,
+            8948,
+            198,
+            37134,
+            17556,
+            3383,
+            21730,
+            13,
+            3155,
+            537,
+            990,
+            4867,
+            7388,
+            13,
+            151645,
+            198,
+            151644,
+            872,
+            198,
+            151652,
+            151655,
+            151655,
+            151655,
+            151655,
+            151653,
+            65813,
+            31263,
+            62,
+            20,
+            16,
+            22,
+            25,
+            4504,
+            279,
+            14764,
+            31340,
+            13,
+            151645,
+            198,
+            151644,
+            77091,
+            198
+          ],
+          "full_token_ids": [
+            151644,
+            8948,
+            198,
+            37134,
+            17556,
+            3383,
+            21730,
+            13,
+            3155,
+            537,
+            990,
+            4867,
+            7388,
+            13,
+            151645,
+            198,
+            151644,
+            872,
+            198,
+            151652,
+            151655,
+            151655,
+            151655,
+            151655,
+            151653,
+            65813,
+            31263,
+            62,
+            20,
+            16,
+            22,
+            25,
+            4504,
+            279,
+            14764,
+            31340,
+            13,
+            151645,
+            198,
+            151644,
+            77091,
+            198,
+            4913,
+            9217,
+            788,
+            330,
+            20339,
+            17556,
+            9207,
+            151645,
+            198
+          ],
+          "prompt_is_exact_token_prefix": true,
+          "integrated_chat_encode_equals_split_render_encode": {
+            "prompt": true,
+            "full": true
+          },
+          "first_divergence_index": null,
+          "native_suffix_token_ids": [
+            4913,
+            9217,
+            788,
+            330,
+            20339,
+            17556,
+            9207,
+            151645,
+            198
+          ],
+          "native_suffix_decoded": "{\"answer\": \"synthetic\"}<|im_end|>\n",
+          "assistant_label_start": 42,
+          "eos_token": "<|im_end|>",
+          "eos_token_id": 151645,
+          "native_suffix_contains_eos": true,
+          "label_scope": "native assistant suffix including any end/newline tokens; no model/training or production mask",
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "thinking_disabled": {
+          "status": "unsupported_template_variable",
+          "template_kwargs": {
+            "enable_thinking": false
+          }
+        }
+      },
+      "rgb_cases": {
+        "rgb_64x64": {
+          "input_hw": [
+            64,
+            64
+          ],
+          "input_sha256": "b7dab22f29375aad51c191e7356564cb159a14ed1808625af350e716cdba55f6",
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                42
+              ],
+              "dtype": "int64",
+              "sha256": "5db601874afc5864c4d95a31eb5d3805228f92694d7ee38747c4de62ec0ed300",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 47641.30952380953
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                42
+              ],
+              "dtype": "int64",
+              "sha256": "59bdd2fdb10e02fc67ea13e8280390cd66fc78d2883699b35de026b246ae8060",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                42
+              ],
+              "dtype": "int64",
+              "sha256": "d4c636746a65128480f15830e87c158173ca497ef955bd261a90a595f58143a2",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.09523809523809523
+            },
+            "pixel_values": {
+              "shape": [
+                16,
+                1176
+              ],
+              "dtype": "float32",
+              "sha256": "7d93727549e843745b50b4bf6874edc039aaad012d320a843a7d59bd953a9cee",
+              "finite": true,
+              "min": -1.4273018836975098,
+              "max": 1.8947904109954834,
+              "mean": -0.5948668718338013
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "213cb0ff709cc49b34eb75c2f11628458bb9fe61f8032f6416a792ee06dbcc75",
+              "finite": true,
+              "min": 1.0,
+              "max": 4.0,
+              "mean": 3.0
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              4,
+              4
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 4,
+          "grid_token_count": 4,
+          "resized_hw_from_grid": [
+            [
+              56,
+              56
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "rgb_301x199": {
+          "input_hw": [
+            199,
+            301
+          ],
+          "input_sha256": "8fdb75e514222cd90d29739c883e3a5adf131aedabfa67e25a733aab66e74c6f",
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                115
+              ],
+              "dtype": "int64",
+              "sha256": "3739b953c193acbf8164085ec042be5b8cb44452a65bdd52ad4c7390c537575e",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 113667.39130434782
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                115
+              ],
+              "dtype": "int64",
+              "sha256": "1c41d701b6e3ee239200fb18b8033772af02d41595bbb82817dad6a3cb821203",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                115
+              ],
+              "dtype": "int64",
+              "sha256": "04c2d03a5a54a235c7442c88bc2daf1feee8dda70f47cc3bcf9096cde30221ca",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.6695652173913044
+            },
+            "pixel_values": {
+              "shape": [
+                308,
+                1176
+              ],
+              "dtype": "float32",
+              "sha256": "b4a80d365dccd2b37e770f943b0b3b0dfd79fc3e180e59b41efa1a8e0eecd6e9",
+              "finite": true,
+              "min": -1.5732861757278442,
+              "max": 1.9548214673995972,
+              "mean": -0.6007087826728821
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "6e4d63ff8a8db18f5017417102f87efc89002d4e70adda32f315284cba8db52c",
+              "finite": true,
+              "min": 1.0,
+              "max": 22.0,
+              "mean": 12.333333333333334
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              14,
+              22
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 77,
+          "grid_token_count": 77,
+          "resized_hw_from_grid": [
+            [
+              196,
+              308
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "rgb_640x480": {
+          "input_hw": [
+            480,
+            640
+          ],
+          "input_sha256": "63a9fb9cfe3a184af7bcfe18f2070061625eb5f9b742da6b85b6cf716428aa91",
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                429
+              ],
+              "dtype": "int64",
+              "sha256": "3c64fea27f0efd7c0310bb0212c16d5a8241f9d6527262204a19783f5b612a32",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 141471.84149184148
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                429
+              ],
+              "dtype": "int64",
+              "sha256": "18e03214bbb40bbb6eb233a1ab193d34e2840fb92f9cccb4cdc7089917ba3d22",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                429
+              ],
+              "dtype": "int64",
+              "sha256": "1354f46d16e884faeb76a7babc2d66d97c2e2420fdd180eb8eafec36c5ad424e",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.9114219114219114
+            },
+            "pixel_values": {
+              "shape": [
+                1564,
+                1176
+              ],
+              "dtype": "float32",
+              "sha256": "bec6b05e35cc1e3016e1e7d67a0a79ef29f7547162f8caa0191e7cafe1ed3a87",
+              "finite": true,
+              "min": -1.3543097972869873,
+              "max": 1.8797825574874878,
+              "mean": -0.601979672908783
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "dfb9d8fe8d3c5aa0755b4261720ca2f98a76caa9e0839afa12b6dba6ec86c1cb",
+              "finite": true,
+              "min": 1.0,
+              "max": 46.0,
+              "mean": 27.0
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              34,
+              46
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 391,
+          "grid_token_count": 391,
+          "resized_hw_from_grid": [
+            [
+              476,
+              644
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "rgb_640x480_bounded": {
+          "input_hw": [
+            480,
+            640
+          ],
+          "override": {
+            "size": {
+              "shortest_edge": 4096,
+              "longest_edge": 65536
+            }
+          },
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                108
+              ],
+              "dtype": "int64",
+              "sha256": "20439b5c6e8defbb193afe249bdd02305652ed86777160ae50980727a5f2a101",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 111205.23148148147
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                108
+              ],
+              "dtype": "int64",
+              "sha256": "38cb0d36d40107e6708e8ca373f2f13e429c47a343d6b7938cbc314c42c531c5",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                108
+              ],
+              "dtype": "int64",
+              "sha256": "e1ca788d84b58d5656466c5c736f01001d4b71533cebfce47ae4b622de036c36",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.6481481481481481
+            },
+            "pixel_values": {
+              "shape": [
+                280,
+                1176
+              ],
+              "dtype": "float32",
+              "sha256": "53e7b4e3a0c0a859873923bdd1b2385500702395fdb9a6be39cc15c65fa87e18",
+              "finite": true,
+              "min": -1.4856956005096436,
+              "max": 1.9303362369537354,
+              "mean": -0.6019877195358276
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "de10430500f91011be2e0d0a834eb3fd397c7bd9b9b81d134915b0eb418f1ee4",
+              "finite": true,
+              "min": 1.0,
+              "max": 20.0,
+              "mean": 11.666666666666666
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              14,
+              20
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 70,
+          "grid_token_count": 70,
+          "resized_hw_from_grid": [
+            [
+              196,
+              280
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "rgb_1024x256": {
+          "input_hw": [
+            256,
+            1024
+          ],
+          "input_sha256": "4160e8a21ac650ce6faed0bcdf3dc60278a8c3fc09b8ef6b189f813f603fce21",
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                371
+              ],
+              "dtype": "int64",
+              "sha256": "419fb41da554b9b156b0d9007bf30e5109e3257d1a2fd2a4bdd4ffd64bf7946d",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 139879.86522911052
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                371
+              ],
+              "dtype": "int64",
+              "sha256": "f6f6f32186d7825c0bde2de7895cd787ce302bb6cbe7992da93f9b59b12b48a9",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                371
+              ],
+              "dtype": "int64",
+              "sha256": "f19edd36dfe7337e12be65e0759cf7369dc10e9883650cb3bc84ac48d9e11afa",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.8975741239892183
+            },
+            "pixel_values": {
+              "shape": [
+                1332,
+                1176
+              ],
+              "dtype": "float32",
+              "sha256": "22380188d35c5475535b9d848dcf0c6ac98372e2e2bc07dc335d58572f2716c0",
+              "finite": true,
+              "min": -1.3543097972869873,
+              "max": 1.9548214673995972,
+              "mean": -0.6015754342079163
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "0d6b46ce9e90d9344ded986dc3129433d1b4c6ec9d2792d1f39b0bd905dd3d1b",
+              "finite": true,
+              "min": 1.0,
+              "max": 74.0,
+              "mean": 31.0
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              18,
+              74
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 333,
+          "grid_token_count": 333,
+          "resized_hw_from_grid": [
+            [
+              252,
+              1036
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "rgb_1600x1200": {
+          "input_hw": [
+            1200,
+            1600
+          ],
+          "input_sha256": "1fdacaabad723b8e45b4f35e182e3ec1fd4f9c0e220e1c7227f52cf186ac45c8",
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                2489
+              ],
+              "dtype": "int64",
+              "sha256": "0a113540b530185fb7d3a2c3f397e3efb897cc3c8913bce50b01c4ca8ff0f01e",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 149899.84732824427
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                2489
+              ],
+              "dtype": "int64",
+              "sha256": "e390e302a56d3122d05b2bdb4ad1918dad116746a12f3f9057946c01b076efe0",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                2489
+              ],
+              "dtype": "int64",
+              "sha256": "8628df9c3a9baa0027f4314f31f331710d77153682af732425dac31c84fae96b",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.9847328244274809
+            },
+            "pixel_values": {
+              "shape": [
+                9804,
+                1176
+              ],
+              "dtype": "float32",
+              "sha256": "a423e8e6565fd1866a744559a8091f783fc17221c80729a7abe979f9523e182b",
+              "finite": true,
+              "min": -1.3543097972869873,
+              "max": 1.8797825574874878,
+              "mean": -0.6025751233100891
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "d5ef478da093fcb422f61656460ca7f0e6b4f4d142bb4a5c505dd46a6385d4bd",
+              "finite": true,
+              "min": 1.0,
+              "max": 114.0,
+              "mean": 67.0
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              86,
+              114
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 2451,
+          "grid_token_count": 2451,
+          "resized_hw_from_grid": [
+            [
+              1204,
+              1596
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "rgb_1x512": {
+          "input_hw": [
+            512,
+            1
+          ],
+          "input_sha256": "853f32d309f2dec17e1de3e2672e7b5ecd3eee04e4ba7c13312a35293f62797c",
+          "status": "rejected",
+          "error_type": "ValueError",
+          "error": "absolute aspect ratio must be smaller than 200, got 512.0",
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": "The channel dimension is ambiguous. Got image shape torch.Size([3, 512, 1]). Assuming channels are the first dimension. Use the [input_data_format](https://huggingface.co/docs/transformers/main/internal/image_processing_utils#transformers.image_transforms.rescale.input_data_format) parameter to assign the channel dimension.\n"
+          }
+        }
+      },
+      "native16_hazards": {
+        "synthetic_source_dtype": "uint16",
+        "synthetic_pil_mode": "I;16",
+        "source_shape": [
+          112,
+          112
+        ],
+        "source_unique_values": [
+          0,
+          1,
+          255,
+          256,
+          1024,
+          32768,
+          65535
+        ],
+        "PIL_RGB_unique_values": [
+          0,
+          1,
+          255
+        ],
+        "PIL_RGB_clips_all_values_above_255": true,
+        "PIL_RGB_preserves_source_levels": false,
+        "pil_native16": {
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                54
+              ],
+              "dtype": "int64",
+              "sha256": "b6e53908eddbf0087e0996b1e27a5d556d51e4e091e18e856f18b0fdb3c20ca8",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 70755.46296296296
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                54
+              ],
+              "dtype": "int64",
+              "sha256": "57556f824cd168f387c784f9c0051c4b6e9fa4ba60a290b567955309ca07d2a8",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                54
+              ],
+              "dtype": "int64",
+              "sha256": "adcc2d91011d817375bb8e07b9b25c96f7e5f443e6513ffdd94418e31c8caf83",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.2962962962962963
+            },
+            "pixel_values": {
+              "shape": [
+                64,
+                1176
+              ],
+              "dtype": "float32",
+              "sha256": "d23cb84e7523367fb455c454059cb38c3f115201566b0936f9d9996f67b6d73b",
+              "finite": true,
+              "min": -1.7922625541687012,
+              "max": 2.145897150039673,
+              "mean": 0.9881072044372559
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "75fe5b104437c4bc6b24286790732df263f88eec19362138e113997d73b3b488",
+              "finite": true,
+              "min": 1.0,
+              "max": 8.0,
+              "mean": 5.666666666666667
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              8,
+              8
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 16,
+          "grid_token_count": 16,
+          "resized_hw_from_grid": [
+            [
+              112,
+              112
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "pil_explicit_RGB": {
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                54
+              ],
+              "dtype": "int64",
+              "sha256": "b6e53908eddbf0087e0996b1e27a5d556d51e4e091e18e856f18b0fdb3c20ca8",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 70755.46296296296
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                54
+              ],
+              "dtype": "int64",
+              "sha256": "57556f824cd168f387c784f9c0051c4b6e9fa4ba60a290b567955309ca07d2a8",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                54
+              ],
+              "dtype": "int64",
+              "sha256": "adcc2d91011d817375bb8e07b9b25c96f7e5f443e6513ffdd94418e31c8caf83",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.2962962962962963
+            },
+            "pixel_values": {
+              "shape": [
+                64,
+                1176
+              ],
+              "dtype": "float32",
+              "sha256": "d23cb84e7523367fb455c454059cb38c3f115201566b0936f9d9996f67b6d73b",
+              "finite": true,
+              "min": -1.7922625541687012,
+              "max": 2.145897150039673,
+              "mean": 0.9881072044372559
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "75fe5b104437c4bc6b24286790732df263f88eec19362138e113997d73b3b488",
+              "finite": true,
+              "min": 1.0,
+              "max": 8.0,
+              "mean": 5.666666666666667
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              8,
+              8
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 16,
+          "grid_token_count": 16,
+          "resized_hw_from_grid": [
+            [
+              112,
+              112
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "numpy_uint16_2d": {
+          "status": "rejected",
+          "error_type": "ValueError",
+          "error": "Could not make a flat list of images from [array([[    0,     0,     0, ..., 65535, 65535, 65535],\n       [    0,     0,     0, ..., 65535, 65535, 65535],\n       [    0,     0,     0, ..., 65535, 65535, 65535],\n       ...,\n       [    0,     0,     0, ..., 65535, 65535, 65535],\n       [    0,     0,     0, ..., 65535, 65535, 65535],\n       [    0,     0,     0, ..., 65535, 65535, 65535]],\n      shape=(112, 112), dtype=uint16)]",
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "numpy_uint16_rgb": {
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                54
+              ],
+              "dtype": "int64",
+              "sha256": "b6e53908eddbf0087e0996b1e27a5d556d51e4e091e18e856f18b0fdb3c20ca8",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 70755.46296296296
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                54
+              ],
+              "dtype": "int64",
+              "sha256": "57556f824cd168f387c784f9c0051c4b6e9fa4ba60a290b567955309ca07d2a8",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                54
+              ],
+              "dtype": "int64",
+              "sha256": "adcc2d91011d817375bb8e07b9b25c96f7e5f443e6513ffdd94418e31c8caf83",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.2962962962962963
+            },
+            "pixel_values": {
+              "shape": [
+                64,
+                1176
+              ],
+              "dtype": "float32",
+              "sha256": "2a7cf566a9903386070610db2f60508c3f6ab30c9636e54a89bc437241d760a1",
+              "finite": true,
+              "min": -1.7922625541687012,
+              "max": 981.7819213867188,
+              "mean": 206.6855926513672
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "75fe5b104437c4bc6b24286790732df263f88eec19362138e113997d73b3b488",
+              "finite": true,
+              "min": 1.0,
+              "max": 8.0,
+              "mean": 5.666666666666667
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              8,
+              8
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 16,
+          "grid_token_count": 16,
+          "resized_hw_from_grid": [
+            [
+              112,
+              112
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "numpy_float01_rgb_default_rescale": {
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                54
+              ],
+              "dtype": "int64",
+              "sha256": "b6e53908eddbf0087e0996b1e27a5d556d51e4e091e18e856f18b0fdb3c20ca8",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 70755.46296296296
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                54
+              ],
+              "dtype": "int64",
+              "sha256": "57556f824cd168f387c784f9c0051c4b6e9fa4ba60a290b567955309ca07d2a8",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                54
+              ],
+              "dtype": "int64",
+              "sha256": "adcc2d91011d817375bb8e07b9b25c96f7e5f443e6513ffdd94418e31c8caf83",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.2962962962962963
+            },
+            "pixel_values": {
+              "shape": [
+                64,
+                1176
+              ],
+              "dtype": "float32",
+              "sha256": "3e6f0a47596e08f94a41773a8f75d1660943250cd8681a0f01272d7680d9634c",
+              "finite": true,
+              "min": -1.7922625541687012,
+              "max": -1.4659998416900635,
+              "mean": -1.6644169092178345
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "75fe5b104437c4bc6b24286790732df263f88eec19362138e113997d73b3b488",
+              "finite": true,
+              "min": 1.0,
+              "max": 8.0,
+              "mean": 5.666666666666667
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              8,
+              8
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 16,
+          "grid_token_count": 16,
+          "resized_hw_from_grid": [
+            [
+              112,
+              112
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "numpy_float01_rgb_without_rescale": {
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                54
+              ],
+              "dtype": "int64",
+              "sha256": "b6e53908eddbf0087e0996b1e27a5d556d51e4e091e18e856f18b0fdb3c20ca8",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 70755.46296296296
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                54
+              ],
+              "dtype": "int64",
+              "sha256": "57556f824cd168f387c784f9c0051c4b6e9fa4ba60a290b567955309ca07d2a8",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                54
+              ],
+              "dtype": "int64",
+              "sha256": "adcc2d91011d817375bb8e07b9b25c96f7e5f443e6513ffdd94418e31c8caf83",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.2962962962962963
+            },
+            "pixel_values": {
+              "shape": [
+                64,
+                1176
+              ],
+              "dtype": "float32",
+              "sha256": "b508ebdaeecc490612af620c153e402ea277968b855df6bd139f42a60d8cccef",
+              "finite": true,
+              "min": -1.7922625541687012,
+              "max": 2.1458969116210938,
+              "mean": 0.9881072640419006
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "75fe5b104437c4bc6b24286790732df263f88eec19362138e113997d73b3b488",
+              "finite": true,
+              "min": 1.0,
+              "max": 8.0,
+              "mean": 5.666666666666667
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              8,
+              8
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 16,
+          "grid_token_count": 16,
+          "resized_hw_from_grid": [
+            [
+              112,
+              112
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "native16_equals_explicit_clipped_RGB": true
+      },
+      "expected_extreme_aspect_rejection": true,
+      "integrated_chat_encode_checked": true,
+      "status": "passed",
+      "scope": "synthetic CPU processor compatibility only; no forward pass, model state, performance, or GPU fit"
+    },
+    {
+      "model_id": "Qwen/Qwen3.5-9B",
+      "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+      "artifact_manifest": {
+        "model_id": "Qwen/Qwen3.5-9B",
+        "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+        "retrieved_at_utc": "2026-10-04T17:28:25.184196+00:00",
+        "files": [
+          {
+            "filename": "config.json",
+            "url": "https://huggingface.co/Qwen/Qwen3.5-9B/resolve/c202236235762e1c871ad0ccb60c8ee5ba337b9a/config.json",
+            "bytes": 3126,
+            "sha256": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+            "status": "downloaded"
+          },
+          {
+            "filename": "preprocessor_config.json",
+            "url": "https://huggingface.co/Qwen/Qwen3.5-9B/resolve/c202236235762e1c871ad0ccb60c8ee5ba337b9a/preprocessor_config.json",
+            "bytes": 390,
+            "sha256": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+            "status": "downloaded"
+          },
+          {
+            "filename": "video_preprocessor_config.json",
+            "url": "https://huggingface.co/Qwen/Qwen3.5-9B/resolve/c202236235762e1c871ad0ccb60c8ee5ba337b9a/video_preprocessor_config.json",
+            "bytes": 385,
+            "sha256": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+            "status": "downloaded"
+          },
+          {
+            "filename": "processor_config.json",
+            "url": "https://huggingface.co/Qwen/Qwen3.5-9B/resolve/c202236235762e1c871ad0ccb60c8ee5ba337b9a/processor_config.json",
+            "status": "http_404"
+          },
+          {
+            "filename": "tokenizer_config.json",
+            "url": "https://huggingface.co/Qwen/Qwen3.5-9B/resolve/c202236235762e1c871ad0ccb60c8ee5ba337b9a/tokenizer_config.json",
+            "bytes": 16710,
+            "sha256": "316230d6a809701f4db5ea8f8fc862bc3a6f3229c937c174e674ff3ca0a64ac8",
+            "status": "downloaded"
+          },
+          {
+            "filename": "tokenizer.json",
+            "url": "https://huggingface.co/Qwen/Qwen3.5-9B/resolve/c202236235762e1c871ad0ccb60c8ee5ba337b9a/tokenizer.json",
+            "bytes": 12807982,
+            "sha256": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42",
+            "status": "downloaded"
+          },
+          {
+            "filename": "vocab.json",
+            "url": "https://huggingface.co/Qwen/Qwen3.5-9B/resolve/c202236235762e1c871ad0ccb60c8ee5ba337b9a/vocab.json",
+            "bytes": 6722759,
+            "sha256": "ce99b4cb2983d118806ce0a8b777a35b093e2000a503ebde25853284c9dfa003",
+            "status": "downloaded"
+          },
+          {
+            "filename": "merges.txt",
+            "url": "https://huggingface.co/Qwen/Qwen3.5-9B/resolve/c202236235762e1c871ad0ccb60c8ee5ba337b9a/merges.txt",
+            "bytes": 3353259,
+            "sha256": "a9d356d7bdf1ef4949e3e748e95b8e10ad9d4e2e838eddc38a0a7b6b94d1db8d",
+            "status": "downloaded"
+          },
+          {
+            "filename": "special_tokens_map.json",
+            "url": "https://huggingface.co/Qwen/Qwen3.5-9B/resolve/c202236235762e1c871ad0ccb60c8ee5ba337b9a/special_tokens_map.json",
+            "status": "http_404"
+          },
+          {
+            "filename": "added_tokens.json",
+            "url": "https://huggingface.co/Qwen/Qwen3.5-9B/resolve/c202236235762e1c871ad0ccb60c8ee5ba337b9a/added_tokens.json",
+            "status": "http_404"
+          },
+          {
+            "filename": "chat_template.json",
+            "url": "https://huggingface.co/Qwen/Qwen3.5-9B/resolve/c202236235762e1c871ad0ccb60c8ee5ba337b9a/chat_template.json",
+            "status": "http_404"
+          },
+          {
+            "filename": "chat_template.jinja",
+            "url": "https://huggingface.co/Qwen/Qwen3.5-9B/resolve/c202236235762e1c871ad0ccb60c8ee5ba337b9a/chat_template.jinja",
+            "bytes": 7756,
+            "sha256": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+            "status": "downloaded"
+          }
+        ]
+      },
+      "processor_class": "Qwen3VLProcessor",
+      "tokenizer_class": "Qwen3_5Tokenizer",
+      "image_processor_class": "Qwen2VLImageProcessor",
+      "loader_warnings": {
+        "python_warnings": [],
+        "transformers_log": ""
+      },
+      "native_image_processor_config": {
+        "size": {
+          "longest_edge": 16777216,
+          "shortest_edge": 65536
+        },
+        "patch_size": 16,
+        "temporal_patch_size": 2,
+        "merge_size": 2,
+        "image_mean": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "image_std": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "image_processor_type": "Qwen2VLImageProcessor",
+        "do_convert_rgb": true,
+        "do_resize": true,
+        "resample": 3,
+        "do_rescale": true,
+        "rescale_factor": 0.00392156862745098,
+        "do_normalize": true
+      },
+      "native_template_variables": [
+        "add_generation_prompt",
+        "add_vision_id",
+        "content",
+        "enable_thinking",
+        "messages",
+        "raise_exception",
+        "reasoning_content",
+        "tools"
+      ],
+      "enable_thinking_template_variable": true,
+      "native_chat_template_sha256": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+      "chat": {
+        "checks": {
+          "task_reference_invariant": true,
+          "context_task_and_reference_invariant": true,
+          "context_excludes_task_question": true,
+          "both_exclude_poison_values": true,
+          "one_image_placeholder_each": true,
+          "generation_prompt_changes_render": true,
+          "render_and_tokenizer_repeat_deterministic": true
+        },
+        "task_rendered": "<|im_start|>system\nSynthetic task probe. Do not use prior requests.<|im_end|>\n<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>TASK_ONLY_517: Count the drawn squares.<|im_end|>\n<|im_start|>assistant\n<think>\n",
+        "context_rendered": "<|im_start|>system\nSynthetic context probe.<|im_end|>\n<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>Describe these requested fields: modality, stain<|im_end|>\n<|im_start|>assistant\n<think>\n",
+        "without_generation_prompt": "<|im_start|>system\nSynthetic task probe. Do not use prior requests.<|im_end|>\n<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>TASK_ONLY_517: Count the drawn squares.<|im_end|>\n",
+        "thinking_disabled_rendered": "<|im_start|>system\nSynthetic task probe. Do not use prior requests.<|im_end|>\n<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>TASK_ONLY_517: Count the drawn squares.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+        "generation_suffix": "<|im_start|>assistant\n<think>\n",
+        "task_text_token_ids": [
+          248045,
+          8678,
+          198,
+          35904,
+          17034,
+          3274,
+          21059,
+          13,
+          3054,
+          524,
+          958,
+          4711,
+          7154,
+          13,
+          248046,
+          198,
+          248045,
+          846,
+          198,
+          248053,
+          248056,
+          248054,
+          63593,
+          30236,
+          62,
+          20,
+          16,
+          22,
+          25,
+          4356,
+          279,
+          14336,
+          30308,
+          13,
+          248046,
+          198,
+          248045,
+          74455,
+          198,
+          248068,
+          198
+        ],
+        "context_text_token_ids": [
+          248045,
+          8678,
+          198,
+          35904,
+          17034,
+          2193,
+          21059,
+          13,
+          248046,
+          198,
+          248045,
+          846,
+          198,
+          248053,
+          248056,
+          248054,
+          72240,
+          1439,
+          10897,
+          4881,
+          25,
+          1410,
+          2632,
+          11,
+          50217,
+          248046,
+          198,
+          248045,
+          74455,
+          198,
+          248068,
+          198
+        ]
+      },
+      "assistant_alignment": {
+        "native_default": {
+          "status": "prefix_mismatch_do_not_infer_mask",
+          "template_kwargs": {},
+          "toy_response": "{\"answer\": \"synthetic\"}",
+          "prompt_rendered": "<|im_start|>system\nSynthetic task probe. Do not use prior requests.<|im_end|>\n<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>TASK_ONLY_517: Count the drawn squares.<|im_end|>\n<|im_start|>assistant\n<think>\n",
+          "full_rendered": "<|im_start|>system\nSynthetic task probe. Do not use prior requests.<|im_end|>\n<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>TASK_ONLY_517: Count the drawn squares.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n{\"answer\": \"synthetic\"}<|im_end|>\n",
+          "prompt_tokens": 104,
+          "full_tokens": 115,
+          "prompt_token_ids": [
+            248045,
+            8678,
+            198,
+            35904,
+            17034,
+            3274,
+            21059,
+            13,
+            3054,
+            524,
+            958,
+            4711,
+            7154,
+            13,
+            248046,
+            198,
+            248045,
+            846,
+            198,
+            248053,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248054,
+            63593,
+            30236,
+            62,
+            20,
+            16,
+            22,
+            25,
+            4356,
+            279,
+            14336,
+            30308,
+            13,
+            248046,
+            198,
+            248045,
+            74455,
+            198,
+            248068,
+            198
+          ],
+          "full_token_ids": [
+            248045,
+            8678,
+            198,
+            35904,
+            17034,
+            3274,
+            21059,
+            13,
+            3054,
+            524,
+            958,
+            4711,
+            7154,
+            13,
+            248046,
+            198,
+            248045,
+            846,
+            198,
+            248053,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248054,
+            63593,
+            30236,
+            62,
+            20,
+            16,
+            22,
+            25,
+            4356,
+            279,
+            14336,
+            30308,
+            13,
+            248046,
+            198,
+            248045,
+            74455,
+            198,
+            248068,
+            271,
+            248069,
+            271,
+            4754,
+            8944,
+            763,
+            328,
+            19722,
+            17034,
+            8934,
+            248046,
+            198
+          ],
+          "prompt_is_exact_token_prefix": false,
+          "integrated_chat_encode_equals_split_render_encode": {
+            "prompt": true,
+            "full": true
+          },
+          "first_divergence_index": 103,
+          "native_suffix_token_ids": null,
+          "native_suffix_decoded": null,
+          "assistant_label_start": null,
+          "eos_token": "<|im_end|>",
+          "eos_token_id": 248046,
+          "native_suffix_contains_eos": null,
+          "label_scope": "native assistant suffix including any end/newline tokens; no model/training or production mask",
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "thinking_disabled": {
+          "status": "exact_prefix",
+          "template_kwargs": {
+            "enable_thinking": false
+          },
+          "toy_response": "{\"answer\": \"synthetic\"}",
+          "prompt_rendered": "<|im_start|>system\nSynthetic task probe. Do not use prior requests.<|im_end|>\n<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>TASK_ONLY_517: Count the drawn squares.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+          "full_rendered": "<|im_start|>system\nSynthetic task probe. Do not use prior requests.<|im_end|>\n<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>TASK_ONLY_517: Count the drawn squares.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n{\"answer\": \"synthetic\"}<|im_end|>\n",
+          "prompt_tokens": 106,
+          "full_tokens": 115,
+          "prompt_token_ids": [
+            248045,
+            8678,
+            198,
+            35904,
+            17034,
+            3274,
+            21059,
+            13,
+            3054,
+            524,
+            958,
+            4711,
+            7154,
+            13,
+            248046,
+            198,
+            248045,
+            846,
+            198,
+            248053,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248054,
+            63593,
+            30236,
+            62,
+            20,
+            16,
+            22,
+            25,
+            4356,
+            279,
+            14336,
+            30308,
+            13,
+            248046,
+            198,
+            248045,
+            74455,
+            198,
+            248068,
+            271,
+            248069,
+            271
+          ],
+          "full_token_ids": [
+            248045,
+            8678,
+            198,
+            35904,
+            17034,
+            3274,
+            21059,
+            13,
+            3054,
+            524,
+            958,
+            4711,
+            7154,
+            13,
+            248046,
+            198,
+            248045,
+            846,
+            198,
+            248053,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248056,
+            248054,
+            63593,
+            30236,
+            62,
+            20,
+            16,
+            22,
+            25,
+            4356,
+            279,
+            14336,
+            30308,
+            13,
+            248046,
+            198,
+            248045,
+            74455,
+            198,
+            248068,
+            271,
+            248069,
+            271,
+            4754,
+            8944,
+            763,
+            328,
+            19722,
+            17034,
+            8934,
+            248046,
+            198
+          ],
+          "prompt_is_exact_token_prefix": true,
+          "integrated_chat_encode_equals_split_render_encode": {
+            "prompt": true,
+            "full": true
+          },
+          "first_divergence_index": null,
+          "native_suffix_token_ids": [
+            4754,
+            8944,
+            763,
+            328,
+            19722,
+            17034,
+            8934,
+            248046,
+            198
+          ],
+          "native_suffix_decoded": "{\"answer\": \"synthetic\"}<|im_end|>\n",
+          "assistant_label_start": 106,
+          "eos_token": "<|im_end|>",
+          "eos_token_id": 248046,
+          "native_suffix_contains_eos": true,
+          "label_scope": "native assistant suffix including any end/newline tokens; no model/training or production mask",
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        }
+      },
+      "rgb_cases": {
+        "rgb_64x64": {
+          "input_hw": [
+            64,
+            64
+          ],
+          "input_sha256": "b7dab22f29375aad51c191e7356564cb159a14ed1808625af350e716cdba55f6",
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                104
+              ],
+              "dtype": "int64",
+              "sha256": "2922d6f63554a685cdd13be950c9f884e3c4daa2f8df2db0744ebf6516312c8f",
+              "finite": true,
+              "min": 13.0,
+              "max": 248068.0,
+              "mean": 174828.04807692306
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                104
+              ],
+              "dtype": "int64",
+              "sha256": "22dcbb4f089234e3e76328789d3a16a89c5f1aff7f549156382715c9f77506b1",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                104
+              ],
+              "dtype": "int64",
+              "sha256": "4f88a8e3adfedfe561ffcc4b6f111d449983f41e15af92e29836101fc44e108b",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.6153846153846154
+            },
+            "pixel_values": {
+              "shape": [
+                256,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "8b240688f5ada575bf7403f73faeffa884cbcc8508c707101bf5d05e8fe8028c",
+              "finite": true,
+              "min": -0.9529411792755127,
+              "max": 1.0,
+              "mean": -0.418646901845932
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "53389fa912f56f81bbbe0669ab378c489b4cfaf9501876dcaec451ae86db735b",
+              "finite": true,
+              "min": 1.0,
+              "max": 16.0,
+              "mean": 11.0
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              16,
+              16
+            ]
+          ],
+          "image_token_id": 248056,
+          "image_token_count": 64,
+          "grid_token_count": 64,
+          "resized_hw_from_grid": [
+            [
+              256,
+              256
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "rgb_301x199": {
+          "input_hw": [
+            199,
+            301
+          ],
+          "input_sha256": "8fdb75e514222cd90d29739c883e3a5adf131aedabfa67e25a733aab66e74c6f",
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                110
+              ],
+              "dtype": "int64",
+              "sha256": "65ac3f2ce13ff34be9705bc9311ce8e3f8a9ede4187b0dad1507a4d29e579301",
+              "finite": true,
+              "min": 13.0,
+              "max": 248068.0,
+              "mean": 178822.3
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                110
+              ],
+              "dtype": "int64",
+              "sha256": "77c058f568cbb171ce4f5c556433b034dea59a73a9d7620e78c9e0e13e13ac19",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                110
+              ],
+              "dtype": "int64",
+              "sha256": "6012c7aed5f99de7322074940f87713cb4ed89ebbef37881e4a91afed0a0abc8",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.6363636363636364
+            },
+            "pixel_values": {
+              "shape": [
+                280,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "7dfeb3ff896911a5bc2e4864f5dd2f5abe88bcb4de5c706d327313f190ebef5f",
+              "finite": true,
+              "min": -0.9450980424880981,
+              "max": 1.0,
+              "mean": -0.42158013582229614
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "de10430500f91011be2e0d0a834eb3fd397c7bd9b9b81d134915b0eb418f1ee4",
+              "finite": true,
+              "min": 1.0,
+              "max": 20.0,
+              "mean": 11.666666666666666
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              14,
+              20
+            ]
+          ],
+          "image_token_id": 248056,
+          "image_token_count": 70,
+          "grid_token_count": 70,
+          "resized_hw_from_grid": [
+            [
+              224,
+              320
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "rgb_640x480": {
+          "input_hw": [
+            480,
+            640
+          ],
+          "input_sha256": "63a9fb9cfe3a184af7bcfe18f2070061625eb5f9b742da6b85b6cf716428aa91",
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                340
+              ],
+              "dtype": "int64",
+              "sha256": "d799daca6a1c158d20fee629645fc52e2916124474058d858fdb8b81af047635",
+              "finite": true,
+              "min": 13.0,
+              "max": 248068.0,
+              "mean": 225656.86176470589
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                340
+              ],
+              "dtype": "int64",
+              "sha256": "61622b9ecb4f0892e7f5a2cef455d2dea3dbc1f9b62ddad1c3a091950f6e6e05",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                340
+              ],
+              "dtype": "int64",
+              "sha256": "3dde7c767024d72e5bae978dbdb800056dcb3ced4d3798c6443c8598fde43915",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.8823529411764706
+            },
+            "pixel_values": {
+              "shape": [
+                1200,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "5a947006fe46ddfd13355ecd9406d90d96a073f49c29bd8b6a64187f742b7d5c",
+              "finite": true,
+              "min": -0.843137264251709,
+              "max": 0.9215686321258545,
+              "mean": -0.4222528636455536
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "d57d75cd100b84d70668fa90c17881ed8d1fcb7bb199a216e050a284b48dfe0e",
+              "finite": true,
+              "min": 1.0,
+              "max": 40.0,
+              "mean": 23.666666666666668
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              30,
+              40
+            ]
+          ],
+          "image_token_id": 248056,
+          "image_token_count": 300,
+          "grid_token_count": 300,
+          "resized_hw_from_grid": [
+            [
+              480,
+              640
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "rgb_640x480_bounded": {
+          "input_hw": [
+            480,
+            640
+          ],
+          "override": {
+            "size": {
+              "shortest_edge": 4096,
+              "longest_edge": 65536
+            }
+          },
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                94
+              ],
+              "dtype": "int64",
+              "sha256": "613663d0c3ec69a50e062b7da90bde9431da42a64dec7b5972f6434b76e212e5",
+              "finite": true,
+              "min": 13.0,
+              "max": 248068.0,
+              "mean": 167037.8404255319
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                94
+              ],
+              "dtype": "int64",
+              "sha256": "5b6ea1150b78246e45c43143eddc870256cb8b6cc377cc3268213b1277b076d7",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                94
+              ],
+              "dtype": "int64",
+              "sha256": "72ef77ec6c48c87974dc2b05deabc8a0f01240b1622d948c82ce3c1b8cae4924",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.574468085106383
+            },
+            "pixel_values": {
+              "shape": [
+                216,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "3a252240fdf9d977786ff8a6a5294668efba49e51bd0e46259137eaf5a3dee3b",
+              "finite": true,
+              "min": -0.9058823585510254,
+              "max": 1.0,
+              "mean": -0.4222588837146759
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "e00330211ef9bb601b978a3e43594f7b7466ca83ec9bd8bd270752c5d0609ec0",
+              "finite": true,
+              "min": 1.0,
+              "max": 18.0,
+              "mean": 10.333333333333334
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              12,
+              18
+            ]
+          ],
+          "image_token_id": 248056,
+          "image_token_count": 54,
+          "grid_token_count": 54,
+          "resized_hw_from_grid": [
+            [
+              192,
+              288
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "rgb_1024x256": {
+          "input_hw": [
+            256,
+            1024
+          ],
+          "input_sha256": "4160e8a21ac650ce6faed0bcdf3dc60278a8c3fc09b8ef6b189f813f603fce21",
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                296
+              ],
+              "dtype": "int64",
+              "sha256": "080444737135f027f3428728c8886966c4b07d45b5e3acdc40ee5c59c0fd7cfa",
+              "finite": true,
+              "min": 13.0,
+              "max": 248068.0,
+              "mean": 222327.26013513515
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                296
+              ],
+              "dtype": "int64",
+              "sha256": "dc5a57ce73944b3a86f670098899fe84114b39f7c274de6b892d0e99d1dde121",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                296
+              ],
+              "dtype": "int64",
+              "sha256": "fa754503e18b80c87ffdafd89860ca08043539aba07c2c2339fc1d0a51e26b00",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.8648648648648649
+            },
+            "pixel_values": {
+              "shape": [
+                1024,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "b5b16533ce96f23b05f3ab8e65567fb11dfbf38bdefd9a694fd8acb37ede75aa",
+              "finite": true,
+              "min": -0.843137264251709,
+              "max": 0.9215686321258545,
+              "mean": -0.4220387935638428
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "295663303744068077d037b829131a6eab823f30385b6ddcf2cfe404e79632ae",
+              "finite": true,
+              "min": 1.0,
+              "max": 64.0,
+              "mean": 27.0
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              16,
+              64
+            ]
+          ],
+          "image_token_id": 248056,
+          "image_token_count": 256,
+          "grid_token_count": 256,
+          "resized_hw_from_grid": [
+            [
+              256,
+              1024
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "rgb_1600x1200": {
+          "input_hw": [
+            1200,
+            1600
+          ],
+          "input_sha256": "1fdacaabad723b8e45b4f35e182e3ec1fd4f9c0e220e1c7227f52cf186ac45c8",
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                1940
+              ],
+              "dtype": "int64",
+              "sha256": "45f6419cc7ef5efacb6756ea18aed045195ce2e1a8b5565dfcff3da56ac473db",
+              "finite": true,
+              "min": 13.0,
+              "max": 248068.0,
+              "mean": 244130.37783505153
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                1940
+              ],
+              "dtype": "int64",
+              "sha256": "9c8d67d9c0b0b9c807cd1a20db0707c1117bf4a8ebbfd839931e2e24fe52b32b",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                1940
+              ],
+              "dtype": "int64",
+              "sha256": "f4f82edef715ef5510bf17e979a4385448b004d36cfc1fdf745844dfa502fce6",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.979381443298969
+            },
+            "pixel_values": {
+              "shape": [
+                7600,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "aef91949d827628a02a233603147cd356f054f512cdad80f7b59cd5f3eda6c4e",
+              "finite": true,
+              "min": -0.843137264251709,
+              "max": 0.929411768913269,
+              "mean": -0.42256107926368713
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "293107103a467bf65b477c74e2cfe74a1c3ff04a7195f5d5f0705cc93a1029a4",
+              "finite": true,
+              "min": 1.0,
+              "max": 100.0,
+              "mean": 59.0
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              76,
+              100
+            ]
+          ],
+          "image_token_id": 248056,
+          "image_token_count": 1900,
+          "grid_token_count": 1900,
+          "resized_hw_from_grid": [
+            [
+              1216,
+              1600
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "rgb_1x512": {
+          "input_hw": [
+            512,
+            1
+          ],
+          "input_sha256": "853f32d309f2dec17e1de3e2672e7b5ecd3eee04e4ba7c13312a35293f62797c",
+          "status": "rejected",
+          "error_type": "ValueError",
+          "error": "absolute aspect ratio must be smaller than 200, got 512.0",
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": "The channel dimension is ambiguous. Got image shape torch.Size([3, 512, 1]). Assuming channels are the first dimension. Use the [input_data_format](https://huggingface.co/docs/transformers/main/internal/image_processing_utils#transformers.image_transforms.rescale.input_data_format) parameter to assign the channel dimension.\n"
+          }
+        }
+      },
+      "native16_hazards": {
+        "synthetic_source_dtype": "uint16",
+        "synthetic_pil_mode": "I;16",
+        "source_shape": [
+          112,
+          112
+        ],
+        "source_unique_values": [
+          0,
+          1,
+          255,
+          256,
+          1024,
+          32768,
+          65535
+        ],
+        "PIL_RGB_unique_values": [
+          0,
+          1,
+          255
+        ],
+        "PIL_RGB_clips_all_values_above_255": true,
+        "PIL_RGB_preserves_source_levels": false,
+        "pil_native16": {
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                104
+              ],
+              "dtype": "int64",
+              "sha256": "2922d6f63554a685cdd13be950c9f884e3c4daa2f8df2db0744ebf6516312c8f",
+              "finite": true,
+              "min": 13.0,
+              "max": 248068.0,
+              "mean": 174828.04807692306
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                104
+              ],
+              "dtype": "int64",
+              "sha256": "22dcbb4f089234e3e76328789d3a16a89c5f1aff7f549156382715c9f77506b1",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                104
+              ],
+              "dtype": "int64",
+              "sha256": "4f88a8e3adfedfe561ffcc4b6f111d449983f41e15af92e29836101fc44e108b",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.6153846153846154
+            },
+            "pixel_values": {
+              "shape": [
+                256,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "eabdef675814af43a681a05a6db4d20627170ae96f76c69bbb09776ca34d81dc",
+              "finite": true,
+              "min": -1.0,
+              "max": 1.0,
+              "mean": 0.42965686321258545
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "53389fa912f56f81bbbe0669ab378c489b4cfaf9501876dcaec451ae86db735b",
+              "finite": true,
+              "min": 1.0,
+              "max": 16.0,
+              "mean": 11.0
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              16,
+              16
+            ]
+          ],
+          "image_token_id": 248056,
+          "image_token_count": 64,
+          "grid_token_count": 64,
+          "resized_hw_from_grid": [
+            [
+              256,
+              256
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "pil_explicit_RGB": {
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                104
+              ],
+              "dtype": "int64",
+              "sha256": "2922d6f63554a685cdd13be950c9f884e3c4daa2f8df2db0744ebf6516312c8f",
+              "finite": true,
+              "min": 13.0,
+              "max": 248068.0,
+              "mean": 174828.04807692306
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                104
+              ],
+              "dtype": "int64",
+              "sha256": "22dcbb4f089234e3e76328789d3a16a89c5f1aff7f549156382715c9f77506b1",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                104
+              ],
+              "dtype": "int64",
+              "sha256": "4f88a8e3adfedfe561ffcc4b6f111d449983f41e15af92e29836101fc44e108b",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.6153846153846154
+            },
+            "pixel_values": {
+              "shape": [
+                256,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "eabdef675814af43a681a05a6db4d20627170ae96f76c69bbb09776ca34d81dc",
+              "finite": true,
+              "min": -1.0,
+              "max": 1.0,
+              "mean": 0.42965686321258545
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "53389fa912f56f81bbbe0669ab378c489b4cfaf9501876dcaec451ae86db735b",
+              "finite": true,
+              "min": 1.0,
+              "max": 16.0,
+              "mean": 11.0
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              16,
+              16
+            ]
+          ],
+          "image_token_id": 248056,
+          "image_token_count": 64,
+          "grid_token_count": 64,
+          "resized_hw_from_grid": [
+            [
+              256,
+              256
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "numpy_uint16_2d": {
+          "status": "rejected",
+          "error_type": "ValueError",
+          "error": "Could not make a flat list of images from [array([[    0,     0,     0, ..., 65535, 65535, 65535],\n       [    0,     0,     0, ..., 65535, 65535, 65535],\n       [    0,     0,     0, ..., 65535, 65535, 65535],\n       ...,\n       [    0,     0,     0, ..., 65535, 65535, 65535],\n       [    0,     0,     0, ..., 65535, 65535, 65535],\n       [    0,     0,     0, ..., 65535, 65535, 65535]],\n      shape=(112, 112), dtype=uint16)]",
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "numpy_uint16_rgb": {
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                104
+              ],
+              "dtype": "int64",
+              "sha256": "2922d6f63554a685cdd13be950c9f884e3c4daa2f8df2db0744ebf6516312c8f",
+              "finite": true,
+              "min": 13.0,
+              "max": 248068.0,
+              "mean": 174828.04807692306
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                104
+              ],
+              "dtype": "int64",
+              "sha256": "22dcbb4f089234e3e76328789d3a16a89c5f1aff7f549156382715c9f77506b1",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                104
+              ],
+              "dtype": "int64",
+              "sha256": "4f88a8e3adfedfe561ffcc4b6f111d449983f41e15af92e29836101fc44e108b",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.6153846153846154
+            },
+            "pixel_values": {
+              "shape": [
+                256,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "fb989c2e15c064175445932e8f2e5cc3fc795c2be361b77f0ead0b614f0cd2ec",
+              "finite": true,
+              "min": -1.0,
+              "max": 513.0,
+              "mean": 106.88162994384766
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "53389fa912f56f81bbbe0669ab378c489b4cfaf9501876dcaec451ae86db735b",
+              "finite": true,
+              "min": 1.0,
+              "max": 16.0,
+              "mean": 11.0
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              16,
+              16
+            ]
+          ],
+          "image_token_id": 248056,
+          "image_token_count": 64,
+          "grid_token_count": 64,
+          "resized_hw_from_grid": [
+            [
+              256,
+              256
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "numpy_float01_rgb_default_rescale": {
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                104
+              ],
+              "dtype": "int64",
+              "sha256": "2922d6f63554a685cdd13be950c9f884e3c4daa2f8df2db0744ebf6516312c8f",
+              "finite": true,
+              "min": 13.0,
+              "max": 248068.0,
+              "mean": 174828.04807692306
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                104
+              ],
+              "dtype": "int64",
+              "sha256": "22dcbb4f089234e3e76328789d3a16a89c5f1aff7f549156382715c9f77506b1",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                104
+              ],
+              "dtype": "int64",
+              "sha256": "4f88a8e3adfedfe561ffcc4b6f111d449983f41e15af92e29836101fc44e108b",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.6153846153846154
+            },
+            "pixel_values": {
+              "shape": [
+                256,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "89a413720e9c04e9dd701b4750e8654b048897fb902f627e01cf96873a65d444",
+              "finite": true,
+              "min": -1.0004907846450806,
+              "max": -0.9917008876800537,
+              "mean": -0.994393527507782
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "53389fa912f56f81bbbe0669ab378c489b4cfaf9501876dcaec451ae86db735b",
+              "finite": true,
+              "min": 1.0,
+              "max": 16.0,
+              "mean": 11.0
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              16,
+              16
+            ]
+          ],
+          "image_token_id": 248056,
+          "image_token_count": 64,
+          "grid_token_count": 64,
+          "resized_hw_from_grid": [
+            [
+              256,
+              256
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "numpy_float01_rgb_without_rescale": {
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                104
+              ],
+              "dtype": "int64",
+              "sha256": "2922d6f63554a685cdd13be950c9f884e3c4daa2f8df2db0744ebf6516312c8f",
+              "finite": true,
+              "min": 13.0,
+              "max": 248068.0,
+              "mean": 174828.04807692306
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                104
+              ],
+              "dtype": "int64",
+              "sha256": "22dcbb4f089234e3e76328789d3a16a89c5f1aff7f549156382715c9f77506b1",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                104
+              ],
+              "dtype": "int64",
+              "sha256": "4f88a8e3adfedfe561ffcc4b6f111d449983f41e15af92e29836101fc44e108b",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.6153846153846154
+            },
+            "pixel_values": {
+              "shape": [
+                256,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "e43055c9cf12d6d033f4f223111b3ac04c3a94b18e061dd3c49ae7dd6eacc084",
+              "finite": true,
+              "min": -1.1251477003097534,
+              "max": 1.116272211074829,
+              "mean": 0.4296673536300659
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "53389fa912f56f81bbbe0669ab378c489b4cfaf9501876dcaec451ae86db735b",
+              "finite": true,
+              "min": 1.0,
+              "max": 16.0,
+              "mean": 11.0
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              16,
+              16
+            ]
+          ],
+          "image_token_id": 248056,
+          "image_token_count": 64,
+          "grid_token_count": 64,
+          "resized_hw_from_grid": [
+            [
+              256,
+              256
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "native16_equals_explicit_clipped_RGB": true
+      },
+      "expected_extreme_aspect_rejection": true,
+      "integrated_chat_encode_checked": true,
+      "status": "passed",
+      "scope": "synthetic CPU processor compatibility only; no forward pass, model state, performance, or GPU fit"
+    },
+    {
+      "model_id": "Qwen/Qwen3-VL-8B-Instruct",
+      "revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+      "artifact_manifest": {
+        "model_id": "Qwen/Qwen3-VL-8B-Instruct",
+        "revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+        "retrieved_at_utc": "2026-10-04T17:28:28.913455+00:00",
+        "files": [
+          {
+            "filename": "config.json",
+            "url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/resolve/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b/config.json",
+            "bytes": 1474,
+            "sha256": "5cd452860dc1e9c29dd71cc3cef7f39b338b7a40793f7a260655c2d3568f3661",
+            "status": "downloaded"
+          },
+          {
+            "filename": "preprocessor_config.json",
+            "url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/resolve/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b/preprocessor_config.json",
+            "bytes": 390,
+            "sha256": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+            "status": "downloaded"
+          },
+          {
+            "filename": "video_preprocessor_config.json",
+            "url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/resolve/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b/video_preprocessor_config.json",
+            "bytes": 385,
+            "sha256": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+            "status": "downloaded"
+          },
+          {
+            "filename": "processor_config.json",
+            "url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/resolve/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b/processor_config.json",
+            "status": "http_404"
+          },
+          {
+            "filename": "tokenizer_config.json",
+            "url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/resolve/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b/tokenizer_config.json",
+            "bytes": 10868,
+            "sha256": "c2da771801886ad9ae98181793ffd3dfb7f1af30f6f7c6a4e15d7dbba52e2399",
+            "status": "downloaded"
+          },
+          {
+            "filename": "tokenizer.json",
+            "url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/resolve/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b/tokenizer.json",
+            "bytes": 7032403,
+            "sha256": "a5d85b6dcc535e6b93115a9ef287e6132fdbf30270da6218194ba742261173c7",
+            "status": "downloaded"
+          },
+          {
+            "filename": "vocab.json",
+            "url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/resolve/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b/vocab.json",
+            "bytes": 2776833,
+            "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910",
+            "status": "downloaded"
+          },
+          {
+            "filename": "merges.txt",
+            "url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/resolve/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b/merges.txt",
+            "bytes": 1671839,
+            "sha256": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3",
+            "status": "downloaded"
+          },
+          {
+            "filename": "special_tokens_map.json",
+            "url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/resolve/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b/special_tokens_map.json",
+            "status": "http_404"
+          },
+          {
+            "filename": "added_tokens.json",
+            "url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/resolve/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b/added_tokens.json",
+            "status": "http_404"
+          },
+          {
+            "filename": "chat_template.json",
+            "url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/resolve/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b/chat_template.json",
+            "bytes": 5499,
+            "sha256": "5c72a170d2a4a1a3bc5adad2e689ae28138a9700e5b8c96c0266331e86c0acce",
+            "status": "downloaded"
+          },
+          {
+            "filename": "chat_template.jinja",
+            "url": "https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct/resolve/0c351dd01ed87e9c1b53cbc748cba10e6187ff3b/chat_template.jinja",
+            "status": "http_404"
+          }
+        ]
+      },
+      "processor_class": "Qwen3VLProcessor",
+      "tokenizer_class": "Qwen2Tokenizer",
+      "image_processor_class": "Qwen2VLImageProcessor",
+      "loader_warnings": {
+        "python_warnings": [],
+        "transformers_log": ""
+      },
+      "native_image_processor_config": {
+        "size": {
+          "longest_edge": 16777216,
+          "shortest_edge": 65536
+        },
+        "patch_size": 16,
+        "temporal_patch_size": 2,
+        "merge_size": 2,
+        "image_mean": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "image_std": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "image_processor_type": "Qwen2VLImageProcessor",
+        "do_convert_rgb": true,
+        "do_resize": true,
+        "resample": 3,
+        "do_rescale": true,
+        "rescale_factor": 0.00392156862745098,
+        "do_normalize": true
+      },
+      "native_template_variables": [
+        "add_generation_prompt",
+        "add_vision_id",
+        "messages",
+        "tools"
+      ],
+      "enable_thinking_template_variable": false,
+      "native_chat_template_sha256": "3636d0f0bd6bef02654cdffdc447b79cb2cef8ab02cc75267345946291a489e4",
+      "chat": {
+        "checks": {
+          "task_reference_invariant": true,
+          "context_task_and_reference_invariant": true,
+          "context_excludes_task_question": true,
+          "both_exclude_poison_values": true,
+          "one_image_placeholder_each": true,
+          "generation_prompt_changes_render": true,
+          "render_and_tokenizer_repeat_deterministic": true
+        },
+        "task_rendered": "<|im_start|>system\nSynthetic task probe. Do not use prior requests.<|im_end|>\n<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>TASK_ONLY_517: Count the drawn squares.<|im_end|>\n<|im_start|>assistant\n",
+        "context_rendered": "<|im_start|>system\nSynthetic context probe.<|im_end|>\n<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>Describe these requested fields: modality, stain<|im_end|>\n<|im_start|>assistant\n",
+        "without_generation_prompt": "<|im_start|>system\nSynthetic task probe. Do not use prior requests.<|im_end|>\n<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>TASK_ONLY_517: Count the drawn squares.<|im_end|>\n",
+        "thinking_disabled_rendered": null,
+        "generation_suffix": "<|im_start|>assistant\n",
+        "task_text_token_ids": [
+          151644,
+          8948,
+          198,
+          37134,
+          17556,
+          3383,
+          21730,
+          13,
+          3155,
+          537,
+          990,
+          4867,
+          7388,
+          13,
+          151645,
+          198,
+          151644,
+          872,
+          198,
+          151652,
+          151655,
+          151653,
+          65813,
+          31263,
+          62,
+          20,
+          16,
+          22,
+          25,
+          4504,
+          279,
+          14764,
+          31340,
+          13,
+          151645,
+          198,
+          151644,
+          77091,
+          198
+        ],
+        "context_text_token_ids": [
+          151644,
+          8948,
+          198,
+          37134,
+          17556,
+          2266,
+          21730,
+          13,
+          151645,
+          198,
+          151644,
+          872,
+          198,
+          151652,
+          151655,
+          151653,
+          74785,
+          1493,
+          11223,
+          5043,
+          25,
+          1463,
+          2719,
+          11,
+          51964,
+          151645,
+          198,
+          151644,
+          77091,
+          198
+        ]
+      },
+      "assistant_alignment": {
+        "native_default": {
+          "status": "exact_prefix",
+          "template_kwargs": {},
+          "toy_response": "{\"answer\": \"synthetic\"}",
+          "prompt_rendered": "<|im_start|>system\nSynthetic task probe. Do not use prior requests.<|im_end|>\n<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>TASK_ONLY_517: Count the drawn squares.<|im_end|>\n<|im_start|>assistant\n",
+          "full_rendered": "<|im_start|>system\nSynthetic task probe. Do not use prior requests.<|im_end|>\n<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>TASK_ONLY_517: Count the drawn squares.<|im_end|>\n<|im_start|>assistant\n{\"answer\": \"synthetic\"}<|im_end|>\n",
+          "prompt_tokens": 102,
+          "full_tokens": 111,
+          "prompt_token_ids": [
+            151644,
+            8948,
+            198,
+            37134,
+            17556,
+            3383,
+            21730,
+            13,
+            3155,
+            537,
+            990,
+            4867,
+            7388,
+            13,
+            151645,
+            198,
+            151644,
+            872,
+            198,
+            151652,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151653,
+            65813,
+            31263,
+            62,
+            20,
+            16,
+            22,
+            25,
+            4504,
+            279,
+            14764,
+            31340,
+            13,
+            151645,
+            198,
+            151644,
+            77091,
+            198
+          ],
+          "full_token_ids": [
+            151644,
+            8948,
+            198,
+            37134,
+            17556,
+            3383,
+            21730,
+            13,
+            3155,
+            537,
+            990,
+            4867,
+            7388,
+            13,
+            151645,
+            198,
+            151644,
+            872,
+            198,
+            151652,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151655,
+            151653,
+            65813,
+            31263,
+            62,
+            20,
+            16,
+            22,
+            25,
+            4504,
+            279,
+            14764,
+            31340,
+            13,
+            151645,
+            198,
+            151644,
+            77091,
+            198,
+            4913,
+            9217,
+            788,
+            330,
+            20339,
+            17556,
+            9207,
+            151645,
+            198
+          ],
+          "prompt_is_exact_token_prefix": true,
+          "integrated_chat_encode_equals_split_render_encode": {
+            "prompt": true,
+            "full": true
+          },
+          "first_divergence_index": null,
+          "native_suffix_token_ids": [
+            4913,
+            9217,
+            788,
+            330,
+            20339,
+            17556,
+            9207,
+            151645,
+            198
+          ],
+          "native_suffix_decoded": "{\"answer\": \"synthetic\"}<|im_end|>\n",
+          "assistant_label_start": 102,
+          "eos_token": "<|im_end|>",
+          "eos_token_id": 151645,
+          "native_suffix_contains_eos": true,
+          "label_scope": "native assistant suffix including any end/newline tokens; no model/training or production mask",
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "thinking_disabled": {
+          "status": "unsupported_template_variable",
+          "template_kwargs": {
+            "enable_thinking": false
+          }
+        }
+      },
+      "rgb_cases": {
+        "rgb_64x64": {
+          "input_hw": [
+            64,
+            64
+          ],
+          "input_sha256": "b7dab22f29375aad51c191e7356564cb159a14ed1808625af350e716cdba55f6",
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                102
+              ],
+              "dtype": "int64",
+              "sha256": "2df0986b465667b1256c9fdf7db3db5a019b4bb82c22d15af573e9eebc7b209f",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 108825.83333333333
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                102
+              ],
+              "dtype": "int64",
+              "sha256": "37611d27f79518e501d2639c031c11b50a8a23a12bf632c89f007c327af72487",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                102
+              ],
+              "dtype": "int64",
+              "sha256": "142302cde02e3f479a1aac0adc988055d52420f4a27d5f6bc1899dce6779c93f",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.6274509803921569
+            },
+            "pixel_values": {
+              "shape": [
+                256,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "8b240688f5ada575bf7403f73faeffa884cbcc8508c707101bf5d05e8fe8028c",
+              "finite": true,
+              "min": -0.9529411792755127,
+              "max": 1.0,
+              "mean": -0.418646901845932
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "53389fa912f56f81bbbe0669ab378c489b4cfaf9501876dcaec451ae86db735b",
+              "finite": true,
+              "min": 1.0,
+              "max": 16.0,
+              "mean": 11.0
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              16,
+              16
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 64,
+          "grid_token_count": 64,
+          "resized_hw_from_grid": [
+            [
+              256,
+              256
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "rgb_301x199": {
+          "input_hw": [
+            199,
+            301
+          ],
+          "input_sha256": "8fdb75e514222cd90d29739c883e3a5adf131aedabfa67e25a733aab66e74c6f",
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                108
+              ],
+              "dtype": "int64",
+              "sha256": "20439b5c6e8defbb193afe249bdd02305652ed86777160ae50980727a5f2a101",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 111205.23148148147
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                108
+              ],
+              "dtype": "int64",
+              "sha256": "38cb0d36d40107e6708e8ca373f2f13e429c47a343d6b7938cbc314c42c531c5",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                108
+              ],
+              "dtype": "int64",
+              "sha256": "e1ca788d84b58d5656466c5c736f01001d4b71533cebfce47ae4b622de036c36",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.6481481481481481
+            },
+            "pixel_values": {
+              "shape": [
+                280,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "7dfeb3ff896911a5bc2e4864f5dd2f5abe88bcb4de5c706d327313f190ebef5f",
+              "finite": true,
+              "min": -0.9450980424880981,
+              "max": 1.0,
+              "mean": -0.42158013582229614
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "de10430500f91011be2e0d0a834eb3fd397c7bd9b9b81d134915b0eb418f1ee4",
+              "finite": true,
+              "min": 1.0,
+              "max": 20.0,
+              "mean": 11.666666666666666
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              14,
+              20
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 70,
+          "grid_token_count": 70,
+          "resized_hw_from_grid": [
+            [
+              224,
+              320
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "rgb_640x480": {
+          "input_hw": [
+            480,
+            640
+          ],
+          "input_sha256": "63a9fb9cfe3a184af7bcfe18f2070061625eb5f9b742da6b85b6cf716428aa91",
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                338
+              ],
+              "dtype": "int64",
+              "sha256": "46b73f4c4b48540765c428ce7af0759ef331f81d3a4c2070fca680accbc9baeb",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 138730.22189349114
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                338
+              ],
+              "dtype": "int64",
+              "sha256": "1fc12bb70299685945d9e02259ce69794edbdf27d9e4de120f8cfc85f07ee626",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                338
+              ],
+              "dtype": "int64",
+              "sha256": "64f46f75d77044025032cde165c0a09d94670692373a78499d1da2a1fa5f389d",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.8875739644970414
+            },
+            "pixel_values": {
+              "shape": [
+                1200,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "5a947006fe46ddfd13355ecd9406d90d96a073f49c29bd8b6a64187f742b7d5c",
+              "finite": true,
+              "min": -0.843137264251709,
+              "max": 0.9215686321258545,
+              "mean": -0.4222528636455536
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "d57d75cd100b84d70668fa90c17881ed8d1fcb7bb199a216e050a284b48dfe0e",
+              "finite": true,
+              "min": 1.0,
+              "max": 40.0,
+              "mean": 23.666666666666668
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              30,
+              40
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 300,
+          "grid_token_count": 300,
+          "resized_hw_from_grid": [
+            [
+              480,
+              640
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "rgb_640x480_bounded": {
+          "input_hw": [
+            480,
+            640
+          ],
+          "override": {
+            "size": {
+              "shortest_edge": 4096,
+              "longest_edge": 65536
+            }
+          },
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                92
+              ],
+              "dtype": "int64",
+              "sha256": "434e62b45acaa48d9648fb0e943e93e1886e821de435b84be97e4bcbc5aecaa2",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 104170.48913043478
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                92
+              ],
+              "dtype": "int64",
+              "sha256": "d264c5b977663d691dd6ae19dd1ddc2a008ea1343c61d26636c0c4975b6e5f42",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                92
+              ],
+              "dtype": "int64",
+              "sha256": "9f0b1815ad60ee95deb858153d6bf82a9ba4fbddb5c8937be70683c40866d191",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.5869565217391305
+            },
+            "pixel_values": {
+              "shape": [
+                216,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "3a252240fdf9d977786ff8a6a5294668efba49e51bd0e46259137eaf5a3dee3b",
+              "finite": true,
+              "min": -0.9058823585510254,
+              "max": 1.0,
+              "mean": -0.4222588837146759
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "e00330211ef9bb601b978a3e43594f7b7466ca83ec9bd8bd270752c5d0609ec0",
+              "finite": true,
+              "min": 1.0,
+              "max": 18.0,
+              "mean": 10.333333333333334
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              12,
+              18
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 54,
+          "grid_token_count": 54,
+          "resized_hw_from_grid": [
+            [
+              192,
+              288
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "rgb_1024x256": {
+          "input_hw": [
+            256,
+            1024
+          ],
+          "input_sha256": "4160e8a21ac650ce6faed0bcdf3dc60278a8c3fc09b8ef6b189f813f603fce21",
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                294
+              ],
+              "dtype": "int64",
+              "sha256": "3673bcf549ca04508118a98a306bad53582e9074d9570bcaac5ee3f093467791",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 136795.90136054423
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                294
+              ],
+              "dtype": "int64",
+              "sha256": "35fe61a5ac9b647241c65940b80901a3fb2e731e026b41a7a65f9dadbec14a3a",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                294
+              ],
+              "dtype": "int64",
+              "sha256": "1cffa2f285dfe27b696d560c7ee60b9be58f018be43c88fdb67cec9c48534a35",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.8707482993197279
+            },
+            "pixel_values": {
+              "shape": [
+                1024,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "b5b16533ce96f23b05f3ab8e65567fb11dfbf38bdefd9a694fd8acb37ede75aa",
+              "finite": true,
+              "min": -0.843137264251709,
+              "max": 0.9215686321258545,
+              "mean": -0.4220387935638428
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "295663303744068077d037b829131a6eab823f30385b6ddcf2cfe404e79632ae",
+              "finite": true,
+              "min": 1.0,
+              "max": 64.0,
+              "mean": 27.0
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              16,
+              64
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 256,
+          "grid_token_count": 256,
+          "resized_hw_from_grid": [
+            [
+              256,
+              1024
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "rgb_1600x1200": {
+          "input_hw": [
+            1200,
+            1600
+          ],
+          "input_sha256": "1fdacaabad723b8e45b4f35e182e3ec1fd4f9c0e220e1c7227f52cf186ac45c8",
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                1938
+              ],
+              "dtype": "int64",
+              "sha256": "4719e173426514783dfe5ef3285f431e2021fd871a824133214cf1b6bbdefaa1",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 149400.83333333334
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                1938
+              ],
+              "dtype": "int64",
+              "sha256": "383a56a2a5f6411198ea93147d076351d0b7d6399fea663485ace3273a59bc60",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                1938
+              ],
+              "dtype": "int64",
+              "sha256": "bf31855ad7d150bc25c2aac39f2837abce997328f646859f66cff6ef10bd69e2",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.9803921568627451
+            },
+            "pixel_values": {
+              "shape": [
+                7600,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "aef91949d827628a02a233603147cd356f054f512cdad80f7b59cd5f3eda6c4e",
+              "finite": true,
+              "min": -0.843137264251709,
+              "max": 0.929411768913269,
+              "mean": -0.42256107926368713
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "293107103a467bf65b477c74e2cfe74a1c3ff04a7195f5d5f0705cc93a1029a4",
+              "finite": true,
+              "min": 1.0,
+              "max": 100.0,
+              "mean": 59.0
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              76,
+              100
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 1900,
+          "grid_token_count": 1900,
+          "resized_hw_from_grid": [
+            [
+              1216,
+              1600
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "rgb_1x512": {
+          "input_hw": [
+            512,
+            1
+          ],
+          "input_sha256": "853f32d309f2dec17e1de3e2672e7b5ecd3eee04e4ba7c13312a35293f62797c",
+          "status": "rejected",
+          "error_type": "ValueError",
+          "error": "absolute aspect ratio must be smaller than 200, got 512.0",
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": "The channel dimension is ambiguous. Got image shape torch.Size([3, 512, 1]). Assuming channels are the first dimension. Use the [input_data_format](https://huggingface.co/docs/transformers/main/internal/image_processing_utils#transformers.image_transforms.rescale.input_data_format) parameter to assign the channel dimension.\n"
+          }
+        }
+      },
+      "native16_hazards": {
+        "synthetic_source_dtype": "uint16",
+        "synthetic_pil_mode": "I;16",
+        "source_shape": [
+          112,
+          112
+        ],
+        "source_unique_values": [
+          0,
+          1,
+          255,
+          256,
+          1024,
+          32768,
+          65535
+        ],
+        "PIL_RGB_unique_values": [
+          0,
+          1,
+          255
+        ],
+        "PIL_RGB_clips_all_values_above_255": true,
+        "PIL_RGB_preserves_source_levels": false,
+        "pil_native16": {
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                102
+              ],
+              "dtype": "int64",
+              "sha256": "2df0986b465667b1256c9fdf7db3db5a019b4bb82c22d15af573e9eebc7b209f",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 108825.83333333333
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                102
+              ],
+              "dtype": "int64",
+              "sha256": "37611d27f79518e501d2639c031c11b50a8a23a12bf632c89f007c327af72487",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                102
+              ],
+              "dtype": "int64",
+              "sha256": "142302cde02e3f479a1aac0adc988055d52420f4a27d5f6bc1899dce6779c93f",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.6274509803921569
+            },
+            "pixel_values": {
+              "shape": [
+                256,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "eabdef675814af43a681a05a6db4d20627170ae96f76c69bbb09776ca34d81dc",
+              "finite": true,
+              "min": -1.0,
+              "max": 1.0,
+              "mean": 0.42965686321258545
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "53389fa912f56f81bbbe0669ab378c489b4cfaf9501876dcaec451ae86db735b",
+              "finite": true,
+              "min": 1.0,
+              "max": 16.0,
+              "mean": 11.0
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              16,
+              16
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 64,
+          "grid_token_count": 64,
+          "resized_hw_from_grid": [
+            [
+              256,
+              256
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "pil_explicit_RGB": {
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                102
+              ],
+              "dtype": "int64",
+              "sha256": "2df0986b465667b1256c9fdf7db3db5a019b4bb82c22d15af573e9eebc7b209f",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 108825.83333333333
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                102
+              ],
+              "dtype": "int64",
+              "sha256": "37611d27f79518e501d2639c031c11b50a8a23a12bf632c89f007c327af72487",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                102
+              ],
+              "dtype": "int64",
+              "sha256": "142302cde02e3f479a1aac0adc988055d52420f4a27d5f6bc1899dce6779c93f",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.6274509803921569
+            },
+            "pixel_values": {
+              "shape": [
+                256,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "eabdef675814af43a681a05a6db4d20627170ae96f76c69bbb09776ca34d81dc",
+              "finite": true,
+              "min": -1.0,
+              "max": 1.0,
+              "mean": 0.42965686321258545
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "53389fa912f56f81bbbe0669ab378c489b4cfaf9501876dcaec451ae86db735b",
+              "finite": true,
+              "min": 1.0,
+              "max": 16.0,
+              "mean": 11.0
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              16,
+              16
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 64,
+          "grid_token_count": 64,
+          "resized_hw_from_grid": [
+            [
+              256,
+              256
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "numpy_uint16_2d": {
+          "status": "rejected",
+          "error_type": "ValueError",
+          "error": "Could not make a flat list of images from [array([[    0,     0,     0, ..., 65535, 65535, 65535],\n       [    0,     0,     0, ..., 65535, 65535, 65535],\n       [    0,     0,     0, ..., 65535, 65535, 65535],\n       ...,\n       [    0,     0,     0, ..., 65535, 65535, 65535],\n       [    0,     0,     0, ..., 65535, 65535, 65535],\n       [    0,     0,     0, ..., 65535, 65535, 65535]],\n      shape=(112, 112), dtype=uint16)]",
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "numpy_uint16_rgb": {
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                102
+              ],
+              "dtype": "int64",
+              "sha256": "2df0986b465667b1256c9fdf7db3db5a019b4bb82c22d15af573e9eebc7b209f",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 108825.83333333333
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                102
+              ],
+              "dtype": "int64",
+              "sha256": "37611d27f79518e501d2639c031c11b50a8a23a12bf632c89f007c327af72487",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                102
+              ],
+              "dtype": "int64",
+              "sha256": "142302cde02e3f479a1aac0adc988055d52420f4a27d5f6bc1899dce6779c93f",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.6274509803921569
+            },
+            "pixel_values": {
+              "shape": [
+                256,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "fb989c2e15c064175445932e8f2e5cc3fc795c2be361b77f0ead0b614f0cd2ec",
+              "finite": true,
+              "min": -1.0,
+              "max": 513.0,
+              "mean": 106.88162994384766
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "53389fa912f56f81bbbe0669ab378c489b4cfaf9501876dcaec451ae86db735b",
+              "finite": true,
+              "min": 1.0,
+              "max": 16.0,
+              "mean": 11.0
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              16,
+              16
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 64,
+          "grid_token_count": 64,
+          "resized_hw_from_grid": [
+            [
+              256,
+              256
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "numpy_float01_rgb_default_rescale": {
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                102
+              ],
+              "dtype": "int64",
+              "sha256": "2df0986b465667b1256c9fdf7db3db5a019b4bb82c22d15af573e9eebc7b209f",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 108825.83333333333
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                102
+              ],
+              "dtype": "int64",
+              "sha256": "37611d27f79518e501d2639c031c11b50a8a23a12bf632c89f007c327af72487",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                102
+              ],
+              "dtype": "int64",
+              "sha256": "142302cde02e3f479a1aac0adc988055d52420f4a27d5f6bc1899dce6779c93f",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.6274509803921569
+            },
+            "pixel_values": {
+              "shape": [
+                256,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "89a413720e9c04e9dd701b4750e8654b048897fb902f627e01cf96873a65d444",
+              "finite": true,
+              "min": -1.0004907846450806,
+              "max": -0.9917008876800537,
+              "mean": -0.994393527507782
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "53389fa912f56f81bbbe0669ab378c489b4cfaf9501876dcaec451ae86db735b",
+              "finite": true,
+              "min": 1.0,
+              "max": 16.0,
+              "mean": 11.0
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              16,
+              16
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 64,
+          "grid_token_count": 64,
+          "resized_hw_from_grid": [
+            [
+              256,
+              256
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "numpy_float01_rgb_without_rescale": {
+          "status": "passed",
+          "checks": {
+            "deterministic_all_outputs": true,
+            "image_token_count_matches_grid": true,
+            "finite_all_outputs": true,
+            "all_tensors_cpu": true
+          },
+          "arrays": {
+            "input_ids": {
+              "shape": [
+                1,
+                102
+              ],
+              "dtype": "int64",
+              "sha256": "2df0986b465667b1256c9fdf7db3db5a019b4bb82c22d15af573e9eebc7b209f",
+              "finite": true,
+              "min": 13.0,
+              "max": 151655.0,
+              "mean": 108825.83333333333
+            },
+            "attention_mask": {
+              "shape": [
+                1,
+                102
+              ],
+              "dtype": "int64",
+              "sha256": "37611d27f79518e501d2639c031c11b50a8a23a12bf632c89f007c327af72487",
+              "finite": true,
+              "min": 1.0,
+              "max": 1.0,
+              "mean": 1.0
+            },
+            "mm_token_type_ids": {
+              "shape": [
+                1,
+                102
+              ],
+              "dtype": "int64",
+              "sha256": "142302cde02e3f479a1aac0adc988055d52420f4a27d5f6bc1899dce6779c93f",
+              "finite": true,
+              "min": 0.0,
+              "max": 1.0,
+              "mean": 0.6274509803921569
+            },
+            "pixel_values": {
+              "shape": [
+                256,
+                1536
+              ],
+              "dtype": "float32",
+              "sha256": "e43055c9cf12d6d033f4f223111b3ac04c3a94b18e061dd3c49ae7dd6eacc084",
+              "finite": true,
+              "min": -1.1251477003097534,
+              "max": 1.116272211074829,
+              "mean": 0.4296673536300659
+            },
+            "image_grid_thw": {
+              "shape": [
+                1,
+                3
+              ],
+              "dtype": "int64",
+              "sha256": "53389fa912f56f81bbbe0669ab378c489b4cfaf9501876dcaec451ae86db735b",
+              "finite": true,
+              "min": 1.0,
+              "max": 16.0,
+              "mean": 11.0
+            }
+          },
+          "image_grid_thw": [
+            [
+              1,
+              16,
+              16
+            ]
+          ],
+          "image_token_id": 151655,
+          "image_token_count": 64,
+          "grid_token_count": 64,
+          "resized_hw_from_grid": [
+            [
+              256,
+              256
+            ]
+          ],
+          "warnings": {
+            "python_warnings": [],
+            "transformers_log": ""
+          }
+        },
+        "native16_equals_explicit_clipped_RGB": true
+      },
+      "expected_extreme_aspect_rejection": true,
+      "integrated_chat_encode_checked": true,
+      "status": "passed",
+      "scope": "synthetic CPU processor compatibility only; no forward pass, model state, performance, or GPU fit"
+    }
+  ],
+  "status": "passed"
+}

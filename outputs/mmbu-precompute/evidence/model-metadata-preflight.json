@@ -1,0 +1,73 @@
+{
+  "source": "Previously retrieved public HF model APIs and exact-revision config files; no weights downloaded",
+  "models": [
+    {
+      "model_id": "Qwen/Qwen2.5-VL-7B-Instruct",
+      "revision": "cc594898137f460bfe9f0759e9844b3ce807cfb5",
+      "hf_reported_total_parameters": 8292166656,
+      "hf_reported_by_dtype": {
+        "BF16": 8292166656
+      },
+      "tensor_bytes_from_reported_dtypes": 16584333312,
+      "tensor_gib": 15.445363998413086,
+      "runtime_memory_estimate": false,
+      "architecture": [
+        "Qwen2_5_VLForConditionalGeneration"
+      ],
+      "model_type": "qwen2_5_vl",
+      "stored_transformers_version": "4.41.2",
+      "version_field_is_minimum_supported_version": false,
+      "native_image_processor": "Qwen2VLImageProcessor",
+      "processor_config": "evidence/model-configs/Qwen2.5-VL-7B-Instruct--preprocessor_config.json",
+      "runtime_verified": false
+    },
+    {
+      "model_id": "Qwen/Qwen3.5-9B",
+      "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+      "hf_reported_total_parameters": 9653104368,
+      "hf_reported_by_dtype": {
+        "BF16": 9653100528,
+        "F32": 3840
+      },
+      "tensor_bytes_from_reported_dtypes": 19306216416,
+      "tensor_gib": 17.980315178632736,
+      "runtime_memory_estimate": false,
+      "architecture": [
+        "Qwen3_5ForConditionalGeneration"
+      ],
+      "model_type": "qwen3_5",
+      "stored_transformers_version": "4.57.0.dev0",
+      "version_field_is_minimum_supported_version": false,
+      "native_image_processor": "Qwen2VLImageProcessorFast",
+      "processor_config": "evidence/model-configs/Qwen3.5-9B--preprocessor_config.json",
+      "runtime_verified": false
+    },
+    {
+      "model_id": "Qwen/Qwen3-VL-8B-Instruct",
+      "revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+      "hf_reported_total_parameters": 8767123696,
+      "hf_reported_by_dtype": {
+        "BF16": 8767123696
+      },
+      "tensor_bytes_from_reported_dtypes": 17534247392,
+      "tensor_gib": 16.33004042506218,
+      "runtime_memory_estimate": false,
+      "architecture": [
+        "Qwen3VLForConditionalGeneration"
+      ],
+      "model_type": "qwen3_vl",
+      "stored_transformers_version": "4.57.0.dev0",
+      "version_field_is_minimum_supported_version": false,
+      "native_image_processor": "Qwen2VLImageProcessorFast",
+      "processor_config": "evidence/model-configs/Qwen3-VL-8B-Instruct--preprocessor_config.json",
+      "runtime_verified": false
+    }
+  ],
+  "limits": [
+    "HF-reported totals were not independently enumerated from checkpoint tensors.",
+    "Tensor-byte arithmetic excludes activations, gradients, optimizer states, image tokens, caches, workspaces and framework overhead; no GPU fit claim.",
+    "Active parameter and final export counts remain unverified.",
+    "config transformers_version is provenance, not an installation compatibility requirement.",
+    "Qwen3.5 pinned generation_config.json returned404; no defaults invented."
+  ]
+}

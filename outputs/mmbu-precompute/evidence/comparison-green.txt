@@ -1,0 +1,32 @@
+Joint comparison: implementation GREEN check
+2026-10-04T05:02:50.064927+00:00
+cwd: /Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute
+command: PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python3 -m unittest discover -s tests -p test_comparison.py -v
+python: 3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]
+exit_code: 0
+
+test_at_least_two_nonblank_candidate_names_are_required (test_comparison.ComparisonTests.test_at_least_two_nonblank_candidate_names_are_required) ... ok
+test_bootstrap_configuration_rejects_invalid_values (test_comparison.ComparisonTests.test_bootstrap_configuration_rejects_invalid_values) ... ok
+test_candidate_and_record_order_do_not_change_seeded_results (test_comparison.ComparisonTests.test_candidate_and_record_order_do_not_change_seeded_results) ... ok
+test_candidates_keep_their_own_baselines_and_signed_scores (test_comparison.ComparisonTests.test_candidates_keep_their_own_baselines_and_signed_scores) ... ok
+test_context_is_averaged_per_example_not_per_annotated_field (test_comparison.ComparisonTests.test_context_is_averaged_per_example_not_per_annotated_field) ... ok
+test_delta_is_not_clipped_to_unit_interval (test_comparison.ComparisonTests.test_delta_is_not_clipped_to_unit_interval) ... ok
+test_duplicate_record_with_conflicting_baseline_is_rejected (test_comparison.ComparisonTests.test_duplicate_record_with_conflicting_baseline_is_rejected) ... ok
+test_every_pair_is_reported_in_stable_order_without_winner_claim (test_comparison.ComparisonTests.test_every_pair_is_reported_in_stable_order_without_winner_claim) ... ok
+test_few_groups_and_draws_are_flagged_as_exploratory (test_comparison.ComparisonTests.test_few_groups_and_draws_are_flagged_as_exploratory) ... ok
+test_finite_large_weights_are_normalized_consistently (test_comparison.ComparisonTests.test_finite_large_weights_are_normalized_consistently) ... ok
+test_identical_candidates_have_zero_difference_on_every_shared_draw (test_comparison.ComparisonTests.test_identical_candidates_have_zero_difference_on_every_shared_draw) ... ok
+test_invalid_or_missing_grades_and_zero_fields_reuse_metric_validation (test_comparison.ComparisonTests.test_invalid_or_missing_grades_and_zero_fields_reuse_metric_validation) ... ok
+test_missing_or_extra_record_ids_fail_instead_of_intersecting (test_comparison.ComparisonTests.test_missing_or_extra_record_ids_fail_instead_of_intersecting) ... ok
+test_named_weights_follow_record_ids_and_apply_to_every_candidate (test_comparison.ComparisonTests.test_named_weights_follow_record_ids_and_apply_to_every_candidate) ... ok
+test_one_underpowered_source_withholds_every_pairwise_interval (test_comparison.ComparisonTests.test_one_underpowered_source_withholds_every_pairwise_interval) ... ok
+test_opposing_correlated_rows_stay_in_whole_groups (test_comparison.ComparisonTests.test_opposing_correlated_rows_stay_in_whole_groups) ... ok
+test_source_group_task_and_context_field_coverage_must_align_per_record (test_comparison.ComparisonTests.test_source_group_task_and_context_field_coverage_must_align_per_record) ... ok
+test_source_mass_stays_fixed_despite_unequal_group_sizes (test_comparison.ComparisonTests.test_source_mass_stays_fixed_despite_unequal_group_sizes) ... ok
+test_uniform_weights_are_explicit_and_keep_repeated_group_rows (test_comparison.ComparisonTests.test_uniform_weights_are_explicit_and_keep_repeated_group_rows) ... ok
+test_weights_must_name_exactly_the_aligned_ids_and_remain_positive (test_comparison.ComparisonTests.test_weights_must_name_exactly_the_aligned_ids_and_remain_positive) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 0.010s
+
+OK

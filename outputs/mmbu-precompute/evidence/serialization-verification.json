@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "verified_at_utc": "2026-10-04T20:23:17.642699+00:00",
+  "python_executable": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+  "python_version": "3.14.7",
+  "checks": [
+    {
+      "command": "PYTHONPATH=src python3 -m unittest discover -s tests -p test_serialization.py -v",
+      "stage": "before implementation",
+      "exit_code": 1,
+      "tests": 20,
+      "failures": 20,
+      "log": "evidence/serialization-red.txt"
+    },
+    {
+      "command": "PYTHONPATH=src python3 -m unittest discover -s tests -p test_serialization.py -v",
+      "stage": "after implementation",
+      "exit_code": 0,
+      "tests": 20,
+      "log": "evidence/serialization-green.txt"
+    },
+    {
+      "command": "PYTHONPATH=src:tests python3 -m unittest test_serialization test_contracts test_data -v",
+      "stage": "related regression checks",
+      "exit_code": 0,
+      "tests": 108,
+      "log": "evidence/serialization-integration-green.txt"
+    },
+    {
+      "stage": "synthetic example construction",
+      "task_examples": 12,
+      "context_examples": 1,
+      "assertions_passed": true,
+      "exit_code": 0
+    }
+  ],
+  "artifacts": {
+    "src/mmbu_prep/serialization.py": {
+      "sha256": "547a9089fc518ad7a50ec95dcb931d284ce9966d690ababcf5f9990064cf6425",
+      "bytes": 5869
+    },
+    "tests/test_serialization.py": {
+      "sha256": "e89371b5e0d503b6fbd4f588b780ea0c211e06cc8dde83616edea29f2db28ae5",
+      "bytes": 11832
+    },
+    "docs/target-serialization.md": {
+      "sha256": "098fe8e4f4c62cf1cd7c0c8064aa769feaf06a7fb43f32bd0666647ca885b0a2",
+      "bytes": 6568
+    },
+    "src/mmbu_prep/contracts.py": {
+      "sha256": "7c2f4a417f946e41cc2c97705b4b7edf07ae4d932e0781f60a05fddc36689db3",
+      "bytes": 10366
+    },
+    "src/mmbu_prep/data.py": {
+      "sha256": "15bf5e2d6feeb84e84b34e74ca83170cc1ad782285c19ecfb2b9144c696a286d",
+      "bytes": 21735
+    },
+    "evidence/serialization-red.txt": {
+      "sha256": "b3f5a187d684d343c1854fdb42e1f979a50a772d273be8c28ed2e4564dfbaeeb",
+      "bytes": 20386
+    },
+    "evidence/serialization-green.txt": {
+      "sha256": "fb2a7586282bf08bee12aa3edbf93e2b47748a091bfdae5b25caae1d143f7a09",
+      "bytes": 4144
+    },
+    "evidence/serialization-integration-green.txt": {
+      "sha256": "b7121d92c985e8e37a7161dd363c1cb33fa72e05027ffe18515f67c18aac6431",
+      "bytes": 16843
+    },
+    "evidence/serialization-examples.json": {
+      "sha256": "c533aa92c37e5d1dd09f98d0b79d070171a2f13fec29ddd9db59bc766f0984f4",
+      "bytes": 8899
+    }
+  },
+  "limits": [
+    "Local provisional profiles only; no official output compatibility claim",
+    "No label correctness, source permission, training, model, GPU or score claim",
+    "Task round-trips checked against current local parser; context uses explicitly local wrapper"
+  ]
+}

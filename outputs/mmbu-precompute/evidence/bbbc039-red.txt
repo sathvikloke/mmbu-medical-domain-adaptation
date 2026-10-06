@@ -1,0 +1,101 @@
+test_background_and_interior_boxes (test_bbbc039.DecoderTests.test_background_and_interior_boxes) ... ERROR
+test_bad_planes_rejected (test_bbbc039.DecoderTests.test_bad_planes_rejected) ... ERROR
+test_equal_value_connectivity_not_unique_color_or_binary_foreground (test_bbbc039.DecoderTests.test_equal_value_connectivity_not_unique_color_or_binary_foreground) ... ERROR
+test_mismatch_and_nonblack_red_zero_fail_without_publishing_result (test_bbbc039.IntakeTests.test_mismatch_and_nonblack_red_zero_fail_without_publishing_result) ... ERROR
+test_only_source_training_is_copied_and_annotations_remain_quarantined (test_bbbc039.IntakeTests.test_only_source_training_is_copied_and_annotations_remain_quarantined) ... ERROR
+test_duplicate_overlap_paths_or_missing_plate_rejected (test_bbbc039.MetadataTests.test_duplicate_overlap_paths_or_missing_plate_rejected) ... ERROR
+test_preserves_original_split_and_plate_mapping (test_bbbc039.MetadataTests.test_preserves_original_split_and_plate_mapping) ... ERROR
+test_unsafe_archive_member_or_duplicate_member_rejected (test_bbbc039.MetadataTests.test_unsafe_archive_member_or_duplicate_member_rejected) ... ERROR
+
+======================================================================
+ERROR: test_background_and_interior_boxes (test_bbbc039.DecoderTests.test_background_and_interior_boxes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_bbbc039.py", line 36, in test_background_and_interior_boxes
+    decode, _, _ = api()
+                   ^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_bbbc039.py", line 13, in api
+    from mmbu_prep.bbbc039 import decode_instances, read_metadata, prepare_quarantine
+ModuleNotFoundError: No module named 'mmbu_prep.bbbc039'
+
+======================================================================
+ERROR: test_bad_planes_rejected (test_bbbc039.DecoderTests.test_bad_planes_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_bbbc039.py", line 42, in test_bad_planes_rejected
+    decode, _, _ = api()
+                   ^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_bbbc039.py", line 13, in api
+    from mmbu_prep.bbbc039 import decode_instances, read_metadata, prepare_quarantine
+ModuleNotFoundError: No module named 'mmbu_prep.bbbc039'
+
+======================================================================
+ERROR: test_equal_value_connectivity_not_unique_color_or_binary_foreground (test_bbbc039.DecoderTests.test_equal_value_connectivity_not_unique_color_or_binary_foreground)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_bbbc039.py", line 25, in test_equal_value_connectivity_not_unique_color_or_binary_foreground
+    decode, _, _ = api()
+                   ^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_bbbc039.py", line 13, in api
+    from mmbu_prep.bbbc039 import decode_instances, read_metadata, prepare_quarantine
+ModuleNotFoundError: No module named 'mmbu_prep.bbbc039'
+
+======================================================================
+ERROR: test_mismatch_and_nonblack_red_zero_fail_without_publishing_result (test_bbbc039.IntakeTests.test_mismatch_and_nonblack_red_zero_fail_without_publishing_result)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_bbbc039.py", line 117, in test_mismatch_and_nonblack_red_zero_fail_without_publishing_result
+    _, _, prep = api()
+                 ^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_bbbc039.py", line 13, in api
+    from mmbu_prep.bbbc039 import decode_instances, read_metadata, prepare_quarantine
+ModuleNotFoundError: No module named 'mmbu_prep.bbbc039'
+
+======================================================================
+ERROR: test_only_source_training_is_copied_and_annotations_remain_quarantined (test_bbbc039.IntakeTests.test_only_source_training_is_copied_and_annotations_remain_quarantined)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_bbbc039.py", line 100, in test_only_source_training_is_copied_and_annotations_remain_quarantined
+    _, _, prep = api()
+                 ^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_bbbc039.py", line 13, in api
+    from mmbu_prep.bbbc039 import decode_instances, read_metadata, prepare_quarantine
+ModuleNotFoundError: No module named 'mmbu_prep.bbbc039'
+
+======================================================================
+ERROR: test_duplicate_overlap_paths_or_missing_plate_rejected (test_bbbc039.MetadataTests.test_duplicate_overlap_paths_or_missing_plate_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_bbbc039.py", line 61, in test_duplicate_overlap_paths_or_missing_plate_rejected
+    _, read, _ = api()
+                 ^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_bbbc039.py", line 13, in api
+    from mmbu_prep.bbbc039 import decode_instances, read_metadata, prepare_quarantine
+ModuleNotFoundError: No module named 'mmbu_prep.bbbc039'
+
+======================================================================
+ERROR: test_preserves_original_split_and_plate_mapping (test_bbbc039.MetadataTests.test_preserves_original_split_and_plate_mapping)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_bbbc039.py", line 53, in test_preserves_original_split_and_plate_mapping
+    _, read, _ = api()
+                 ^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_bbbc039.py", line 13, in api
+    from mmbu_prep.bbbc039 import decode_instances, read_metadata, prepare_quarantine
+ModuleNotFoundError: No module named 'mmbu_prep.bbbc039'
+
+======================================================================
+ERROR: test_unsafe_archive_member_or_duplicate_member_rejected (test_bbbc039.MetadataTests.test_unsafe_archive_member_or_duplicate_member_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_bbbc039.py", line 72, in test_unsafe_archive_member_or_duplicate_member_rejected
+    _, read, _ = api()
+                 ^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_bbbc039.py", line 13, in api
+    from mmbu_prep.bbbc039 import decode_instances, read_metadata, prepare_quarantine
+ModuleNotFoundError: No module named 'mmbu_prep.bbbc039'
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.002s
+
+FAILED (errors=8)

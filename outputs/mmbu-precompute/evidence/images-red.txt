@@ -1,0 +1,361 @@
+Initial missing-module run: 22 assertion failures, exit 1.
+Behavioral red run with temporary permissive scaffold:
+Command: PYTHONPATH=src /Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m unittest discover -s tests -p test_images.py -v
+Python: 3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]
+test_16_bit_rgb_png_is_rejected_when_decoder_reduces_precision (test_images.ImageInspectionTests.test_16_bit_rgb_png_is_rejected_when_decoder_reduces_precision) ... FAIL
+test_16_bit_tiff_preserves_samples_and_flags_precision (test_images.ImageInspectionTests.test_16_bit_tiff_preserves_samples_and_flags_precision) ... ERROR
+test_corrupted_truncated_missing_and_nonimage_files_fail_individually (test_images.ImageInspectionTests.test_corrupted_truncated_missing_and_nonimage_files_fail_individually) ... FAIL
+test_decodes_pixels_reports_properties_and_raw_identity (test_images.ImageInspectionTests.test_decodes_pixels_reports_properties_and_raw_identity) ... ERROR
+test_duplicate_ids_missing_hash_and_malformed_rows_are_rejected (test_images.ImageInspectionTests.test_duplicate_ids_missing_hash_and_malformed_rows_are_rejected) ... 
+  test_duplicate_ids_missing_hash_and_malformed_rows_are_rejected (test_images.ImageInspectionTests.test_duplicate_ids_missing_hash_and_malformed_rows_are_rejected) (rows=[{'record_id': 'a', 'source_id': 'synthetic-inspection-fixture', 'split': 'engineering', 'image_path': 'rgb.png', 'image_sha256': '8daed3a53413218f8f5e6ce581f4890f15d90912680a505bd45ab22632e42817'}, {'record_id': 'a', 'source_id': 'synthetic-inspection-fixture', 'split': 'engineering', 'image_path': 'rgb.png', 'image_sha256': '8daed3a53413218f8f5e6ce581f4890f15d90912680a505bd45ab22632e42817'}]) ... FAIL
+  test_duplicate_ids_missing_hash_and_malformed_rows_are_rejected (test_images.ImageInspectionTests.test_duplicate_ids_missing_hash_and_malformed_rows_are_rejected) (rows=[{'record_id': 'a', 'source_id': 'synthetic-inspection-fixture', 'split': 'engineering', 'image_path': 'rgb.png'}]) ... FAIL
+  test_duplicate_ids_missing_hash_and_malformed_rows_are_rejected (test_images.ImageInspectionTests.test_duplicate_ids_missing_hash_and_malformed_rows_are_rejected) (rows=[None]) ... FAIL
+test_duplicate_pixels_crossing_sources_and_splits_fail (test_images.ImageInspectionTests.test_duplicate_pixels_crossing_sources_and_splits_fail) ... FAIL
+test_duplicate_reporting_is_stable_under_input_order (test_images.ImageInspectionTests.test_duplicate_reporting_is_stable_under_input_order) ... FAIL
+test_exact_pixels_match_across_different_lossless_encodings (test_images.ImageInspectionTests.test_exact_pixels_match_across_different_lossless_encodings) ... FAIL
+test_large_header_dimensions_are_rejected_before_pixel_allocation (test_images.ImageInspectionTests.test_large_header_dimensions_are_rejected_before_pixel_allocation) ... FAIL
+test_manifest_hash_and_dimensions_are_compared_without_repair (test_images.ImageInspectionTests.test_manifest_hash_and_dimensions_are_compared_without_repair) ... FAIL
+test_missing_dimensions_are_visible_but_not_fabricated (test_images.ImageInspectionTests.test_missing_dimensions_are_visible_but_not_fabricated) ... FAIL
+test_modes_are_not_silently_converted_for_matching (test_images.ImageInspectionTests.test_modes_are_not_silently_converted_for_matching) ... ok
+test_multiframe_input_is_rejected_instead_of_using_first_frame (test_images.ImageInspectionTests.test_multiframe_input_is_rejected_instead_of_using_first_frame) ... FAIL
+test_nonidentity_png_exif_orientation_is_reported_not_applied (test_images.ImageInspectionTests.test_nonidentity_png_exif_orientation_is_reported_not_applied) ... ERROR
+test_nonidentity_tiff_is_rejected_before_automatic_decoder_rotation (test_images.ImageInspectionTests.test_nonidentity_tiff_is_rejected_before_automatic_decoder_rotation) ... FAIL
+test_palette_and_transparency_participate_in_pixel_identity (test_images.ImageInspectionTests.test_palette_and_transparency_participate_in_pixel_identity) ... ok
+test_pillow_bomb_warning_is_error_and_global_setting_is_untouched (test_images.ImageInspectionTests.test_pillow_bomb_warning_is_error_and_global_setting_is_untouched) ... FAIL
+test_pixel_and_compressed_file_limits_are_enforced (test_images.ImageInspectionTests.test_pixel_and_compressed_file_limits_are_enforced) ... 
+  test_pixel_and_compressed_file_limits_are_enforced (test_images.ImageInspectionTests.test_pixel_and_compressed_file_limits_are_enforced) (options={'max_pixels': 5}) ... FAIL
+  test_pixel_and_compressed_file_limits_are_enforced (test_images.ImageInspectionTests.test_pixel_and_compressed_file_limits_are_enforced) (options={'max_file_bytes': 8}) ... FAIL
+test_same_dimensions_with_different_pixels_are_not_duplicates (test_images.ImageInspectionTests.test_same_dimensions_with_different_pixels_are_not_duplicates) ... ok
+test_source_root_confines_resolved_paths (test_images.ImageInspectionTests.test_source_root_confines_resolved_paths) ... 
+  test_source_root_confines_resolved_paths (test_images.ImageInspectionTests.test_source_root_confines_resolved_paths) (path='../rgb.png') ... FAIL
+  test_source_root_confines_resolved_paths (test_images.ImageInspectionTests.test_source_root_confines_resolved_paths) (path='/var/folders/cg/p3brbvp90c3gxplxsvs7xqf40000gn/T/tmpo58iq08t/rgb.png') ... FAIL
+  test_source_root_confines_resolved_paths (test_images.ImageInspectionTests.test_source_root_confines_resolved_paths) (path='C:\\rgb.png') ... FAIL
+  test_source_root_confines_resolved_paths (test_images.ImageInspectionTests.test_source_root_confines_resolved_paths) (path='escape.png') ... FAIL
+test_core_import_and_missing_dependency_result_without_site_packages (test_images.OptionalDependencyTests.test_core_import_and_missing_dependency_result_without_site_packages) ... FAIL
+test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) ... 
+  test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (rows=[]) ... FAIL
+  test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (rows=None) ... FAIL
+  test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (rows={}) ... FAIL
+  test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (option='max_pixels', value=0) ... FAIL
+  test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (option='max_pixels', value=-1) ... FAIL
+  test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (option='max_pixels', value=True) ... FAIL
+  test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (option='max_pixels', value=1.5) ... FAIL
+  test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (option='max_pixels', value='100') ... FAIL
+  test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (option='max_file_bytes', value=0) ... FAIL
+  test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (option='max_file_bytes', value=-1) ... FAIL
+  test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (option='max_file_bytes', value=True) ... FAIL
+  test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (option='max_file_bytes', value=1.5) ... FAIL
+  test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (option='max_file_bytes', value='100') ... FAIL
+
+======================================================================
+ERROR: test_16_bit_tiff_preserves_samples_and_flags_precision (test_images.ImageInspectionTests.test_16_bit_tiff_preserves_samples_and_flags_precision)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 197, in test_16_bit_tiff_preserves_samples_and_flags_precision
+    self.assertEqual(result["images"][0]["mode"], "I;16")
+                     ~~~~~~~~~~~~~~~~^^^
+IndexError: list index out of range
+
+======================================================================
+ERROR: test_decodes_pixels_reports_properties_and_raw_identity (test_images.ImageInspectionTests.test_decodes_pixels_reports_properties_and_raw_identity)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 83, in test_decodes_pixels_reports_properties_and_raw_identity
+    item = result["images"][0]
+           ~~~~~~~~~~~~~~~~^^^
+IndexError: list index out of range
+
+======================================================================
+ERROR: test_nonidentity_png_exif_orientation_is_reported_not_applied (test_images.ImageInspectionTests.test_nonidentity_png_exif_orientation_is_reported_not_applied)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 174, in test_nonidentity_png_exif_orientation_is_reported_not_applied
+    item = result["images"][1]
+           ~~~~~~~~~~~~~~~~^^^
+IndexError: list index out of range
+
+======================================================================
+FAIL: test_16_bit_rgb_png_is_rejected_when_decoder_reduces_precision (test_images.ImageInspectionTests.test_16_bit_rgb_png_is_rejected_when_decoder_reduces_precision)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 211, in test_16_bit_rgb_png_is_rejected_when_decoder_reduces_precision
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_corrupted_truncated_missing_and_nonimage_files_fail_individually (test_images.ImageInspectionTests.test_corrupted_truncated_missing_and_nonimage_files_fail_individually)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 231, in test_corrupted_truncated_missing_and_nonimage_files_fail_individually
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_duplicate_ids_missing_hash_and_malformed_rows_are_rejected (test_images.ImageInspectionTests.test_duplicate_ids_missing_hash_and_malformed_rows_are_rejected) (rows=[{'record_id': 'a', 'source_id': 'synthetic-inspection-fixture', 'split': 'engineering', 'image_path': 'rgb.png', 'image_sha256': '8daed3a53413218f8f5e6ce581f4890f15d90912680a505bd45ab22632e42817'}, {'record_id': 'a', 'source_id': 'synthetic-inspection-fixture', 'split': 'engineering', 'image_path': 'rgb.png', 'image_sha256': '8daed3a53413218f8f5e6ce581f4890f15d90912680a505bd45ab22632e42817'}])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 279, in test_duplicate_ids_missing_hash_and_malformed_rows_are_rejected
+    self.assertFalse(self.inspect(rows)["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_duplicate_ids_missing_hash_and_malformed_rows_are_rejected (test_images.ImageInspectionTests.test_duplicate_ids_missing_hash_and_malformed_rows_are_rejected) (rows=[{'record_id': 'a', 'source_id': 'synthetic-inspection-fixture', 'split': 'engineering', 'image_path': 'rgb.png'}])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 279, in test_duplicate_ids_missing_hash_and_malformed_rows_are_rejected
+    self.assertFalse(self.inspect(rows)["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_duplicate_ids_missing_hash_and_malformed_rows_are_rejected (test_images.ImageInspectionTests.test_duplicate_ids_missing_hash_and_malformed_rows_are_rejected) (rows=[None])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 279, in test_duplicate_ids_missing_hash_and_malformed_rows_are_rejected
+    self.assertFalse(self.inspect(rows)["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_duplicate_pixels_crossing_sources_and_splits_fail (test_images.ImageInspectionTests.test_duplicate_pixels_crossing_sources_and_splits_fail)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 111, in test_duplicate_pixels_crossing_sources_and_splits_fail
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_duplicate_reporting_is_stable_under_input_order (test_images.ImageInspectionTests.test_duplicate_reporting_is_stable_under_input_order)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 285, in test_duplicate_reporting_is_stable_under_input_order
+    self.assertEqual([item["record_id"] for item in first["images"]], ["b", "a"])
+AssertionError: Lists differ: [] != ['b', 'a']
+
+Second list contains 2 additional elements.
+First extra element 0:
+'b'
+
+- []
++ ['b', 'a']
+
+======================================================================
+FAIL: test_exact_pixels_match_across_different_lossless_encodings (test_images.ImageInspectionTests.test_exact_pixels_match_across_different_lossless_encodings)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 98, in test_exact_pixels_match_across_different_lossless_encodings
+    self.assertEqual(len(result["duplicate_groups"]), 1)
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_large_header_dimensions_are_rejected_before_pixel_allocation (test_images.ImageInspectionTests.test_large_header_dimensions_are_rejected_before_pixel_allocation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 263, in test_large_header_dimensions_are_rejected_before_pixel_allocation
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_manifest_hash_and_dimensions_are_compared_without_repair (test_images.ImageInspectionTests.test_manifest_hash_and_dimensions_are_compared_without_repair)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 147, in test_manifest_hash_and_dimensions_are_compared_without_repair
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_missing_dimensions_are_visible_but_not_fabricated (test_images.ImageInspectionTests.test_missing_dimensions_are_visible_but_not_fabricated)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 158, in test_missing_dimensions_are_visible_but_not_fabricated
+    self.assertIn("dimensions_unrecorded", self.codes(result, "warnings"))
+AssertionError: 'dimensions_unrecorded' not found in set()
+
+======================================================================
+FAIL: test_multiframe_input_is_rejected_instead_of_using_first_frame (test_images.ImageInspectionTests.test_multiframe_input_is_rejected_instead_of_using_first_frame)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 220, in test_multiframe_input_is_rejected_instead_of_using_first_frame
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_nonidentity_tiff_is_rejected_before_automatic_decoder_rotation (test_images.ImageInspectionTests.test_nonidentity_tiff_is_rejected_before_automatic_decoder_rotation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 186, in test_nonidentity_tiff_is_rejected_before_automatic_decoder_rotation
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_pillow_bomb_warning_is_error_and_global_setting_is_untouched (test_images.ImageInspectionTests.test_pillow_bomb_warning_is_error_and_global_setting_is_untouched)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 270, in test_pillow_bomb_warning_is_error_and_global_setting_is_untouched
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_pixel_and_compressed_file_limits_are_enforced (test_images.ImageInspectionTests.test_pixel_and_compressed_file_limits_are_enforced) (options={'max_pixels': 5})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 252, in test_pixel_and_compressed_file_limits_are_enforced
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_pixel_and_compressed_file_limits_are_enforced (test_images.ImageInspectionTests.test_pixel_and_compressed_file_limits_are_enforced) (options={'max_file_bytes': 8})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 252, in test_pixel_and_compressed_file_limits_are_enforced
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_source_root_confines_resolved_paths (test_images.ImageInspectionTests.test_source_root_confines_resolved_paths) (path='../rgb.png')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 244, in test_source_root_confines_resolved_paths
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_source_root_confines_resolved_paths (test_images.ImageInspectionTests.test_source_root_confines_resolved_paths) (path='/var/folders/cg/p3brbvp90c3gxplxsvs7xqf40000gn/T/tmpo58iq08t/rgb.png')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 244, in test_source_root_confines_resolved_paths
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_source_root_confines_resolved_paths (test_images.ImageInspectionTests.test_source_root_confines_resolved_paths) (path='C:\\rgb.png')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 244, in test_source_root_confines_resolved_paths
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_source_root_confines_resolved_paths (test_images.ImageInspectionTests.test_source_root_confines_resolved_paths) (path='escape.png')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 244, in test_source_root_confines_resolved_paths
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_core_import_and_missing_dependency_result_without_site_packages (test_images.OptionalDependencyTests.test_core_import_and_missing_dependency_result_without_site_packages)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 46, in test_core_import_and_missing_dependency_result_without_site_packages
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (rows=[])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 53, in test_empty_inputs_and_invalid_limits_return_structured_errors
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (rows=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 53, in test_empty_inputs_and_invalid_limits_return_structured_errors
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (rows={})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 53, in test_empty_inputs_and_invalid_limits_return_structured_errors
+    self.assertFalse(result["ok"])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (option='max_pixels', value=0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 59, in test_empty_inputs_and_invalid_limits_return_structured_errors
+    self.assertIn("invalid_limit", {issue["code"] for issue in result["errors"]})
+AssertionError: 'invalid_limit' not found in set()
+
+======================================================================
+FAIL: test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (option='max_pixels', value=-1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 59, in test_empty_inputs_and_invalid_limits_return_structured_errors
+    self.assertIn("invalid_limit", {issue["code"] for issue in result["errors"]})
+AssertionError: 'invalid_limit' not found in set()
+
+======================================================================
+FAIL: test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (option='max_pixels', value=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 59, in test_empty_inputs_and_invalid_limits_return_structured_errors
+    self.assertIn("invalid_limit", {issue["code"] for issue in result["errors"]})
+AssertionError: 'invalid_limit' not found in set()
+
+======================================================================
+FAIL: test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (option='max_pixels', value=1.5)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 59, in test_empty_inputs_and_invalid_limits_return_structured_errors
+    self.assertIn("invalid_limit", {issue["code"] for issue in result["errors"]})
+AssertionError: 'invalid_limit' not found in set()
+
+======================================================================
+FAIL: test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (option='max_pixels', value='100')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 59, in test_empty_inputs_and_invalid_limits_return_structured_errors
+    self.assertIn("invalid_limit", {issue["code"] for issue in result["errors"]})
+AssertionError: 'invalid_limit' not found in set()
+
+======================================================================
+FAIL: test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (option='max_file_bytes', value=0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 59, in test_empty_inputs_and_invalid_limits_return_structured_errors
+    self.assertIn("invalid_limit", {issue["code"] for issue in result["errors"]})
+AssertionError: 'invalid_limit' not found in set()
+
+======================================================================
+FAIL: test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (option='max_file_bytes', value=-1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 59, in test_empty_inputs_and_invalid_limits_return_structured_errors
+    self.assertIn("invalid_limit", {issue["code"] for issue in result["errors"]})
+AssertionError: 'invalid_limit' not found in set()
+
+======================================================================
+FAIL: test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (option='max_file_bytes', value=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 59, in test_empty_inputs_and_invalid_limits_return_structured_errors
+    self.assertIn("invalid_limit", {issue["code"] for issue in result["errors"]})
+AssertionError: 'invalid_limit' not found in set()
+
+======================================================================
+FAIL: test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (option='max_file_bytes', value=1.5)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 59, in test_empty_inputs_and_invalid_limits_return_structured_errors
+    self.assertIn("invalid_limit", {issue["code"] for issue in result["errors"]})
+AssertionError: 'invalid_limit' not found in set()
+
+======================================================================
+FAIL: test_empty_inputs_and_invalid_limits_return_structured_errors (test_images.OptionalDependencyTests.test_empty_inputs_and_invalid_limits_return_structured_errors) (option='max_file_bytes', value='100')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_images.py", line 59, in test_empty_inputs_and_invalid_limits_return_structured_errors
+    self.assertIn("invalid_limit", {issue["code"] for issue in result["errors"]})
+AssertionError: 'invalid_limit' not found in set()
+
+----------------------------------------------------------------------
+Ran 22 tests in 0.049s
+
+FAILED (failures=34, errors=3)
+
+Exit code: 1

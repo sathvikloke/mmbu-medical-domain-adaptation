@@ -1,0 +1,113 @@
+{
+  "version": "0.3.0",
+  "verified_at_utc": "2026-10-04T20:30:51.774944+00:00",
+  "archive_path": "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute-v0.3.zip",
+  "archive_bytes": 1025222,
+  "archive_sha256": "5c6b137f889ea3662fbe9a4934bad2884f67a3c5e51627f7cabdec40281398d4",
+  "manifest_sha256": "51db3f2af0177df49a42fda0a942d9e68e5807b8a1d8d61ed2bd0805f1c93f5d",
+  "manifest_file_count": 275,
+  "archive_file_count": 276,
+  "all_file_hashes_match_after_clean_extraction": true,
+  "unexpected_files": [],
+  "clean_extraction_commands": [
+    {
+      "command": [
+        "/Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "mmbu_prep",
+        "status"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "0ee1b6847dd1009f149322a3784df15e72298c07e9e2e58e76b02b5f746823f7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "mmbu_prep",
+        "demo"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "1c3fa263c3227ddc81991323331ed353626da47eed9a71c79933daf7d3e01fcb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "mmbu_prep",
+        "compare",
+        "examples/candidate-grades-toy.json",
+        "--bootstrap",
+        "25",
+        "--seed",
+        "17"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "b3f253f76752af61c65ec1e2e5594568114082743d29dfb984a86e8a3af088da",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "mmbu_prep",
+        "diagnose",
+        "examples/candidate-grades-toy.json",
+        "--bootstrap",
+        "25",
+        "--seed",
+        "17"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "d00ddf20d0a5bd5ebb7cacebcbd7a1d9ae512879e80145d1c720b2d7d03fd7b5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "mmbu_prep",
+        "inspect-images",
+        "examples/engineering-manifest.jsonl",
+        "--image-root",
+        "examples"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "672ee970c4c73b5f0633240c37ba007ec3f1e730d82184d4bee9994e014c18a9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "-m",
+        "mmbu_prep",
+        "near-duplicates",
+        "examples/engineering-manifest.jsonl",
+        "--image-root",
+        "examples"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "47f2c7a90cd8159a844066e708f9218b61b74a5299a7ae35a4386e3c7ddfc7c6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "evidence/einstein-preflight-tests.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "d0af4d597665b983d3798115a5af6e9256925d2e6dd5b7ac789b69cb32c36f46"
+    }
+  ],
+  "historical_archives_verified_unchanged": {
+    "mmbu-precompute.zip": "85dd05407f1a64da7e7cb09aea8a032bcd9dfa4f2e6764f217b9fc4b58363f51",
+    "mmbu-precompute-v0.2.zip": "2e80e161c04f2aa5222c748c3d38ae94def7c3f4fdba18ffc9e0d7727a780ad3"
+  },
+  "full_suite_receipt": "mmbu-precompute/evidence/batch3-final-test-runs.json",
+  "model_execution": false,
+  "training": false,
+  "gpu_used": false
+}

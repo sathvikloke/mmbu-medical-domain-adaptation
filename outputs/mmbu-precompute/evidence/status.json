@@ -1,0 +1,61 @@
+{
+  "gpu": {
+    "count": null,
+    "evidence": "User reports access to an Einstein GPU, currently unreliable; user will discuss with IT.",
+    "model": null,
+    "provider": "Einstein",
+    "reserved_hours": null,
+    "runtime_verified": false,
+    "scheduler": null,
+    "status": "it_followup_pending",
+    "vram_gb": null
+  },
+  "protocol_status": "unresolved",
+  "remaining_gates": [
+    "authoritative evaluation contract",
+    "accepted biomedical source/record review",
+    "GPU access and runtime verification",
+    "native model load and BF16/FP16 export check"
+  ],
+  "scope": "CPU preparation only",
+  "sources": [
+    {
+      "allowed_purposes": [],
+      "source_id": "rocov2",
+      "status": "candidate"
+    },
+    {
+      "allowed_purposes": [],
+      "source_id": "pmc-vqa",
+      "status": "candidate"
+    },
+    {
+      "allowed_purposes": [],
+      "source_id": "bbbc039",
+      "status": "candidate"
+    },
+    {
+      "allowed_purposes": [],
+      "source_id": "bbbc041",
+      "status": "candidate"
+    },
+    {
+      "allowed_purposes": [],
+      "source_id": "chest-imagenome",
+      "status": "candidate"
+    },
+    {
+      "allowed_purposes": [],
+      "source_id": "mmbu-public",
+      "status": "candidate"
+    },
+    {
+      "allowed_purposes": [
+        "engineering"
+      ],
+      "source_id": "synthetic-fixtures",
+      "status": "engineering_only"
+    }
+  ],
+  "training_ready": false
+}

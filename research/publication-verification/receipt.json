@@ -1,0 +1,69 @@
+{
+  "recorded_at_utc": "2026-10-06T01:20:43.504683+00:00",
+  "scope": "Fresh local private-publication checks; no GPU or model accuracy evaluated.",
+  "checks": [
+    {
+      "check": "full-tests",
+      "command": [
+        "/Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "tools/team.py",
+        "test",
+        "--images"
+      ],
+      "cwd": "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/team-repo",
+      "exit_code": 0,
+      "log": "research/publication-verification/full-tests.txt",
+      "log_sha256": "6c46c788b110c0caf52dac92ad6acdfec7f674f2bda0bf515f8f700353143b16"
+    },
+    {
+      "check": "smoke",
+      "command": [
+        "/Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "tools/team.py",
+        "smoke"
+      ],
+      "cwd": "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/team-repo",
+      "exit_code": 0,
+      "log": "research/publication-verification/smoke.txt",
+      "log_sha256": "f4a7508203aea059980d196381a2d9b1435e6c4983c113018e9430382270bb4f"
+    },
+    {
+      "check": "integrity",
+      "command": [
+        "/Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "tools/team.py",
+        "verify-evidence"
+      ],
+      "cwd": "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/team-repo",
+      "exit_code": 0,
+      "log": "research/publication-verification/integrity.txt",
+      "log_sha256": "a2d256891876e415ac6cf134761bfc34942c63a0f24f2d3a5b50707ff68b0400"
+    },
+    {
+      "check": "links",
+      "command": [
+        "/Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "tools/team.py",
+        "verify-links"
+      ],
+      "cwd": "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/team-repo",
+      "exit_code": 0,
+      "log": "research/publication-verification/links.txt",
+      "log_sha256": "856fef38ab5d88e67527fcb8a392dde8a4313e563c018ec79f1671dc5b9f6632"
+    },
+    {
+      "check": "restore-dry-run",
+      "command": [
+        "/Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+        "tools/restore_workspace.py",
+        "--archive",
+        "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/work/github-delivery/workspace-data.zip",
+        "--dry-run"
+      ],
+      "cwd": "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/team-repo",
+      "exit_code": 0,
+      "log": "research/publication-verification/restore-dry-run.txt",
+      "log_sha256": "7806576824690f8c5acf265cba9933d40c633322ca684f4c20c7829f03b469bc"
+    }
+  ]
+}

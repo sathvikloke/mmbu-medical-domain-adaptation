@@ -1,0 +1,15 @@
+test_approved_engineering_intake_can_get_initial_training_split (test_cli.CliTests.test_approved_engineering_intake_can_get_initial_training_split) ... ok
+test_arithmetic_command_retains_failed_predictions (test_cli.CliTests.test_arithmetic_command_retains_failed_predictions) ... ok
+test_demo_is_engineering_only_and_does_not_train (test_cli.CliTests.test_demo_is_engineering_only_and_does_not_train) ... ok
+test_dev_only_split_does_not_require_training_permission (test_cli.CliTests.test_dev_only_split_does_not_require_training_permission) ... ok
+test_duplicate_json_keys_and_nonfinite_values_fail_closed (test_cli.CliTests.test_duplicate_json_keys_and_nonfinite_values_fail_closed) ... ok
+test_missing_input_is_actionable_nonzero_without_traceback (test_cli.CliTests.test_missing_input_is_actionable_nonzero_without_traceback) ... ok
+test_split_refuses_to_overwrite_existing_manifest (test_cli.CliTests.test_split_refuses_to_overwrite_existing_manifest) ... ok
+test_status_keeps_protocol_and_gpu_unresolved (test_cli.CliTests.test_status_keeps_protocol_and_gpu_unresolved) ... ok
+test_training_preflight_rejects_a_confirmation_record (test_cli.CliTests.test_training_preflight_rejects_a_confirmation_record) ... ok
+test_unapproved_real_source_returns_structured_failure (test_cli.CliTests.test_unapproved_real_source_returns_structured_failure) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.515s
+
+OK

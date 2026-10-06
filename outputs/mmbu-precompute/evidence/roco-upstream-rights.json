@@ -1,0 +1,2683 @@
+{
+  "schema_version": 1,
+  "scope": "24 deterministic shortlisted ROCO source-training articles only; article licensing/provenance evidence, no legal or model-use approval",
+  "shortlist_sha256": "d815b2238224f8e92cf5f321aba387e9a4ca3686bfd4dab13bf1c3b4377b9014",
+  "normalization": "XML parser resolves entities; concatenate caption itertext in document order; NFC Unicode normalization; collapse Unicode whitespace runs to one ASCII space; strip outer whitespace; preserve case, punctuation, hyphens, spelling and words. No label stripping, fuzzy matching, token reordering or medical interpretation.",
+  "summary": {
+    "articles": 24,
+    "retrieved_xml": 24,
+    "article_license_versions": {
+      "by-2.0": 4,
+      "by-3.0": 10,
+      "by-4.0": 10
+    },
+    "figure_match_status": {
+      "unique_exact_normalized_caption": 22,
+      "no_unique_exact_caption": 2
+    },
+    "transfer_bytes": 330583,
+    "decoded_bytes": 1485466,
+    "images_downloaded": 0,
+    "model_use_approvals": 0
+  },
+  "results": [
+    {
+      "source_image_id": "ROCOv2_2023_train_024386",
+      "pmcid": "PMC7935576",
+      "source_caption_sha256": "cbd9d395a1170c0458f8528fbc556e4342c8478721571021f398ad6d625d17b4",
+      "source_attribution": "CC BY Vijaykumar et al. (2021)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "fig3",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "CRIS2021-6613914.003.jpg"
+        }
+      ],
+      "retrieval": {
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A7935576&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC7935576.xml",
+        "at_utc": "2026-10-04T18:08:46.180220+00:00",
+        "method": "GET",
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A7935576&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:08:46 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 7473,
+        "decoded_bytes": 27369,
+        "transfer_sha256": "392317bc54891f168fd615c194a290d5cbab5955acd68eec5b783ba5edd488bb",
+        "sha256": "594a2cbfc3af9a11ba9aa15d06d00b410dc7fef21b3c0268fa1300ca188cff96",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC7935576",
+        "pmcid-ver": "PMC7935576.1",
+        "pmcaid": "7935576",
+        "pmcaiid": "7935576",
+        "pmid": "33728089",
+        "doi": "10.1155/2021/6613914"
+      },
+      "oai_datestamp": "2021-03-15",
+      "article_licenses": [
+        {
+          "attributes": {
+            "{http://www.w3.org/1999/xlink}href": "https://creativecommons.org/licenses/by/4.0/"
+          },
+          "primary_license_uri": "https://creativecommons.org/licenses/by/4.0/",
+          "primary_uri_locator": "article-meta/permissions/license/@xlink:href",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "4.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/4.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "https://creativecommons.org/licenses/by/4.0/",
+              "location": "license/license/@xlink:href",
+              "attributes": {
+                "{http://www.w3.org/1999/xlink}href": "https://creativecommons.org/licenses/by/4.0/"
+              }
+            },
+            {
+              "uri": "https://creativecommons.org/licenses/by/4.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            }
+          ],
+          "license_text_sha256": "bf67818198b8a923837a2949c28013c8cd88e5098d21c058911ac98e1669b6ad",
+          "serialized_license_element_sha256": "45b83c40dddb9308bcdd320153f8cd8281fc1a866eb964f2827f99a36230fe57",
+          "separate_data_waiver_uri_present": false,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 4,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "fig3",
+          "label": "Figure 3",
+          "normalized_caption_sha256": "cbd9d395a1170c0458f8528fbc556e4342c8478721571021f398ad6d625d17b4",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "CRIS2021-6613914.003.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "cbd9d395a1170c0458f8528fbc556e4342c8478721571021f398ad6d625d17b4",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_000571",
+      "pmcid": "PMC3408669",
+      "source_caption_sha256": "3c4d9396ca624ae8aef6b0f7d69a2b63c3ddbf2f87fd389b379dc44be5452a53",
+      "source_attribution": "CC BY Pomier-Layrargues et al. (2012)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "fig8",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "IJHEP2012-167868.008.jpg"
+        }
+      ],
+      "retrieval": {
+        "pmcid": "PMC3408669",
+        "source_image_id": "ROCOv2_2023_train_000571",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A3408669&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC3408669.xml",
+        "at_utc": "2026-10-04T18:09:37.557262+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A3408669&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:37 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 29554,
+        "transfer_sha256": "632c89e3b74fa645d551652bf4f316fa24d0213731a6eb9fdb63b0bbbfa51cd7",
+        "decoded_bytes": 171869,
+        "sha256": "a0ae5c6a048de2d202745d9cd501c882224e60d49ea11dcf2ccf01f33163d5d5",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC3408669",
+        "pmcid-ver": "PMC3408669.1",
+        "pmcaid": "3408669",
+        "pmcaiid": "3408669",
+        "pmid": "22888442",
+        "doi": "10.1155/2012/167868"
+      },
+      "oai_datestamp": "2012-08-10",
+      "article_licenses": [
+        {
+          "attributes": {
+            "{http://www.w3.org/1999/xlink}href": "https://creativecommons.org/licenses/by/3.0/"
+          },
+          "primary_license_uri": "https://creativecommons.org/licenses/by/3.0/",
+          "primary_uri_locator": "article-meta/permissions/license/@xlink:href",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "3.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/3.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "https://creativecommons.org/licenses/by/3.0/",
+              "location": "license/license/@xlink:href",
+              "attributes": {
+                "{http://www.w3.org/1999/xlink}href": "https://creativecommons.org/licenses/by/3.0/"
+              }
+            },
+            {
+              "uri": "https://creativecommons.org/licenses/by/3.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            }
+          ],
+          "license_text_sha256": "8ff7c6d233b0526ae1513275e6de880bafe8e93bee8fa7e3aad8ab69c1081937",
+          "serialized_license_element_sha256": "07b3abdbc40a75ac3235d9d7a71bb02bdb8c70c55c11eb7a3375474ebd88fa24",
+          "separate_data_waiver_uri_present": false,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 10,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "fig8",
+          "label": "Figure 8",
+          "normalized_caption_sha256": "3c4d9396ca624ae8aef6b0f7d69a2b63c3ddbf2f87fd389b379dc44be5452a53",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "IJHEP2012-167868.008.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "3c4d9396ca624ae8aef6b0f7d69a2b63c3ddbf2f87fd389b379dc44be5452a53",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_059923",
+      "pmcid": "PMC8346277",
+      "source_caption_sha256": "0d612533c453e836d6bdd37077ac4b26757e6de9f9b7da7cb7c049fa9ad0323f",
+      "source_attribution": "CC BY Muacevic et al. (2021)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "FIG2",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "cureus-0013-00000016244-i02.jpg"
+        }
+      ],
+      "retrieval": {
+        "pmcid": "PMC8346277",
+        "source_image_id": "ROCOv2_2023_train_059923",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A8346277&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC8346277.xml",
+        "at_utc": "2026-10-04T18:09:38.501430+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A8346277&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:38 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 8540,
+        "transfer_sha256": "fce56559307b2e1c069d4e1777a11166dac4b72a3ff4598b4e1c60cad78a06e0",
+        "decoded_bytes": 31904,
+        "sha256": "9f12c309f4a4d5f00e62d563488384d5a84ca7f650f29583688f719f1bc82192",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC8346277",
+        "pmcid-ver": "PMC8346277.1",
+        "pmcaid": "8346277",
+        "pmcaiid": "8346277",
+        "pmid": "34373807",
+        "doi": "10.7759/cureus.16244"
+      },
+      "oai_datestamp": "2021-08-08",
+      "article_licenses": [
+        {
+          "attributes": {},
+          "primary_license_uri": "https://creativecommons.org/licenses/by/3.0/",
+          "primary_uri_locator": "license/ali:license_ref/text()",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "3.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/3.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "https://creativecommons.org/licenses/by/3.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            }
+          ],
+          "license_text_sha256": "9cd509a60c65a3ac78b7cee33f1bc6352c93d71e312edf6f41ced7b0f2886a85",
+          "serialized_license_element_sha256": "9cd6e5bedefb1d59d3ef2ffaba9a80d740da49c3b755a3ce10bd3d4add65920a",
+          "separate_data_waiver_uri_present": false,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 3,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "FIG2",
+          "label": "Figure 2",
+          "normalized_caption_sha256": "0d612533c453e836d6bdd37077ac4b26757e6de9f9b7da7cb7c049fa9ad0323f",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "cureus-0013-00000016244-i02.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "0d612533c453e836d6bdd37077ac4b26757e6de9f9b7da7cb7c049fa9ad0323f",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_047764",
+      "pmcid": "PMC4312640",
+      "source_caption_sha256": "611ccfd6f711c36634f6a41fca762698a3c9454c0f959b7b2eeba47df8f0003b",
+      "source_attribution": "CC BY Rana et al. (2015)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "fig6",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "CRIVAM2015-157623.006.jpg"
+        }
+      ],
+      "retrieval": {
+        "pmcid": "PMC4312640",
+        "source_image_id": "ROCOv2_2023_train_047764",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A4312640&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC4312640.xml",
+        "at_utc": "2026-10-04T18:09:39.497974+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A4312640&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:39 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 7770,
+        "transfer_sha256": "02c89db4fe13204744858695c3c8ba24304d420b41d937a51694d9baf629b53b",
+        "decoded_bytes": 28607,
+        "sha256": "7ceab429e6b513e6a2c4b294e6a2f6d5c31152d33079ebfb481f542a3ffedeec",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC4312640",
+        "pmcid-ver": "PMC4312640.1",
+        "pmcaid": "4312640",
+        "pmcaiid": "4312640",
+        "pmid": "25685591",
+        "doi": "10.1155/2015/157623"
+      },
+      "oai_datestamp": "2015-02-15",
+      "article_licenses": [
+        {
+          "attributes": {
+            "{http://www.w3.org/1999/xlink}href": "https://creativecommons.org/licenses/by/3.0/"
+          },
+          "primary_license_uri": "https://creativecommons.org/licenses/by/3.0/",
+          "primary_uri_locator": "article-meta/permissions/license/@xlink:href",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "3.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/3.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "https://creativecommons.org/licenses/by/3.0/",
+              "location": "license/license/@xlink:href",
+              "attributes": {
+                "{http://www.w3.org/1999/xlink}href": "https://creativecommons.org/licenses/by/3.0/"
+              }
+            },
+            {
+              "uri": "https://creativecommons.org/licenses/by/3.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            }
+          ],
+          "license_text_sha256": "8ff7c6d233b0526ae1513275e6de880bafe8e93bee8fa7e3aad8ab69c1081937",
+          "serialized_license_element_sha256": "07b3abdbc40a75ac3235d9d7a71bb02bdb8c70c55c11eb7a3375474ebd88fa24",
+          "separate_data_waiver_uri_present": false,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 7,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "fig6",
+          "label": "Figure 6",
+          "normalized_caption_sha256": "611ccfd6f711c36634f6a41fca762698a3c9454c0f959b7b2eeba47df8f0003b",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "CRIVAM2015-157623.006.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "611ccfd6f711c36634f6a41fca762698a3c9454c0f959b7b2eeba47df8f0003b",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_040197",
+      "pmcid": "PMC8336382",
+      "source_caption_sha256": "aaccf4c11d1912c772d8c1758f56760fc860e5f663ea429d1b0b99a0760b1a48",
+      "source_attribution": "CC BY Muacevic et al. (2021)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "FIG9",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "cureus-0013-00000016194-i09.jpg"
+        }
+      ],
+      "retrieval": {
+        "pmcid": "PMC8336382",
+        "source_image_id": "ROCOv2_2023_train_040197",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A8336382&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC8336382.xml",
+        "at_utc": "2026-10-04T18:09:40.428311+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A8336382&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:40 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 11266,
+        "transfer_sha256": "5673ef15879f62bb7af6f451612cfa6146b36571ff24b69d39791ffb9add9964",
+        "decoded_bytes": 43901,
+        "sha256": "3aa63fabdd612d83f3478cb1861ae61523d327df36e296ab0759a193053c2f92",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC8336382",
+        "pmcid-ver": "PMC8336382.1",
+        "pmcaid": "8336382",
+        "pmcaiid": "8336382",
+        "pmid": "34367798",
+        "doi": "10.7759/cureus.16194"
+      },
+      "oai_datestamp": "2021-08-06",
+      "article_licenses": [
+        {
+          "attributes": {},
+          "primary_license_uri": "https://creativecommons.org/licenses/by/3.0/",
+          "primary_uri_locator": "license/ali:license_ref/text()",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "3.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/3.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "https://creativecommons.org/licenses/by/3.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            }
+          ],
+          "license_text_sha256": "9cd509a60c65a3ac78b7cee33f1bc6352c93d71e312edf6f41ced7b0f2886a85",
+          "serialized_license_element_sha256": "9cd6e5bedefb1d59d3ef2ffaba9a80d740da49c3b755a3ce10bd3d4add65920a",
+          "separate_data_waiver_uri_present": false,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 9,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "FIG9",
+          "label": "Figure 9",
+          "normalized_caption_sha256": "aaccf4c11d1912c772d8c1758f56760fc860e5f663ea429d1b0b99a0760b1a48",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "cureus-0013-00000016194-i09.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "aaccf4c11d1912c772d8c1758f56760fc860e5f663ea429d1b0b99a0760b1a48",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_046920",
+      "pmcid": "PMC4776813",
+      "source_caption_sha256": "4b888569a11ab7e9bea34e5798de42e64bb2a020b9b0862312e0d445d87bde1f",
+      "source_attribution": "CC BY U. et al. (2013)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "F4",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "GJHS-5-195-g004.jpg"
+        }
+      ],
+      "retrieval": {
+        "pmcid": "PMC4776813",
+        "source_image_id": "ROCOv2_2023_train_046920",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A4776813&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC4776813.xml",
+        "at_utc": "2026-10-04T18:09:41.296333+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A4776813&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:41 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 23673,
+        "transfer_sha256": "fd0c554fdf2581ad340b02cd2ce2050df94c67307082a6089d0039114692ca2f",
+        "decoded_bytes": 100999,
+        "sha256": "75bfb64444241e0b3c6ced0e209d920c4f0a5074d5a0147e3bef913082910444",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC4776813",
+        "pmcid-ver": "PMC4776813.1",
+        "pmcaid": "4776813",
+        "pmcaiid": "4776813",
+        "pmid": "23618490",
+        "doi": "10.5539/gjhs.v5n3p195",
+        "publisher-id": "GJHS-5-195"
+      },
+      "oai_datestamp": "2016-04-21",
+      "article_licenses": [
+        {
+          "attributes": {
+            "license-type": "open-access",
+            "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/3.0/"
+          },
+          "primary_license_uri": "http://creativecommons.org/licenses/by/3.0/",
+          "primary_uri_locator": "article-meta/permissions/license/@xlink:href",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "3.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/3.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "http://creativecommons.org/licenses/by/3.0/",
+              "location": "license/license/@xlink:href",
+              "attributes": {
+                "license-type": "open-access",
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/3.0/"
+              }
+            },
+            {
+              "uri": "https://creativecommons.org/licenses/by/3.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            },
+            {
+              "uri": "http://creativecommons.org/licenses/by/3.0/",
+              "location": "license/ext-link/@xlink:href",
+              "attributes": {
+                "ext-link-type": "uri",
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/3.0/"
+              }
+            }
+          ],
+          "license_text_sha256": "3b7971096a13248ddc8d27ac30ac800108ca24c88bb3db6d72dce5504779a984",
+          "serialized_license_element_sha256": "8735fe1a0ceb0fe13ff1ac6147397f8099c7677ca12ab106a182c05d7c89cfca",
+          "separate_data_waiver_uri_present": false,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 7,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "F4",
+          "label": "Figure 4",
+          "normalized_caption_sha256": "4b888569a11ab7e9bea34e5798de42e64bb2a020b9b0862312e0d445d87bde1f",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "GJHS-5-195-g004.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "4b888569a11ab7e9bea34e5798de42e64bb2a020b9b0862312e0d445d87bde1f",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_003162",
+      "pmcid": "PMC4783311",
+      "source_caption_sha256": "6ff47cac7d73725bb6823af3dcdf5464c4c478d43a0bbf4c6d1f4bc60e4a374d",
+      "source_attribution": "CC BY Igala et al. (2016)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "Fig2",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "40064_2016_1926_Fig2_HTML.jpg"
+        }
+      ],
+      "retrieval": {
+        "pmcid": "PMC4783311",
+        "source_image_id": "ROCOv2_2023_train_003162",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A4783311&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC4783311.xml",
+        "at_utc": "2026-10-04T18:09:42.234818+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A4783311&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:42 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 7846,
+        "transfer_sha256": "d7316e2b6c81e4a5513c1d7509bf26fb45f469b56e3bdf2284cbc60e9cf8ce2f",
+        "decoded_bytes": 29388,
+        "sha256": "ed751924264d48c56ff0aaf20e8a851312ee93a97179b2c0745e121ec64b8269",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC4783311",
+        "pmcid-ver": "PMC4783311.1",
+        "pmcaid": "4783311",
+        "pmcaiid": "4783311",
+        "pmid": "27066337",
+        "doi": "10.1186/s40064-016-1926-x",
+        "publisher-id": "1926"
+      },
+      "oai_datestamp": "2016-04-09",
+      "article_licenses": [
+        {
+          "attributes": {
+            "license-type": "OpenAccess"
+          },
+          "primary_license_uri": "https://creativecommons.org/licenses/by/4.0/",
+          "primary_uri_locator": "license/ali:license_ref/text()",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "4.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/4.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "https://creativecommons.org/licenses/by/4.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            },
+            {
+              "uri": "http://creativecommons.org/licenses/by/4.0/",
+              "location": "license/ext-link/@xlink:href",
+              "attributes": {
+                "ext-link-type": "uri",
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/4.0/"
+              }
+            }
+          ],
+          "license_text_sha256": "ef7b4f2b068ccbf7aa68fb4b641923acbde234d700128105f98212a5e1debcad",
+          "serialized_license_element_sha256": "a5b83d108e42d3c41642cdab3c4fce2dd80507a66d7783fe6f034d731845c38c",
+          "separate_data_waiver_uri_present": false,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 3,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "Fig2",
+          "label": "Fig. 2",
+          "normalized_caption_sha256": "6ff47cac7d73725bb6823af3dcdf5464c4c478d43a0bbf4c6d1f4bc60e4a374d",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "40064_2016_1926_Fig2_HTML.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "6ff47cac7d73725bb6823af3dcdf5464c4c478d43a0bbf4c6d1f4bc60e4a374d",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_006911",
+      "pmcid": "PMC6263494",
+      "source_caption_sha256": "90095e46be6455bfd199d623d00a0e574f7b136569a1d9394dbfd31ec818ef7b",
+      "source_attribution": "CC BY Muacevic et al. (2018)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "FIG6",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "cureus-0010-00000003226-i06.jpg"
+        }
+      ],
+      "retrieval": {
+        "pmcid": "PMC6263494",
+        "source_image_id": "ROCOv2_2023_train_006911",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A6263494&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC6263494.xml",
+        "at_utc": "2026-10-04T18:09:43.105908+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A6263494&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:43 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 11605,
+        "transfer_sha256": "65f6ed10fbd6ee95ae7a540f69dd23483faf91ac267b9272bcd97e34cbcdde97",
+        "decoded_bytes": 44159,
+        "sha256": "89191e2a115332c856a74d78be4311501cb4c0180f4b863644783db7813c2e48",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC6263494",
+        "pmcid-ver": "PMC6263494.1",
+        "pmcaid": "6263494",
+        "pmcaiid": "6263494",
+        "pmid": "30510861",
+        "doi": "10.7759/cureus.3226"
+      },
+      "oai_datestamp": "2018-12-03",
+      "article_licenses": [
+        {
+          "attributes": {
+            "license-type": "open-access",
+            "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/3.0/"
+          },
+          "primary_license_uri": "http://creativecommons.org/licenses/by/3.0/",
+          "primary_uri_locator": "article-meta/permissions/license/@xlink:href",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "3.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/3.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "http://creativecommons.org/licenses/by/3.0/",
+              "location": "license/license/@xlink:href",
+              "attributes": {
+                "license-type": "open-access",
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/3.0/"
+              }
+            },
+            {
+              "uri": "https://creativecommons.org/licenses/by/3.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            }
+          ],
+          "license_text_sha256": "9cd509a60c65a3ac78b7cee33f1bc6352c93d71e312edf6f41ced7b0f2886a85",
+          "serialized_license_element_sha256": "a39f5e3fb2cbdf5a0187dfabef282af73769de40ce4449d75878a248bcca60e8",
+          "separate_data_waiver_uri_present": false,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 12,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "FIG6",
+          "label": "Figure 6",
+          "normalized_caption_sha256": "4cb7680fa338d05f5f193caa30d0c0c065fe4b572405994ae643241b33b34d36",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "cureus-0010-00000003226-i06.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "4cb7680fa338d05f5f193caa30d0c0c065fe4b572405994ae643241b33b34d36",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_045777",
+      "pmcid": "PMC4912502",
+      "source_caption_sha256": "056c3ddd3ba14991983a4d4688c8ffe8f84aa58014c397bbb1c574d181bfe6ee",
+      "source_attribution": "CC BY Nagano et al. (2016)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "Fig4",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "40792_2016_188_Fig4_HTML.jpg"
+        }
+      ],
+      "retrieval": {
+        "pmcid": "PMC4912502",
+        "source_image_id": "ROCOv2_2023_train_045777",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A4912502&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC4912502.xml",
+        "at_utc": "2026-10-04T18:09:43.974201+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A4912502&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:44 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 7423,
+        "transfer_sha256": "02aca382f36d476982b8392571199a5827667281dc10b1db11a42a812bed9d2b",
+        "decoded_bytes": 27421,
+        "sha256": "83df520d07bb7a42ff19d3e8945a72678dca438756287ae277727a3c7d1a47c8",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC4912502",
+        "pmcid-ver": "PMC4912502.1",
+        "pmcaid": "4912502",
+        "pmcaiid": "4912502",
+        "pmid": "27316721",
+        "doi": "10.1186/s40792-016-0188-8",
+        "publisher-id": "188"
+      },
+      "oai_datestamp": "2016-07-06",
+      "article_licenses": [
+        {
+          "attributes": {
+            "license-type": "OpenAccess"
+          },
+          "primary_license_uri": "https://creativecommons.org/licenses/by/4.0/",
+          "primary_uri_locator": "license/ali:license_ref/text()",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "4.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/4.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "https://creativecommons.org/licenses/by/4.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            },
+            {
+              "uri": "http://creativecommons.org/licenses/by/4.0/",
+              "location": "license/ext-link/@xlink:href",
+              "attributes": {
+                "ext-link-type": "uri",
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/4.0/"
+              }
+            }
+          ],
+          "license_text_sha256": "ef7b4f2b068ccbf7aa68fb4b641923acbde234d700128105f98212a5e1debcad",
+          "serialized_license_element_sha256": "a5b83d108e42d3c41642cdab3c4fce2dd80507a66d7783fe6f034d731845c38c",
+          "separate_data_waiver_uri_present": false,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 4,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "Fig4",
+          "label": "Fig 4",
+          "normalized_caption_sha256": "056c3ddd3ba14991983a4d4688c8ffe8f84aa58014c397bbb1c574d181bfe6ee",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "40792_2016_188_Fig4_HTML.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "056c3ddd3ba14991983a4d4688c8ffe8f84aa58014c397bbb1c574d181bfe6ee",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_036012",
+      "pmcid": "PMC2769440",
+      "source_caption_sha256": "2eaf502bb803fc6db64e7428ef898b4ee7da723525995b6b6b47224ba81e4d09",
+      "source_attribution": "CC BY G\u00fcnal et al. (2009)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "fig-003",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "1757-1626-0002-0000008420-003.jpg"
+        }
+      ],
+      "retrieval": {
+        "pmcid": "PMC2769440",
+        "source_image_id": "ROCOv2_2023_train_036012",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A2769440&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC2769440.xml",
+        "at_utc": "2026-10-04T18:09:44.951974+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A2769440&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:45 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 8433,
+        "transfer_sha256": "78aada0b81d37a3bf7b7de7b42e0873886d71ff477855d834a580fe46927ccba",
+        "decoded_bytes": 32099,
+        "sha256": "82c6a6c3b262089b1efb9dfc5ed5ca8c0932dd8a931fb5e7e15e4f4ea44442ba",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC2769440",
+        "pmcid-ver": "PMC2769440.1",
+        "pmcaid": "2769440",
+        "pmcaiid": "2769440",
+        "pmid": "19918430",
+        "doi": "10.4076/1757-1626-2-8420",
+        "publisher-id": "8420"
+      },
+      "oai_datestamp": "2009-11-16",
+      "article_licenses": [
+        {
+          "attributes": {
+            "license-type": "open-access",
+            "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/3.0/"
+          },
+          "primary_license_uri": "http://creativecommons.org/licenses/by/3.0/",
+          "primary_uri_locator": "article-meta/permissions/license/@xlink:href",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "3.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/3.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "http://creativecommons.org/licenses/by/3.0/",
+              "location": "license/license/@xlink:href",
+              "attributes": {
+                "license-type": "open-access",
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/3.0/"
+              }
+            },
+            {
+              "uri": "https://creativecommons.org/licenses/by/3.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            },
+            {
+              "uri": "http://creativecommons.org/licenses/by/3.0",
+              "location": "license/ext-link/@xlink:href",
+              "attributes": {
+                "ext-link-type": "uri",
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/3.0"
+              }
+            }
+          ],
+          "license_text_sha256": "05c48811c3e46ecaab441166304c69d6121967080154ac89217b1558333af7ce",
+          "serialized_license_element_sha256": "d0552b4555eb384cb1fe9d5b42a3b78e0d1d070380cbaa359d7776dd7216d9e5",
+          "separate_data_waiver_uri_present": false,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 3,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "fig-003",
+          "label": "Figure 3.",
+          "normalized_caption_sha256": "2eaf502bb803fc6db64e7428ef898b4ee7da723525995b6b6b47224ba81e4d09",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "1757-1626-0002-0000008420-003.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "2eaf502bb803fc6db64e7428ef898b4ee7da723525995b6b6b47224ba81e4d09",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_011831",
+      "pmcid": "PMC6478494",
+      "source_caption_sha256": "3639f8d98a6caddde0ed25d4fe769696ab46eda258d39680c7b060733f466b3f",
+      "source_attribution": "CC BY Muacevic et al. (2019)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": null,
+      "graphic_references": [],
+      "retrieval": {
+        "pmcid": "PMC6478494",
+        "source_image_id": "ROCOv2_2023_train_011831",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A6478494&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC6478494.xml",
+        "at_utc": "2026-10-04T18:09:45.954001+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A6478494&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:46 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 8752,
+        "transfer_sha256": "daa83a186009774ab1b801646adce970166e24cc2de541ce950c695fb4bef655",
+        "decoded_bytes": 32765,
+        "sha256": "a083baebf9e0f4c9b4ed81c3163b3ba068d56fc24c1e442b5b9eae33cd692b29",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC6478494",
+        "pmcid-ver": "PMC6478494.1",
+        "pmcaid": "6478494",
+        "pmcaiid": "6478494",
+        "pmid": "31037232",
+        "doi": "10.7759/cureus.4118"
+      },
+      "oai_datestamp": "2019-04-29",
+      "article_licenses": [
+        {
+          "attributes": {
+            "license-type": "open-access",
+            "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/3.0/"
+          },
+          "primary_license_uri": "http://creativecommons.org/licenses/by/3.0/",
+          "primary_uri_locator": "article-meta/permissions/license/@xlink:href",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "3.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/3.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "http://creativecommons.org/licenses/by/3.0/",
+              "location": "license/license/@xlink:href",
+              "attributes": {
+                "license-type": "open-access",
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/3.0/"
+              }
+            },
+            {
+              "uri": "https://creativecommons.org/licenses/by/3.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            }
+          ],
+          "license_text_sha256": "9cd509a60c65a3ac78b7cee33f1bc6352c93d71e312edf6f41ced7b0f2886a85",
+          "serialized_license_element_sha256": "a39f5e3fb2cbdf5a0187dfabef282af73769de40ce4449d75878a248bcca60e8",
+          "separate_data_waiver_uri_present": false,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 2,
+      "caption_candidate_matches": [],
+      "source_caption_normalized_sha256": "3639f8d98a6caddde0ed25d4fe769696ab46eda258d39680c7b060733f466b3f",
+      "figure_match_status": "no_unique_exact_caption",
+      "figure_match_reason": "No figure matches under NFC plus Unicode-whitespace collapse; no fuzzy matching used",
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_022485",
+      "pmcid": "PMC4898465",
+      "source_caption_sha256": "878351d3f05123c473cbb76a4e1de857d20368bbe32e050ea8e98590034ecf6c",
+      "source_attribution": "CC BY Rauscher et al. (2016)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "Fig1",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "40644_2016_72_Fig1_HTML.jpg"
+        }
+      ],
+      "retrieval": {
+        "pmcid": "PMC4898465",
+        "source_image_id": "ROCOv2_2023_train_022485",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A4898465&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC4898465.xml",
+        "at_utc": "2026-10-04T18:09:46.832909+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A4898465&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:47 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 20170,
+        "transfer_sha256": "6ddc773ba7193ed1e8efb3bd440159ca577af95d4757d3724cd6daaf74baaa76",
+        "decoded_bytes": 83311,
+        "sha256": "f0cf7cbe4b8fb6d263a8cf71481d8f2f02bac571330a2da489984302f139c53c",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC4898465",
+        "pmcid-ver": "PMC4898465.1",
+        "pmcaid": "4898465",
+        "pmcaiid": "4898465",
+        "pmid": "27277843",
+        "doi": "10.1186/s40644-016-0072-6",
+        "publisher-id": "72"
+      },
+      "oai_datestamp": "2016-06-09",
+      "article_licenses": [
+        {
+          "attributes": {
+            "license-type": "OpenAccess"
+          },
+          "primary_license_uri": "https://creativecommons.org/licenses/by/4.0/",
+          "primary_uri_locator": "license/ali:license_ref/text()",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "4.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/4.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "https://creativecommons.org/licenses/by/4.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            },
+            {
+              "uri": "http://creativecommons.org/licenses/by/4.0/",
+              "location": "license/ext-link/@xlink:href",
+              "attributes": {
+                "ext-link-type": "uri",
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/4.0/"
+              }
+            },
+            {
+              "uri": "http://creativecommons.org/publicdomain/zero/1.0/",
+              "location": "license/ext-link/@xlink:href",
+              "attributes": {
+                "ext-link-type": "uri",
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/publicdomain/zero/1.0/"
+              }
+            }
+          ],
+          "license_text_sha256": "70a8fb0d16456eeaf19f43c31b8f846150ca4fd6b6c35ac529cfd1d371c0895e",
+          "serialized_license_element_sha256": "2c96b8704ae925b1f1256538012ac69ccd47b850bd5099d79c4df277f858aed6",
+          "separate_data_waiver_uri_present": true,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 6,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "Fig1",
+          "label": "Fig. 1",
+          "normalized_caption_sha256": "878351d3f05123c473cbb76a4e1de857d20368bbe32e050ea8e98590034ecf6c",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "40644_2016_72_Fig1_HTML.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "878351d3f05123c473cbb76a4e1de857d20368bbe32e050ea8e98590034ecf6c",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_049219",
+      "pmcid": "PMC5543582",
+      "source_caption_sha256": "9ec262d0b46b81f14580682213984166865f20b424ce8368e49cd2a719a26374",
+      "source_attribution": "CC BY Ono et al. (2017)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "Fig4",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "12882_2017_676_Fig4_HTML.jpg"
+        }
+      ],
+      "retrieval": {
+        "pmcid": "PMC5543582",
+        "source_image_id": "ROCOv2_2023_train_049219",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A5543582&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC5543582.xml",
+        "at_utc": "2026-10-04T18:09:47.720891+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A5543582&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:47 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 8918,
+        "transfer_sha256": "130158b77a046663d14c3da505d03924efa2d706d0804525aba2f9001299323f",
+        "decoded_bytes": 37298,
+        "sha256": "b7d25aab7ff0c854e69a32ee42b4e52873b6d225e89423c35e37f5c9c329430f",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC5543582",
+        "pmcid-ver": "PMC5543582.1",
+        "pmcaid": "5543582",
+        "pmcaiid": "5543582",
+        "pmid": "28774276",
+        "doi": "10.1186/s12882-017-0676-5",
+        "publisher-id": "676"
+      },
+      "oai_datestamp": "2017-08-07",
+      "article_licenses": [
+        {
+          "attributes": {
+            "license-type": "OpenAccess"
+          },
+          "primary_license_uri": "https://creativecommons.org/licenses/by/4.0/",
+          "primary_uri_locator": "license/ali:license_ref/text()",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "4.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/4.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "https://creativecommons.org/licenses/by/4.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            },
+            {
+              "uri": "http://creativecommons.org/licenses/by/4.0/",
+              "location": "license/ext-link/@xlink:href",
+              "attributes": {
+                "ext-link-type": "uri",
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/4.0/"
+              }
+            },
+            {
+              "uri": "http://creativecommons.org/publicdomain/zero/1.0/",
+              "location": "license/ext-link/@xlink:href",
+              "attributes": {
+                "ext-link-type": "uri",
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/publicdomain/zero/1.0/"
+              }
+            }
+          ],
+          "license_text_sha256": "70a8fb0d16456eeaf19f43c31b8f846150ca4fd6b6c35ac529cfd1d371c0895e",
+          "serialized_license_element_sha256": "2c96b8704ae925b1f1256538012ac69ccd47b850bd5099d79c4df277f858aed6",
+          "separate_data_waiver_uri_present": true,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 4,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "Fig4",
+          "label": "Fig. 4",
+          "normalized_caption_sha256": "9ec262d0b46b81f14580682213984166865f20b424ce8368e49cd2a719a26374",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "12882_2017_676_Fig4_HTML.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "9ec262d0b46b81f14580682213984166865f20b424ce8368e49cd2a719a26374",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_002716",
+      "pmcid": "PMC7455822",
+      "source_caption_sha256": "29f4bde50821132808f9b57dcbf3de436a4b88adecd9683ca20cdbf6c38a37d6",
+      "source_attribution": "CC BY Liu et al. (2020)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "fig3",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "JO2020-5259717.003.jpg"
+        }
+      ],
+      "retrieval": {
+        "pmcid": "PMC7455822",
+        "source_image_id": "ROCOv2_2023_train_002716",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A7455822&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC7455822.xml",
+        "at_utc": "2026-10-04T18:09:48.571391+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A7455822&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:48 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 15069,
+        "transfer_sha256": "7374aa19e0ef42b30d579e14c00e270d2d83b4a3d679349c11969255a2781a17",
+        "decoded_bytes": 70507,
+        "sha256": "4147ba6ad7e43a88a7c3645fd6d915dfbd9d4385397482f70bb06cb1f570a721",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC7455822",
+        "pmcid-ver": "PMC7455822.1",
+        "pmcaid": "7455822",
+        "pmcaiid": "7455822",
+        "pmid": "32884570",
+        "doi": "10.1155/2020/5259717"
+      },
+      "oai_datestamp": "2020-09-02",
+      "article_licenses": [
+        {
+          "attributes": {
+            "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/4.0/"
+          },
+          "primary_license_uri": "http://creativecommons.org/licenses/by/4.0/",
+          "primary_uri_locator": "article-meta/permissions/license/@xlink:href",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "4.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/4.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "http://creativecommons.org/licenses/by/4.0/",
+              "location": "license/license/@xlink:href",
+              "attributes": {
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/4.0/"
+              }
+            },
+            {
+              "uri": "https://creativecommons.org/licenses/by/4.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            }
+          ],
+          "license_text_sha256": "bf67818198b8a923837a2949c28013c8cd88e5098d21c058911ac98e1669b6ad",
+          "serialized_license_element_sha256": "2752299807a41265a64719dcb20d29eef2e2d1aca760c936fc0335cd89be76ad",
+          "separate_data_waiver_uri_present": false,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 5,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "fig3",
+          "label": "Figure 3",
+          "normalized_caption_sha256": "29f4bde50821132808f9b57dcbf3de436a4b88adecd9683ca20cdbf6c38a37d6",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "JO2020-5259717.003.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "29f4bde50821132808f9b57dcbf3de436a4b88adecd9683ca20cdbf6c38a37d6",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_036451",
+      "pmcid": "PMC1914059",
+      "source_caption_sha256": "46d5918ea21d1a0f9c7ba955d97d51d097cb9234bea03e1e235e9095e9408de4",
+      "source_attribution": "CC BY Kubal et al. (2007)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "F1",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "1749-8090-2-29-1.jpg"
+        }
+      ],
+      "retrieval": {
+        "pmcid": "PMC1914059",
+        "source_image_id": "ROCOv2_2023_train_036451",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A1914059&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC1914059.xml",
+        "at_utc": "2026-10-04T18:09:49.425922+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A1914059&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:49 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 6270,
+        "transfer_sha256": "5bc5ca0c55b3f2d90df7b86663600b4df0dcf1ea3b2e5dfa75431ad2d6e8adb1",
+        "decoded_bytes": 22910,
+        "sha256": "c6b3278902efac1688c075b58279d418b269a4c5407510d32ff722482b65de45",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC1914059",
+        "pmcid-ver": "PMC1914059.1",
+        "pmcaid": "1914059",
+        "pmcaiid": "1914059",
+        "pmid": "17598912",
+        "doi": "10.1186/1749-8090-2-29",
+        "publisher-id": "1749-8090-2-29"
+      },
+      "oai_datestamp": "2007-07-13",
+      "article_licenses": [
+        {
+          "attributes": {
+            "license-type": "open-access",
+            "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/2.0"
+          },
+          "primary_license_uri": "http://creativecommons.org/licenses/by/2.0",
+          "primary_uri_locator": "article-meta/permissions/license/@xlink:href",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "2.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/2.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "http://creativecommons.org/licenses/by/2.0",
+              "location": "license/license/@xlink:href",
+              "attributes": {
+                "license-type": "open-access",
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/2.0"
+              }
+            },
+            {
+              "uri": "https://creativecommons.org/licenses/by/2.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            },
+            {
+              "uri": "http://creativecommons.org/licenses/by/2.0",
+              "location": "license/ext-link/@xlink:href",
+              "attributes": {
+                "ext-link-type": "uri",
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/2.0"
+              }
+            }
+          ],
+          "license_text_sha256": "2974d2139e391a292fd61c6d29ee7a2d0b94e3cb5a2c867fae85f0e4d4f36c96",
+          "serialized_license_element_sha256": "94872428d4ab55b3bdd49ffc1245df6265ba8f0f0ad74c7a8c1cfcd2ec085c87",
+          "separate_data_waiver_uri_present": false,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 3,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "F1",
+          "label": "Figure 1",
+          "normalized_caption_sha256": "46d5918ea21d1a0f9c7ba955d97d51d097cb9234bea03e1e235e9095e9408de4",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "1749-8090-2-29-1.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "46d5918ea21d1a0f9c7ba955d97d51d097cb9234bea03e1e235e9095e9408de4",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_005416",
+      "pmcid": "PMC6093752",
+      "source_caption_sha256": "6369b44ba0040ec17337760179acb2f8f270d213c69be768c3961ad7c2632c85",
+      "source_attribution": "CC BY Muacevic et al. (2018)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": null,
+      "graphic_references": [],
+      "retrieval": {
+        "pmcid": "PMC6093752",
+        "source_image_id": "ROCOv2_2023_train_005416",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A6093752&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC6093752.xml",
+        "at_utc": "2026-10-04T18:09:50.279023+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A6093752&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:50 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 11725,
+        "transfer_sha256": "5d308d187803bffbbc39d96bae84febaefa5be54ae7da4a08d81784c0f0b9345",
+        "decoded_bytes": 49826,
+        "sha256": "e336b3b1cd173374d892d7ac356dacad1a1dc4e56bc586a418df61af413cb847",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC6093752",
+        "pmcid-ver": "PMC6093752.1",
+        "pmcaid": "6093752",
+        "pmcaiid": "6093752",
+        "pmid": "30128218",
+        "doi": "10.7759/cureus.2813"
+      },
+      "oai_datestamp": "2018-08-20",
+      "article_licenses": [
+        {
+          "attributes": {
+            "license-type": "open-access",
+            "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/3.0/"
+          },
+          "primary_license_uri": "http://creativecommons.org/licenses/by/3.0/",
+          "primary_uri_locator": "article-meta/permissions/license/@xlink:href",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "3.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/3.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "http://creativecommons.org/licenses/by/3.0/",
+              "location": "license/license/@xlink:href",
+              "attributes": {
+                "license-type": "open-access",
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/3.0/"
+              }
+            },
+            {
+              "uri": "https://creativecommons.org/licenses/by/3.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            }
+          ],
+          "license_text_sha256": "9cd509a60c65a3ac78b7cee33f1bc6352c93d71e312edf6f41ced7b0f2886a85",
+          "serialized_license_element_sha256": "a39f5e3fb2cbdf5a0187dfabef282af73769de40ce4449d75878a248bcca60e8",
+          "separate_data_waiver_uri_present": false,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 6,
+      "caption_candidate_matches": [],
+      "source_caption_normalized_sha256": "6369b44ba0040ec17337760179acb2f8f270d213c69be768c3961ad7c2632c85",
+      "figure_match_status": "no_unique_exact_caption",
+      "figure_match_reason": "No figure matches under NFC plus Unicode-whitespace collapse; no fuzzy matching used",
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_055358",
+      "pmcid": "PMC8404122",
+      "source_caption_sha256": "bf7689102c4452918395b7f6adddefe04fd2a89ad5634a9cf1062fc112889d48",
+      "source_attribution": "CC BY Tharwat et al. (2021)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "F9",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "Vetworld-14-1879-g009.jpg"
+        }
+      ],
+      "retrieval": {
+        "pmcid": "PMC8404122",
+        "source_image_id": "ROCOv2_2023_train_055358",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A8404122&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC8404122.xml",
+        "at_utc": "2026-10-04T18:09:51.239391+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A8404122&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:51 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 15469,
+        "transfer_sha256": "c3fb42ddc72ebc6588a7b8446d72ab0f0e2d14066d0e4de11ff61b2e5c568215",
+        "decoded_bytes": 72524,
+        "sha256": "fb87c24261d62d2dabc95c20a6ce43a57d8e549cb1fce35de55609bd1ede3a8e",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC8404122",
+        "pmcid-ver": "PMC8404122.1",
+        "pmcaid": "8404122",
+        "pmcaiid": "8404122",
+        "pmid": "34475712",
+        "doi": "10.14202/vetworld.2021.1879-1887",
+        "publisher-id": "Vetworld-14-1879"
+      },
+      "oai_datestamp": "2021-09-01",
+      "article_licenses": [
+        {
+          "attributes": {},
+          "primary_license_uri": "https://creativecommons.org/licenses/by/4.0/",
+          "primary_uri_locator": "license/ali:license_ref/text()",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "4.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/4.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "https://creativecommons.org/licenses/by/4.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            },
+            {
+              "uri": "https://creativecommons.org/licenses/by/4.0/",
+              "location": "license/ext-link/@xlink:href",
+              "attributes": {
+                "{http://www.w3.org/1999/xlink}href": "https://creativecommons.org/licenses/by/4.0/",
+                "ext-link-type": "uri"
+              }
+            },
+            {
+              "uri": "https://creativecommons.org/publicdomain/zero/1.0/",
+              "location": "license/ext-link/@xlink:href",
+              "attributes": {
+                "{http://www.w3.org/1999/xlink}href": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "ext-link-type": "uri"
+              }
+            }
+          ],
+          "license_text_sha256": "9a8393bd6f3a0a29b8f931275e3c1770625d492049e96eed55235a8fa6e23a8f",
+          "serialized_license_element_sha256": "ad4153cacca19f97b7c535dce5dcbeaa9f0725ee19bd414f3814fcd59fbda226",
+          "separate_data_waiver_uri_present": true,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 17,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "F9",
+          "label": "Figure-9",
+          "normalized_caption_sha256": "bf7689102c4452918395b7f6adddefe04fd2a89ad5634a9cf1062fc112889d48",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "Vetworld-14-1879-g009.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "bf7689102c4452918395b7f6adddefe04fd2a89ad5634a9cf1062fc112889d48",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_001828",
+      "pmcid": "PMC7884066",
+      "source_caption_sha256": "aa914824f3f916c489160df79e047b8a56dc670cbb6353c9fbe3792e1cbabee6",
+      "source_attribution": "CC BY Campagnano et al. (2021)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "Fig2",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "40477_2021_559_Fig2_HTML.jpg"
+        }
+      ],
+      "retrieval": {
+        "pmcid": "PMC7884066",
+        "source_image_id": "ROCOv2_2023_train_001828",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A7884066&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC7884066.xml",
+        "at_utc": "2026-10-04T18:09:52.233450+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A7884066&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:52 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 31484,
+        "transfer_sha256": "f76ef241a7ef5ebbc39c4941d0162bde073f575aaaeea3a92dcfaddfda49f008",
+        "decoded_bytes": 192260,
+        "sha256": "4745bf06388e3dd395b2bd17dd155d45f2159fb87812b3ec2942bf199f14bc3f",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC7884066",
+        "pmcid-ver": "PMC7884066.2",
+        "pmcaid": "7884066",
+        "pmcaiid": "8572305",
+        "pmid": "33590456",
+        "doi": "10.1007/s40477-021-00559-x",
+        "publisher-id": "559"
+      },
+      "oai_datestamp": "2021-02-16",
+      "article_licenses": [
+        {
+          "attributes": {},
+          "primary_license_uri": "https://creativecommons.org/licenses/by/4.0/",
+          "primary_uri_locator": "license/ali:license_ref/text()",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "4.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/4.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "https://creativecommons.org/licenses/by/4.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            },
+            {
+              "uri": "https://creativecommons.org/licenses/by/4.0/",
+              "location": "license/ext-link/@xlink:href",
+              "attributes": {
+                "ext-link-type": "uri",
+                "{http://www.w3.org/1999/xlink}href": "https://creativecommons.org/licenses/by/4.0/"
+              }
+            }
+          ],
+          "license_text_sha256": "1e9f24a00baa0a020526a44b035c3bf24fb918fb72d81e67eae125d151f4f3d0",
+          "serialized_license_element_sha256": "957725c84a53975141a7c0ba32ca238c30a759b9a37bb0a1442eb3b712e53ba0",
+          "separate_data_waiver_uri_present": false,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 3,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "Fig2",
+          "label": "Fig. 2",
+          "normalized_caption_sha256": "aa914824f3f916c489160df79e047b8a56dc670cbb6353c9fbe3792e1cbabee6",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "40477_2021_559_Fig2_HTML.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "aa914824f3f916c489160df79e047b8a56dc670cbb6353c9fbe3792e1cbabee6",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_055240",
+      "pmcid": "PMC2277428",
+      "source_caption_sha256": "463531b326a682f2d0ba9f520099abff1dc5e5e1e1a6351dbaf1302090b62811",
+      "source_attribution": "CC BY Christianakis et al. (2008)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "F1",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "1752-1947-2-54-1.jpg"
+        }
+      ],
+      "retrieval": {
+        "pmcid": "PMC2277428",
+        "source_image_id": "ROCOv2_2023_train_055240",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A2277428&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC2277428.xml",
+        "at_utc": "2026-10-04T18:09:53.293378+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A2277428&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:53 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 5906,
+        "transfer_sha256": "240c22c323f089fa8aa13a1d19abe5a1972d38f8e23999b86c89d1cb60fb588d",
+        "decoded_bytes": 20536,
+        "sha256": "7d18c3550d6b62374d4aa7321c4f7382f49cc08670c2e4d39b3f5d5bd19d96ee",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC2277428",
+        "pmcid-ver": "PMC2277428.1",
+        "pmcaid": "2277428",
+        "pmcaiid": "2277428",
+        "pmid": "18289386",
+        "doi": "10.1186/1752-1947-2-54",
+        "publisher-id": "1752-1947-2-54"
+      },
+      "oai_datestamp": "2008-04-01",
+      "article_licenses": [
+        {
+          "attributes": {
+            "license-type": "open-access",
+            "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/2.0"
+          },
+          "primary_license_uri": "http://creativecommons.org/licenses/by/2.0",
+          "primary_uri_locator": "article-meta/permissions/license/@xlink:href",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "2.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/2.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "http://creativecommons.org/licenses/by/2.0",
+              "location": "license/license/@xlink:href",
+              "attributes": {
+                "license-type": "open-access",
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/2.0"
+              }
+            },
+            {
+              "uri": "https://creativecommons.org/licenses/by/2.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            },
+            {
+              "uri": "http://creativecommons.org/licenses/by/2.0",
+              "location": "license/ext-link/@xlink:href",
+              "attributes": {
+                "ext-link-type": "uri",
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/2.0"
+              }
+            }
+          ],
+          "license_text_sha256": "2974d2139e391a292fd61c6d29ee7a2d0b94e3cb5a2c867fae85f0e4d4f36c96",
+          "serialized_license_element_sha256": "94872428d4ab55b3bdd49ffc1245df6265ba8f0f0ad74c7a8c1cfcd2ec085c87",
+          "separate_data_waiver_uri_present": false,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 3,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "F1",
+          "label": "Figure 1",
+          "normalized_caption_sha256": "463531b326a682f2d0ba9f520099abff1dc5e5e1e1a6351dbaf1302090b62811",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "1752-1947-2-54-1.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "463531b326a682f2d0ba9f520099abff1dc5e5e1e1a6351dbaf1302090b62811",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_055075",
+      "pmcid": "PMC3017926",
+      "source_caption_sha256": "4cb35993faf7b0a5f6e17b4193b620496cac3be7dc482d04b5ffcc0062e44d69",
+      "source_attribution": "CC BY Khoury et al. (2010)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "F0002",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "APC-3-178-g002.jpg"
+        }
+      ],
+      "retrieval": {
+        "pmcid": "PMC3017926",
+        "source_image_id": "ROCOv2_2023_train_055075",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A3017926&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC3017926.xml",
+        "at_utc": "2026-10-04T18:09:54.185239+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A3017926&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:54 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 7326,
+        "transfer_sha256": "6e9818fe9af18a2b2404f0b5f30bffcb2101f7dfaf72208b0a91fca2eaaaba59",
+        "decoded_bytes": 28443,
+        "sha256": "c5fb082f1aefea8cf259e41395ae806124b8a515217c6082f9e1897cd65d27a0",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC3017926",
+        "pmcid-ver": "PMC3017926.1",
+        "pmcaid": "3017926",
+        "pmcaiid": "3017926",
+        "pmid": "21234201",
+        "doi": "10.4103/0974-2069.74052",
+        "publisher-id": "APC-3-178"
+      },
+      "oai_datestamp": "2011-01-13",
+      "article_licenses": [
+        {
+          "attributes": {
+            "license-type": "open-access",
+            "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/2.0/"
+          },
+          "primary_license_uri": "http://creativecommons.org/licenses/by/2.0/",
+          "primary_uri_locator": "article-meta/permissions/license/@xlink:href",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "2.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/2.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "http://creativecommons.org/licenses/by/2.0/",
+              "location": "license/license/@xlink:href",
+              "attributes": {
+                "license-type": "open-access",
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/2.0/"
+              }
+            },
+            {
+              "uri": "https://creativecommons.org/licenses/by/2.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            }
+          ],
+          "license_text_sha256": "729cdad4f1837ef8e058b91153ae4f92c0191ec098dbd945dbe1675e74564dc0",
+          "serialized_license_element_sha256": "5d61362e84f616680e9a37768855851952e8e9ec70c98e59520f3d35d6a9a1ef",
+          "separate_data_waiver_uri_present": false,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 3,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "F0002",
+          "label": "Figure 2",
+          "normalized_caption_sha256": "4cb35993faf7b0a5f6e17b4193b620496cac3be7dc482d04b5ffcc0062e44d69",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "APC-3-178-g002.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "4cb35993faf7b0a5f6e17b4193b620496cac3be7dc482d04b5ffcc0062e44d69",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_007674",
+      "pmcid": "PMC4564414",
+      "source_caption_sha256": "788edb4e3c50ca19da3cd148afa18cb6e547952665d560832220485f94f5eb1a",
+      "source_attribution": "CC BY Hani et al. (2015)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "F0003",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "PAMJ-21-55-g003.jpg"
+        }
+      ],
+      "retrieval": {
+        "pmcid": "PMC4564414",
+        "source_image_id": "ROCOv2_2023_train_007674",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A4564414&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC4564414.xml",
+        "at_utc": "2026-10-04T18:09:55.046057+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A4564414&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:55 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 5227,
+        "transfer_sha256": "a43a5c191122a50536e1f735f0416c6838a4d5bcf923c05af455e5d1518a2fb8",
+        "decoded_bytes": 20626,
+        "sha256": "bc108a2592f5eaf37c9181ec93d702cdeb8c660cee6e3c731b21dd406cae6ac4",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC4564414",
+        "pmcid-ver": "PMC4564414.1",
+        "pmcaid": "4564414",
+        "pmcaiid": "4564414",
+        "pmid": "26405491",
+        "doi": "10.11604/pamj.2015.21.55.6392",
+        "publisher-id": "PAMJ-21-55"
+      },
+      "oai_datestamp": "2015-09-24",
+      "article_licenses": [
+        {
+          "attributes": {
+            "license-type": "open-access",
+            "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/2.0/"
+          },
+          "primary_license_uri": "http://creativecommons.org/licenses/by/2.0/",
+          "primary_uri_locator": "article-meta/permissions/license/@xlink:href",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "2.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/2.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "http://creativecommons.org/licenses/by/2.0/",
+              "location": "license/license/@xlink:href",
+              "attributes": {
+                "license-type": "open-access",
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/2.0/"
+              }
+            },
+            {
+              "uri": "https://creativecommons.org/licenses/by/2.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            }
+          ],
+          "license_text_sha256": "dbccfd74d9ff40c7d8f1e63262674525396526c59bdfe1116e553c4c7caac811",
+          "serialized_license_element_sha256": "ccad18705d54e6e6fabbda0ab7edd8edb20ab1948d3b9f0880b4594a70422307",
+          "separate_data_waiver_uri_present": false,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 4,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "F0003",
+          "label": "Figure 3",
+          "normalized_caption_sha256": "788edb4e3c50ca19da3cd148afa18cb6e547952665d560832220485f94f5eb1a",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "PAMJ-21-55-g003.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "788edb4e3c50ca19da3cd148afa18cb6e547952665d560832220485f94f5eb1a",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_056560",
+      "pmcid": "PMC4391505",
+      "source_caption_sha256": "0391338d695c680cb5769e9eef992cd5b9eb58d339449512b96b25a7e482dbd6",
+      "source_attribution": "CC BY Watanobe et al. (2015)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "fig2",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "CRIS2015-940768.002.jpg"
+        }
+      ],
+      "retrieval": {
+        "pmcid": "PMC4391505",
+        "source_image_id": "ROCOv2_2023_train_056560",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A4391505&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC4391505.xml",
+        "at_utc": "2026-10-04T18:09:55.894992+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A4391505&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:56 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 11710,
+        "transfer_sha256": "10d642396f647bf454068a6a11a0915cb0e712fb46cd80cc2713a23d7e1571a0",
+        "decoded_bytes": 58688,
+        "sha256": "f985b10ed89e414289a84137fbeb4f6d687df93e68101ba5d25ed542234d1548",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC4391505",
+        "pmcid-ver": "PMC4391505.1",
+        "pmcaid": "4391505",
+        "pmcaiid": "4391505",
+        "pmid": "25883826",
+        "doi": "10.1155/2015/940768"
+      },
+      "oai_datestamp": "2015-04-16",
+      "article_licenses": [
+        {
+          "attributes": {
+            "{http://www.w3.org/1999/xlink}href": "https://creativecommons.org/licenses/by/3.0/"
+          },
+          "primary_license_uri": "https://creativecommons.org/licenses/by/3.0/",
+          "primary_uri_locator": "article-meta/permissions/license/@xlink:href",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "3.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/3.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "https://creativecommons.org/licenses/by/3.0/",
+              "location": "license/license/@xlink:href",
+              "attributes": {
+                "{http://www.w3.org/1999/xlink}href": "https://creativecommons.org/licenses/by/3.0/"
+              }
+            },
+            {
+              "uri": "https://creativecommons.org/licenses/by/3.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            }
+          ],
+          "license_text_sha256": "8ff7c6d233b0526ae1513275e6de880bafe8e93bee8fa7e3aad8ab69c1081937",
+          "serialized_license_element_sha256": "07b3abdbc40a75ac3235d9d7a71bb02bdb8c70c55c11eb7a3375474ebd88fa24",
+          "separate_data_waiver_uri_present": false,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 7,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "fig2",
+          "label": "Figure 2",
+          "normalized_caption_sha256": "0391338d695c680cb5769e9eef992cd5b9eb58d339449512b96b25a7e482dbd6",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "CRIS2015-940768.002.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "0391338d695c680cb5769e9eef992cd5b9eb58d339449512b96b25a7e482dbd6",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_023807",
+      "pmcid": "PMC7786393",
+      "source_caption_sha256": "872dbe3d5a757d320814995a1c961f990def5fb63c87f35be926ed6e8f40c7a8",
+      "source_attribution": "CC BY Van Praet et al. (2020)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "F1",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "fsurg-07-00065-g0001.jpg"
+        }
+      ],
+      "retrieval": {
+        "pmcid": "PMC7786393",
+        "source_image_id": "ROCOv2_2023_train_023807",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A7786393&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC7786393.xml",
+        "at_utc": "2026-10-04T18:09:56.809784+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A7786393&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:57 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 15354,
+        "transfer_sha256": "a2f5ba2e74fce412465a45196684ef261bdc547f94b7c43e8e6da36da6cb44fc",
+        "decoded_bytes": 59763,
+        "sha256": "8a34456b15d7fc59fa27737cb2d53cefa82826e22b94ac58ee49c3530794411b",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC7786393",
+        "pmcid-ver": "PMC7786393.1",
+        "pmcaid": "7786393",
+        "pmcaiid": "7786393",
+        "pmid": "33425979",
+        "doi": "10.3389/fsurg.2020.00065"
+      },
+      "oai_datestamp": "2021-01-07",
+      "article_licenses": [
+        {
+          "attributes": {
+            "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/4.0/"
+          },
+          "primary_license_uri": "http://creativecommons.org/licenses/by/4.0/",
+          "primary_uri_locator": "article-meta/permissions/license/@xlink:href",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "4.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/4.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "http://creativecommons.org/licenses/by/4.0/",
+              "location": "license/license/@xlink:href",
+              "attributes": {
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/4.0/"
+              }
+            },
+            {
+              "uri": "https://creativecommons.org/licenses/by/4.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            }
+          ],
+          "license_text_sha256": "4ec56f959d3ff21346e517d81972aa977b6fd6c0b2e19e740f614f9d73806541",
+          "serialized_license_element_sha256": "01df616d3cfd5cf31e610e02371dc9baaf7eaddbbd0cadc383a1d6145c11590d",
+          "separate_data_waiver_uri_present": false,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 5,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "F1",
+          "label": "Figure 1",
+          "normalized_caption_sha256": "872dbe3d5a757d320814995a1c961f990def5fb63c87f35be926ed6e8f40c7a8",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "fsurg-07-00065-g0001.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "872dbe3d5a757d320814995a1c961f990def5fb63c87f35be926ed6e8f40c7a8",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    },
+    {
+      "source_image_id": "ROCOv2_2023_train_018974",
+      "pmcid": "PMC4863867",
+      "source_caption_sha256": "6318f890b6d6347ebaf6ded3ab942ffaa9ab545ee28e6f9d0194428f1a716c14",
+      "source_attribution": "CC BY FREITAS et al. (2016)",
+      "aggregate_roco_license": "CC-BY-NC-4.0",
+      "model_use_approved": false,
+      "original_figure_id": "f1",
+      "graphic_references": [
+        {
+          "element": "graphic",
+          "href": "1413-7852-aob-24-03-00164-gf1.jpg"
+        }
+      ],
+      "retrieval": {
+        "pmcid": "PMC4863867",
+        "source_image_id": "ROCOv2_2023_train_018974",
+        "url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A4863867&metadataPrefix=pmc",
+        "path": "work/roco-upstream-rights/PMC4863867.xml",
+        "at_utc": "2026-10-04T18:09:57.690955+00:00",
+        "method": "GET",
+        "minimum_interrequest_delay_seconds": 0.6,
+        "status": 200,
+        "final_url": "https://pmc.ncbi.nlm.nih.gov/api/oai/v1/mh/?verb=GetRecord&identifier=oai%3Apubmedcentral.nih.gov%3A4863867&metadataPrefix=pmc",
+        "headers": {
+          "Date": "Sun, 04 Oct 2026 18:09:57 GMT",
+          "content-type": "application/xml; charset=utf-8",
+          "Content-Encoding": "gzip"
+        },
+        "transfer_bytes": 7790,
+        "transfer_sha256": "0fcd0664077a627d01e4809e958c0b2c41626f98c0eadff3ca99fbf48f5af627",
+        "decoded_bytes": 28097,
+        "sha256": "ccb1a674422b6b88b1bd1b0847ba7888fca65d5a9dc6739cac0e79e09a38585c",
+        "exit_code": 0
+      },
+      "status": "retrieved",
+      "article_ids": {
+        "pmcid": "PMC4863867",
+        "pmcid-ver": "PMC4863867.1",
+        "pmcaid": "4863867",
+        "pmcaiid": "4863867",
+        "pmid": "27217820",
+        "doi": "10.1590/1413-785220162403155803"
+      },
+      "oai_datestamp": "2016-05-23",
+      "article_licenses": [
+        {
+          "attributes": {
+            "license-type": "open-access",
+            "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/4.0/"
+          },
+          "primary_license_uri": "http://creativecommons.org/licenses/by/4.0/",
+          "primary_uri_locator": "article-meta/permissions/license/@xlink:href",
+          "parsed_primary_license": {
+            "license_code": "by",
+            "version": "4.0",
+            "canonical_uri": "https://creativecommons.org/licenses/by/4.0/"
+          },
+          "primary_uri_candidates_agree": true,
+          "uri_evidence": [
+            {
+              "uri": "http://creativecommons.org/licenses/by/4.0/",
+              "location": "license/license/@xlink:href",
+              "attributes": {
+                "license-type": "open-access",
+                "{http://www.w3.org/1999/xlink}href": "http://creativecommons.org/licenses/by/4.0/"
+              }
+            },
+            {
+              "uri": "https://creativecommons.org/licenses/by/4.0/",
+              "location": "license/ali:license_ref/text()",
+              "attributes": {
+                "specific-use": "textmining",
+                "content-type": "ccbylicense"
+              }
+            }
+          ],
+          "license_text_sha256": "62bcf6f872f4af03c559cdce1b877780c8f6c682b0d9344b1d8bfbab7ea8c612",
+          "serialized_license_element_sha256": "40aad7faa371fc67c7a6599e75bb9aa1ac417f86b316a8987886534374f4b7fa",
+          "separate_data_waiver_uri_present": false,
+          "scope": "article-meta/permissions; not an independent figure-specific rights clearance"
+        }
+      ],
+      "article_figure_count": 3,
+      "caption_candidate_matches": [
+        {
+          "figure_id": "f1",
+          "label": "Figure 1",
+          "normalized_caption_sha256": "6318f890b6d6347ebaf6ded3ab942ffaa9ab545ee28e6f9d0194428f1a716c14",
+          "source_caption_exact_normalized_match": true,
+          "graphic_references": [
+            {
+              "element": "graphic",
+              "href": "1413-7852-aob-24-03-00164-gf1.jpg"
+            }
+          ],
+          "figure_permissions": [],
+          "figure_attribution_text_sha256": [],
+          "figure_attribution_count": 0,
+          "caption_rights_credit_marker_detected": false
+        }
+      ],
+      "source_caption_normalized_sha256": "6318f890b6d6347ebaf6ded3ab942ffaa9ab545ee28e6f9d0194428f1a716c14",
+      "figure_match_status": "unique_exact_normalized_caption",
+      "figure_permissions": [],
+      "figure_attribution_count": 0,
+      "caption_rights_credit_marker_detected": false,
+      "source_image_bytes_compared_to_upstream_graphic": false,
+      "figure_match_limit": "Caption linkage only: does not establish source-image byte identity, panel cropping, or figure-specific legal clearance."
+    }
+  ],
+  "documentation_retrievals": [
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/tools/oa-service/",
+      "path": "work/roco-upstream-rights/oa-service-doc.html",
+      "at_utc": "2026-10-04T18:08:44.212534+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://pmc.ncbi.nlm.nih.gov/tools/oa-service/",
+      "headers": {
+        "Date": "Sun, 04 Oct 2026 18:08:44 GMT",
+        "content-type": "text/html; charset=utf-8",
+        "content-encoding": "gzip"
+      },
+      "transfer_bytes": 16282,
+      "decoded_bytes": 79591,
+      "transfer_sha256": "47ac906e8cdda314a155a7678221d0dda2d11cb9f8c75b27befb6596bf583d46",
+      "sha256": "b3dc51a51b8e8a60318e2cb7fe07178ae30f9cb0c04d77375e2510ebae73ba9e",
+      "exit_code": 0
+    },
+    {
+      "url": "https://pmc.ncbi.nlm.nih.gov/tools/oai/",
+      "path": "work/roco-upstream-rights/oai-doc.html",
+      "at_utc": "2026-10-04T18:08:45.191953+00:00",
+      "method": "GET",
+      "status": 200,
+      "final_url": "https://pmc.ncbi.nlm.nih.gov/tools/oai/",
+      "headers": {
+        "Date": "Sun, 04 Oct 2026 18:08:45 GMT",
+        "content-type": "text/html; charset=utf-8",
+        "content-encoding": "gzip"
+      },
+      "transfer_bytes": 19548,
+      "decoded_bytes": 90605,
+      "transfer_sha256": "8377967504bb13da03c283cb17ff5bc57aa3f9a88fbb1651cd0e542e5baabcf1",
+      "sha256": "6759ed1b2b68bfffba966220a1fa3bf68b3ae85f953e9daf575cf2db860c5dee",
+      "exit_code": 0
+    }
+  ],
+  "input_hashes": {
+    "shortlist": "d815b2238224f8e92cf5f321aba387e9a4ca3686bfd4dab13bf1c3b4377b9014",
+    "retrievals": "d799a1f126d29ba14eaf1eac8c947336d86bc6afa3959d8ce059db18d94aa4ef",
+    "analysis_script": "199d5f8eaa1a4a9d3966048ddd66ab00097a5d9bb168e6499acb24e62f114bad",
+    "acquisition_script": "5b33fa0f6ffbf50c42bb5a65ba661a0a8d3b277fbb5968d580c2ad12f293ec65"
+  },
+  "analysis_exit_code": 0
+}

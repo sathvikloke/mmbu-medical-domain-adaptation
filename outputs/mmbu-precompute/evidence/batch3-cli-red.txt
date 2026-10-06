@@ -1,0 +1,49 @@
+test_bad_calibration_is_structured_error (test_cli_batch3.Batch3CliTests.test_bad_calibration_is_structured_error) ... ERROR
+test_calibration_keeps_selected_disagreements_out_of_random_summary (test_cli_batch3.Batch3CliTests.test_calibration_keeps_selected_disagreements_out_of_random_summary) ... FAIL
+test_diagnostics_keep_partial_coverage_explicit (test_cli_batch3.Batch3CliTests.test_diagnostics_keep_partial_coverage_explicit) ... FAIL
+
+======================================================================
+ERROR: test_bad_calibration_is_structured_error (test_cli_batch3.Batch3CliTests.test_bad_calibration_is_structured_error)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_cli_batch3.py", line 36, in test_bad_calibration_is_structured_error
+    self.assertIn('error',json.loads(out.stderr))
+                          ~~~~~~~~~~^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/__init__.py", line 352, in loads
+    return _default_decoder.decode(s)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/decoder.py", line 345, in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/lib/python3.14/json/decoder.py", line 363, in raw_decode
+    raise JSONDecodeError("Expecting value", s, err.value) from None
+json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+
+======================================================================
+FAIL: test_calibration_keeps_selected_disagreements_out_of_random_summary (test_cli_batch3.Batch3CliTests.test_calibration_keeps_selected_disagreements_out_of_random_summary)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_cli_batch3.py", line 29, in test_calibration_keeps_selected_disagreements_out_of_random_summary
+    out=self.run_cli('calibrate',str(p));self.assertEqual(out.returncode,0,out.stderr)
+                                         ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 2 != 0 : usage: python3.14 -m mmbu_prep [-h] [--workspace WORKSPACE]
+                               {status,demo,score,validate,split,compare,inspect-images,prepare-bbbc039} ...
+python3.14 -m mmbu_prep: error: argument command: invalid choice: 'calibrate' (choose from 'status', 'demo', 'score', 'validate', 'split', 'compare', 'inspect-images', 'prepare-bbbc039')
+
+
+======================================================================
+FAIL: test_diagnostics_keep_partial_coverage_explicit (test_cli_batch3.Batch3CliTests.test_diagnostics_keep_partial_coverage_explicit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_cli_batch3.py", line 18, in test_diagnostics_keep_partial_coverage_explicit
+    self.assertEqual(out.returncode,0,out.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 2 != 0 : usage: python3.14 -m mmbu_prep [-h] [--workspace WORKSPACE]
+                               {status,demo,score,validate,split,compare,inspect-images,prepare-bbbc039} ...
+python3.14 -m mmbu_prep: error: argument command: invalid choice: 'diagnose' (choose from 'status', 'demo', 'score', 'validate', 'split', 'compare', 'inspect-images', 'prepare-bbbc039')
+
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.138s
+
+FAILED (failures=2, errors=1)

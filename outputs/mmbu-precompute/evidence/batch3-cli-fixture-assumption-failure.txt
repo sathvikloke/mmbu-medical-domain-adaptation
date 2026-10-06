@@ -1,0 +1,17 @@
+test_bad_calibration_is_structured_error (test_cli_batch3.Batch3CliTests.test_bad_calibration_is_structured_error) ... ok
+test_calibration_keeps_selected_disagreements_out_of_random_summary (test_cli_batch3.Batch3CliTests.test_calibration_keeps_selected_disagreements_out_of_random_summary) ... ok
+test_diagnostics_keep_partial_coverage_explicit (test_cli_batch3.Batch3CliTests.test_diagnostics_keep_partial_coverage_explicit) ... FAIL
+
+======================================================================
+FAIL: test_diagnostics_keep_partial_coverage_explicit (test_cli_batch3.Batch3CliTests.test_diagnostics_keep_partial_coverage_explicit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_cli_batch3.py", line 21, in test_diagnostics_keep_partial_coverage_explicit
+    self.assertFalse(result['full_task_coverage'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.148s
+
+FAILED (failures=1)

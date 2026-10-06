@@ -1,0 +1,15 @@
+{
+  "script_sha256": "1ac6ac8c23896a6190042ab2b6a200322bfc1b8f0fd35c5f9c7e0b6a3937a365",
+  "initial_probe_exit_code": 0,
+  "replay_exit_code": 0,
+  "replay_equal_except_timestamp": true,
+  "existing_output_exit_code": 2,
+  "existing_output_bytes_preserved": true,
+  "missing_torch_exit_code": 2,
+  "missing_torch_report_not_written": true,
+  "replay_stdout": "{\"status\": \"passed\", \"checks\": 15, \"combined_loss\": 2.2584657866233395, \"token_normalized_loss\": 2.25846578662334, \"naive_equal_mean_loss\": 2.14267488493503, \"model_executed\": false, \"gpu_used\": false}",
+  "existing_output_stderr": "{\"status\": \"unavailable_or_failed\", \"error_type\": \"FileExistsError\", \"error\": \"output already exists\"}",
+  "missing_torch_stderr": "{\"status\": \"unavailable_or_failed\", \"error_type\": \"ModuleNotFoundError\", \"error\": \"No module named 'torch'\"}",
+  "report_sha256": "747323e3a526439b522cbe5c40877eab0134c0355667861a6edc9896c7090e19",
+  "log_sha256": "2e8e4055c5cf9c5ab3b6a64090bd90bc86235aa8b4c1023c08c81fd7b41961a0"
+}

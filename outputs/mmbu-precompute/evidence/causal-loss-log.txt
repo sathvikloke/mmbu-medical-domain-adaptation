@@ -1,0 +1,1 @@
+{"status": "passed", "checks": 15, "combined_loss": 2.2584657866233395, "token_normalized_loss": 2.25846578662334, "naive_equal_mean_loss": 2.14267488493503, "model_executed": false, "gpu_used": false}

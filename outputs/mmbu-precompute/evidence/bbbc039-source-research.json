@@ -1,0 +1,443 @@
+{
+  "schema_version": 1,
+  "audit_id": "BBBC039-SOURCE-2026-10-04",
+  "status": "bounded_source_audit_complete",
+  "checked_at_utc": "2026-10-04T05:03:06.961302+00:00",
+  "scope": "Public source documentation, canonical decoding code, and split/plate filename metadata. No image/mask archive download or source label inspection by this auditor.",
+  "sources": [
+    {
+      "source_id": "bbbc039-card",
+      "url": "https://bbbc.broadinstitute.org/BBBC039",
+      "retrieved_at_utc": "2026-10-04T05:03:06.961302+00:00",
+      "commit_or_revision": null,
+      "response_bytes": 33920,
+      "sha256": "a3a06ed4227c8fdde341af75bb17d14cf9c4424296d5cd070c97c33276103d08",
+      "raw_body_retained": false,
+      "inspection": "Public documentation, code, or filename metadata only."
+    },
+    {
+      "source_id": "bbbc022-card",
+      "url": "https://bbbc.broadinstitute.org/BBBC022",
+      "retrieved_at_utc": "2026-10-04T05:03:06.961302+00:00",
+      "commit_or_revision": null,
+      "response_bytes": 49656,
+      "sha256": "866441a74dd3fb150e98bc5dd9f2fd0eb27b5ee1c77f3e68aac5d4656a38f234",
+      "raw_body_retained": false,
+      "inspection": "Public documentation, code, or filename metadata only."
+    },
+    {
+      "source_id": "bbbc038-card",
+      "url": "https://bbbc.broadinstitute.org/BBBC038",
+      "retrieved_at_utc": "2026-10-04T05:03:06.961302+00:00",
+      "commit_or_revision": null,
+      "response_bytes": 33713,
+      "sha256": "ad9c5aa63b9c73da728045724cb9242dd55d5abf95fea66c270f80762e326790",
+      "raw_body_retained": false,
+      "inspection": "Public documentation, code, or filename metadata only."
+    },
+    {
+      "source_id": "canonical-gist-api",
+      "url": "https://api.github.com/gists/15e811722fca51e3ae90e8b43057f075/2dd780afdbde1d5410ed57030a011b2000cfc658",
+      "retrieved_at_utc": "2026-10-04T05:03:06.961302+00:00",
+      "commit_or_revision": "2dd780afdbde1d5410ed57030a011b2000cfc658",
+      "response_bytes": 4681,
+      "sha256": "8a515010bb6539a4300c0dbb7502b6a6457c5c70b0979195d484c3899195665a",
+      "raw_body_retained": false,
+      "inspection": "Public documentation, code, or filename metadata only."
+    },
+    {
+      "source_id": "unet-preprocessing",
+      "url": "https://raw.githubusercontent.com/carpenterlab/unet4nuclei/5575e611f06abe2af97ccb50ba7b777f2c6b0cad/unet4nuclei/01-preprocessing.ipynb",
+      "retrieved_at_utc": "2026-10-04T05:03:06.961302+00:00",
+      "commit_or_revision": "5575e611f06abe2af97ccb50ba7b777f2c6b0cad",
+      "response_bytes": 444569,
+      "sha256": "f7daea1dd509880007810c11a22fd9e36ce352e00a760336bf4384501d4dff00",
+      "raw_body_retained": false,
+      "inspection": "Notebook source cells only; embedded outputs not inspected."
+    },
+    {
+      "source_id": "unet-evaluation",
+      "url": "https://raw.githubusercontent.com/carpenterlab/unet4nuclei/5575e611f06abe2af97ccb50ba7b777f2c6b0cad/unet4nuclei/04-evaluation.ipynb",
+      "retrieved_at_utc": "2026-10-04T05:03:06.961302+00:00",
+      "commit_or_revision": "5575e611f06abe2af97ccb50ba7b777f2c6b0cad",
+      "response_bytes": 9530,
+      "sha256": "815a08306e292f05a76432a823811fec3964d199cf3bb0212951168482d82e92",
+      "raw_body_retained": false,
+      "inspection": "Notebook source cells only; embedded outputs not inspected."
+    },
+    {
+      "source_id": "unet-config",
+      "url": "https://raw.githubusercontent.com/carpenterlab/unet4nuclei/5575e611f06abe2af97ccb50ba7b777f2c6b0cad/examples/bbbc039_seg_config.py",
+      "retrieved_at_utc": "2026-10-04T05:03:06.961302+00:00",
+      "commit_or_revision": "5575e611f06abe2af97ccb50ba7b777f2c6b0cad",
+      "response_bytes": 2659,
+      "sha256": "851638f2c3582548df42ff21724ef33721acc99950656dc2ccc2342d7f5d5d87",
+      "raw_body_retained": false,
+      "inspection": "Public documentation, code, or filename metadata only."
+    },
+    {
+      "source_id": "unet-split-code",
+      "url": "https://raw.githubusercontent.com/carpenterlab/unet4nuclei/5575e611f06abe2af97ccb50ba7b777f2c6b0cad/unet4nuclei/utils/dirtools.py",
+      "retrieved_at_utc": "2026-10-04T05:03:06.961302+00:00",
+      "commit_or_revision": "5575e611f06abe2af97ccb50ba7b777f2c6b0cad",
+      "response_bytes": 4073,
+      "sha256": "8a8efb942d010b6907c4473db9a5f7b4bacdb324abe66ab8e984c1215fe1915b",
+      "raw_body_retained": false,
+      "inspection": "Public documentation, code, or filename metadata only."
+    },
+    {
+      "source_id": "unet-tree",
+      "url": "https://api.github.com/repos/carpenterlab/unet4nuclei/git/trees/5575e611f06abe2af97ccb50ba7b777f2c6b0cad?recursive=1",
+      "retrieved_at_utc": "2026-10-04T05:03:06.961302+00:00",
+      "commit_or_revision": "5575e611f06abe2af97ccb50ba7b777f2c6b0cad",
+      "response_bytes": 7232,
+      "sha256": "ddbfc7a04d5d9e5c1474ac6114488ffe2086375a2e462b65a59d218f4b2ffb09",
+      "raw_body_retained": false,
+      "inspection": "Public documentation, code, or filename metadata only."
+    },
+    {
+      "source_id": "skimage-label",
+      "url": "https://raw.githubusercontent.com/scikit-image/scikit-image/03f4997359e9d439db9709fb359d7b9c0ea38556/skimage/measure/_label.py",
+      "retrieved_at_utc": "2026-10-04T05:03:06.961302+00:00",
+      "commit_or_revision": "03f4997359e9d439db9709fb359d7b9c0ea38556",
+      "response_bytes": 3158,
+      "sha256": "2cd3d94e861d5e9fd4a1eec3f9b7d2a9dbdea75931d878029edd99898c27b788",
+      "raw_body_retained": false,
+      "inspection": "Public documentation, code, or filename metadata only."
+    },
+    {
+      "source_id": "skimage-morphology-alias",
+      "url": "https://raw.githubusercontent.com/scikit-image/scikit-image/03f4997359e9d439db9709fb359d7b9c0ea38556/skimage/morphology/__init__.py",
+      "retrieved_at_utc": "2026-10-04T05:03:06.961302+00:00",
+      "commit_or_revision": "03f4997359e9d439db9709fb359d7b9c0ea38556",
+      "response_bytes": 1586,
+      "sha256": "47cf6176ff6894a2c71d89a13178e12918e3433b5c318634bd9b85c105a71c3c",
+      "raw_body_retained": false,
+      "inspection": "Public documentation, code, or filename metadata only."
+    },
+    {
+      "source_id": "bbbc039-metadata",
+      "url": "https://data.broadinstitute.org/bbbc/BBBC039/metadata.zip",
+      "retrieved_at_utc": "2026-10-04T05:03:06.961302+00:00",
+      "commit_or_revision": null,
+      "response_bytes": 17816,
+      "sha256": "a2c1f900bed9ba92a99553efd4c2ae98598433691c7401d818653ab61110deb2",
+      "raw_body_retained": false,
+      "inspection": "Public documentation, code, or filename metadata only."
+    }
+  ],
+  "canonical_decoder": {
+    "gist_revision": "2dd780afdbde1d5410ed57030a011b2000cfc658",
+    "unet_commit": "5575e611f06abe2af97ccb50ba7b777f2c6b0cad",
+    "historic_library_commit": "03f4997359e9d439db9709fb359d7b9c0ea38556",
+    "historic_library_release": "v0.13.1",
+    "authors_runtime_version": "unresolved; the gist/repository does not pin its environment",
+    "channel": 0,
+    "input_semantics": "integer values, not thresholded binary foreground and not packed RGB IDs",
+    "background_value": 0,
+    "connectivity_2d": 8,
+    "current_explicit_equivalent": "skimage.measure.label(first_channel, background=0, connectivity=2)",
+    "object_identity": "Connected regions of equal first-channel value; reuse in disconnected regions produces separate instances.",
+    "filtering": "No size filtering, boundary conversion, erosion, dilation, or interpolation in canonical instance decoding."
+  },
+  "metadata_checks": {
+    "archive_bytes": 17816,
+    "archive_sha256": "a2c1f900bed9ba92a99553efd4c2ae98598433691c7401d818653ab61110deb2",
+    "members": [
+      {
+        "name": "metadata/",
+        "uncompressed_bytes": 0
+      },
+      {
+        "name": "metadata/filenames_and_plates.csv",
+        "uncompressed_bytes": 12799
+      },
+      {
+        "name": "__MACOSX/",
+        "uncompressed_bytes": 0
+      },
+      {
+        "name": "__MACOSX/metadata/",
+        "uncompressed_bytes": 0
+      },
+      {
+        "name": "__MACOSX/metadata/._filenames_and_plates.csv",
+        "uncompressed_bytes": 222
+      },
+      {
+        "name": "metadata/readme.txt",
+        "uncompressed_bytes": 504
+      },
+      {
+        "name": "__MACOSX/metadata/._readme.txt",
+        "uncompressed_bytes": 222
+      },
+      {
+        "name": "metadata/segmentation_cp3.cppipe",
+        "uncompressed_bytes": 10372
+      },
+      {
+        "name": "__MACOSX/metadata/._segmentation_cp3.cppipe",
+        "uncompressed_bytes": 222
+      },
+      {
+        "name": "metadata/test.txt",
+        "uncompressed_bytes": 2900
+      },
+      {
+        "name": "__MACOSX/metadata/._test.txt",
+        "uncompressed_bytes": 222
+      },
+      {
+        "name": "metadata/training.txt",
+        "uncompressed_bytes": 5800
+      },
+      {
+        "name": "__MACOSX/metadata/._training.txt",
+        "uncompressed_bytes": 222
+      },
+      {
+        "name": "metadata/validation.txt",
+        "uncompressed_bytes": 2900
+      },
+      {
+        "name": "__MACOSX/metadata/._validation.txt",
+        "uncompressed_bytes": 222
+      },
+      {
+        "name": "__MACOSX/._metadata",
+        "uncompressed_bytes": 222
+      }
+    ],
+    "partitions": {
+      "training": {
+        "count": 100,
+        "unique_count": 100,
+        "sha256": "0e576fbbc420a7435ceeab3d0db6c8af7a5d0b42abf9d376cb29fe027e8d9f74",
+        "extension": "png",
+        "plate_count": 20
+      },
+      "validation": {
+        "count": 50,
+        "unique_count": 50,
+        "sha256": "4fca45a79803e9abda51ecfca8acb97239b8e3183385c91c6f2c9f493174aa20",
+        "extension": "png",
+        "plate_count": 20
+      },
+      "test": {
+        "count": 50,
+        "unique_count": 50,
+        "sha256": "938af88d75a723e83c1e5b5802f8cd22e0cc4b0e2be7bebaf6b48e26a7fef2ba",
+        "extension": "png",
+        "plate_count": 18
+      }
+    },
+    "partition_lists_pairwise_disjoint": true,
+    "union_count": 200,
+    "all_filename_prefixes": [
+      "IXMtest"
+    ],
+    "plate_mapping": {
+      "header_present": false,
+      "columns": [
+        "mask_filename",
+        "BBBC022_plate_number"
+      ],
+      "row_count": 200,
+      "unique_filename_count": 200,
+      "unique_plate_count": 20,
+      "mapping_covers_partition_union": true,
+      "sha256": "19f2c043f9a88a54a74428ab19308a3ae5db91379e379be5358d95ae4b15724e",
+      "csv_reader_newline": ""
+    }
+  },
+  "findings": [
+    {
+      "id": "BBBC039-01",
+      "kind": "conversion_control",
+      "confidence": "high",
+      "claim": "Pin first-channel equal-value 8-connected decoding; color cardinality and binary components are incorrect replacements.",
+      "evidence_ids": [
+        "canonical-gist-api",
+        "unet-preprocessing",
+        "unet-evaluation",
+        "skimage-label",
+        "skimage-morphology-alias"
+      ]
+    },
+    {
+      "id": "BBBC039-02",
+      "kind": "metadata_control",
+      "confidence": "high",
+      "claim": "Use explicit supplied splits and headerless plate map; all filenames begin IXMtest. Source partitions are not plate-disjoint.",
+      "evidence_ids": [
+        "bbbc039-metadata"
+      ]
+    },
+    {
+      "id": "BBBC039-03",
+      "kind": "target_preservation",
+      "confidence": "high",
+      "claim": "UNet training preprocessing removes objects below25pixels and makes boundary targets; evaluation labels original first-channel masks. Keep unfiltered instance targets.",
+      "evidence_ids": [
+        "unet-preprocessing",
+        "unet-config",
+        "unet-evaluation"
+      ]
+    },
+    {
+      "id": "BBBC039-04",
+      "kind": "intensity_preservation",
+      "confidence": "high",
+      "claim": "UNet percentile clipping and8bit PNG output are lossy training choices; retain original TIFF bytes and transformation metadata.",
+      "evidence_ids": [
+        "unet-preprocessing"
+      ]
+    },
+    {
+      "id": "BBBC039-05",
+      "kind": "lineage_limit",
+      "confidence": "high",
+      "claim": "BBBC039 derives from BBBC022 and partly overlaps BBBC038; neither source independence nor absence from MMBU is established.",
+      "evidence_ids": [
+        "bbbc039-card",
+        "bbbc022-card",
+        "bbbc038-card"
+      ]
+    },
+    {
+      "id": "BBBC039-06",
+      "kind": "permission_distinction",
+      "confidence": "high",
+      "claim": "Dataset CC0 rights evidence does not establish competition eligibility. Separate quarantined inventory is defensible; training promotion remains blocked.",
+      "evidence_ids": [
+        "bbbc039-card"
+      ]
+    }
+  ],
+  "synthetic_semantics_probes": {
+    "implementation": "Original small Python8-neighbor equal-value flood fill, executed in this audit. No source pixels used.",
+    "scope_limit": "Demonstrates contract counterexamples; not an execution of installed scikit-image or a review of the intake implementation.",
+    "cases": [
+      {
+        "name": "reused_value_disconnected",
+        "first_channel": [
+          [
+            7,
+            0,
+            7
+          ]
+        ],
+        "expected_labels": [
+          [
+            1,
+            0,
+            2
+          ]
+        ],
+        "expected_count": 2,
+        "result": "PASS"
+      },
+      {
+        "name": "touching_unequal_values",
+        "first_channel": [
+          [
+            7,
+            8
+          ]
+        ],
+        "expected_labels": [
+          [
+            1,
+            2
+          ]
+        ],
+        "expected_count": 2,
+        "result": "PASS"
+      },
+      {
+        "name": "diagonal_equal_values",
+        "first_channel": [
+          [
+            7,
+            0
+          ],
+          [
+            0,
+            7
+          ]
+        ],
+        "expected_labels": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "expected_count": 1,
+        "result": "PASS"
+      },
+      {
+        "name": "zero_background",
+        "first_channel": [
+          [
+            0,
+            0
+          ]
+        ],
+        "expected_labels": [
+          [
+            0,
+            0
+          ]
+        ],
+        "expected_count": 0,
+        "result": "PASS"
+      },
+      {
+        "name": "nonzero_values_are_not_binary",
+        "first_channel": [
+          [
+            7,
+            8
+          ],
+          [
+            0,
+            7
+          ]
+        ],
+        "expected_labels": [
+          [
+            1,
+            2
+          ],
+          [
+            0,
+            1
+          ]
+        ],
+        "expected_count": 2,
+        "result": "PASS"
+      }
+    ]
+  },
+  "licensing": {
+    "dataset": "BBBC039v1 official card states CC0.",
+    "code": "No LICENSE/COPYING file visible in the pinned unet4nuclei tree; gist contains only the decoder example. Dataset waiver should not be generalized to repository code. This is absence of a verified code license, not a finding of a rights violation.",
+    "competition_eligibility": "unresolved",
+    "source_registry_changed": false,
+    "source_approved": false
+  },
+  "limitations": [
+    "No images.zip or masks.zip downloaded by auditor. No source validation/test labels inspected.",
+    "Notebook sources read without viewing embedded outputs; no notebook executed.",
+    "No source heldout count, geometry, morphology, image quality, model performance, or dataset contamination claims.",
+    "Historical scikit-image source establishes default semantics; exact original author runtime is unpinned.",
+    "Linked bioRxiv page returned403; findings do not depend on its contents.",
+    "Source metadata lists prove filename disjointness, not perceptual uniqueness or independent acquisition.",
+    "Quarantine feasibility is a workflow judgment conditional on preserving blocked promotion and restricted label inspection; it is not MMBU permission."
+  ]
+}

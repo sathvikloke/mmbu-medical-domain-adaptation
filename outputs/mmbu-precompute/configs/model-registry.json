@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "selection_status": "provisional_not_a_model_ranking",
+  "models": [
+    {
+      "model_id": "Qwen/Qwen2.5-VL-7B-Instruct",
+      "role": "initial_compatibility_baseline",
+      "revision": "cc594898137f460bfe9f0759e9844b3ce807cfb5",
+      "private": false,
+      "gated": false,
+      "card_license": "apache-2.0",
+      "metadata_url": "https://huggingface.co/api/models/Qwen/Qwen2.5-VL-7B-Instruct",
+      "metadata_sha256": "cb108c6563113bd4644d14fac967427fb6d1921ff5ad2085ec47f25e307a9573",
+      "retrieved_at_utc": "2026-10-04T02:25:10.578428+00:00",
+      "weights_downloaded": false,
+      "runtime_verified": false,
+      "total_active_parameters_verified": false,
+      "status": "candidate_metadata_only",
+      "checkpoint_metadata_preflight": "evidence/model-metadata-preflight.json"
+    },
+    {
+      "model_id": "Qwen/Qwen3.5-9B",
+      "role": "first_challenger",
+      "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+      "private": false,
+      "gated": false,
+      "card_license": "apache-2.0",
+      "metadata_url": "https://huggingface.co/api/models/Qwen/Qwen3.5-9B",
+      "metadata_sha256": "b590b5d527c9c6625b892e2a28cd903b77766fe635226a0d89ef9d800b93cdc0",
+      "retrieved_at_utc": "2026-10-04T02:25:10.683341+00:00",
+      "weights_downloaded": false,
+      "runtime_verified": false,
+      "total_active_parameters_verified": false,
+      "status": "candidate_metadata_only",
+      "checkpoint_metadata_preflight": "evidence/model-metadata-preflight.json"
+    },
+    {
+      "model_id": "Qwen/Qwen3-VL-8B-Instruct",
+      "role": "compatibility_fallback",
+      "revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+      "private": false,
+      "gated": false,
+      "card_license": "apache-2.0",
+      "metadata_url": "https://huggingface.co/api/models/Qwen/Qwen3-VL-8B-Instruct",
+      "metadata_sha256": "0c3a6afc5c7e9d926890d085e8ab596bb0c9b4acfb33ce877ee5780aa593bc80",
+      "retrieved_at_utc": "2026-10-04T02:25:10.889843+00:00",
+      "weights_downloaded": false,
+      "runtime_verified": false,
+      "total_active_parameters_verified": false,
+      "status": "candidate_metadata_only",
+      "checkpoint_metadata_preflight": "evidence/model-metadata-preflight.json"
+    }
+  ]
+}

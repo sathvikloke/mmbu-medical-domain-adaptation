@@ -1,0 +1,73 @@
+{
+  "scope": "local macOS CPU-only checks; not Einstein worker evidence",
+  "executions": [
+    {
+      "name": "default",
+      "command": [
+        "python3",
+        "tools/einstein_preflight.py",
+        "--output",
+        "evidence/einstein-preflight-local-cpu.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"status\": \"report_written\", \"output\": \"evidence/einstein-preflight-local-cpu.json\", \"readiness_assessed\": false}\n"
+    },
+    {
+      "name": "torch_query",
+      "command": [
+        "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/work/processor-probe/.venv/bin/python",
+        "tools/einstein_preflight.py",
+        "--torch-cuda",
+        "--timeout",
+        "10",
+        "--output",
+        "evidence/einstein-preflight-local-torch-cpu.json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"status\": \"report_written\", \"output\": \"evidence/einstein-preflight-local-torch-cpu.json\", \"readiness_assessed\": false}\n"
+    },
+    {
+      "name": "tests",
+      "command": [
+        "python3",
+        "evidence/einstein-preflight-tests.py"
+      ],
+      "exit_code": 0,
+      "stdout": "test_default_report_skips_torch_import_and_never_claims_readiness (__main__.PreflightTests.test_default_report_skips_torch_import_and_never_claims_readiness) ... ok\ntest_exact_query_parses_only_gpu_name_memory_and_driver (__main__.PreflightTests.test_exact_query_parses_only_gpu_name_memory_and_driver) ... ok\ntest_existing_output_is_never_overwritten (__main__.PreflightTests.test_existing_output_is_never_overwritten) ... ok\ntest_failed_gpu_query_preserves_exit_without_raw_diagnostics (__main__.PreflightTests.test_failed_gpu_query_preserves_exit_without_raw_diagnostics) ... ok\ntest_invalid_timeout_fails_before_writing_output (__main__.PreflightTests.test_invalid_timeout_fails_before_writing_output) ... ok\ntest_malformed_gpu_output_does_not_publish_unrequested_fields (__main__.PreflightTests.test_malformed_gpu_output_does_not_publish_unrequested_fields) ... ok\ntest_missing_gpu_tool_is_explicit_without_fabricated_devices (__main__.PreflightTests.test_missing_gpu_tool_is_explicit_without_fabricated_devices) ... ok\ntest_optional_torch_query_uses_subprocess_and_validates_result (__main__.PreflightTests.test_optional_torch_query_uses_subprocess_and_validates_result) ... ok\ntest_optional_torch_timeout_and_invalid_json_remain_explicit (__main__.PreflightTests.test_optional_torch_timeout_and_invalid_json_remain_explicit) ... ok\ntest_scheduler_discovery_does_not_execute_scheduler_commands (__main__.PreflightTests.test_scheduler_discovery_does_not_execute_scheduler_commands) ... ok\ntest_timeout_is_bounded_and_does_not_become_gpu_unavailable_claim (__main__.PreflightTests.test_timeout_is_bounded_and_does_not_become_gpu_unavailable_claim) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 0.815s\n\nOK\n"
+    }
+  ],
+  "local_report_checks": {
+    "einstein-preflight-local-cpu.json": {
+      "sha256": "6131bca23c7c9996bdc42c7561c50533f64eeaabea9d9832381ce6617d164ee9",
+      "nvidia_smi": {
+        "exit_code": null,
+        "gpus": [],
+        "status": "missing_tool"
+      },
+      "torch_cuda": {
+        "status": "not_requested"
+      },
+      "readiness_assessed": false,
+      "allocation_verified": false
+    },
+    "einstein-preflight-local-torch-cpu.json": {
+      "sha256": "88a96ca7873eeb63be8f477de5e5047ed2bdd37dacd707cec286edf045f79f15",
+      "nvidia_smi": {
+        "exit_code": null,
+        "gpus": [],
+        "status": "missing_tool"
+      },
+      "torch_cuda": {
+        "cuda_available": false,
+        "cuda_runtime_version": null,
+        "device_count": 0,
+        "devices": [],
+        "exit_code": 0,
+        "status": "ok",
+        "stderr_present": false
+      },
+      "readiness_assessed": false,
+      "allocation_verified": false
+    }
+  }
+}

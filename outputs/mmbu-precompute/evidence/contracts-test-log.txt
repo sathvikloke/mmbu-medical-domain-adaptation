@@ -1,0 +1,366 @@
+CONTRACT TEST EVIDENCE: RED
+2026-10-04T02:24:51.631148+00:00
+cwd: /Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute
+command: PYTHONPATH=src python3 -m unittest discover -s tests -p test_contracts.py -v
+python: 3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]
+exit_code: 1
+
+test_dimensions_must_be_positive_finite_numbers_not_booleans (test_contracts.GeometryTests.test_dimensions_must_be_positive_finite_numbers_not_booleans) ... FAIL
+test_invalid_boxes_are_rejected_without_clamping (test_contracts.GeometryTests.test_invalid_boxes_are_rejected_without_clamping) ... FAIL
+test_iou_identity_touching_and_disjoint_boxes (test_contracts.GeometryTests.test_iou_identity_touching_and_disjoint_boxes) ... FAIL
+test_iou_of_large_finite_boxes_avoids_area_overflow (test_contracts.GeometryTests.test_iou_of_large_finite_boxes_avoids_area_overflow) ... FAIL
+test_iou_rejects_invalid_boxes_even_when_they_would_not_overlap (test_contracts.GeometryTests.test_iou_rejects_invalid_boxes_even_when_they_would_not_overlap) ... FAIL
+test_iou_uses_xywh_and_hand_derived_half_threshold (test_contracts.GeometryTests.test_iou_uses_xywh_and_hand_derived_half_threshold) ... FAIL
+test_valid_pixel_boxes_are_preserved_without_rounding (test_contracts.GeometryTests.test_valid_pixel_boxes_are_preserved_without_rounding) ... FAIL
+test_builders_do_not_mutate_record_or_reuse_output_dict (test_contracts.InputContractTests.test_builders_do_not_mutate_record_or_reuse_output_dict) ... FAIL
+test_context_does_not_require_task_question_or_reference_metadata (test_contracts.InputContractTests.test_context_does_not_require_task_question_or_reference_metadata) ... FAIL
+test_context_is_invariant_to_question_answer_options_and_previous_state (test_contracts.InputContractTests.test_context_is_invariant_to_question_answer_options_and_previous_state) ... FAIL
+test_context_rejects_duplicate_unknown_and_empty_fields (test_contracts.InputContractTests.test_context_rejects_duplicate_unknown_and_empty_fields) ... FAIL
+test_context_requested_fields_are_fresh_and_keep_caller_order (test_contracts.InputContractTests.test_context_requested_fields_are_fresh_and_keep_caller_order) ... FAIL
+test_judge_deep_copies_nested_references (test_contracts.InputContractTests.test_judge_deep_copies_nested_references) ... FAIL
+test_judge_handles_optional_options_context_but_requires_answer_and_raw_text (test_contracts.InputContractTests.test_judge_handles_optional_options_context_but_requires_answer_and_raw_text) ... FAIL
+test_judge_receives_reference_data_but_no_history_or_model_prompt (test_contracts.InputContractTests.test_judge_receives_reference_data_but_no_history_or_model_prompt) ... FAIL
+test_model_builders_reject_missing_or_empty_caller_prompt (test_contracts.InputContractTests.test_model_builders_reject_missing_or_empty_caller_prompt) ... FAIL
+test_model_builders_validate_only_their_required_input_fields (test_contracts.InputContractTests.test_model_builders_validate_only_their_required_input_fields) ... FAIL
+test_task_contains_only_current_question_image_and_caller_prompt (test_contracts.InputContractTests.test_task_contains_only_current_question_image_and_caller_prompt) ... FAIL
+test_brief_does_not_extract_or_repair_json (test_contracts.ParserTests.test_brief_does_not_extract_or_repair_json) ... FAIL
+test_brief_preserves_answer_rationale_and_raw_without_semantic_grading (test_contracts.ParserTests.test_brief_preserves_answer_rationale_and_raw_without_semantic_grading) ... FAIL
+test_brief_rationale_is_optional_in_engineering_convention (test_contracts.ParserTests.test_brief_rationale_is_optional_in_engineering_convention) ... FAIL
+test_configuration_errors_raise_instead_of_becoming_model_failures (test_contracts.ParserTests.test_configuration_errors_raise_instead_of_becoming_model_failures) ... FAIL
+test_duplicate_json_keys_are_rejected_including_nested_keys (test_contracts.ParserTests.test_duplicate_json_keys_are_rejected_including_nested_keys) ... FAIL
+test_missing_empty_or_null_answer_is_invalid (test_contracts.ParserTests.test_missing_empty_or_null_answer_is_invalid) ... FAIL
+test_multiple_json_objects_are_rejected_in_both_profiles (test_contracts.ParserTests.test_multiple_json_objects_are_rejected_in_both_profiles) ... FAIL
+test_nonfinite_constants_and_overflowing_json_numbers_are_rejected (test_contracts.ParserTests.test_nonfinite_constants_and_overflowing_json_numbers_are_rejected) ... FAIL
+test_nonobject_top_level_boolean_or_object_answer_rejected (test_contracts.ParserTests.test_nonobject_top_level_boolean_or_object_answer_rejected) ... FAIL
+test_public_card_accepts_json_only (test_contracts.ParserTests.test_public_card_accepts_json_only) ... FAIL
+test_public_card_allows_rationale_prefix_and_preserves_boxes (test_contracts.ParserTests.test_public_card_allows_rationale_prefix_and_preserves_boxes) ... FAIL
+test_public_card_does_not_accept_prose_after_or_multiline_final_object (test_contracts.ParserTests.test_public_card_does_not_accept_prose_after_or_multiline_final_object) ... FAIL
+test_unknown_keys_and_nonstring_rationale_are_invalid (test_contracts.ParserTests.test_unknown_keys_and_nonstring_rationale_are_invalid) ... FAIL
+
+======================================================================
+FAIL: test_dimensions_must_be_positive_finite_numbers_not_booleans (test_contracts.GeometryTests.test_dimensions_must_be_positive_finite_numbers_not_booleans)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_invalid_boxes_are_rejected_without_clamping (test_contracts.GeometryTests.test_invalid_boxes_are_rejected_without_clamping)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_iou_identity_touching_and_disjoint_boxes (test_contracts.GeometryTests.test_iou_identity_touching_and_disjoint_boxes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_iou_of_large_finite_boxes_avoids_area_overflow (test_contracts.GeometryTests.test_iou_of_large_finite_boxes_avoids_area_overflow)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_iou_rejects_invalid_boxes_even_when_they_would_not_overlap (test_contracts.GeometryTests.test_iou_rejects_invalid_boxes_even_when_they_would_not_overlap)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_iou_uses_xywh_and_hand_derived_half_threshold (test_contracts.GeometryTests.test_iou_uses_xywh_and_hand_derived_half_threshold)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_valid_pixel_boxes_are_preserved_without_rounding (test_contracts.GeometryTests.test_valid_pixel_boxes_are_preserved_without_rounding)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_builders_do_not_mutate_record_or_reuse_output_dict (test_contracts.InputContractTests.test_builders_do_not_mutate_record_or_reuse_output_dict)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_context_does_not_require_task_question_or_reference_metadata (test_contracts.InputContractTests.test_context_does_not_require_task_question_or_reference_metadata)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_context_is_invariant_to_question_answer_options_and_previous_state (test_contracts.InputContractTests.test_context_is_invariant_to_question_answer_options_and_previous_state)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_context_rejects_duplicate_unknown_and_empty_fields (test_contracts.InputContractTests.test_context_rejects_duplicate_unknown_and_empty_fields)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_context_requested_fields_are_fresh_and_keep_caller_order (test_contracts.InputContractTests.test_context_requested_fields_are_fresh_and_keep_caller_order)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_judge_deep_copies_nested_references (test_contracts.InputContractTests.test_judge_deep_copies_nested_references)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_judge_handles_optional_options_context_but_requires_answer_and_raw_text (test_contracts.InputContractTests.test_judge_handles_optional_options_context_but_requires_answer_and_raw_text)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_judge_receives_reference_data_but_no_history_or_model_prompt (test_contracts.InputContractTests.test_judge_receives_reference_data_but_no_history_or_model_prompt)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_model_builders_reject_missing_or_empty_caller_prompt (test_contracts.InputContractTests.test_model_builders_reject_missing_or_empty_caller_prompt)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_model_builders_validate_only_their_required_input_fields (test_contracts.InputContractTests.test_model_builders_validate_only_their_required_input_fields)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_task_contains_only_current_question_image_and_caller_prompt (test_contracts.InputContractTests.test_task_contains_only_current_question_image_and_caller_prompt)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_brief_does_not_extract_or_repair_json (test_contracts.ParserTests.test_brief_does_not_extract_or_repair_json)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_brief_preserves_answer_rationale_and_raw_without_semantic_grading (test_contracts.ParserTests.test_brief_preserves_answer_rationale_and_raw_without_semantic_grading)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_brief_rationale_is_optional_in_engineering_convention (test_contracts.ParserTests.test_brief_rationale_is_optional_in_engineering_convention)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_configuration_errors_raise_instead_of_becoming_model_failures (test_contracts.ParserTests.test_configuration_errors_raise_instead_of_becoming_model_failures)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_duplicate_json_keys_are_rejected_including_nested_keys (test_contracts.ParserTests.test_duplicate_json_keys_are_rejected_including_nested_keys)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_missing_empty_or_null_answer_is_invalid (test_contracts.ParserTests.test_missing_empty_or_null_answer_is_invalid)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_multiple_json_objects_are_rejected_in_both_profiles (test_contracts.ParserTests.test_multiple_json_objects_are_rejected_in_both_profiles)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_nonfinite_constants_and_overflowing_json_numbers_are_rejected (test_contracts.ParserTests.test_nonfinite_constants_and_overflowing_json_numbers_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_nonobject_top_level_boolean_or_object_answer_rejected (test_contracts.ParserTests.test_nonobject_top_level_boolean_or_object_answer_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_public_card_accepts_json_only (test_contracts.ParserTests.test_public_card_accepts_json_only)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_public_card_allows_rationale_prefix_and_preserves_boxes (test_contracts.ParserTests.test_public_card_allows_rationale_prefix_and_preserves_boxes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_public_card_does_not_accept_prose_after_or_multiline_final_object (test_contracts.ParserTests.test_public_card_does_not_accept_prose_after_or_multiline_final_object)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+======================================================================
+FAIL: test_unknown_keys_and_nonstring_rationale_are_invalid (test_contracts.ParserTests.test_unknown_keys_and_nonstring_rationale_are_invalid)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_contracts.py", line 19, in setUp
+    self.assertIsNotNone(contracts, "The input/geometry contract module is not implemented yet")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : The input/geometry contract module is not implemented yet
+
+----------------------------------------------------------------------
+Ran 31 tests in 0.002s
+
+FAILED (failures=31)
+
+CONTRACT TEST EVIDENCE: IMPLEMENTATION CHECK
+2026-10-04T02:27:26.288476+00:00
+cwd: /Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute
+command: PYTHONPATH=src python3 -m unittest discover -s tests -p test_contracts.py -v
+python: 3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]
+exit_code: 0
+
+test_dimensions_must_be_positive_finite_numbers_not_booleans (test_contracts.GeometryTests.test_dimensions_must_be_positive_finite_numbers_not_booleans) ... ok
+test_invalid_boxes_are_rejected_without_clamping (test_contracts.GeometryTests.test_invalid_boxes_are_rejected_without_clamping) ... ok
+test_iou_identity_touching_and_disjoint_boxes (test_contracts.GeometryTests.test_iou_identity_touching_and_disjoint_boxes) ... ok
+test_iou_of_large_finite_boxes_avoids_area_overflow (test_contracts.GeometryTests.test_iou_of_large_finite_boxes_avoids_area_overflow) ... ok
+test_iou_rejects_invalid_boxes_even_when_they_would_not_overlap (test_contracts.GeometryTests.test_iou_rejects_invalid_boxes_even_when_they_would_not_overlap) ... ok
+test_iou_uses_xywh_and_hand_derived_half_threshold (test_contracts.GeometryTests.test_iou_uses_xywh_and_hand_derived_half_threshold) ... ok
+test_valid_pixel_boxes_are_preserved_without_rounding (test_contracts.GeometryTests.test_valid_pixel_boxes_are_preserved_without_rounding) ... ok
+test_builders_do_not_mutate_record_or_reuse_output_dict (test_contracts.InputContractTests.test_builders_do_not_mutate_record_or_reuse_output_dict) ... ok
+test_context_does_not_require_task_question_or_reference_metadata (test_contracts.InputContractTests.test_context_does_not_require_task_question_or_reference_metadata) ... ok
+test_context_is_invariant_to_question_answer_options_and_previous_state (test_contracts.InputContractTests.test_context_is_invariant_to_question_answer_options_and_previous_state) ... ok
+test_context_rejects_duplicate_unknown_and_empty_fields (test_contracts.InputContractTests.test_context_rejects_duplicate_unknown_and_empty_fields) ... ok
+test_context_requested_fields_are_fresh_and_keep_caller_order (test_contracts.InputContractTests.test_context_requested_fields_are_fresh_and_keep_caller_order) ... ok
+test_judge_deep_copies_nested_references (test_contracts.InputContractTests.test_judge_deep_copies_nested_references) ... ok
+test_judge_handles_optional_options_context_but_requires_answer_and_raw_text (test_contracts.InputContractTests.test_judge_handles_optional_options_context_but_requires_answer_and_raw_text) ... ok
+test_judge_receives_reference_data_but_no_history_or_model_prompt (test_contracts.InputContractTests.test_judge_receives_reference_data_but_no_history_or_model_prompt) ... ok
+test_model_builders_reject_missing_or_empty_caller_prompt (test_contracts.InputContractTests.test_model_builders_reject_missing_or_empty_caller_prompt) ... ok
+test_model_builders_validate_only_their_required_input_fields (test_contracts.InputContractTests.test_model_builders_validate_only_their_required_input_fields) ... ok
+test_task_contains_only_current_question_image_and_caller_prompt (test_contracts.InputContractTests.test_task_contains_only_current_question_image_and_caller_prompt) ... ok
+test_brief_does_not_extract_or_repair_json (test_contracts.ParserTests.test_brief_does_not_extract_or_repair_json) ... ok
+test_brief_preserves_answer_rationale_and_raw_without_semantic_grading (test_contracts.ParserTests.test_brief_preserves_answer_rationale_and_raw_without_semantic_grading) ... ok
+test_brief_rationale_is_optional_in_engineering_convention (test_contracts.ParserTests.test_brief_rationale_is_optional_in_engineering_convention) ... ok
+test_configuration_errors_raise_instead_of_becoming_model_failures (test_contracts.ParserTests.test_configuration_errors_raise_instead_of_becoming_model_failures) ... ok
+test_duplicate_json_keys_are_rejected_including_nested_keys (test_contracts.ParserTests.test_duplicate_json_keys_are_rejected_including_nested_keys) ... ok
+test_missing_empty_or_null_answer_is_invalid (test_contracts.ParserTests.test_missing_empty_or_null_answer_is_invalid) ... ok
+test_multiple_json_objects_are_rejected_in_both_profiles (test_contracts.ParserTests.test_multiple_json_objects_are_rejected_in_both_profiles) ... ok
+test_nonfinite_constants_and_overflowing_json_numbers_are_rejected (test_contracts.ParserTests.test_nonfinite_constants_and_overflowing_json_numbers_are_rejected) ... ok
+test_nonobject_top_level_boolean_or_object_answer_rejected (test_contracts.ParserTests.test_nonobject_top_level_boolean_or_object_answer_rejected) ... ok
+test_public_card_accepts_json_only (test_contracts.ParserTests.test_public_card_accepts_json_only) ... ok
+test_public_card_allows_rationale_prefix_and_preserves_boxes (test_contracts.ParserTests.test_public_card_allows_rationale_prefix_and_preserves_boxes) ... ok
+test_public_card_does_not_accept_prose_after_or_multiline_final_object (test_contracts.ParserTests.test_public_card_does_not_accept_prose_after_or_multiline_final_object) ... ok
+test_unknown_keys_and_nonstring_rationale_are_invalid (test_contracts.ParserTests.test_unknown_keys_and_nonstring_rationale_are_invalid) ... ok
+
+----------------------------------------------------------------------
+Ran 31 tests in 0.001s
+
+OK

@@ -1,0 +1,58 @@
+test_approved_engineering_intake_can_get_initial_training_split (test_cli.CliTests.test_approved_engineering_intake_can_get_initial_training_split) ... FAIL
+test_arithmetic_command_retains_failed_predictions (test_cli.CliTests.test_arithmetic_command_retains_failed_predictions) ... ok
+test_demo_is_engineering_only_and_does_not_train (test_cli.CliTests.test_demo_is_engineering_only_and_does_not_train) ... ok
+test_dev_only_split_does_not_require_training_permission (test_cli.CliTests.test_dev_only_split_does_not_require_training_permission) ... ok
+test_duplicate_json_keys_and_nonfinite_values_fail_closed (test_cli.CliTests.test_duplicate_json_keys_and_nonfinite_values_fail_closed) ... ok
+test_missing_input_is_actionable_nonzero_without_traceback (test_cli.CliTests.test_missing_input_is_actionable_nonzero_without_traceback) ... ok
+test_split_refuses_to_overwrite_existing_manifest (test_cli.CliTests.test_split_refuses_to_overwrite_existing_manifest) ... ok
+test_status_keeps_protocol_and_gpu_unresolved (test_cli.CliTests.test_status_keeps_protocol_and_gpu_unresolved) ... ok
+test_training_preflight_rejects_a_confirmation_record (test_cli.CliTests.test_training_preflight_rejects_a_confirmation_record) ... ok
+test_unapproved_real_source_returns_structured_failure (test_cli.CliTests.test_unapproved_real_source_returns_structured_failure) ... ok
+
+======================================================================
+FAIL: test_approved_engineering_intake_can_get_initial_training_split (test_cli.CliTests.test_approved_engineering_intake_can_get_initial_training_split)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_cli.py", line 116, in test_approved_engineering_intake_can_get_initial_training_split
+    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 2 != 0 : {
+  "counts": {
+    "by_split": {
+      "engineering": 1
+    },
+    "by_task": {
+      "global_classification": 1
+    },
+    "components": 1,
+    "files_checked": 0,
+    "records": 1,
+    "sources": 1
+  },
+  "errors": [
+    {
+      "code": "purpose_split_mismatch",
+      "message": "Operational purpose must match the record's existing split.",
+      "purpose": "train",
+      "record_id": "a",
+      "record_index": 0
+    }
+  ],
+  "ok": false,
+  "warnings": [
+    {
+      "code": "files_unchecked",
+      "message": "No image_root supplied: file existence and SHA-256 were not checked."
+    },
+    {
+      "code": "semantic_checks_not_performed",
+      "message": "Byte hashes do not establish image decoding, coordinate-frame correctness, label validity, visual support, near-duplicate absence, correct grouping, or legal/official authorization."
+    }
+  ]
+}
+
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.503s
+
+FAILED (failures=1)

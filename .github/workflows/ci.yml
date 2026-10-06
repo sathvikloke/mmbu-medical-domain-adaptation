@@ -1,0 +1,62 @@
+name: Offline preparation checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  core:
+    name: Core / Python ${{ matrix.python }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.12", "3.14"]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, resolved 2026-10-05
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5, resolved 2026-10-05
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Create isolated standard-library environment
+        run: python -m venv .venv-ci
+      - name: Verify historical evidence
+        run: .venv-ci/bin/python tools/team.py verify-evidence
+      - name: Verify maintained local documentation links
+        run: .venv-ci/bin/python tools/team.py verify-links
+      - name: Run package and team tooling tests
+        run: .venv-ci/bin/python tools/team.py test
+      - name: Run offline toy smoke commands
+        run: .venv-ci/bin/python tools/team.py smoke
+
+  images:
+    name: Optional images / Python 3.12
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, resolved 2026-10-05
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5, resolved 2026-10-05
+        with:
+          python-version: "3.12"
+      - name: Create isolated image environment
+        run: python -m venv .venv-ci
+      - name: Install explicitly pinned optional image dependency
+        run: .venv-ci/bin/python -m pip install "Pillow==12.3.0"
+      - name: Run package and team tooling tests with images required
+        run: .venv-ci/bin/python tools/team.py test --images
+

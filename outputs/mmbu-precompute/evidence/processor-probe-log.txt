@@ -1,0 +1,6 @@
+Qwen/Qwen2.5-VL-7B-Instruct: passed
+Qwen/Qwen3.5-9B: passed
+Qwen/Qwen3-VL-8B-Instruct: passed
+[transformers] The channel dimension is ambiguous. Got image shape torch.Size([3, 512, 1]). Assuming channels are the first dimension. Use the [input_data_format](https://huggingface.co/docs/transformers/main/internal/image_processing_utils#transformers.image_transforms.rescale.input_data_format) parameter to assign the channel dimension.
+[transformers] The channel dimension is ambiguous. Got image shape torch.Size([3, 512, 1]). Assuming channels are the first dimension. Use the [input_data_format](https://huggingface.co/docs/transformers/main/internal/image_processing_utils#transformers.image_transforms.rescale.input_data_format) parameter to assign the channel dimension.
+[transformers] The channel dimension is ambiguous. Got image shape torch.Size([3, 512, 1]). Assuming channels are the first dimension. Use the [input_data_format](https://huggingface.co/docs/transformers/main/internal/image_processing_utils#transformers.image_transforms.rescale.input_data_format) parameter to assign the channel dimension.

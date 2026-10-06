@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "scope": "Private team publication, 2026-10-05. Original user workspace files were not modified. Original historical receipt hashes describe originals; exported hashes describe shared files.",
+  "transformations": [
+    {
+      "path": "outputs/mmbu-precompute/evidence/source-expansion.json",
+      "original_bytes": 40023,
+      "original_sha256": "b3d1f700f433dc8dc8d3ec02cc5acab4e9bc25c8842fe937298a1813b641498b",
+      "published_bytes": 39613,
+      "published_sha256": "c103652682b2ad3d02ae907318f3a28888a9e3629eec88b808e5ff074e2e8aa8",
+      "reason": "Removed five Set-Cookie response-header values, including four unexpired opaque Zenodo session handles; research content unchanged."
+    },
+    {
+      "path": "work/source-expansion/retrieval-ledger.json",
+      "original_bytes": 23629,
+      "original_sha256": "70cefcac8f861196896f801b6e629e449d99ca5898a519828bf97c9c5785e1e0",
+      "published_bytes": 23219,
+      "published_sha256": "8488c0c15cae988d94d41584ab8981d0b5388695fe340b5897c94205599abd4c",
+      "reason": "Removed five Set-Cookie response-header values, including four unexpired opaque Zenodo session handles; research content unchanged."
+    },
+    {
+      "path": "outputs/mmbu-precompute/evidence/bundle-manifest.json",
+      "original_bytes": 42572,
+      "original_sha256": "51db3f2af0177df49a42fda0a942d9e68e5807b8a1d8d61ed2bd0805f1c93f5d",
+      "published_bytes": 42572,
+      "published_sha256": "c5761ff316edc0ff9dc43017d42ef38f0b619cdead53f7c2e13a1ed1b38c51e8",
+      "reason": "Updated only the source-expansion.json content hash/size after transport-cookie redaction. Original manifest retained at research/original-bundle-manifest-v0.3.json."
+    },
+    {
+      "path": "outputs/mmbu-precompute-v0.3.zip",
+      "original_bytes": 1025222,
+      "original_sha256": "5c6b137f889ea3662fbe9a4934bad2884f67a3c5e51627f7cabdec40281398d4",
+      "published_bytes": 1042151,
+      "published_sha256": "ab872f5908287e8b37f74c35673165273469101881a2f98cb37a80e262db75ba",
+      "reason": "Repacked v0.3 with only its source-expansion.json and bundle-manifest.json transformed; other members unchanged. Historical original ZIP receipt retained."
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+name: Research experiment proposal
+description: Define a reviewable experiment before any data or model execution.
+title: "experiment: "
+body:
+  - type: markdown
+    attributes:
+      value: "A proposal is not data approval, compute authorization, or a result. Distinguish observed evidence from assumptions."
+  - type: textarea
+    id: hypothesis
+    attributes:
+      label: Question and falsifiable hypothesis
+      description: State the decision this experiment would inform and evidence that would reject the hypothesis.
+    validations:
+      required: true
+  - type: textarea
+    id: protocol
+    attributes:
+      label: Protocol, baseline, and comparison
+      description: Specify base and candidate identities, matched resources, task/context treatment, metrics, analysis, and stopping criteria.
+    validations:
+      required: true
+  - type: textarea
+    id: data
+    attributes:
+      label: Data and split prerequisites
+      description: Record source provenance, rights review, clinical-label review, lineage, split and leakage checks, and unresolved approvals.
+    validations:
+      required: true
+  - type: textarea
+    id: execution
+    attributes:
+      label: Compute, owner, and execution prerequisites
+      description: Name the owner and reviewer, estimated cost, required environment, authorization, and unresolved organizer decisions.
+    validations:
+      required: true
+  - type: textarea
+    id: artifacts
+    attributes:
+      label: Evidence to retain and acceptance criteria
+      description: Specify immutable identities, commands, logs, seeds, failure records, output locations, and claims the evidence could support.
+    validations:
+      required: true
+

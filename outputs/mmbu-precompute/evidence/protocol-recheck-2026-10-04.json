@@ -1,0 +1,42 @@
+[
+  {
+    "url": "https://akiranishii.github.io/mmbu-challenge/",
+    "path": "work/protocol-recheck-2026-10-04/challenge.html",
+    "retrieved_at_utc": "2026-10-04T18:12:57.322033+00:00",
+    "status": 200,
+    "final_url": "https://akiranishii.github.io/mmbu-challenge/",
+    "bytes": 58959,
+    "sha256": "6f70738ac6788ad473494a4fd5744243d0f0dfc58478a052ae197efbaae38831"
+  },
+  {
+    "url": "https://huggingface.co/api/datasets/mmbu/mmbu-public",
+    "path": "work/protocol-recheck-2026-10-04/public-api.json",
+    "retrieved_at_utc": "2026-10-04T18:12:57.522088+00:00",
+    "status": 200,
+    "final_url": "https://huggingface.co/api/datasets/mmbu/mmbu-public",
+    "bytes": 190269,
+    "sha256": "23200375b90d6befe6e53af60bae77a712de5bab8b88a47628fd97eae33d6ea7",
+    "revision": "069da7bbd6201a867039b548f3c02e103711ed4a",
+    "lastModified": "2026-10-03T20:33:16.000Z",
+    "gated": "auto"
+  },
+  {
+    "url": "https://huggingface.co/datasets/mmbu/mmbu-public",
+    "path": "work/protocol-recheck-2026-10-04/public-card.html",
+    "retrieved_at_utc": "2026-10-04T18:12:57.727323+00:00",
+    "status": 200,
+    "final_url": "https://huggingface.co/datasets/mmbu/mmbu-public",
+    "bytes": 138827,
+    "sha256": "33b3d27382292aa52542d2882053fa12e95aa21f1f61d5055dd694b9f861e1d8"
+  },
+  {
+    "url": "https://api.github.com/repos/akiranishii/mmbu-challenge/issues?state=open&per_page=100",
+    "path": "work/protocol-recheck-2026-10-04/github-issues.json",
+    "retrieved_at_utc": "2026-10-04T18:12:57.989623+00:00",
+    "status": 200,
+    "final_url": "https://api.github.com/repos/akiranishii/mmbu-challenge/issues?state=open&per_page=100",
+    "bytes": 2,
+    "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "open_issue_count_first_page": 0
+  }
+]

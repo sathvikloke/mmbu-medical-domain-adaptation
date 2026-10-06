@@ -1,0 +1,39 @@
+Metrics shared-source weight division: RED
+2026-10-04T05:06:19.136226+00:00
+command: PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python3 -m unittest discover -s tests -p test_metrics.py -v
+python: 3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]
+exit_code: 1
+
+test_bootstrap_parameters_are_validated (test_metrics.MetricTests.test_bootstrap_parameters_are_validated) ... ok
+test_bootstrap_preserves_tiny_source_mass_before_weight_division (test_metrics.MetricTests.test_bootstrap_preserves_tiny_source_mass_before_weight_division) ... FAIL
+test_cluster_bootstrap_keeps_correlated_rows_together (test_metrics.MetricTests.test_cluster_bootstrap_keeps_correlated_rows_together) ... ok
+test_counting_shares_global_group_and_sources_are_balanced (test_metrics.MetricTests.test_counting_shares_global_group_and_sources_are_balanced) ... ok
+test_four_task_proxy_cannot_hide_missing_groups (test_metrics.MetricTests.test_four_task_proxy_cannot_hide_missing_groups) ... ok
+test_huge_integer_grade_has_a_validation_error (test_metrics.MetricTests.test_huge_integer_grade_has_a_validation_error) ... ok
+test_invalid_grades_and_duplicate_ids_are_rejected (test_metrics.MetricTests.test_invalid_grades_and_duplicate_ids_are_rejected) ... ok
+test_large_finite_weights_are_normalized_without_overflow (test_metrics.MetricTests.test_large_finite_weights_are_normalized_without_overflow) ... ok
+test_metadata_is_averaged_within_example_before_examples (test_metrics.MetricTests.test_metadata_is_averaged_within_example_before_examples) ... ok
+test_missing_grades_are_not_silently_dropped (test_metrics.MetricTests.test_missing_grades_are_not_silently_dropped) ... ok
+test_negative_adaptation_is_not_clipped (test_metrics.MetricTests.test_negative_adaptation_is_not_clipped) ... ok
+test_one_group_per_source_cannot_produce_a_precision_claim (test_metrics.MetricTests.test_one_group_per_source_cannot_produce_a_precision_claim) ... ok
+test_repeated_image_rows_are_not_deduplicated (test_metrics.MetricTests.test_repeated_image_rows_are_not_deduplicated) ... ok
+test_unknown_or_incomplete_task_weights_fail (test_metrics.MetricTests.test_unknown_or_incomplete_task_weights_fail) ... ok
+test_unknown_zero_metadata_policy_requires_explicit_resolution (test_metrics.MetricTests.test_unknown_zero_metadata_policy_requires_explicit_resolution) ... ok
+test_weighted_aggregates_precede_nonlinear_product (test_metrics.MetricTests.test_weighted_aggregates_precede_nonlinear_product) ... ok
+test_weights_require_one_finite_positive_entry_per_row (test_metrics.MetricTests.test_weights_require_one_finite_positive_entry_per_row) ... ok
+
+======================================================================
+FAIL: test_bootstrap_preserves_tiny_source_mass_before_weight_division (test_metrics.MetricTests.test_bootstrap_preserves_tiny_source_mass_before_weight_division)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_metrics.py", line 98, in test_bootstrap_preserves_tiny_source_mass_before_weight_division
+    self.assertTrue(math.isclose(value, 2e-201, rel_tol=1e-14, abs_tol=0.0),
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                    f"Expected preserved tiny source contribution, got {value!r}")
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : Expected preserved tiny source contribution, got 0.0
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.008s
+
+FAILED (failures=1)

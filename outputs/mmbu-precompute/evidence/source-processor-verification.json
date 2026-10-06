@@ -1,0 +1,37 @@
+{
+  "kind": "source_processor_author_verification",
+  "created_at_utc": "2026-10-04T20:27:50.223541+00:00",
+  "status": "passed",
+  "checks": {
+    "final_status_passed": true,
+    "full_replay_equal_except_timestamp": true,
+    "earlier_model_observations_unchanged": true,
+    "144_unique_successful_cases": true,
+    "every_case_deterministic_finite_cpu_and_grid_checked": true,
+    "no_network_attempts": true,
+    "inputs_unchanged": true,
+    "source_pending_unapproved": true,
+    "reported_code_hashes_match_disk": true,
+    "registry_snapshot_hash_matches": true,
+    "focused_tests_passed": true
+  },
+  "full_run_exit_code": 0,
+  "full_replay_exit_code": 0,
+  "focused_tests_exit_code": 0,
+  "focused_tests_count": 10,
+  "cases_per_full_run": 144,
+  "native_processor_calls_per_full_run": 288,
+  "manifest_sha256": "fa6e591fea3b1cec61c87e0eef87959028c88afb4f6904c144c5bee666fed327",
+  "artifacts": {
+    "tools/source_processor_probe.py": "6aa20bb459d7993115c98fd8a2cd3d37adc74b9cbba759242dcdc30505db33dd",
+    "docs/source-processor-probe.md": "8db1a61208ab3ac955d509f84f25dc62e453379fed2453e922425c4564b92694",
+    "evidence/source-processor-registry.json": "bf72bacd517bd614a2af07d8576a4e7d95cbf38acf930096d75edb5e16e43c91",
+    "evidence/source-processor-final-v2.json": "b7ece4644d4da1639877400de815cbc4f8c3e934cb2e54b187a039d17e14914e",
+    "evidence/source-processor-final-v2-log.txt": "1737556fe91a98345ac9dda546b814c482274c6515e766e087aba6e2e36f23d0",
+    "evidence/source-processor-replay-v2.json": "2b04790721099827b1fe694204cd276f93fd795616c010cd53dc59e489269895",
+    "evidence/source-processor-replay-v2-log.txt": "1737556fe91a98345ac9dda546b814c482274c6515e766e087aba6e2e36f23d0",
+    "evidence/source-processor-tests.py": "2c6f620bfcc5fcab0ba903643e40d5562fc92f1e2efe974d82950e8694db1aad",
+    "evidence/source-processor-tests-log.txt": "df1496e0f7bc143324a2e1873b883ba5e45816ab5dda1b564ad94715172d7322"
+  },
+  "scope": "Author verification, separate from the independent reviewer. Input engineering only; no model or data-use approval."
+}

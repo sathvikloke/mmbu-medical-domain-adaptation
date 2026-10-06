@@ -1,0 +1,86 @@
+{
+  "allocation_verified": false,
+  "created_at_utc": "2026-10-04T18:10:49.419772+00:00",
+  "interpretation": "Observations from this process only; no worker allocation, usable GPU memory, GPU hours, model fit, or training readiness inferred.",
+  "kind": "einstein_read_only_worker_diagnostic",
+  "nvidia_smi": {
+    "exit_code": null,
+    "gpus": [],
+    "status": "missing_tool"
+  },
+  "packages": {
+    "Pillow": {
+      "status": "installed",
+      "version": "12.3.0"
+    },
+    "accelerate": {
+      "status": "missing",
+      "version": null
+    },
+    "bitsandbytes": {
+      "status": "missing",
+      "version": null
+    },
+    "numpy": {
+      "status": "installed",
+      "version": "2.5.3"
+    },
+    "peft": {
+      "status": "missing",
+      "version": null
+    },
+    "safetensors": {
+      "status": "installed",
+      "version": "0.8.0"
+    },
+    "tokenizers": {
+      "status": "installed",
+      "version": "0.23.2"
+    },
+    "torch": {
+      "status": "installed",
+      "version": "2.14.1"
+    },
+    "torchvision": {
+      "status": "installed",
+      "version": "0.29.1"
+    },
+    "transformers": {
+      "status": "installed",
+      "version": "5.18.0"
+    }
+  },
+  "platform": {
+    "machine": "arm64",
+    "release": "27.0.0",
+    "system": "Darwin"
+  },
+  "python": {
+    "implementation": "CPython",
+    "version": "3.12.14"
+  },
+  "query_timeout_seconds": 10.0,
+  "readiness_assessed": false,
+  "scheduler_executables": {
+    "bjobs": false,
+    "bsub": false,
+    "qstat": false,
+    "qsub": false,
+    "salloc": false,
+    "sbatch": false,
+    "sinfo": false,
+    "squeue": false,
+    "srun": false
+  },
+  "schema_version": 1,
+  "script_sha256": "7290386c4ee7893a6112f0c01149912b8faeef3221b330614d79e1fe152e21f2",
+  "torch_cuda": {
+    "cuda_available": false,
+    "cuda_runtime_version": null,
+    "device_count": 0,
+    "devices": [],
+    "exit_code": 0,
+    "status": "ok",
+    "stderr_present": false
+  }
+}

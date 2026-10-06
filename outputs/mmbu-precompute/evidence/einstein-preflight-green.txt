@@ -1,0 +1,20 @@
+Python: 3.14.7
+Command: PYTHONDONTWRITEBYTECODE=1 python3 evidence/einstein-preflight-tests.py
+test_default_report_skips_torch_import_and_never_claims_readiness (__main__.PreflightTests.test_default_report_skips_torch_import_and_never_claims_readiness) ... ok
+test_exact_query_parses_only_gpu_name_memory_and_driver (__main__.PreflightTests.test_exact_query_parses_only_gpu_name_memory_and_driver) ... ok
+test_existing_output_is_never_overwritten (__main__.PreflightTests.test_existing_output_is_never_overwritten) ... ok
+test_failed_gpu_query_preserves_exit_without_raw_diagnostics (__main__.PreflightTests.test_failed_gpu_query_preserves_exit_without_raw_diagnostics) ... ok
+test_invalid_timeout_fails_before_writing_output (__main__.PreflightTests.test_invalid_timeout_fails_before_writing_output) ... ok
+test_malformed_gpu_output_does_not_publish_unrequested_fields (__main__.PreflightTests.test_malformed_gpu_output_does_not_publish_unrequested_fields) ... ok
+test_missing_gpu_tool_is_explicit_without_fabricated_devices (__main__.PreflightTests.test_missing_gpu_tool_is_explicit_without_fabricated_devices) ... ok
+test_optional_torch_query_uses_subprocess_and_validates_result (__main__.PreflightTests.test_optional_torch_query_uses_subprocess_and_validates_result) ... ok
+test_optional_torch_timeout_and_invalid_json_remain_explicit (__main__.PreflightTests.test_optional_torch_timeout_and_invalid_json_remain_explicit) ... ok
+test_scheduler_discovery_does_not_execute_scheduler_commands (__main__.PreflightTests.test_scheduler_discovery_does_not_execute_scheduler_commands) ... ok
+test_timeout_is_bounded_and_does_not_become_gpu_unavailable_claim (__main__.PreflightTests.test_timeout_is_bounded_and_does_not_become_gpu_unavailable_claim) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.815s
+
+OK
+
+Exit code: 0

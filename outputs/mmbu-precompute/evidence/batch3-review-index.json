@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "created_at_utc": "2026-10-04T20:30:50.323037+00:00",
+  "scope": "Separate-author focused software/evidence reviews within one shared workspace; no external human review, model-result audit or SENTINEL controller certification. Initial findings and repair versions remain in the linked reports.",
+  "reports": [
+    {
+      "path": "evidence/processor-independent-review.md",
+      "sha256": "1db510df7c2a0f72df8af4f93d80592d28ff8dfc078cc3b0b88a2d5ca73f5184"
+    },
+    {
+      "path": "evidence/experiments-cli-independent-review.md",
+      "sha256": "23c073acc30eaee989cb24005d6ea43fe12095e79e98592bbe97a3a39d60a953"
+    },
+    {
+      "path": "evidence/diagnostics-acquisition-review.md",
+      "sha256": "29e04b7363084124dc5690e933d2516978b36578b2ce5b74207e521e12bfef03"
+    },
+    {
+      "path": "evidence/roco-independent-review.md",
+      "sha256": "072b1cbfbab95b22d7a47503b055acb19703db5beb351df8379147fb2d302f23"
+    },
+    {
+      "path": "evidence/supervision-presentation-review.md",
+      "sha256": "d8d1a4ebfc5b02c5be4ba092d7508b35c12184f96b663128affbcd62a248047e"
+    },
+    {
+      "path": "evidence/causal-loss-independent-review.md",
+      "sha256": "68d0d26dd1d061a737c991c833c7e49498e026c896ec8057da775bfb2b4f16ad"
+    },
+    {
+      "path": "evidence/roco-sample-independent-review.md",
+      "sha256": "6a82cf60d4a2031ff840371c7de0b49bfd9516158913e8d4731abf9a26e1f7a3"
+    },
+    {
+      "path": "evidence/duplicates-independent-review.md",
+      "sha256": "88d7db0e59953643ade8f428a7e726c3e0bd9f0a5732348862d99dc739910646"
+    },
+    {
+      "path": "evidence/source-processor-independent-review.md",
+      "sha256": "d727ebaf20d961bb5d3fa0386424f1c0212581bd65c69356d004b77cb9e86884"
+    },
+    {
+      "path": "evidence/serialization-independent-review.md",
+      "sha256": "58a001f17f4e4f6e70c7b0a6f9cd8be92734773cc7e63e172760057234267952"
+    },
+    {
+      "path": "evidence/einstein-preflight-independent-review.md",
+      "sha256": "ec99423ac17e7e3a85f9598f19fc7eee40b178d67109c3ff19da521d400a34c7"
+    },
+    {
+      "path": "evidence/cpu-coverage-audit.md",
+      "sha256": "e61c0c15dbc2c8e4adedff403449a3c02869b88773cf88b939fd1a29a359498b"
+    },
+    {
+      "path": "evidence/protocol-recheck-analysis.md",
+      "sha256": "2c77d53f6d407f9feb09f73ac61769b638ef90ffef595adb93e6453c159a9163"
+    }
+  ],
+  "readiness": {
+    "cpu_plan_scope": "complete",
+    "E00": "engineering_subset_only; native_model_load_forward_export_pending",
+    "E01_to_E05": "not_executed",
+    "real_source_model_use_approvals": 0,
+    "model_inference_executed": false,
+    "training_executed": false,
+    "gpu_used": false
+  },
+  "final_suite_receipt": "evidence/batch3-final-test-runs.json",
+  "source_processor_current_report": "evidence/source-processor-final-v2.json",
+  "external_gates_document": "docs/next-actions.md"
+}

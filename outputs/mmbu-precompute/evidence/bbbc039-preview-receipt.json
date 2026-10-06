@@ -1,0 +1,80 @@
+{
+  "purpose": "Structural visual QA only, not medical annotation validation or model input",
+  "selection": "both empty masks, lowest nonzero, sorted positions25/50/75, two highest counts",
+  "display": "per-image linear native-minmax uint16 to uint8, red mask-derived boxes, resized previews; original files unchanged",
+  "images": [
+    {
+      "stem": "IXMtest_F13_s7_w13C1B1D8C-293E-454F-B0FD-6C2C3F9F5173",
+      "count": 0,
+      "raw_range": [
+        118,
+        208
+      ],
+      "sha256": "97ecd7bcff6e74cc92e7d945f13adddb218776b0de1ac0a5bfac8bcf1a42fc95"
+    },
+    {
+      "stem": "IXMtest_L01_s2_w1E5038251-DBA3-44D0-BC37-E43E2FC8C174",
+      "count": 0,
+      "raw_range": [
+        117,
+        170
+      ],
+      "sha256": "fbfe08ac0acda0a753544c77c2634919f33978aead5d51d3c2e3f45f4382c99f"
+    },
+    {
+      "stem": "IXMtest_P23_s7_w13B627CB9-6C57-4049-AAD7-6468A051DD24",
+      "count": 12,
+      "raw_range": [
+        120,
+        3841
+      ],
+      "sha256": "74b21a3855f7039a6599a740370fab0c4367f3eaf1ba7f85ba219234ac477459"
+    },
+    {
+      "stem": "IXMtest_O07_s2_w148B3D2F0-D4D6-4F1A-88D3-F18574F52153",
+      "count": 94,
+      "raw_range": [
+        118,
+        1866
+      ],
+      "sha256": "71e425f04e5fd001f3c0b34cadfbeaf0baffb0a26ba0228d3257f273bd9760ce"
+    },
+    {
+      "stem": "IXMtest_G16_s3_w1B4690283-D75E-4DFB-92B0-29419E8292C6",
+      "count": 128,
+      "raw_range": [
+        131,
+        3565
+      ],
+      "sha256": "2fb7f07b5eb2083704bb1f353e39e30c2eb314d998166f978df2337cbeb3f480"
+    },
+    {
+      "stem": "IXMtest_G23_s4_w126F855D5-89CE-432B-9592-684B6E5EEF24",
+      "count": 148,
+      "raw_range": [
+        123,
+        2846
+      ],
+      "sha256": "f7f8ead96da6ad1d390e478c012d93fca062c0c0bd530fca365c354d29bab379"
+    },
+    {
+      "stem": "IXMtest_B21_s3_w141E785B1-44FE-4ED0-9CCE-6FF076EFE9FE",
+      "count": 191,
+      "raw_range": [
+        118,
+        2141
+      ],
+      "sha256": "ca881a90b4820efb9c29a3e21acf72809f105ba32823a0760265bd70b1643083"
+    },
+    {
+      "stem": "IXMtest_J07_s9_w16921AB3C-1E9C-41C5-ADDA-7DE5CBF9CCBB",
+      "count": 194,
+      "raw_range": [
+        129,
+        3727
+      ],
+      "sha256": "221384503a7766713648117e1fd3571557e8f573b329f893734eb72d134eceba"
+    }
+  ],
+  "preview_sha256": "734aa5215e580230d475985b57fa69c3162136035235612d19acfe8dd41327fd"
+}

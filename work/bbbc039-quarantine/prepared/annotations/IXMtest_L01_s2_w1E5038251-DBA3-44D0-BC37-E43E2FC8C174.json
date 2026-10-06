@@ -1,0 +1,19 @@
+{
+  "count": 0,
+  "width": 696,
+  "height": 520,
+  "instances": [],
+  "decoder": "bbbc039-red-equal-8-v1",
+  "connectivity": 8,
+  "background_red_value": 0,
+  "image_sha256": "fbfe08ac0acda0a753544c77c2634919f33978aead5d51d3c2e3f45f4382c99f",
+  "mask_sha256": "cbeed30abeabe0402abe1b33b09c5cd849cfac5bc065d2b01611c977d83f8a5b",
+  "source_split": "training",
+  "source_plate": "20626",
+  "image_mode": "I;16",
+  "image_extrema": [
+    117,
+    170
+  ],
+  "review_status": "pending"
+}

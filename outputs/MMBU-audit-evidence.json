@@ -1,0 +1,267 @@
+{
+  "scope": "Plan and source audit only; no training, model inference, gated examples or resource measurement.",
+  "source_receipts": [
+    {
+      "artifact": "plan-v1-frozen.md",
+      "sha256": "a2ee7b1dfe0882e1f4db3a6578733479aca74ffd86b04eb6d7aa0cbe5f1b23db",
+      "bytes": 30304,
+      "matched_prior_receipt": true
+    },
+    {
+      "artifact": "MMBU_challenge_update.pdf",
+      "sha256": "72589a77da294da10e1e953b7bc93c62fc3d511685bdd290a0f046f67348d362",
+      "bytes": 4354651,
+      "matched_prior_receipt": true
+    },
+    {
+      "artifact": "MMBU_challenge_update.txt",
+      "sha256": "55ce42b3890d44139523131e0a743843391750193c6e34895db0e368748a3d86",
+      "bytes": 32189,
+      "matched_prior_receipt": true
+    },
+    {
+      "artifact": "mmbu-public-card.html",
+      "sha256": "4de94707131d8a05a97d5c91d3473657a304f9bb530e62ac6f6deec4c712f0f2",
+      "bytes": 138827,
+      "matched_prior_receipt": true
+    },
+    {
+      "artifact": "mmbu-public-card-visible.txt",
+      "sha256": "5e072c7c5823bc9ce87f2086c2148b3885f97caf02b0ffaa1a5d4ce997a53ef7",
+      "bytes": 7607,
+      "matched_prior_receipt": true
+    },
+    {
+      "artifact": "mmbu-public-api.json",
+      "sha256": "345df38e3becea6b2cc73b9288fa1e70e2aeae826fa4751da3cd3236b14a8d41",
+      "bytes": 190269,
+      "matched_prior_receipt": true
+    },
+    {
+      "artifact": "acceptance-email-excerpts.txt",
+      "sha256": "892a54e446f6999af8ae773b058806890081c2f17abfda47234b6b58c5fd5c64",
+      "bytes": 1344,
+      "matched_prior_receipt": true
+    },
+    {
+      "artifact": "source-recheck.json",
+      "sha256": "ffffb5c43b89fb6975084356dee98a009b89ae71cc3293fb849fbfe83a9721db",
+      "bytes": 300,
+      "matched_prior_receipt": true
+    }
+  ],
+  "independent_checks": {
+    "receipt_hashes": 8,
+    "public_API_distinct_image_paths": 3147,
+    "row_count_independently_verified": false,
+    "brief_refetch_byte_identical": true,
+    "score_and_sensitivity_fixtures_recomputed": true,
+    "deadline_chicago": "2027-01-01T06:00:00-06:00"
+  },
+  "dataset": {
+    "dataset_id": "mmbu/mmbu-public",
+    "revision": "069da7bbd6201a867039b548f3c02e103711ed4a",
+    "gated": "auto",
+    "private": false,
+    "last_modified": "2026-10-03T20:33:16.000Z",
+    "listed_images": 3147,
+    "non_image_files": [
+      ".gitattributes",
+      "README.md",
+      "metadata.jsonl",
+      "metadata.tsv"
+    ],
+    "card_count_claim": "3,147 rows / 3,147 images (card statement, rows not independently counted)",
+    "inspected": "Public HTML card and public API metadata only; raw README returned HTTP 401; no terms accepted or gated records/images obtained."
+  },
+  "synthetic_arithmetic": {
+    "label": "Synthetic arithmetic fixtures, not model performance or estimated real uncertainty",
+    "mixture_reversal": [
+      {
+        "weights": [
+          0.8,
+          0.19999999999999996
+        ],
+        "A": 0.2059199999999999,
+        "B": 0.15087999999999993
+      },
+      {
+        "weights": [
+          0.2,
+          0.8
+        ],
+        "A": 0.08352000000000008,
+        "B": 0.18688000000000007
+      }
+    ],
+    "pooled_vs_average_products": {
+      "pooled": 0.11999999999999997,
+      "mean_of_source_scores": 0.09,
+      "inputs": {
+        "source_weights": [
+          0.5,
+          0.5
+        ],
+        "adapted_T": [
+          0.9,
+          0.3
+        ],
+        "context_C": [
+          0.9,
+          0.3
+        ],
+        "base_T": [
+          0.8,
+          0.0
+        ]
+      }
+    },
+    "judge_bias_example": {
+      "true_A": 0.11999999999999997,
+      "true_B": 0.12381999999999997,
+      "A_with_optimistic_point01_T": 0.12768
+    },
+    "zero_errors_200_iid_one_sided_95_upper": 0.014867039231272083,
+    "context_repeated_image": {
+      "example_mean": 0.9,
+      "unique_image_mean": 0.5
+    },
+    "context_unequal_fields": {
+      "correct_example_mean": 0.5,
+      "incorrect_pooled_fields": 0.14285714285714285
+    },
+    "first_two_weeks_assumed_person_hours": [
+      50,
+      80
+    ]
+  },
+  "controller_commands": [
+    {
+      "command": [
+        "sentinel",
+        "verify"
+      ],
+      "returncode": 127,
+      "stdout": "",
+      "stderr": "[Errno 2] No such file or directory: 'sentinel'"
+    },
+    {
+      "command": [
+        "sentinel",
+        "ledger",
+        "--json"
+      ],
+      "returncode": 127,
+      "stdout": "",
+      "stderr": "[Errno 2] No such file or directory: 'sentinel'"
+    }
+  ],
+  "limitations": [
+    "Same-model separate-context reviews are not empirical replication.",
+    "Official contract and permitted public-dev uses unresolved.",
+    "No official harness, model run, accepted training manifest or measured budget.",
+    "No SENTINEL parser or controller hash-chain certification.",
+    "Original full round-0 report is not archived; its three stable ledger keys are retained."
+  ],
+  "date": "2026-10-03",
+  "final_plan_sha256": "7e4997da8fef7614ad057bbd910c15a585d354e7f2036cc6be8bd659f5afbe64",
+  "planning_defect_ledger": [
+    {
+      "defect_key": "DEF-0001",
+      "severity": "HIGH",
+      "category": "conflicting-official-contracts",
+      "status": "CLOSED",
+      "blocking": "BLOCKING",
+      "evidence": "V2 lines 11-24,32,117,166-171 retain explicit source conflicts, versioning, clarification questions, and gates on official-equivalence claims. Closure carried forward from round 1; affected precision wording does not change these protections.",
+      "root_cause": "The original plan omitted conflicts between official sources.",
+      "repair": "Completed at the planning level; organizer precedence remains an explicitly gated external dependency."
+    },
+    {
+      "defect_key": "DEF-0002",
+      "severity": "MEDIUM",
+      "category": "selection-versus-confirmation",
+      "status": "CLOSED",
+      "blocking": "BLOCKING",
+      "evidence": "V2 lines 70,75,122,158-159 retain selection before confirmation, prohibit finalist/seed selection on confirmation, and specify result-informed reuse consequences. These lines are unchanged from audited round 1.",
+      "root_cause": "The original locked set served both selection and claimed independent confirmation.",
+      "repair": "Completed; development selection and confirmation retain distinct, consistent roles."
+    },
+    {
+      "defect_key": "DEF-0003",
+      "severity": "LOW",
+      "category": "metric-definition",
+      "status": "CLOSED",
+      "blocking": "NONBLOCKING",
+      "evidence": "V2 lines 28 and 83 retain example-level context averaging, repeated-image handling, C=0.9 fixture, and explicit zero-field dependency. These lines are unchanged from audited round 1.",
+      "root_cause": "The original wording substituted images for evaluation examples.",
+      "repair": "Completed; the averaging unit and edge-case requirements remain explicit."
+    },
+    {
+      "defect_key": "DEF-0004",
+      "severity": "LOW",
+      "category": "precision-definition-regression",
+      "status": "CLOSED",
+      "blocking": "NONBLOCKING",
+      "evidence": "V2 lines 48,117,128 now explicitly require non-quantized BF16/FP16 loading/export. Line 171 distinguishes the published dtype requirement from other organizer constraints; line 128 records later amendments separately. A case-insensitive search found zero remaining full-precision mentions.",
+      "root_cause": "The revision replaced a concrete dtype requirement with ambiguous full-precision terminology.",
+      "repair": "Completed through four localized wording changes; verified against the published BF16/FP16 requirement."
+    },
+    {
+      "defect_key": "DEF-0005",
+      "severity": "MEDIUM",
+      "category": "submission-constraints-regression",
+      "status": "CLOSED",
+      "blocking": "BLOCKING",
+      "evidence": "Red-team challenge upheld against frozen v1 lines106,111,248,250 and brief rules1,3,4,5. Restored v2 lines111-124 inspected by red-team reviewer at SHA-256 7e4997da8fef7614ad057bbd910c15a585d354e7f2036cc6be8bd659f5afbe64.",
+      "root_cause": "Revision compressed away concrete submission constraints; round1 regression coverage missed this.",
+      "repair": "Explicit separate task/context/judge builders; no carried state; full-component active/total counts; single end-to-end VLM without auxiliary systems/tools; raw-output preservation and required inference procedure. Manual adjudication records the repair; no actual submission violation asserted."
+    }
+  ],
+  "external_dependencies": [
+    "Authoritative task/context output and scoring contract",
+    "Permitted official-public-dev selection use",
+    "Dataset access and accepted source manifests",
+    "Actual GPU availability, spend ceiling, throughput and review capacity",
+    "Calibration, paired performance and export evidence",
+    "Final portal and submission logistics"
+  ],
+  "historical_audits": [
+    {
+      "file": "round1-forensic-report.md",
+      "sha256": "f4a4c08c1f59357e549ef2d657616d89664b15af4017e3d0a307c43527073bfd",
+      "bytes": 10756
+    },
+    {
+      "file": "round1-precision-closure.md",
+      "sha256": "7b3414b001bca2591d303227129cb400481bc7f2f7e2fa4a08065b8840d4638b",
+      "bytes": 3686
+    },
+    {
+      "file": "redteam-report.md",
+      "sha256": "07b20f582de88ca9dd4c249626d53d2f7b08c54f64691025bafcacd5febcecbe",
+      "bytes": 5649
+    },
+    {
+      "file": "final-adjudication.md",
+      "sha256": "5c3ca565534df0fd7a4c2e22bd697c9216c1893b98ab58a8934f76f190dc46f4",
+      "bytes": 1577
+    }
+  ],
+  "deliverables": [
+    {
+      "path": "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/MMBU-domain-adaptation-plan-v2.md",
+      "sha256": "7e4997da8fef7614ad057bbd910c15a585d354e7f2036cc6be8bd659f5afbe64",
+      "bytes": 28681
+    },
+    {
+      "path": "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/MMBU-plan-audit.md",
+      "sha256": "e4f2e66c8fc52968c77284773564931f1f0336de663c23c2fdaf199b713397d1",
+      "bytes": 20931
+    },
+    {
+      "path": "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/MMBU-audit-review-record.md",
+      "sha256": "0473902cedabbcea29d91b91f8212b3770e63e5a261962fa7c94fd9643843516",
+      "bytes": 22130
+    }
+  ]
+}

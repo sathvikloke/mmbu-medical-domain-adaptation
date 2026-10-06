@@ -1,0 +1,13 @@
+test_manifest_cannot_add_arbitrary_file (__main__.ArtifactGuards.test_manifest_cannot_add_arbitrary_file) ... ok
+test_mutable_revision_is_rejected (__main__.ArtifactGuards.test_mutable_revision_is_rejected) ... ok
+test_offline_detects_tampering (__main__.ArtifactGuards.test_offline_detects_tampering) ... ok
+test_offline_never_fetches_and_validates_snapshot (__main__.ArtifactGuards.test_offline_never_fetches_and_validates_snapshot) ... ok
+test_offline_refuses_identity_change (__main__.ArtifactGuards.test_offline_refuses_identity_change) ... ok
+test_offline_refuses_unmanifested_optional_artifact (__main__.ArtifactGuards.test_offline_refuses_unmanifested_optional_artifact) ... ok
+test_offline_refuses_weight_file (__main__.ArtifactGuards.test_offline_refuses_weight_file) ... ok
+test_oversize_download_fails_before_write (__main__.ArtifactGuards.test_oversize_download_fails_before_write) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.015s
+
+OK

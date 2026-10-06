@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "final_verdict": "PASS_WITH_CLOSED_SUP_01",
+  "scope": "Independent bounded engineering review; not full research audit",
+  "python": "3.12.14 (main, Aug 25 2026, 13:50:33) [Clang 22.1.3 ]",
+  "pillow": "12.3.0",
+  "commands": [
+    {
+      "command": "bundled-python review_supervision_presentation.py",
+      "phase": "initial adversarial probes with invalid in-root-symlink test expectation",
+      "exit_code": 1
+    },
+    {
+      "command": "bundled-python review_supervision_presentation.py",
+      "phase": "corrected fixture and SUP-01 regression after owner fix",
+      "exit_code": 0
+    },
+    {
+      "command": "work/processor-probe/.venv/bin/python work/source-expansion/review_supervision_presentation.py --native",
+      "phase": "final offline native processor integration",
+      "exit_code": 0
+    },
+    {
+      "command": "bundled-python -m unittest discover -s outputs/mmbu-precompute/tests -p test_supervision.py",
+      "phase": "final owner unit suite",
+      "tests": 6,
+      "exit_code": 0
+    },
+    {
+      "command": "bundled-python -m unittest discover -s outputs/mmbu-precompute/tests -p test_presentation.py",
+      "phase": "owner unit suite",
+      "tests": 3,
+      "exit_code": 0
+    }
+  ],
+  "production_hashes": {
+    "supervision.py": "1d2becd54c176054b1cb7d7a49d4428b2b3f70f0329d9b0507eec08e07e04be4",
+    "presentation.py": "3fbb557efd9bdc375daa88599d6b7833f6b2135f1b877e675a9178007e97785a",
+    "images.py": "2b6fd50003d659204806b354f5da2a1502bc85a7a8dde9f5b6475bde65b58b51"
+  },
+  "script_sha256": "65d8a76863cfc3cb968d16f5ac79b5dccee7a1e311bd723a7efe76e6ae69e9bc",
+  "artifacts": [
+    {
+      "path": "evidence/supervision-presentation-review.md",
+      "bytes": 7327,
+      "sha256": "d8d1a4ebfc5b02c5be4ba092d7508b35c12184f96b663128affbcd62a248047e"
+    },
+    {
+      "path": "evidence/supervision-presentation-adversarial.json",
+      "bytes": 3308,
+      "sha256": "8d69d01a734b4dc5e6c6ccc5639b049049771a76b10b4c06cb4bb87654091278"
+    },
+    {
+      "path": "evidence/supervision-presentation-adversarial-initial.json",
+      "bytes": 3167,
+      "sha256": "1b72aff40e8f3af5983f3026ee344fd4e5b049369ae4cab52e6522104470ec90"
+    },
+    {
+      "path": "evidence/supervision-presentation-native.json",
+      "bytes": 4640,
+      "sha256": "22144785d0328a2d6d2abb00b5e6dcf02318c0c2f5b3ff9f69855055135d6e97"
+    },
+    {
+      "path": "evidence/supervision-presentation-native.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "evidence/supervision-presentation-padding-counterexample.json",
+      "bytes": 633,
+      "sha256": "7a4458457581c7573212487723b8befe9e6d47f87db7e0312814829cbadd8695"
+    },
+    {
+      "path": "evidence/supervision-presentation-unit-supervision.txt",
+      "bytes": 104,
+      "sha256": "c6b9b1f09add0403cc07e90bfdf272129b1ddfa2f8f7675ea8218862f2516371"
+    },
+    {
+      "path": "evidence/supervision-presentation-unit-presentation.txt",
+      "bytes": 101,
+      "sha256": "cafe0befc6204d742636f5a24376ea4683600e3bfa4dbf7d1f6d93fa609e5024"
+    }
+  ]
+}

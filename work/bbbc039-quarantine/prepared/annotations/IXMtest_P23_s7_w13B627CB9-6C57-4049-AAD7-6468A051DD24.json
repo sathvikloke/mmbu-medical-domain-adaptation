@@ -1,0 +1,164 @@
+{
+  "count": 12,
+  "width": 696,
+  "height": 520,
+  "instances": [
+    {
+      "instance_id": 1,
+      "red_value": 1,
+      "area_pixels": 366,
+      "bbox_xywh": [
+        195,
+        0,
+        25,
+        17
+      ],
+      "touches_border": true
+    },
+    {
+      "instance_id": 2,
+      "red_value": 2,
+      "area_pixels": 189,
+      "bbox_xywh": [
+        224,
+        0,
+        16,
+        15
+      ],
+      "touches_border": true
+    },
+    {
+      "instance_id": 3,
+      "red_value": 1,
+      "area_pixels": 837,
+      "bbox_xywh": [
+        431,
+        60,
+        26,
+        42
+      ],
+      "touches_border": false
+    },
+    {
+      "instance_id": 4,
+      "red_value": 1,
+      "area_pixels": 272,
+      "bbox_xywh": [
+        330,
+        76,
+        14,
+        25
+      ],
+      "touches_border": false
+    },
+    {
+      "instance_id": 5,
+      "red_value": 1,
+      "area_pixels": 478,
+      "bbox_xywh": [
+        156,
+        184,
+        32,
+        18
+      ],
+      "touches_border": false
+    },
+    {
+      "instance_id": 6,
+      "red_value": 1,
+      "area_pixels": 299,
+      "bbox_xywh": [
+        406,
+        210,
+        21,
+        19
+      ],
+      "touches_border": false
+    },
+    {
+      "instance_id": 7,
+      "red_value": 2,
+      "area_pixels": 177,
+      "bbox_xywh": [
+        417,
+        225,
+        15,
+        15
+      ],
+      "touches_border": false
+    },
+    {
+      "instance_id": 8,
+      "red_value": 1,
+      "area_pixels": 507,
+      "bbox_xywh": [
+        10,
+        252,
+        30,
+        24
+      ],
+      "touches_border": false
+    },
+    {
+      "instance_id": 9,
+      "red_value": 1,
+      "area_pixels": 336,
+      "bbox_xywh": [
+        360,
+        305,
+        20,
+        22
+      ],
+      "touches_border": false
+    },
+    {
+      "instance_id": 10,
+      "red_value": 1,
+      "area_pixels": 380,
+      "bbox_xywh": [
+        309,
+        350,
+        22,
+        23
+      ],
+      "touches_border": false
+    },
+    {
+      "instance_id": 11,
+      "red_value": 2,
+      "area_pixels": 328,
+      "bbox_xywh": [
+        89,
+        482,
+        18,
+        24
+      ],
+      "touches_border": false
+    },
+    {
+      "instance_id": 12,
+      "red_value": 1,
+      "area_pixels": 272,
+      "bbox_xywh": [
+        77,
+        490,
+        15,
+        23
+      ],
+      "touches_border": false
+    }
+  ],
+  "decoder": "bbbc039-red-equal-8-v1",
+  "connectivity": 8,
+  "background_red_value": 0,
+  "image_sha256": "74b21a3855f7039a6599a740370fab0c4367f3eaf1ba7f85ba219234ac477459",
+  "mask_sha256": "2b16337f4dd83d1a8801df0e876dc8f45ad156d6691e70a0963ea422ea4bb14c",
+  "source_split": "training",
+  "source_plate": "20589",
+  "image_mode": "I;16",
+  "image_extrema": [
+    120,
+    3841
+  ],
+  "review_status": "pending"
+}

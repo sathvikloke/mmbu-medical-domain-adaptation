@@ -1,0 +1,58 @@
+test_arithmetic_command_retains_failed_predictions (test_cli.CliTests.test_arithmetic_command_retains_failed_predictions) ... FAIL
+test_demo_is_engineering_only_and_does_not_train (test_cli.CliTests.test_demo_is_engineering_only_and_does_not_train) ... FAIL
+test_duplicate_json_keys_and_nonfinite_values_fail_closed (test_cli.CliTests.test_duplicate_json_keys_and_nonfinite_values_fail_closed) ... FAIL
+test_missing_input_is_actionable_nonzero_without_traceback (test_cli.CliTests.test_missing_input_is_actionable_nonzero_without_traceback) ... FAIL
+test_status_keeps_protocol_and_gpu_unresolved (test_cli.CliTests.test_status_keeps_protocol_and_gpu_unresolved) ... FAIL
+
+======================================================================
+FAIL: test_arithmetic_command_retains_failed_predictions (test_cli.CliTests.test_arithmetic_command_retains_failed_predictions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_cli.py", line 30, in test_arithmetic_command_retains_failed_predictions
+    self.assertEqual(result.returncode, 0, result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : /opt/homebrew/opt/python@3.14/bin/python3.14: No module named mmbu_prep.__main__; 'mmbu_prep' is a package and cannot be directly executed
+
+
+======================================================================
+FAIL: test_demo_is_engineering_only_and_does_not_train (test_cli.CliTests.test_demo_is_engineering_only_and_does_not_train)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_cli.py", line 46, in test_demo_is_engineering_only_and_does_not_train
+    self.assertEqual(result.returncode, 0, result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : /opt/homebrew/opt/python@3.14/bin/python3.14: No module named mmbu_prep.__main__; 'mmbu_prep' is a package and cannot be directly executed
+
+
+======================================================================
+FAIL: test_duplicate_json_keys_and_nonfinite_values_fail_closed (test_cli.CliTests.test_duplicate_json_keys_and_nonfinite_values_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_cli.py", line 41, in test_duplicate_json_keys_and_nonfinite_values_fail_closed
+    self.assertEqual(result.returncode, 2)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 2
+
+======================================================================
+FAIL: test_missing_input_is_actionable_nonzero_without_traceback (test_cli.CliTests.test_missing_input_is_actionable_nonzero_without_traceback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_cli.py", line 21, in test_missing_input_is_actionable_nonzero_without_traceback
+    self.assertEqual(result.returncode, 2)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 2
+
+======================================================================
+FAIL: test_status_keeps_protocol_and_gpu_unresolved (test_cli.CliTests.test_status_keeps_protocol_and_gpu_unresolved)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_cli.py", line 55, in test_status_keeps_protocol_and_gpu_unresolved
+    self.assertEqual(result.returncode, 0, result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : /opt/homebrew/opt/python@3.14/bin/python3.14: No module named mmbu_prep.__main__; 'mmbu_prep' is a package and cannot be directly executed
+
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.109s
+
+FAILED (failures=5)

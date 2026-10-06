@@ -1,0 +1,148 @@
+{
+  "scope": "Plan and source audit only; no training, model inference, gated examples or resource measurement.",
+  "source_receipts": [
+    {
+      "artifact": "plan-v1-frozen.md",
+      "sha256": "a2ee7b1dfe0882e1f4db3a6578733479aca74ffd86b04eb6d7aa0cbe5f1b23db",
+      "bytes": 30304,
+      "matched_prior_receipt": true
+    },
+    {
+      "artifact": "MMBU_challenge_update.pdf",
+      "sha256": "72589a77da294da10e1e953b7bc93c62fc3d511685bdd290a0f046f67348d362",
+      "bytes": 4354651,
+      "matched_prior_receipt": true
+    },
+    {
+      "artifact": "MMBU_challenge_update.txt",
+      "sha256": "55ce42b3890d44139523131e0a743843391750193c6e34895db0e368748a3d86",
+      "bytes": 32189,
+      "matched_prior_receipt": true
+    },
+    {
+      "artifact": "mmbu-public-card.html",
+      "sha256": "4de94707131d8a05a97d5c91d3473657a304f9bb530e62ac6f6deec4c712f0f2",
+      "bytes": 138827,
+      "matched_prior_receipt": true
+    },
+    {
+      "artifact": "mmbu-public-card-visible.txt",
+      "sha256": "5e072c7c5823bc9ce87f2086c2148b3885f97caf02b0ffaa1a5d4ce997a53ef7",
+      "bytes": 7607,
+      "matched_prior_receipt": true
+    },
+    {
+      "artifact": "mmbu-public-api.json",
+      "sha256": "345df38e3becea6b2cc73b9288fa1e70e2aeae826fa4751da3cd3236b14a8d41",
+      "bytes": 190269,
+      "matched_prior_receipt": true
+    },
+    {
+      "artifact": "acceptance-email-excerpts.txt",
+      "sha256": "892a54e446f6999af8ae773b058806890081c2f17abfda47234b6b58c5fd5c64",
+      "bytes": 1344,
+      "matched_prior_receipt": true
+    },
+    {
+      "artifact": "source-recheck.json",
+      "sha256": "ffffb5c43b89fb6975084356dee98a009b89ae71cc3293fb849fbfe83a9721db",
+      "bytes": 300,
+      "matched_prior_receipt": true
+    }
+  ],
+  "independent_checks": {
+    "receipt_hashes": 8,
+    "public_API_distinct_image_paths": 3147,
+    "row_count_independently_verified": false,
+    "brief_refetch_byte_identical": true,
+    "score_and_sensitivity_fixtures_recomputed": true,
+    "deadline_chicago": "2027-01-01T06:00:00-06:00"
+  },
+  "dataset": {
+    "dataset_id": "mmbu/mmbu-public",
+    "revision": "069da7bbd6201a867039b548f3c02e103711ed4a",
+    "gated": "auto",
+    "private": false,
+    "last_modified": "2026-10-03T20:33:16.000Z",
+    "listed_images": 3147,
+    "non_image_files": [
+      ".gitattributes",
+      "README.md",
+      "metadata.jsonl",
+      "metadata.tsv"
+    ],
+    "card_count_claim": "3,147 rows / 3,147 images (card statement, rows not independently counted)",
+    "inspected": "Public HTML card and public API metadata only; raw README returned HTTP 401; no terms accepted or gated records/images obtained."
+  },
+  "synthetic_arithmetic": {
+    "label": "Synthetic arithmetic fixtures, not model performance or estimated real uncertainty",
+    "mixture_reversal": [
+      {
+        "weights": [
+          0.8,
+          0.19999999999999996
+        ],
+        "A": 0.2059199999999999,
+        "B": 0.15087999999999993
+      },
+      {
+        "weights": [
+          0.2,
+          0.8
+        ],
+        "A": 0.08352000000000008,
+        "B": 0.18688000000000007
+      }
+    ],
+    "pooled_vs_average_products": {
+      "pooled": 0.11999999999999997,
+      "mean_of_source_scores": 0.09
+    },
+    "judge_bias_example": {
+      "true_A": 0.11999999999999997,
+      "true_B": 0.12381999999999997,
+      "A_with_optimistic_point01_T": 0.12768
+    },
+    "zero_errors_200_iid_one_sided_95_upper": 0.014867039231272083,
+    "context_repeated_image": {
+      "example_mean": 0.9,
+      "unique_image_mean": 0.5
+    },
+    "context_unequal_fields": {
+      "correct_example_mean": 0.5,
+      "incorrect_pooled_fields": 0.14285714285714285
+    },
+    "first_two_weeks_assumed_person_hours": [
+      50,
+      80
+    ]
+  },
+  "controller_commands": [
+    {
+      "command": [
+        "sentinel",
+        "verify"
+      ],
+      "returncode": 127,
+      "stdout": "",
+      "stderr": "[Errno 2] No such file or directory: 'sentinel'"
+    },
+    {
+      "command": [
+        "sentinel",
+        "ledger",
+        "--json"
+      ],
+      "returncode": 127,
+      "stdout": "",
+      "stderr": "[Errno 2] No such file or directory: 'sentinel'"
+    }
+  ],
+  "limitations": [
+    "Same-model separate-context reviews are not empirical replication.",
+    "Official contract and permitted public-dev uses unresolved.",
+    "No official harness, model run, accepted training manifest or measured budget.",
+    "No SENTINEL parser or controller hash-chain certification.",
+    "Original full round-0 report is not archived; its three stable ledger keys are retained."
+  ]
+}

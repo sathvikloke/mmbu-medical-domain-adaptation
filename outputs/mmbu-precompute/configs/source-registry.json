@@ -1,0 +1,380 @@
+{
+  "schema_version": 1,
+  "prepared_at_utc": "2026-10-04T18:19:35.104849+00:00",
+  "review_date_local": "2026-10-04",
+  "timezone": "America/Chicago",
+  "status_note": "All real sources remain unapproved for model use. BBBC039 and a fixed24-image ROCO training sample were acquired only for quarantined CPU inspection; metadata and processor checks do not grant allowed purposes.",
+  "approval_policy": {
+    "approved_real_required_fields": [
+      "evidence",
+      "reviewed_by",
+      "reviewed_at"
+    ],
+    "purpose_vocabulary": [
+      "engineering",
+      "train",
+      "dev",
+      "confirmation",
+      "official_dev"
+    ],
+    "rule": "Approval must identify source version, intended purposes, rights basis, overlap disposition and conversion QA; public visibility alone is insufficient."
+  },
+  "sources": [
+    {
+      "source_id": "rocov2",
+      "source_family": "pmc-literature",
+      "source_version": "2.0.1",
+      "source_role": "external",
+      "status": "candidate",
+      "allowed_purposes": [],
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "evidence": [
+        {
+          "evidence_id": "SRC-01",
+          "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11208523/",
+          "locator": "Methods: dataset creation and concept extraction; Data Records",
+          "checked_date_local": "2026-10-03",
+          "checked_timezone": "America/Chicago"
+        },
+        {
+          "evidence_id": "ROCO-METADATA",
+          "path": "evidence/roco-inventory-audit.json"
+        },
+        {
+          "evidence_id": "ROCO-UPSTREAM",
+          "path": "evidence/roco-upstream-rights.json"
+        },
+        {
+          "evidence_id": "ROCO-SAMPLE",
+          "path": "evidence/roco-sample-intake.json"
+        }
+      ],
+      "unresolved_checks": [
+        "Document intended training/evaluation and public-weight release compatibility.",
+        "Resolve permitted overlap with MMBU without seeking hidden examples.",
+        "Approve grouping, conversion review, and eligible split before ingestion."
+      ],
+      "version_basis": "Zenodo record10821435, DOI10.5281/zenodo.10821435. Four metadata files match publisher MD5; selected24archive members have CRC/SHA256 receipts. Whole image archive MD5 unverified.",
+      "rights": {
+        "source_statement": "Aggregate ROCOv2 release declares CC-BY-NC-4.0. Source article JATS for the24sampled items identifies CC BY2.0/3.0/4.0; article scope is distinct from individual-figure exceptions and aggregate terms.",
+        "clearance": "Unresolved for intended training, public-weight release and challenge eligibility; no legal or use approval."
+      },
+      "annotation_semantics": "Curated modalities; curated X-ray body region/directionality; other concepts extracted from captions. No generic lesion boxes.",
+      "upstream_lineage": [
+        "PMC Open Access articles",
+        "ROCO",
+        "ImageCLEFmedical Caption"
+      ],
+      "known_overlap": [
+        "12,078ROCO-training PMCIDs overlap PMC-VQA training. This is article overlap, not proof of identical images.",
+        "Source training shares no PMCIDs with ROCOvalid/test in pinned license table; valid/test share4,417PMCIDs.",
+        "Hidden MMBU overlap not assessed or inferred."
+      ],
+      "grouping_plan": "Group article/PMCID, original figure, panels and transformations; preserve original splits pending review.",
+      "proposed_conversions": [
+        "Image-supported modality/context questions",
+        "Reviewed caption/concept questions"
+      ],
+      "access": {
+        "documentation": "public",
+        "data": "Four metadata files and24selected source-training JPEGs acquired for quarantine-only CPUinspection; no heldout image/label tables.",
+        "downloaded": true,
+        "acquisition_receipt": "evidence/roco-image-acquisition.json"
+      },
+      "quarantine_inspection": {
+        "report": "evidence/roco-sample-intake.json",
+        "source_train_images": 24,
+        "pending_records": 24,
+        "does_not_grant_model_use": true
+      }
+    },
+    {
+      "source_id": "pmc-vqa",
+      "source_family": "pmc-literature",
+      "source_version": "b56ae594f794867893143b337b4118a835794647",
+      "source_role": "external",
+      "status": "candidate",
+      "allowed_purposes": [],
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "evidence": [
+        {
+          "evidence_id": "SRC-02",
+          "url": "https://arxiv.org/html/2305.10415v6",
+          "locator": "v6, sections 4.1 and 7 Data Availability",
+          "checked_date_local": "2026-10-03",
+          "checked_timezone": "America/Chicago"
+        },
+        {
+          "evidence_id": "SRC-06",
+          "url": "https://huggingface.co/datasets/RadGenome/PMC-VQA",
+          "locator": "Public repository redirect and dataset-viewer schema error; not archive inspection",
+          "checked_date_local": "2026-10-03",
+          "checked_timezone": "America/Chicago"
+        },
+        {
+          "evidence_id": "PMC-METADATA",
+          "path": "evidence/source-expansion.json"
+        }
+      ],
+      "unresolved_checks": [
+        "Document intended training/evaluation and public-weight release compatibility.",
+        "Resolve permitted overlap with MMBU without seeking hidden examples.",
+        "Approve grouping, conversion review, and eligible split before ingestion."
+      ],
+      "version_basis": "Public Hugging Face API repository SHA; paper v6 is a separate document version.",
+      "rights": {
+        "source_statement": "Paper v6 reports upstream CC0/CC BY and aggregate CC BY-SA; per-paper license list is linked.",
+        "clearance": "unresolved; exact license version and release obligations require source review"
+      },
+      "annotation_semantics": "Caption-derived VQA with compound-figure questions; manually verified test subset does not certify training labels.",
+      "upstream_lineage": [
+        "PMC Open Access commercial-use subset",
+        "PMC figure/caption pipeline"
+      ],
+      "known_overlap": [
+        "12,078PMCIDs shared by PMC-VQA training and ROCOtraining; group under the common pmc-literature family.",
+        "PMC-VQA training also intersects9ROCOvalidation and12ROCOtest article IDs; do not treat independent source split names as cross-source isolation."
+      ],
+      "grouping_plan": "Group PMCID, original figure and all panel/question derivatives; check supplied splits.",
+      "proposed_conversions": [
+        "Reviewed open-ended answers with choice dependence removed only when meaning is preserved"
+      ],
+      "access": {
+        "documentation": "public",
+        "data": "Public source-training CSV and license/documentation metadata inspected; no images acquired.",
+        "downloaded": true,
+        "images_downloaded": false
+      },
+      "implementation_notes": [
+        "Repository redirects from xmcmic to RadGenome. Viewer reports incompatible CSV columns; choose files/schema explicitly."
+      ]
+    },
+    {
+      "source_id": "bbbc039",
+      "source_family": "bbbc",
+      "source_version": "1",
+      "source_role": "external",
+      "status": "candidate",
+      "allowed_purposes": [],
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "evidence": [
+        {
+          "evidence_id": "SRC-03",
+          "url": "https://bbbc.broadinstitute.org/BBBC039",
+          "locator": "Version 1; Images; Ground truth; Copyright",
+          "checked_date_local": "2026-10-03",
+          "checked_timezone": "America/Chicago"
+        }
+      ],
+      "unresolved_checks": [
+        "Resolve permitted MMBU source overlap without seeking hidden examples.",
+        "Review 16-bit display policy, empty masks, border objects and source annotations.",
+        "Approve conversion and intended model-use purposes before any train/dev/confirmation ingestion."
+      ],
+      "version_basis": "Visible accession BBBC039, Version 1.",
+      "rights": {
+        "source_statement": "Dataset page states CC0.",
+        "clearance": "Source CC0 declaration recorded; model-use eligibility and overlap disposition remain unresolved."
+      },
+      "annotation_semantics": "Instance nuclei masks, not disease labels; 200 fluorescence fields from one chemical screen.",
+      "upstream_lineage": [
+        "BBBC022"
+      ],
+      "known_overlap": [
+        "Page documents partial overlap with BBBC038; no item-level overlap audit performed."
+      ],
+      "grouping_plan": "Preserve experiment/field lineage and original splits; link BBBC022/038 aliases before assignment.",
+      "proposed_conversions": [
+        "Nucleus region identification",
+        "Reviewed instance-count questions",
+        "Mask-derived tight boxes with derivation recorded"
+      ],
+      "access": {
+        "documentation": "public",
+        "data": "Public official archives acquired for quarantine-only CPU engineering inspection; only source training image/mask contents decoded.",
+        "downloaded": true,
+        "acquisition_receipt": "evidence/bbbc039-acquisition.json"
+      },
+      "quarantine_inspection": {
+        "report": "evidence/bbbc039-intake.json",
+        "source_train_images": 100,
+        "pending_records": 198,
+        "does_not_grant_model_use": true
+      }
+    },
+    {
+      "source_id": "bbbc041",
+      "source_family": "bbbc",
+      "source_version": "1",
+      "source_role": "external",
+      "status": "candidate",
+      "allowed_purposes": [],
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "evidence": [
+        {
+          "evidence_id": "SRC-04",
+          "url": "https://bbbc.broadinstitute.org/BBBC041",
+          "locator": "Version 1; Images; Ground truth; Copyright",
+          "checked_date_local": "2026-10-03",
+          "checked_timezone": "America/Chicago"
+        }
+      ],
+      "unresolved_checks": [
+        "Document intended training/evaluation and public-weight release compatibility.",
+        "Resolve permitted overlap with MMBU without seeking hidden examples.",
+        "Approve grouping, conversion review, and eligible split before ingestion."
+      ],
+      "version_basis": "Visible accession BBBC041, Version 1.",
+      "rights": {
+        "source_statement": "Images and ground truth: CC BY-NC-SA 3.0.",
+        "clearance": "noncommercial/share-alike and public-weight release compatibility unresolved"
+      },
+      "annotation_semantics": "Cell classes and boxes, including difficult labels; uninfected RBCs dominate. Not independent patients per cell.",
+      "upstream_lineage": [
+        "Three blood-smear collections documented on source page"
+      ],
+      "known_overlap": [
+        "Cross-collection and MMBU overlap unresolved."
+      ],
+      "grouping_plan": "Retain acquisition collection, smear/patient/field identifiers when supplied; never invent independence for unknown groups.",
+      "proposed_conversions": [
+        "Box-grounded cell classification",
+        "Class-conditioned cell localization",
+        "Reviewed counts excluding ambiguous instances as documented"
+      ],
+      "access": {
+        "documentation": "public",
+        "data": "archive link public; not fetched",
+        "downloaded": false
+      }
+    },
+    {
+      "source_id": "chest-imagenome",
+      "source_family": "mimic-cxr",
+      "source_version": "1.0.0",
+      "source_role": "external",
+      "status": "candidate",
+      "allowed_purposes": [],
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "evidence": [
+        {
+          "evidence_id": "SRC-05",
+          "url": "https://physionet.org/content/chest-imagenome/1.0.0/",
+          "locator": "v1.0.0; Methods; Data Description; Usage Notes; Access",
+          "checked_date_local": "2026-10-03",
+          "checked_timezone": "America/Chicago"
+        }
+      ],
+      "unresolved_checks": [
+        "Document intended training/evaluation and public-weight release compatibility.",
+        "Resolve permitted overlap with MMBU without seeking hidden examples.",
+        "Approve grouping, conversion review, and eligible split before ingestion."
+      ],
+      "version_basis": "Versioned PhysioNet v1.0.0 documentation.",
+      "rights": {
+        "source_statement": "PhysioNet Credentialed Health Data License/DUA 1.5.0.",
+        "clearance": "restricted-data and public-weight release compatibility unresolved"
+      },
+      "annotation_semantics": "Silver automated anatomical boxes/report relations; separate corrected gold subset. Anatomical boxes are not lesion boxes.",
+      "upstream_lineage": [
+        "MIMIC-CXR"
+      ],
+      "known_overlap": [
+        "Patient/study lineage links to MIMIC-CXR; MMBU overlap unresolved."
+      ],
+      "grouping_plan": "Patient grouping across studies/images; retain gold/silver origin and coordinate scaling.",
+      "proposed_conversions": [
+        "Anatomical localization",
+        "Reviewed region-linked observations"
+      ],
+      "access": {
+        "documentation": "public",
+        "data": "credentialed users, required training and DUA; none completed by this task",
+        "downloaded": false
+      }
+    },
+    {
+      "source_id": "mmbu-public",
+      "source_family": "mmbu",
+      "source_version": "069da7bbd6201a867039b548f3c02e103711ed4a",
+      "source_role": "official",
+      "status": "candidate",
+      "allowed_purposes": [],
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "evidence": [
+        {
+          "evidence_id": "PROTO-CARD",
+          "url": "https://huggingface.co/datasets/mmbu/mmbu-public",
+          "locator": "Visible card snapshot; API SHA verified without file access",
+          "checked_date_local": "2026-10-03",
+          "checked_timezone": "America/Chicago"
+        }
+      ],
+      "version_basis": "Public Hugging Face API SHA, lastModified 2026-10-03T20:33:16.000Z.",
+      "rights": {
+        "source_statement": "API license other; auto-gated files.",
+        "clearance": "unresolved; no terms accepted"
+      },
+      "annotation_semantics": "Official challenge evaluation source. Technical split name train is not training permission.",
+      "upstream_lineage": [
+        "MMBU contributing datasets; item-level lineage not inspected"
+      ],
+      "known_overlap": [
+        "Official benchmark material: never include in external optimization."
+      ],
+      "grouping_plan": "Do not assign external splits; await permitted official-dev policy.",
+      "proposed_conversions": [],
+      "unresolved_checks": [
+        "Organizer policy for local evaluation and checkpoint/hyperparameter selection.",
+        "Terms and authorized access.",
+        "Protocol conflicts in protocol-register.json."
+      ],
+      "access": {
+        "documentation": "public visible card and API only",
+        "data": "auto-gated; no files accessed",
+        "downloaded": false
+      }
+    },
+    {
+      "source_id": "synthetic-fixtures",
+      "source_family": "synthetic-fixtures",
+      "source_version": "1",
+      "source_role": "synthetic",
+      "status": "engineering_only",
+      "allowed_purposes": [
+        "engineering"
+      ],
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "evidence": [
+        {
+          "evidence_id": "FIXTURE-SCOPE",
+          "scope": "Original geometric shapes and hand-derived answers created within this package; no medical-source images."
+        }
+      ],
+      "version_basis": "Local engineering fixture schema version 1.",
+      "rights": {
+        "source_statement": "Original local geometry fixtures.",
+        "clearance": "engineering scope only"
+      },
+      "annotation_semantics": "Shape/box/count fixtures for software checks; no biomedical meaning.",
+      "upstream_lineage": [],
+      "known_overlap": [],
+      "proposed_conversions": [
+        "Engineering geometry and isolation fixtures"
+      ],
+      "unresolved_checks": [],
+      "access": {
+        "documentation": "local",
+        "data": "generated locally",
+        "downloaded": false
+      }
+    }
+  ]
+}

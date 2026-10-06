@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "python": "3.14.7 (main, Aug  5 2026, 10:29:49) [Clang 21.0.0 (clang-2100.1.1.101)]",
+  "platform": "macOS-27.0-arm64-arm-64bit-Mach-O",
+  "commands": [
+    {
+      "command": "PYTHONPATH=outputs/mmbu-precompute/src python3 -m unittest discover -s outputs/mmbu-precompute/tests -p test_roco.py",
+      "stage": "before implementation",
+      "exit_code": 1,
+      "log": "evidence/roco-tests-red.txt"
+    },
+    {
+      "command": "PYTHONPATH=outputs/mmbu-precompute/src python3 -m unittest discover -s outputs/mmbu-precompute/tests -p test_roco.py",
+      "stage": "after implementation",
+      "exit_code": 0,
+      "tests": 10,
+      "log": "evidence/roco-tests-green.txt"
+    },
+    {
+      "command": "build_roco_inventory(project_root / work/source-expansion, per_modality=4, seed=1729)",
+      "stage": "real source metadata reproduction",
+      "exit_code": 0,
+      "inventory_records": 59958,
+      "shortlist_images": 24,
+      "distinct_articles": 24
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "src/mmbu_prep/roco.py",
+      "bytes": 13360,
+      "sha256": "392caca85d1b31e7f249944f0f5783dce187bd1ff8133410c02a6421c328e536"
+    },
+    {
+      "path": "tests/test_roco.py",
+      "bytes": 8590,
+      "sha256": "36ed0b12621e9cf142518fd6c37263dd8efc1ae6d7a812c8a3189e82ecd956bb"
+    },
+    {
+      "path": "docs/roco-intake.md",
+      "bytes": 5175,
+      "sha256": "1f4fcd97ac9037b3cb3362cae6fabbd2bb8969e1f0b8d94077f1b61ab0d2b75b"
+    },
+    {
+      "path": "docs/source-expansion.md",
+      "bytes": 12568,
+      "sha256": "d280a6c82e76596058b13407a51e87eab4aebfac944261a17cef6046c3592643"
+    },
+    {
+      "path": "evidence/roco-tests-red.txt",
+      "bytes": 14683,
+      "sha256": "d22179c3ff1c5239ca6bf411db2ec45372349c7221b7ebd8a24fb0534f66823f"
+    },
+    {
+      "path": "evidence/roco-tests-green.txt",
+      "bytes": 109,
+      "sha256": "6ebfdfd4b3c00fc8d529c9d9843a65a06a2c956847a10a8789c0a9c804012d92"
+    },
+    {
+      "path": "evidence/roco-inventory-audit.json",
+      "bytes": 5120,
+      "sha256": "a8b37f636d5ba1a5819bfa8d0c34232ba3adde063ee983433c2040e7f672cae8"
+    },
+    {
+      "path": "evidence/roco-shortlist.json",
+      "bytes": 57515,
+      "sha256": "d815b2238224f8e92cf5f321aba387e9a4ca3686bfd4dab13bf1c3b4377b9014"
+    },
+    {
+      "path": "evidence/source-expansion.json",
+      "bytes": 40023,
+      "sha256": "b3d1f700f433dc8dc8d3ec02cc5acab4e9bc25c8842fe937298a1813b641498b"
+    },
+    {
+      "path": "evidence/source-expansion-analysis.log",
+      "bytes": 10100,
+      "sha256": "73c27f2c66278095876177435cdc404b2edad34d0fe34577344a97136be5e6fd"
+    }
+  ],
+  "no_model_use_approval": true
+}

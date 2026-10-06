@@ -1,0 +1,3 @@
+Verified 275 published v0.3 files and all ZIP members against the anchored original manifest plus four fixed publication transformations.
+Verified unchanged v0.1/v0.2 ZIPs and all three original receipts; the v0.3 ZIP is the explicitly recorded sanitized publication.
+Artifact integrity only; no claim of scientific validity, medical truth or training results.

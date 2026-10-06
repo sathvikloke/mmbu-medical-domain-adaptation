@@ -1,0 +1,25 @@
+# Local environments, caches and generated runs
+.venv/
+.venv-ci/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.DS_Store
+.env
+.env.*
+!.env.example
+# Large inputs are delivered by the private release, never silently committed.
+.local/
+data/
+checkpoints/
+wandb/
+runs/
+*.safetensors
+*.pt
+*.pth
+# The work tree is restored from the hashed release asset. Selected authored
+# drivers and lightweight provenance already tracked in Git remain tracked.
+/work/**

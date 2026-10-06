@@ -1,0 +1,48 @@
+{
+  "bootstrap": {
+    "confidence": 0.95,
+    "estimand": "adaptation_score_conditional_on_fixed_sources_and_supplied_grades",
+    "groups_per_source": {
+      "toy-a": 5,
+      "toy-b": 5
+    },
+    "interval": [
+      0.0225,
+      0.2926249999999999
+    ],
+    "iterations": 1000,
+    "point": {
+      "C": 0.6000000000000001,
+      "S": 0.12000000000000005,
+      "T": 0.6000000000000001,
+      "T_base": 0.4,
+      "label": "arithmetic_over_supplied_grades_not_official_evaluation",
+      "n_examples": 20,
+      "n_groups": 10,
+      "n_sources": 2,
+      "task_gain": 0.20000000000000007
+    },
+    "seed": 17,
+    "warnings": [
+      "Conditional fixed-source group bootstrap; not unseen-source or training-seed uncertainty.",
+      "Few groups: percentile coverage may be poor; interval is exploratory."
+    ]
+  },
+  "limits": [
+    "Grades were supplied by the caller; no semantic judging occurred.",
+    "No estimate of hidden leaderboard performance."
+  ],
+  "official_evaluation": false,
+  "score": {
+    "C": 0.6000000000000001,
+    "S": 0.12000000000000005,
+    "T": 0.6000000000000001,
+    "T_base": 0.4,
+    "label": "arithmetic_over_supplied_grades_not_official_evaluation",
+    "n_examples": 20,
+    "n_groups": 10,
+    "n_sources": 2,
+    "task_gain": 0.20000000000000007
+  },
+  "weighting": "natural"
+}

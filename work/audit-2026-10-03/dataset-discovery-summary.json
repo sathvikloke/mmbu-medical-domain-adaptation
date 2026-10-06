@@ -1,0 +1,16 @@
+{
+  "dataset_id": "mmbu/mmbu-public",
+  "revision": "069da7bbd6201a867039b548f3c02e103711ed4a",
+  "gated": "auto",
+  "private": false,
+  "last_modified": "2026-10-03T20:33:16.000Z",
+  "listed_images": 3147,
+  "non_image_files": [
+    ".gitattributes",
+    "README.md",
+    "metadata.jsonl",
+    "metadata.tsv"
+  ],
+  "card_count_claim": "3,147 rows / 3,147 images (card statement, rows not independently counted)",
+  "inspected": "Public HTML card and public API metadata only; raw README returned HTTP 401; no terms accepted or gated records/images obtained."
+}

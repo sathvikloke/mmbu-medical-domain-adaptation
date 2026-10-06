@@ -1,0 +1,1 @@
+Maintained root/docs/team Markdown local paths and supported anchors verified; external URLs not fetched.

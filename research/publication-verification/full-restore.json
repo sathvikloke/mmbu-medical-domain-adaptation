@@ -1,0 +1,28 @@
+{
+  "recorded_at_utc": "2026-10-06T01:21:07.240499+00:00",
+  "archive_sha256": "57be1f6894748047da8a03b30559ea87b1e298ea9efb69ff90d0f4f297eef5e3",
+  "checks": [
+    {
+      "phase": "fresh-restore",
+      "exit_code": 0,
+      "output": {
+        "verified_files": 561,
+        "existing_identical": 0,
+        "restored_files": 561,
+        "dry_run": false,
+        "model_use_approved": false
+      }
+    },
+    {
+      "phase": "idempotent-replay",
+      "exit_code": 0,
+      "output": {
+        "verified_files": 561,
+        "existing_identical": 561,
+        "restored_files": 0,
+        "dry_run": false,
+        "model_use_approved": false
+      }
+    }
+  ]
+}

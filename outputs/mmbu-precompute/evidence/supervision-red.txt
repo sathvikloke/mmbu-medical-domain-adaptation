@@ -1,0 +1,65 @@
+test_batch_padding_masks_padding_but_retains_supervised_eos (test_supervision.SupervisionTests.test_batch_padding_masks_padding_but_retains_supervised_eos) ... ERROR
+test_empty_targets_oversize_and_special_target_tokens_rejected (test_supervision.SupervisionTests.test_empty_targets_oversize_and_special_target_tokens_rejected) ... ERROR
+test_inconsistent_labels_missing_supervision_and_rounding_over_cap_rejected (test_supervision.SupervisionTests.test_inconsistent_labels_missing_supervision_and_rounding_over_cap_rejected) ... ERROR
+test_only_exact_native_suffix_gets_loss (test_supervision.SupervisionTests.test_only_exact_native_suffix_gets_loss) ... ERROR
+test_thinking_prefix_mismatch_never_guesses_target_boundary (test_supervision.SupervisionTests.test_thinking_prefix_mismatch_never_guesses_target_boundary) ... ERROR
+
+======================================================================
+ERROR: test_batch_padding_masks_padding_but_retains_supervised_eos (test_supervision.SupervisionTests.test_batch_padding_masks_padding_but_retains_supervised_eos)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_supervision.py", line 26, in test_batch_padding_masks_padding_but_retains_supervised_eos
+    _,pad=api()
+          ^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_supervision.py", line 5, in api
+    from mmbu_prep.supervision import assistant_labels,pad_supervised_batch
+ModuleNotFoundError: No module named 'mmbu_prep.supervision'
+
+======================================================================
+ERROR: test_empty_targets_oversize_and_special_target_tokens_rejected (test_supervision.SupervisionTests.test_empty_targets_oversize_and_special_target_tokens_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_supervision.py", line 19, in test_empty_targets_oversize_and_special_target_tokens_rejected
+    labels,_=api()
+             ^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_supervision.py", line 5, in api
+    from mmbu_prep.supervision import assistant_labels,pad_supervised_batch
+ModuleNotFoundError: No module named 'mmbu_prep.supervision'
+
+======================================================================
+ERROR: test_inconsistent_labels_missing_supervision_and_rounding_over_cap_rejected (test_supervision.SupervisionTests.test_inconsistent_labels_missing_supervision_and_rounding_over_cap_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_supervision.py", line 34, in test_inconsistent_labels_missing_supervision_and_rounding_over_cap_rejected
+    _,pad=api()
+          ^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_supervision.py", line 5, in api
+    from mmbu_prep.supervision import assistant_labels,pad_supervised_batch
+ModuleNotFoundError: No module named 'mmbu_prep.supervision'
+
+======================================================================
+ERROR: test_only_exact_native_suffix_gets_loss (test_supervision.SupervisionTests.test_only_exact_native_suffix_gets_loss)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_supervision.py", line 11, in test_only_exact_native_suffix_gets_loss
+    labels,_=api()
+             ^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_supervision.py", line 5, in api
+    from mmbu_prep.supervision import assistant_labels,pad_supervised_batch
+ModuleNotFoundError: No module named 'mmbu_prep.supervision'
+
+======================================================================
+ERROR: test_thinking_prefix_mismatch_never_guesses_target_boundary (test_supervision.SupervisionTests.test_thinking_prefix_mismatch_never_guesses_target_boundary)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_supervision.py", line 15, in test_thinking_prefix_mismatch_never_guesses_target_boundary
+    labels,_=api()
+             ^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_supervision.py", line 5, in api
+    from mmbu_prep.supervision import assistant_labels,pad_supervised_batch
+ModuleNotFoundError: No module named 'mmbu_prep.supervision'
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.001s
+
+FAILED (errors=5)

@@ -1,0 +1,9 @@
+test_bad_comparison_alignment_returns_json_error (test_cli_batch2.Batch2CliTests.test_bad_comparison_alignment_returns_json_error) ... ok
+test_compare_aligned_supplied_grades_and_no_winner_claim (test_cli_batch2.Batch2CliTests.test_compare_aligned_supplied_grades_and_no_winner_claim) ... ok
+test_images_decodes_shipped_fixtures (test_cli_batch2.Batch2CliTests.test_images_decodes_shipped_fixtures) ... ok
+test_missing_intake_archive_returns_json_error (test_cli_batch2.Batch2CliTests.test_missing_intake_archive_returns_json_error) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.543s
+
+OK

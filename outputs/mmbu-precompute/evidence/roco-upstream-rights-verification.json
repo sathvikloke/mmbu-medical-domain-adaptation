@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "verification_exit_code": 0,
+  "records_verified": 24,
+  "direct_jats_identity_license_caption_graphics_checks": true,
+  "normalization_negative_and_equivalence_checks": 4,
+  "serialized_requests": 26,
+  "all_http_statuses_200": true,
+  "minimum_request_start_gap_seconds": 0.848935,
+  "transfer_bytes": 330583,
+  "source_heldout_or_image_requests": 0,
+  "no_model_use_approval": true,
+  "artifacts": [
+    {
+      "path": "outputs/mmbu-precompute/evidence/roco-upstream-rights.json",
+      "sha256": "90b91945e40b6d27771b62f7c6ef0537ae316770ce64f57ca00596fb5ee616d7",
+      "bytes": 115647
+    },
+    {
+      "path": "work/roco-upstream-rights/acquire.py",
+      "sha256": "5b33fa0f6ffbf50c42bb5a65ba661a0a8d3b277fbb5968d580c2ad12f293ec65",
+      "bytes": 3852
+    },
+    {
+      "path": "work/roco-upstream-rights/analyze.py",
+      "sha256": "199d5f8eaa1a4a9d3966048ddd66ab00097a5d9bb168e6499acb24e62f114bad",
+      "bytes": 8904
+    },
+    {
+      "path": "work/roco-upstream-rights/verify.py",
+      "sha256": "230c59b8819668ee95285f0bb951b7625431201cc31955c4a15584c5cf1a67e1",
+      "bytes": 3847
+    },
+    {
+      "path": "work/roco-upstream-rights/retrievals.json",
+      "sha256": "d799a1f126d29ba14eaf1eac8c947336d86bc6afa3959d8ce059db18d94aa4ef",
+      "bytes": 43330
+    }
+  ]
+}

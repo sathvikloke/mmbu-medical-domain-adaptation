@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "kind": "roco_training_metadata_quarantine",
+  "conversion_version": "rocov2-manual-modality-metadata-v1",
+  "source_version": "2.0.1",
+  "training_ready": false,
+  "model_executed": false,
+  "images_acquired": false,
+  "heldout_labels_opened": false,
+  "allowed_purposes": [],
+  "source_image_counts": {
+    "train": 59958,
+    "valid": 9904,
+    "test": 9927
+  },
+  "source_article_counts": {
+    "train": 33814,
+    "valid": 7759,
+    "test": 7819
+  },
+  "source_article_intersections": {
+    "train__valid": 0,
+    "train__test": 0,
+    "valid__test": 4417
+  },
+  "metadata_files": {
+    "train_concepts_manual.csv": {
+      "source_filename": "train_concepts_manual.csv",
+      "local_filename": "roco-train_concepts_manual.csv",
+      "bytes": 2352220,
+      "sha256": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "md5": "29c00284c410665b6fe6ddc7f0b72f0a",
+      "published_md5": "29c00284c410665b6fe6ddc7f0b72f0a",
+      "matches_published_md5": true,
+      "source_url": "https://zenodo.org/records/10821435/files/train_concepts_manual.csv?download=1"
+    },
+    "train_captions.csv": {
+      "source_filename": "train_captions.csv",
+      "local_filename": "roco-train_captions.csv",
+      "bytes": 10100161,
+      "sha256": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "md5": "fac7fc6bd570408f451e7558b994518a",
+      "published_md5": "fac7fc6bd570408f451e7558b994518a",
+      "matches_published_md5": true,
+      "source_url": "https://zenodo.org/records/10821435/files/train_captions.csv?download=1"
+    },
+    "license_information.csv": {
+      "source_filename": "license_information.csv",
+      "local_filename": "roco-license_information.csv",
+      "bytes": 9446130,
+      "sha256": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "md5": "65f21bc4620778259b530a2c033cd4e7",
+      "published_md5": "65f21bc4620778259b530a2c033cd4e7",
+      "matches_published_md5": true,
+      "source_url": "https://zenodo.org/records/10821435/files/license_information.csv?download=1"
+    },
+    "cui_mapping.csv": {
+      "source_filename": "cui_mapping.csv",
+      "local_filename": "roco-cui_mapping.csv",
+      "bytes": 62591,
+      "sha256": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502",
+      "md5": "b12e7e3627b599b18c68dd3091294ef6",
+      "published_md5": "b12e7e3627b599b18c68dd3091294ef6",
+      "matches_published_md5": true,
+      "source_url": "https://zenodo.org/records/10821435/files/cui_mapping.csv?download=1"
+    }
+  },
+  "release_integrity_verified": true,
+  "inventory_records": 59958,
+  "eligible_shortlist_pool": 46241,
+  "excluded_from_shortlist_pool": 13717,
+  "shortlist_exclusion_counts": {
+    "attribution_not_exact_cc_by_prefix": 13331,
+    "missing_modality": 493
+  },
+  "shortlist_exclusion_counts_can_overlap": true,
+  "attribution_prefix_counts": {
+    "CC BY": 46627,
+    "CC BY-NC": 13315,
+    "PUBLIC DOMAIN": 14,
+    "unrecognized": 2
+  },
+  "modality_counts": {
+    "C0002978": 3958,
+    "C0024485": 9790,
+    "C0032743": 350,
+    "C0040405": 20459,
+    "C0041618": 8305,
+    "C1306645": 16603,
+    "missing_or_ambiguous": 493
+  },
+  "shortlist_source_image_ids": [
+    "ROCOv2_2023_train_024386",
+    "ROCOv2_2023_train_000571",
+    "ROCOv2_2023_train_059923",
+    "ROCOv2_2023_train_047764",
+    "ROCOv2_2023_train_040197",
+    "ROCOv2_2023_train_046920",
+    "ROCOv2_2023_train_003162",
+    "ROCOv2_2023_train_006911",
+    "ROCOv2_2023_train_045777",
+    "ROCOv2_2023_train_036012",
+    "ROCOv2_2023_train_011831",
+    "ROCOv2_2023_train_022485",
+    "ROCOv2_2023_train_049219",
+    "ROCOv2_2023_train_002716",
+    "ROCOv2_2023_train_036451",
+    "ROCOv2_2023_train_005416",
+    "ROCOv2_2023_train_055358",
+    "ROCOv2_2023_train_001828",
+    "ROCOv2_2023_train_055240",
+    "ROCOv2_2023_train_055075",
+    "ROCOv2_2023_train_007674",
+    "ROCOv2_2023_train_056560",
+    "ROCOv2_2023_train_023807",
+    "ROCOv2_2023_train_018974"
+  ],
+  "shortlist_selection": {
+    "seed": 1729,
+    "requested_per_modality": 4,
+    "algorithm": "lexical CUI order; ascending SHA256(seed NUL CUI NUL source_image_id), then ID; globally unique PMCID",
+    "modality_order": [
+      "C0002978",
+      "C0024485",
+      "C0032743",
+      "C0040405",
+      "C0041618",
+      "C1306645"
+    ],
+    "selected_counts": {
+      "C0002978": 4,
+      "C0024485": 4,
+      "C0032743": 4,
+      "C0040405": 4,
+      "C0041618": 4,
+      "C1306645": 4
+    },
+    "duplicate_article_candidates_skipped": {
+      "C0002978": 0,
+      "C0024485": 0,
+      "C0032743": 0,
+      "C0040405": 0,
+      "C0041618": 0,
+      "C1306645": 0
+    },
+    "provenance_filter": "exact CC BY attribution prefix only; not rights clearance",
+    "sampling_scope": "conversion inspection only; not representative performance evaluation"
+  },
+  "remaining_checks": [
+    "MMBU eligibility and source overlap disposition",
+    "aggregate and upstream rights/release review",
+    "source image bytes, dimensions and figure provenance",
+    "image-supported modality and conversion review"
+  ]
+}

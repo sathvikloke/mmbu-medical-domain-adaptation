@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "status": "not_frozen_not_opened",
+  "selected_on": "external_development_only",
+  "checkpoint_revision": null,
+  "checkpoint_sha256": null,
+  "base_revision": null,
+  "code_bundle_sha256": null,
+  "environment_lock_sha256": null,
+  "confirmation_manifest_sha256": null,
+  "protocol_revision": null,
+  "judge_revision": null,
+  "selection_decision_record": null,
+  "chosen_seed": null,
+  "freeze_time_utc": null,
+  "owner": null,
+  "mechanical_failure_fallback_rule": null,
+  "opened_time_utc": null,
+  "result_artifact_sha256": null,
+  "result_informed_changes": false,
+  "retired_to_development": false,
+  "rule": "Freeze one checkpoint/seed before access. Preserve disappointing results. Result-informed changes retire this set; do not select a new finalist on it."
+}

@@ -1,0 +1,240 @@
+{
+  "schema_version": 1,
+  "status": "unresolved",
+  "prepared_at_utc": "2026-10-04T02:26:18.298248+00:00",
+  "review_date_local": "2026-10-03",
+  "timezone": "America/Chicago",
+  "scope": "Engineering profiles only; no silently selected source precedence.",
+  "evidence": [
+    {
+      "evidence_id": "PROTO-BRIEF",
+      "url": "https://akiranishii.github.io/mmbu-challenge/MMBU_challenge_update.pdf",
+      "workspace_relative_path": "work/audit-2026-10-03/brief-refetched.pdf",
+      "sha256": "72589a77da294da10e1e953b7bc93c62fc3d511685bdd290a0f046f67348d362",
+      "locator": "pages 3, 6-10",
+      "verification": "Local SHA-256 recomputed in this task; content capture predates this preparation batch."
+    },
+    {
+      "evidence_id": "PROTO-BRIEF-TEXT",
+      "url": "https://akiranishii.github.io/mmbu-challenge/MMBU_challenge_update.pdf",
+      "workspace_relative_path": "work/MMBU_challenge_update.txt",
+      "sha256": "55ce42b3890d44139523131e0a743843391750193c6e34895db0e368748a3d86",
+      "locator": "local text extraction with PAGE markers",
+      "verification": "Local SHA-256 recomputed in this task; content capture predates this preparation batch."
+    },
+    {
+      "evidence_id": "PROTO-CARD",
+      "url": "https://huggingface.co/datasets/mmbu/mmbu-public",
+      "workspace_relative_path": "work/audit-2026-10-03/mmbu-public-card-visible.txt",
+      "sha256": "5e072c7c5823bc9ce87f2086c2148b3885f97caf02b0ffaa1a5d4ce997a53ef7",
+      "locator": "visible-text snapshot, lines 71-287",
+      "verification": "Local SHA-256 recomputed in this task; content capture predates this preparation batch."
+    },
+    {
+      "evidence_id": "PROTO-CARD-HTML",
+      "url": "https://huggingface.co/datasets/mmbu/mmbu-public",
+      "workspace_relative_path": "work/audit-2026-10-03/mmbu-public-card.html",
+      "sha256": "4de94707131d8a05a97d5c91d3473657a304f9bb530e62ac6f6deec4c712f0f2",
+      "locator": "public HTML snapshot",
+      "verification": "Local SHA-256 recomputed in this task; content capture predates this preparation batch."
+    },
+    {
+      "evidence_id": "PROTO-CARD-API",
+      "url": "https://huggingface.co/api/datasets/mmbu/mmbu-public",
+      "workspace_relative_path": "work/audit-2026-10-03/mmbu-public-api.json",
+      "sha256": "345df38e3becea6b2cc73b9288fa1e70e2aeae826fa4751da3cd3236b14a8d41",
+      "locator": "public metadata only",
+      "verification": "Local SHA-256 recomputed in this task; content capture predates this preparation batch."
+    }
+  ],
+  "public_repository_revision": "069da7bbd6201a867039b548f3c02e103711ed4a",
+  "conflicts": [
+    {
+      "id": "PROTO-01",
+      "kind": "contradiction",
+      "title": "Task rationale placement",
+      "status": "unresolved",
+      "source_positions": [
+        {
+          "evidence_id": "PROTO-BRIEF",
+          "url": "https://akiranishii.github.io/mmbu-challenge/MMBU_challenge_update.pdf",
+          "sha256": "72589a77da294da10e1e953b7bc93c62fc3d511685bdd290a0f046f67348d362",
+          "locator": "page 6",
+          "position": "Task answer and rationale belong in JSON."
+        },
+        {
+          "evidence_id": "PROTO-CARD",
+          "url": "https://huggingface.co/datasets/mmbu/mmbu-public",
+          "sha256": "5e072c7c5823bc9ce87f2086c2148b3885f97caf02b0ffaa1a5d4ce997a53ef7",
+          "locator": "visible lines 138-179",
+          "position": "Rationale precedes final answer-only JSON."
+        }
+      ],
+      "blocked_actions": [
+        "Freeze production task serializer",
+        "Schema-specific training",
+        "Claim official format compliance"
+      ],
+      "resolution_needed": "Organizer-selected prompt/schema and harness revision.",
+      "authoritative_choice": null
+    },
+    {
+      "id": "PROTO-02",
+      "kind": "contradiction",
+      "title": "Malformed output handling",
+      "status": "unresolved",
+      "source_positions": [
+        {
+          "evidence_id": "PROTO-BRIEF",
+          "url": "https://akiranishii.github.io/mmbu-challenge/MMBU_challenge_update.pdf",
+          "sha256": "72589a77da294da10e1e953b7bc93c62fc3d511685bdd290a0f046f67348d362",
+          "locator": "page 7",
+          "position": "Malformed JSON receives zero in its pass."
+        },
+        {
+          "evidence_id": "PROTO-CARD",
+          "url": "https://huggingface.co/datasets/mmbu/mmbu-public",
+          "sha256": "5e072c7c5823bc9ce87f2086c2148b3885f97caf02b0ffaa1a5d4ce997a53ef7",
+          "locator": "visible lines 182-185",
+          "position": "Invalid or missing JSON falls back to raw reply."
+        }
+      ],
+      "blocked_actions": [
+        "Official-equivalent parsing/scoring",
+        "Eliminate candidates on format-dependent scores"
+      ],
+      "resolution_needed": "Authoritative failure behavior and fixtures.",
+      "authoritative_choice": null
+    },
+    {
+      "id": "PROTO-03",
+      "kind": "internal_inconsistency",
+      "title": "Multiple segmentation labels",
+      "status": "unresolved",
+      "source_positions": [
+        {
+          "evidence_id": "PROTO-CARD",
+          "url": "https://huggingface.co/datasets/mmbu/mmbu-public",
+          "sha256": "5e072c7c5823bc9ce87f2086c2148b3885f97caf02b0ffaa1a5d4ce997a53ef7",
+          "locator": "visible lines 165-172",
+          "position": "Segmentation-derived responses may contain multiple labels."
+        },
+        {
+          "evidence_id": "PROTO-CARD",
+          "url": "https://huggingface.co/datasets/mmbu/mmbu-public",
+          "sha256": "5e072c7c5823bc9ce87f2086c2148b3885f97caf02b0ffaa1a5d4ce997a53ef7",
+          "locator": "visible lines 229-245",
+          "position": "Judge grounding gate demands one specific concept."
+        }
+      ],
+      "blocked_actions": [
+        "Finalize multi-label grading",
+        "Promote models using unvalidated multi-label grades"
+      ],
+      "resolution_needed": "Multi-label examples and executable grading policy.",
+      "authoritative_choice": null
+    },
+    {
+      "id": "PROTO-04",
+      "kind": "coverage_gap",
+      "title": "Context pass implementation",
+      "status": "unresolved",
+      "source_positions": [
+        {
+          "evidence_id": "PROTO-BRIEF",
+          "url": "https://akiranishii.github.io/mmbu-challenge/MMBU_challenge_update.pdf",
+          "sha256": "72589a77da294da10e1e953b7bc93c62fc3d511685bdd290a0f046f67348d362",
+          "locator": "pages 6-8",
+          "position": "Independent context pass contributes C; requested fields determine each row mean."
+        },
+        {
+          "evidence_id": "PROTO-CARD",
+          "url": "https://huggingface.co/datasets/mmbu/mmbu-public",
+          "sha256": "5e072c7c5823bc9ce87f2086c2148b3885f97caf02b0ffaa1a5d4ce997a53ef7",
+          "locator": "visible Prompt and Scoring sections",
+          "position": "Visible instructions cover task scoring; no context implementation shown."
+        }
+      ],
+      "blocked_actions": [
+        "Claim official C or S",
+        "Set missing/zero-field behavior"
+      ],
+      "resolution_needed": "Context schema, annotation mask, unknown/zero-field rules and harness.",
+      "authoritative_choice": null
+    },
+    {
+      "id": "PROTO-05",
+      "kind": "permission_ambiguity",
+      "title": "Public-development use",
+      "status": "unresolved",
+      "source_positions": [
+        {
+          "evidence_id": "PROTO-BRIEF",
+          "url": "https://akiranishii.github.io/mmbu-challenge/MMBU_challenge_update.pdf",
+          "sha256": "72589a77da294da10e1e953b7bc93c62fc3d511685bdd290a0f046f67348d362",
+          "locator": "page 10 rules 6 and 7",
+          "position": "Local development evaluation is described; selection on MMBU evaluation examples is prohibited."
+        },
+        {
+          "evidence_id": "PROTO-CARD",
+          "url": "https://huggingface.co/datasets/mmbu/mmbu-public",
+          "sha256": "5e072c7c5823bc9ce87f2086c2148b3885f97caf02b0ffaa1a5d4ce997a53ef7",
+          "locator": "visible lines 75-90 and 277-287",
+          "position": "Official public set includes answers and loads under a technical train split."
+        }
+      ],
+      "blocked_actions": [
+        "Train on challenge records",
+        "Select checkpoints/hyperparameters using official-dev outcomes",
+        "Grant registry official_dev purpose"
+      ],
+      "resolution_needed": "Explicit permissible public-dev operations; keep training prohibited by default.",
+      "authoritative_choice": null
+    },
+    {
+      "id": "PROTO-06",
+      "kind": "implementation_gap",
+      "title": "Detection and task routing",
+      "status": "unresolved",
+      "source_positions": [
+        {
+          "evidence_id": "PROTO-BRIEF",
+          "url": "https://akiranishii.github.io/mmbu-challenge/MMBU_challenge_update.pdf",
+          "sha256": "72589a77da294da10e1e953b7bc93c62fc3d511685bdd290a0f046f67348d362",
+          "locator": "page 3",
+          "position": "Four broad tasks; counting is included in ungrounded classification; detection uses xywh and IoU threshold."
+        },
+        {
+          "evidence_id": "PROTO-CARD",
+          "url": "https://huggingface.co/datasets/mmbu/mmbu-public",
+          "sha256": "5e072c7c5823bc9ce87f2086c2148b3885f97caf02b0ffaa1a5d4ce997a53ef7",
+          "locator": "visible lines 94-137 and 173-193",
+          "position": "Counting has its own routing label; pixel xywh may contain multiple boxes; maximum pairwise IoU is described."
+        }
+      ],
+      "blocked_actions": [
+        "Claim official aggregation/matching",
+        "Finalize production conversion profiles"
+      ],
+      "resolution_needed": "Confirm route/group mapping, coordinates after resizing, multiple/absent targets and matching code.",
+      "authoritative_choice": null
+    }
+  ],
+  "unresolved_runtime": [
+    "Authoritative harness commit and dependency/runtime limits",
+    "Allowed resolution, token budget, generation and thinking configuration",
+    "Base/final checkpoint availability and counting of all active components"
+  ],
+  "permitted_current_work": [
+    "Offline synthetic geometry and input-isolation tests",
+    "Public documentation review",
+    "Schema-independent annotation and provenance design",
+    "Arithmetic over explicitly pregraded engineering fixtures"
+  ],
+  "not_established": [
+    "Official protocol equivalence",
+    "Permission to optimize on challenge examples",
+    "Model performance or submission eligibility"
+  ],
+  "communications_sent": false
+}

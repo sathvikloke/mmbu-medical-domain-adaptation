@@ -1,0 +1,41 @@
+test_16bit_requires_explicit_window_then_maps_without_changing_frame (test_presentation.PresentationTests.test_16bit_requires_explicit_window_then_maps_without_changing_frame) ... ERROR
+test_float_orientation_transparency_and_bad_windows_rejected (test_presentation.PresentationTests.test_float_orientation_transparency_and_bad_windows_rejected) ... ERROR
+test_rgb_sample_values_survive_png_output (test_presentation.PresentationTests.test_rgb_sample_values_survive_png_output) ... ERROR
+
+======================================================================
+ERROR: test_16bit_requires_explicit_window_then_maps_without_changing_frame (test_presentation.PresentationTests.test_16bit_requires_explicit_window_then_maps_without_changing_frame)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_presentation.py", line 18, in test_16bit_requires_explicit_window_then_maps_without_changing_frame
+    present=api()
+            ^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_presentation.py", line 9, in api
+    from mmbu_prep.presentation import present_image
+ModuleNotFoundError: No module named 'mmbu_prep.presentation'
+
+======================================================================
+ERROR: test_float_orientation_transparency_and_bad_windows_rejected (test_presentation.PresentationTests.test_float_orientation_transparency_and_bad_windows_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_presentation.py", line 45, in test_float_orientation_transparency_and_bad_windows_rejected
+    present=api()
+            ^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_presentation.py", line 9, in api
+    from mmbu_prep.presentation import present_image
+ModuleNotFoundError: No module named 'mmbu_prep.presentation'
+
+======================================================================
+ERROR: test_rgb_sample_values_survive_png_output (test_presentation.PresentationTests.test_rgb_sample_values_survive_png_output)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_presentation.py", line 36, in test_rgb_sample_values_survive_png_output
+    present=api()
+            ^^^^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_presentation.py", line 9, in api
+    from mmbu_prep.presentation import present_image
+ModuleNotFoundError: No module named 'mmbu_prep.presentation'
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.017s
+
+FAILED (errors=3)

@@ -1,0 +1,34 @@
+test_artifact_receipt_cli_detects_local_drift (test_cli_batch3.Batch3CliTests.test_artifact_receipt_cli_detects_local_drift) ... FAIL
+test_bad_calibration_is_structured_error (test_cli_batch3.Batch3CliTests.test_bad_calibration_is_structured_error) ... ok
+test_calibration_keeps_selected_disagreements_out_of_random_summary (test_cli_batch3.Batch3CliTests.test_calibration_keeps_selected_disagreements_out_of_random_summary) ... ok
+test_diagnostics_keep_partial_coverage_explicit (test_cli_batch3.Batch3CliTests.test_diagnostics_keep_partial_coverage_explicit) ... ok
+test_synthetic_confirmation_cli_lifecycle_and_retained_anchors (test_cli_batch3.Batch3CliTests.test_synthetic_confirmation_cli_lifecycle_and_retained_anchors) ... FAIL
+
+======================================================================
+FAIL: test_artifact_receipt_cli_detects_local_drift (test_cli_batch3.Batch3CliTests.test_artifact_receipt_cli_detects_local_drift)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_cli_batch3.py", line 47, in test_artifact_receipt_cli_detects_local_drift
+    self.assertEqual(made.returncode,0,made.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 2 != 0 : usage: python3.14 -m mmbu_prep [-h] [--workspace WORKSPACE]
+                               {status,demo,score,validate,split,compare,diagnose,calibrate,inspect-images,prepare-bbbc039} ...
+python3.14 -m mmbu_prep: error: argument command: invalid choice: 'receipt-create' (choose from 'status', 'demo', 'score', 'validate', 'split', 'compare', 'diagnose', 'calibrate', 'inspect-images', 'prepare-bbbc039')
+
+
+======================================================================
+FAIL: test_synthetic_confirmation_cli_lifecycle_and_retained_anchors (test_cli_batch3.Batch3CliTests.test_synthetic_confirmation_cli_lifecycle_and_retained_anchors)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_cli_batch3.py", line 61, in test_synthetic_confirmation_cli_lifecycle_and_retained_anchors
+    self.assertEqual(valid.returncode,0,valid.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 2 != 0 : usage: python3.14 -m mmbu_prep [-h] [--workspace WORKSPACE]
+                               {status,demo,score,validate,split,compare,diagnose,calibrate,inspect-images,prepare-bbbc039} ...
+python3.14 -m mmbu_prep: error: argument command: invalid choice: 'experiment-validate' (choose from 'status', 'demo', 'score', 'validate', 'split', 'compare', 'diagnose', 'calibrate', 'inspect-images', 'prepare-bbbc039')
+
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.282s
+
+FAILED (failures=2)

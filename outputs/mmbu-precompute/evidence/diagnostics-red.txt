@@ -1,0 +1,89 @@
+test_bad_or_missing_grades_duplicate_ids_sampling_rejected (test_diagnostics.CalibrationTests.test_bad_or_missing_grades_duplicate_ids_sampling_rejected) ... ERROR
+test_random_and_targeted_samples_are_not_pooled (test_diagnostics.CalibrationTests.test_random_and_targeted_samples_are_not_pooled) ... ERROR
+test_undefined_denominators_are_null (test_diagnostics.CalibrationTests.test_undefined_denominators_are_null) ... ERROR
+test_counting_groups_with_global_but_stays_separate_diagnostic (test_diagnostics.DiagnosticTests.test_counting_groups_with_global_but_stays_separate_diagnostic) ... ERROR
+test_misaligned_candidates_fail_before_subgroup_intersection (test_diagnostics.DiagnosticTests.test_misaligned_candidates_fail_before_subgroup_intersection) ... ERROR
+test_missing_task_groups_give_partial_diagnostics_not_fake_balanced_score (test_diagnostics.DiagnosticTests.test_missing_task_groups_give_partial_diagnostics_not_fake_balanced_score) ... ERROR
+test_reweighting_can_reverse_order_without_declaring_winner (test_diagnostics.DiagnosticTests.test_reweighting_can_reverse_order_without_declaring_winner) ... ERROR
+
+======================================================================
+ERROR: test_bad_or_missing_grades_duplicate_ids_sampling_rejected (test_diagnostics.CalibrationTests.test_bad_or_missing_grades_duplicate_ids_sampling_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_diagnostics.py", line 78, in test_bad_or_missing_grades_duplicate_ids_sampling_rejected
+    _,calibrate=api();row={'case_id':'a','sampling':'random','stratum':'label','human_grade':1,'judge_grade':1}
+                ~~~^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_diagnostics.py", line 7, in api
+    from mmbu_prep.diagnostics import diagnose_candidates, calibration_report
+ModuleNotFoundError: No module named 'mmbu_prep.diagnostics'
+
+======================================================================
+ERROR: test_random_and_targeted_samples_are_not_pooled (test_diagnostics.CalibrationTests.test_random_and_targeted_samples_are_not_pooled)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_diagnostics.py", line 57, in test_random_and_targeted_samples_are_not_pooled
+    _,calibrate=api()
+                ~~~^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_diagnostics.py", line 7, in api
+    from mmbu_prep.diagnostics import diagnose_candidates, calibration_report
+ModuleNotFoundError: No module named 'mmbu_prep.diagnostics'
+
+======================================================================
+ERROR: test_undefined_denominators_are_null (test_diagnostics.CalibrationTests.test_undefined_denominators_are_null)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_diagnostics.py", line 72, in test_undefined_denominators_are_null
+    _,calibrate=api()
+                ~~~^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_diagnostics.py", line 7, in api
+    from mmbu_prep.diagnostics import diagnose_candidates, calibration_report
+ModuleNotFoundError: No module named 'mmbu_prep.diagnostics'
+
+======================================================================
+ERROR: test_counting_groups_with_global_but_stays_separate_diagnostic (test_diagnostics.DiagnosticTests.test_counting_groups_with_global_but_stays_separate_diagnostic)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_diagnostics.py", line 48, in test_counting_groups_with_global_but_stays_separate_diagnostic
+    diagnose,_=api();cs=candidates()
+               ~~~^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_diagnostics.py", line 7, in api
+    from mmbu_prep.diagnostics import diagnose_candidates, calibration_report
+ModuleNotFoundError: No module named 'mmbu_prep.diagnostics'
+
+======================================================================
+ERROR: test_misaligned_candidates_fail_before_subgroup_intersection (test_diagnostics.DiagnosticTests.test_misaligned_candidates_fail_before_subgroup_intersection)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_diagnostics.py", line 44, in test_misaligned_candidates_fail_before_subgroup_intersection
+    diagnose,_=api();cs=candidates();cs['B'].pop()
+               ~~~^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_diagnostics.py", line 7, in api
+    from mmbu_prep.diagnostics import diagnose_candidates, calibration_report
+ModuleNotFoundError: No module named 'mmbu_prep.diagnostics'
+
+======================================================================
+ERROR: test_missing_task_groups_give_partial_diagnostics_not_fake_balanced_score (test_diagnostics.DiagnosticTests.test_missing_task_groups_give_partial_diagnostics_not_fake_balanced_score)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_diagnostics.py", line 37, in test_missing_task_groups_give_partial_diagnostics_not_fake_balanced_score
+    diagnose,_=api();cs={k:[r for r in rows if r['task']==TASKS[0]] for k,rows in candidates().items()}
+               ~~~^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_diagnostics.py", line 7, in api
+    from mmbu_prep.diagnostics import diagnose_candidates, calibration_report
+ModuleNotFoundError: No module named 'mmbu_prep.diagnostics'
+
+======================================================================
+ERROR: test_reweighting_can_reverse_order_without_declaring_winner (test_diagnostics.DiagnosticTests.test_reweighting_can_reverse_order_without_declaring_winner)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_diagnostics.py", line 24, in test_reweighting_can_reverse_order_without_declaring_winner
+    diagnose,_=api();cs=candidates();original=copy.deepcopy(cs)
+               ~~~^^
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_diagnostics.py", line 7, in api
+    from mmbu_prep.diagnostics import diagnose_candidates, calibration_report
+ModuleNotFoundError: No module named 'mmbu_prep.diagnostics'
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.001s
+
+FAILED (errors=7)

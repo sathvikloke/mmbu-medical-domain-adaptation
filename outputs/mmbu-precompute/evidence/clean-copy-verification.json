@@ -1,0 +1,322 @@
+{
+  "scope": "Copied package without bytecode caches; no installation or network required by these commands.",
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "-m",
+        "mmbu_prep",
+        "demo"
+      ],
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": {
+        "hand_checked_iou": 0.5,
+        "kind": "synthetic_engineering_demo",
+        "manifest": {
+          "counts": {
+            "by_split": {
+              "engineering": 5
+            },
+            "by_task": {
+              "box_classification": 1,
+              "counting": 1,
+              "detection": 1,
+              "global_classification": 1,
+              "mask_classification": 1
+            },
+            "components": 5,
+            "files_checked": 5,
+            "records": 5,
+            "sources": 1
+          },
+          "errors": [],
+          "ok": true,
+          "warnings": [
+            {
+              "code": "semantic_checks_not_performed",
+              "message": "Byte hashes do not establish image decoding, coordinate-frame correctness, label validity, visual support, near-duplicate absence, correct grouping, or legal/official authorization."
+            }
+          ]
+        },
+        "model_executed": false,
+        "official_evaluation": false,
+        "ok": true,
+        "parser_diagnostics": {
+          "brief_json": {
+            "diagnostics": [],
+            "ok": true,
+            "parsed": {
+              "answer": "shape",
+              "rationale": "Engineering fixture."
+            },
+            "profile": "brief_json",
+            "raw": "{\"answer\":\"shape\",\"rationale\":\"Engineering fixture.\"}"
+          },
+          "public_card": {
+            "diagnostics": [],
+            "ok": true,
+            "parsed": {
+              "answer": "shape"
+            },
+            "profile": "public_card",
+            "raw": "Engineering fixture.\n{\"answer\":\"shape\"}"
+          }
+        },
+        "pregraded_toy_score": {
+          "C": 0.6000000000000001,
+          "S": 0.12000000000000005,
+          "T": 0.6000000000000001,
+          "T_base": 0.4,
+          "label": "arithmetic_over_supplied_grades_not_official_evaluation",
+          "n_examples": 20,
+          "n_groups": 10,
+          "n_sources": 2,
+          "task_gain": 0.20000000000000007
+        }
+      },
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "mmbu_prep",
+        "status"
+      ],
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": {
+        "gpu": {
+          "count": null,
+          "evidence": "User reports access to an Einstein GPU, currently unreliable; user will discuss with IT.",
+          "model": null,
+          "provider": "Einstein",
+          "reserved_hours": null,
+          "runtime_verified": false,
+          "scheduler": null,
+          "status": "it_followup_pending",
+          "vram_gb": null
+        },
+        "protocol_status": "unresolved",
+        "remaining_gates": [
+          "authoritative evaluation contract",
+          "accepted biomedical source/record review",
+          "GPU access and runtime verification",
+          "native model load and BF16/FP16 export check"
+        ],
+        "scope": "CPU preparation only",
+        "sources": [
+          {
+            "allowed_purposes": [],
+            "source_id": "rocov2",
+            "status": "candidate"
+          },
+          {
+            "allowed_purposes": [],
+            "source_id": "pmc-vqa",
+            "status": "candidate"
+          },
+          {
+            "allowed_purposes": [],
+            "source_id": "bbbc039",
+            "status": "candidate"
+          },
+          {
+            "allowed_purposes": [],
+            "source_id": "bbbc041",
+            "status": "candidate"
+          },
+          {
+            "allowed_purposes": [],
+            "source_id": "chest-imagenome",
+            "status": "candidate"
+          },
+          {
+            "allowed_purposes": [],
+            "source_id": "mmbu-public",
+            "status": "candidate"
+          },
+          {
+            "allowed_purposes": [
+              "engineering"
+            ],
+            "source_id": "synthetic-fixtures",
+            "status": "engineering_only"
+          }
+        ],
+        "training_ready": false
+      },
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "mmbu_prep",
+        "validate",
+        "examples/engineering-manifest.jsonl",
+        "--image-root",
+        "examples",
+        "--purpose",
+        "train"
+      ],
+      "expected_exit": 2,
+      "actual_exit": 2,
+      "stdout": {
+        "counts": {
+          "by_split": {
+            "engineering": 5
+          },
+          "by_task": {
+            "box_classification": 1,
+            "counting": 1,
+            "detection": 1,
+            "global_classification": 1,
+            "mask_classification": 1
+          },
+          "components": 5,
+          "files_checked": 5,
+          "records": 5,
+          "sources": 1
+        },
+        "errors": [
+          {
+            "code": "purpose_not_permitted",
+            "message": "Requested purpose has no recorded source permission.",
+            "record_id": "engineering-0",
+            "record_index": 0
+          },
+          {
+            "code": "synthetic_not_engineering",
+            "message": "Synthetic fixtures are restricted to engineering.",
+            "record_id": "engineering-0",
+            "record_index": 0
+          },
+          {
+            "code": "purpose_not_permitted",
+            "message": "Requested purpose has no recorded source permission.",
+            "record_id": "engineering-1",
+            "record_index": 1
+          },
+          {
+            "code": "synthetic_not_engineering",
+            "message": "Synthetic fixtures are restricted to engineering.",
+            "record_id": "engineering-1",
+            "record_index": 1
+          },
+          {
+            "code": "purpose_not_permitted",
+            "message": "Requested purpose has no recorded source permission.",
+            "record_id": "engineering-2",
+            "record_index": 2
+          },
+          {
+            "code": "synthetic_not_engineering",
+            "message": "Synthetic fixtures are restricted to engineering.",
+            "record_id": "engineering-2",
+            "record_index": 2
+          },
+          {
+            "code": "purpose_not_permitted",
+            "message": "Requested purpose has no recorded source permission.",
+            "record_id": "engineering-3",
+            "record_index": 3
+          },
+          {
+            "code": "synthetic_not_engineering",
+            "message": "Synthetic fixtures are restricted to engineering.",
+            "record_id": "engineering-3",
+            "record_index": 3
+          },
+          {
+            "code": "purpose_not_permitted",
+            "message": "Requested purpose has no recorded source permission.",
+            "record_id": "engineering-4",
+            "record_index": 4
+          },
+          {
+            "code": "synthetic_not_engineering",
+            "message": "Synthetic fixtures are restricted to engineering.",
+            "record_id": "engineering-4",
+            "record_index": 4
+          }
+        ],
+        "ok": false,
+        "warnings": [
+          {
+            "code": "semantic_checks_not_performed",
+            "message": "Byte hashes do not establish image decoding, coordinate-frame correctness, label validity, visual support, near-duplicate absence, correct grouping, or legal/official authorization."
+          }
+        ]
+      },
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "mmbu_prep",
+        "score",
+        "examples/pregraded-toy.jsonl",
+        "--weighting",
+        "balanced",
+        "--bootstrap",
+        "200",
+        "--seed",
+        "17"
+      ],
+      "expected_exit": 0,
+      "actual_exit": 0,
+      "stdout": {
+        "bootstrap": {
+          "confidence": 0.95,
+          "estimand": "adaptation_score_conditional_on_fixed_sources_and_supplied_grades",
+          "groups_per_source": {
+            "toy-a": 5,
+            "toy-b": 5
+          },
+          "interval": [
+            0.01730769230769237,
+            0.26026406106519767
+          ],
+          "iterations": 200,
+          "point": {
+            "C": 0.6041666666666666,
+            "S": 0.11328125,
+            "T": 0.6041666666666666,
+            "T_base": 0.41666666666666663,
+            "label": "arithmetic_over_supplied_grades_not_official_evaluation",
+            "n_examples": 20,
+            "n_groups": 10,
+            "n_sources": 2,
+            "task_gain": 0.1875
+          },
+          "seed": 17,
+          "warnings": [
+            "Conditional fixed-source group bootstrap; not unseen-source or training-seed uncertainty.",
+            "Few groups: percentile coverage may be poor; interval is exploratory."
+          ]
+        },
+        "limits": [
+          "Grades were supplied by the caller; no semantic judging occurred.",
+          "No estimate of hidden leaderboard performance."
+        ],
+        "official_evaluation": false,
+        "score": {
+          "C": 0.6041666666666666,
+          "S": 0.11328125,
+          "T": 0.6041666666666666,
+          "T_base": 0.41666666666666663,
+          "label": "arithmetic_over_supplied_grades_not_official_evaluation",
+          "n_examples": 20,
+          "n_groups": 10,
+          "n_sources": 2,
+          "task_gain": 0.1875
+        },
+        "weighting": "balanced"
+      },
+      "stderr": ""
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+Python: 3.14.7
+Command: PYTHONDONTWRITEBYTECODE=1 python3 evidence/einstein-preflight-tests.py
+test_default_report_skips_torch_import_and_never_claims_readiness (__main__.PreflightTests.test_default_report_skips_torch_import_and_never_claims_readiness) ... FAIL
+test_exact_query_parses_only_gpu_name_memory_and_driver (__main__.PreflightTests.test_exact_query_parses_only_gpu_name_memory_and_driver) ... FAIL
+test_existing_output_is_never_overwritten (__main__.PreflightTests.test_existing_output_is_never_overwritten) ... FAIL
+test_failed_gpu_query_preserves_exit_without_raw_diagnostics (__main__.PreflightTests.test_failed_gpu_query_preserves_exit_without_raw_diagnostics) ... FAIL
+test_invalid_timeout_fails_before_writing_output (__main__.PreflightTests.test_invalid_timeout_fails_before_writing_output) ... FAIL
+test_malformed_gpu_output_does_not_publish_unrequested_fields (__main__.PreflightTests.test_malformed_gpu_output_does_not_publish_unrequested_fields) ... FAIL
+test_missing_gpu_tool_is_explicit_without_fabricated_devices (__main__.PreflightTests.test_missing_gpu_tool_is_explicit_without_fabricated_devices) ... FAIL
+test_optional_torch_query_uses_subprocess_and_validates_result (__main__.PreflightTests.test_optional_torch_query_uses_subprocess_and_validates_result) ... FAIL
+test_optional_torch_timeout_and_invalid_json_remain_explicit (__main__.PreflightTests.test_optional_torch_timeout_and_invalid_json_remain_explicit) ... FAIL
+test_scheduler_discovery_does_not_execute_scheduler_commands (__main__.PreflightTests.test_scheduler_discovery_does_not_execute_scheduler_commands) ... FAIL
+test_timeout_is_bounded_and_does_not_become_gpu_unavailable_claim (__main__.PreflightTests.test_timeout_is_bounded_and_does_not_become_gpu_unavailable_claim) ... FAIL
+
+======================================================================
+FAIL: test_default_report_skips_torch_import_and_never_claims_readiness (__main__.PreflightTests.test_default_report_skips_torch_import_and_never_claims_readiness)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/evidence/einstein-preflight-tests.py", line 22, in setUp
+    self.assertIsNotNone(preflight, "standalone Einstein diagnostic is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : standalone Einstein diagnostic is not implemented
+
+======================================================================
+FAIL: test_exact_query_parses_only_gpu_name_memory_and_driver (__main__.PreflightTests.test_exact_query_parses_only_gpu_name_memory_and_driver)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/evidence/einstein-preflight-tests.py", line 22, in setUp
+    self.assertIsNotNone(preflight, "standalone Einstein diagnostic is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : standalone Einstein diagnostic is not implemented
+
+======================================================================
+FAIL: test_existing_output_is_never_overwritten (__main__.PreflightTests.test_existing_output_is_never_overwritten)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/evidence/einstein-preflight-tests.py", line 22, in setUp
+    self.assertIsNotNone(preflight, "standalone Einstein diagnostic is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : standalone Einstein diagnostic is not implemented
+
+======================================================================
+FAIL: test_failed_gpu_query_preserves_exit_without_raw_diagnostics (__main__.PreflightTests.test_failed_gpu_query_preserves_exit_without_raw_diagnostics)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/evidence/einstein-preflight-tests.py", line 22, in setUp
+    self.assertIsNotNone(preflight, "standalone Einstein diagnostic is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : standalone Einstein diagnostic is not implemented
+
+======================================================================
+FAIL: test_invalid_timeout_fails_before_writing_output (__main__.PreflightTests.test_invalid_timeout_fails_before_writing_output)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/evidence/einstein-preflight-tests.py", line 22, in setUp
+    self.assertIsNotNone(preflight, "standalone Einstein diagnostic is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : standalone Einstein diagnostic is not implemented
+
+======================================================================
+FAIL: test_malformed_gpu_output_does_not_publish_unrequested_fields (__main__.PreflightTests.test_malformed_gpu_output_does_not_publish_unrequested_fields)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/evidence/einstein-preflight-tests.py", line 22, in setUp
+    self.assertIsNotNone(preflight, "standalone Einstein diagnostic is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : standalone Einstein diagnostic is not implemented
+
+======================================================================
+FAIL: test_missing_gpu_tool_is_explicit_without_fabricated_devices (__main__.PreflightTests.test_missing_gpu_tool_is_explicit_without_fabricated_devices)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/evidence/einstein-preflight-tests.py", line 22, in setUp
+    self.assertIsNotNone(preflight, "standalone Einstein diagnostic is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : standalone Einstein diagnostic is not implemented
+
+======================================================================
+FAIL: test_optional_torch_query_uses_subprocess_and_validates_result (__main__.PreflightTests.test_optional_torch_query_uses_subprocess_and_validates_result)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/evidence/einstein-preflight-tests.py", line 22, in setUp
+    self.assertIsNotNone(preflight, "standalone Einstein diagnostic is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : standalone Einstein diagnostic is not implemented
+
+======================================================================
+FAIL: test_optional_torch_timeout_and_invalid_json_remain_explicit (__main__.PreflightTests.test_optional_torch_timeout_and_invalid_json_remain_explicit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/evidence/einstein-preflight-tests.py", line 22, in setUp
+    self.assertIsNotNone(preflight, "standalone Einstein diagnostic is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : standalone Einstein diagnostic is not implemented
+
+======================================================================
+FAIL: test_scheduler_discovery_does_not_execute_scheduler_commands (__main__.PreflightTests.test_scheduler_discovery_does_not_execute_scheduler_commands)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/evidence/einstein-preflight-tests.py", line 22, in setUp
+    self.assertIsNotNone(preflight, "standalone Einstein diagnostic is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : standalone Einstein diagnostic is not implemented
+
+======================================================================
+FAIL: test_timeout_is_bounded_and_does_not_become_gpu_unavailable_claim (__main__.PreflightTests.test_timeout_is_bounded_and_does_not_become_gpu_unavailable_claim)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/evidence/einstein-preflight-tests.py", line 22, in setUp
+    self.assertIsNotNone(preflight, "standalone Einstein diagnostic is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : standalone Einstein diagnostic is not implemented
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.001s
+
+FAILED (failures=11)
+
+Exit code: 1

@@ -1,0 +1,56 @@
+{
+  "kind": "quarantined_source_training_conversion",
+  "training_ready": false,
+  "model_executed": false,
+  "images_inspected": 100,
+  "pending_records": 198,
+  "nucleus_instances": 11999,
+  "instance_count_range": [
+    0,
+    194
+  ],
+  "border_touching_instances": 1997,
+  "source_split_sizes": {
+    "training": 100,
+    "validation": 50,
+    "test": 50
+  },
+  "source_training_plates": 20,
+  "plates_shared_across_source_splits": [
+    "20585",
+    "20586",
+    "20589",
+    "20590",
+    "20591",
+    "20592",
+    "20593",
+    "20594",
+    "20595",
+    "20596",
+    "20607",
+    "20608",
+    "20625",
+    "20626",
+    "20630",
+    "20633",
+    "20639",
+    "20640",
+    "20641",
+    "20646"
+  ],
+  "decoder": "bbbc039-red-equal-8-v1",
+  "heldout_image_and_mask_contents_opened": false,
+  "archive_sha256": {
+    "images.zip": "6f30a5d4fe38c928ded972704f085975f8dc0d65d9aa366df00e5a9d449fddd7",
+    "masks.zip": "f9e6043d8ca56344a4886f96a700d804d6ee982f31e2b2cd3194af2a053c2710",
+    "metadata.zip": "a2c1f900bed9ba92a99553efd4c2ae98598433691c7401d818653ab61110deb2"
+  },
+  "remaining_checks": [
+    "MMBU source eligibility/overlap disposition",
+    "independent nucleus label review",
+    "16-bit display/model processor policy",
+    "task and context ontology review",
+    "correlation-aware split design"
+  ],
+  "warning": "Source plate groups are conservative lineage identifiers, not certified independent biological samples."
+}

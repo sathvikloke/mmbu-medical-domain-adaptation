@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "status": "passed",
+  "checks": [
+    {
+      "case": "report_code_input_pins_and_status_scope",
+      "status": "passed"
+    },
+    {
+      "case": "24_actual_png_and_independent_decoded_digest_checks",
+      "status": "passed",
+      "count": 24
+    },
+    {
+      "case": "144_record_grid_hash_and_18_exact_arithmetic_summary_checks",
+      "status": "passed",
+      "records": 144,
+      "summaries": 18
+    },
+    {
+      "case": "duplicate_keys_nonfinite_and_exponent_overflow",
+      "status": "passed",
+      "rejections": 6
+    },
+    {
+      "case": "bounded_reader_limit_plus_one_and_inclusive_limit",
+      "status": "passed",
+      "fixtures": 4
+    },
+    {
+      "case": "five_network_entrypoint_guards",
+      "status": "passed",
+      "blocked_calls": 5
+    },
+    {
+      "case": "six_independent_cached_native_encodings_and_poisoned_input_invariance",
+      "status": "passed",
+      "replays": [
+        {
+          "model": "Qwen/Qwen2.5-VL-7B-Instruct",
+          "policy": "native_default",
+          "input_tokens": 434,
+          "all_tensor_hashes_equal": true
+        },
+        {
+          "model": "Qwen/Qwen2.5-VL-7B-Instruct",
+          "policy": "common_area_65536_262144",
+          "input_tokens": 358,
+          "all_tensor_hashes_equal": true
+        },
+        {
+          "model": "Qwen/Qwen3.5-9B",
+          "policy": "native_default",
+          "input_tokens": 345,
+          "all_tensor_hashes_equal": true
+        },
+        {
+          "model": "Qwen/Qwen3.5-9B",
+          "policy": "common_area_65536_262144",
+          "input_tokens": 279,
+          "all_tensor_hashes_equal": true
+        },
+        {
+          "model": "Qwen/Qwen3-VL-8B-Instruct",
+          "policy": "native_default",
+          "input_tokens": 343,
+          "all_tensor_hashes_equal": true
+        },
+        {
+          "model": "Qwen/Qwen3-VL-8B-Instruct",
+          "policy": "common_area_65536_262144",
+          "input_tokens": 277,
+          "all_tensor_hashes_equal": true
+        }
+      ],
+      "network_attempts": 0
+    }
+  ],
+  "report_sha256": "b7ece4644d4da1639877400de815cbc4f8c3e934cb2e54b187a039d17e14914e",
+  "script_sha256": "24e2c23a4f63ae977304e4632b0edcebff566df94545fe723f5101f4471dc107",
+  "source_script_sha256": "6aa20bb459d7993115c98fd8a2cd3d37adc74b9cbba759242dcdc30505db33dd",
+  "manifest_sha256": "fa6e591fea3b1cec61c87e0eef87959028c88afb4f6904c144c5bee666fed327",
+  "production_modified": false,
+  "model_execution": false,
+  "gpu_used": false,
+  "source_use_approval": false
+}

@@ -1,0 +1,199 @@
+Python: 3.14.7
+Command: PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src python3 -m unittest discover -s tests -p test_experiments.py -v
+test_backdated_transition_and_retirement_before_result_fail (test_experiments.ExperimentTests.test_backdated_transition_and_retirement_before_result_fail) ... FAIL
+test_bad_hash_seed_number_time_and_unknown_fields_fail (test_experiments.ExperimentTests.test_bad_hash_seed_number_time_and_unknown_fields_fail) ... FAIL
+test_complete_record_is_copied_without_defaults_or_mutation (test_experiments.ExperimentTests.test_complete_record_is_copied_without_defaults_or_mutation) ... FAIL
+test_freeze_checks_declared_hashes_before_creating_ledger (test_experiments.ExperimentTests.test_freeze_checks_declared_hashes_before_creating_ledger) ... FAIL
+test_freeze_rejects_undeclared_scope_files_and_nonconfirmation_purpose (test_experiments.ExperimentTests.test_freeze_rejects_undeclared_scope_files_and_nonconfirmation_purpose) ... FAIL
+test_frozen_unopened_record_has_fixed_candidate_and_cannot_be_overwritten (test_experiments.ExperimentTests.test_frozen_unopened_record_has_fixed_candidate_and_cannot_be_overwritten) ... FAIL
+test_ledger_tampering_extra_events_and_duplicate_json_keys_fail (test_experiments.ExperimentTests.test_ledger_tampering_extra_events_and_duplicate_json_keys_fail) ... FAIL
+test_missing_artifact_reference_and_duplicate_paths_fail (test_experiments.ExperimentTests.test_missing_artifact_reference_and_duplicate_paths_fail) ... FAIL
+test_missing_provenance_fields_and_identity_are_rejected (test_experiments.ExperimentTests.test_missing_provenance_fields_and_identity_are_rejected) ... FAIL
+test_open_checks_artifact_drift_and_preserves_unopened_state_on_failure (test_experiments.ExperimentTests.test_open_checks_artifact_drift_and_preserves_unopened_state_on_failure) ... FAIL
+test_open_requires_correct_anchor_and_cannot_reopen (test_experiments.ExperimentTests.test_open_requires_correct_anchor_and_cannot_reopen) ... FAIL
+test_receipt_is_deterministic_and_existing_output_is_preserved (test_experiments.ExperimentTests.test_receipt_is_deterministic_and_existing_output_is_preserved) ... FAIL
+test_receipt_reports_missing_extra_and_changed_artifacts (test_experiments.ExperimentTests.test_receipt_reports_missing_extra_and_changed_artifacts) ... FAIL
+test_receipt_uses_real_bytes_and_requires_external_digest (test_experiments.ExperimentTests.test_receipt_uses_real_bytes_and_requires_external_digest) ... FAIL
+test_result_informed_change_retires_set_and_forbids_reselection (test_experiments.ExperimentTests.test_result_informed_change_retires_set_and_forbids_reselection) ... FAIL
+test_results_require_open_state_and_preserve_exact_result_file (test_experiments.ExperimentTests.test_results_require_open_state_and_preserve_exact_result_file) ... FAIL
+test_symlinks_escape_duplicate_scope_and_self_receipt_are_rejected (test_experiments.ExperimentTests.test_symlinks_escape_duplicate_scope_and_self_receipt_are_rejected) ... FAIL
+test_tampered_receipt_cannot_be_reanchored_with_its_own_new_digest (test_experiments.ExperimentTests.test_tampered_receipt_cannot_be_reanchored_with_its_own_new_digest) ... FAIL
+test_templates_unresolved_revisions_and_implicit_weights_are_rejected (test_experiments.ExperimentTests.test_templates_unresolved_revisions_and_implicit_weights_are_rejected) ... FAIL
+
+======================================================================
+FAIL: test_backdated_transition_and_retirement_before_result_fail (test_experiments.ExperimentTests.test_backdated_transition_and_retirement_before_result_fail)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_experiments.py", line 54, in setUp
+    self.assertIsNotNone(experiments, "experiments module is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : experiments module is not implemented
+
+======================================================================
+FAIL: test_bad_hash_seed_number_time_and_unknown_fields_fail (test_experiments.ExperimentTests.test_bad_hash_seed_number_time_and_unknown_fields_fail)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_experiments.py", line 54, in setUp
+    self.assertIsNotNone(experiments, "experiments module is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : experiments module is not implemented
+
+======================================================================
+FAIL: test_complete_record_is_copied_without_defaults_or_mutation (test_experiments.ExperimentTests.test_complete_record_is_copied_without_defaults_or_mutation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_experiments.py", line 54, in setUp
+    self.assertIsNotNone(experiments, "experiments module is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : experiments module is not implemented
+
+======================================================================
+FAIL: test_freeze_checks_declared_hashes_before_creating_ledger (test_experiments.ExperimentTests.test_freeze_checks_declared_hashes_before_creating_ledger)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_experiments.py", line 54, in setUp
+    self.assertIsNotNone(experiments, "experiments module is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : experiments module is not implemented
+
+======================================================================
+FAIL: test_freeze_rejects_undeclared_scope_files_and_nonconfirmation_purpose (test_experiments.ExperimentTests.test_freeze_rejects_undeclared_scope_files_and_nonconfirmation_purpose)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_experiments.py", line 54, in setUp
+    self.assertIsNotNone(experiments, "experiments module is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : experiments module is not implemented
+
+======================================================================
+FAIL: test_frozen_unopened_record_has_fixed_candidate_and_cannot_be_overwritten (test_experiments.ExperimentTests.test_frozen_unopened_record_has_fixed_candidate_and_cannot_be_overwritten)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_experiments.py", line 54, in setUp
+    self.assertIsNotNone(experiments, "experiments module is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : experiments module is not implemented
+
+======================================================================
+FAIL: test_ledger_tampering_extra_events_and_duplicate_json_keys_fail (test_experiments.ExperimentTests.test_ledger_tampering_extra_events_and_duplicate_json_keys_fail)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_experiments.py", line 54, in setUp
+    self.assertIsNotNone(experiments, "experiments module is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : experiments module is not implemented
+
+======================================================================
+FAIL: test_missing_artifact_reference_and_duplicate_paths_fail (test_experiments.ExperimentTests.test_missing_artifact_reference_and_duplicate_paths_fail)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_experiments.py", line 54, in setUp
+    self.assertIsNotNone(experiments, "experiments module is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : experiments module is not implemented
+
+======================================================================
+FAIL: test_missing_provenance_fields_and_identity_are_rejected (test_experiments.ExperimentTests.test_missing_provenance_fields_and_identity_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_experiments.py", line 54, in setUp
+    self.assertIsNotNone(experiments, "experiments module is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : experiments module is not implemented
+
+======================================================================
+FAIL: test_open_checks_artifact_drift_and_preserves_unopened_state_on_failure (test_experiments.ExperimentTests.test_open_checks_artifact_drift_and_preserves_unopened_state_on_failure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_experiments.py", line 54, in setUp
+    self.assertIsNotNone(experiments, "experiments module is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : experiments module is not implemented
+
+======================================================================
+FAIL: test_open_requires_correct_anchor_and_cannot_reopen (test_experiments.ExperimentTests.test_open_requires_correct_anchor_and_cannot_reopen)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_experiments.py", line 54, in setUp
+    self.assertIsNotNone(experiments, "experiments module is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : experiments module is not implemented
+
+======================================================================
+FAIL: test_receipt_is_deterministic_and_existing_output_is_preserved (test_experiments.ExperimentTests.test_receipt_is_deterministic_and_existing_output_is_preserved)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_experiments.py", line 54, in setUp
+    self.assertIsNotNone(experiments, "experiments module is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : experiments module is not implemented
+
+======================================================================
+FAIL: test_receipt_reports_missing_extra_and_changed_artifacts (test_experiments.ExperimentTests.test_receipt_reports_missing_extra_and_changed_artifacts)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_experiments.py", line 54, in setUp
+    self.assertIsNotNone(experiments, "experiments module is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : experiments module is not implemented
+
+======================================================================
+FAIL: test_receipt_uses_real_bytes_and_requires_external_digest (test_experiments.ExperimentTests.test_receipt_uses_real_bytes_and_requires_external_digest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_experiments.py", line 54, in setUp
+    self.assertIsNotNone(experiments, "experiments module is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : experiments module is not implemented
+
+======================================================================
+FAIL: test_result_informed_change_retires_set_and_forbids_reselection (test_experiments.ExperimentTests.test_result_informed_change_retires_set_and_forbids_reselection)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_experiments.py", line 54, in setUp
+    self.assertIsNotNone(experiments, "experiments module is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : experiments module is not implemented
+
+======================================================================
+FAIL: test_results_require_open_state_and_preserve_exact_result_file (test_experiments.ExperimentTests.test_results_require_open_state_and_preserve_exact_result_file)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_experiments.py", line 54, in setUp
+    self.assertIsNotNone(experiments, "experiments module is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : experiments module is not implemented
+
+======================================================================
+FAIL: test_symlinks_escape_duplicate_scope_and_self_receipt_are_rejected (test_experiments.ExperimentTests.test_symlinks_escape_duplicate_scope_and_self_receipt_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_experiments.py", line 54, in setUp
+    self.assertIsNotNone(experiments, "experiments module is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : experiments module is not implemented
+
+======================================================================
+FAIL: test_tampered_receipt_cannot_be_reanchored_with_its_own_new_digest (test_experiments.ExperimentTests.test_tampered_receipt_cannot_be_reanchored_with_its_own_new_digest)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_experiments.py", line 54, in setUp
+    self.assertIsNotNone(experiments, "experiments module is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : experiments module is not implemented
+
+======================================================================
+FAIL: test_templates_unresolved_revisions_and_implicit_weights_are_rejected (test_experiments.ExperimentTests.test_templates_unresolved_revisions_and_implicit_weights_are_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/tests/test_experiments.py", line 54, in setUp
+    self.assertIsNotNone(experiments, "experiments module is not implemented")
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None : experiments module is not implemented
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.002s
+
+FAILED (failures=19)
+
+Exit code: 1

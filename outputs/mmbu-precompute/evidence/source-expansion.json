@@ -1,0 +1,909 @@
+{
+  "schema_version": 1,
+  "scope": "Bounded primary-source metadata and training-text audit; no images, no source-heldout label files, no model use approval.",
+  "method_note": "ROCO license table includes heldout article identity and attribution only. Partial HTTP ranges are never treated as complete files.",
+  "schemas": {
+    "roco_license": [
+      "ID",
+      "PMCID",
+      "Attribution",
+      "Link"
+    ],
+    "roco_train_manual": [
+      "ID",
+      "CUIs"
+    ],
+    "roco_train_captions": [
+      "ID",
+      "Caption"
+    ],
+    "roco_cui_mapping": [
+      "CUI",
+      "Canonical name"
+    ],
+    "pmcvqa_train": [
+      "Figure_path",
+      "Question",
+      "Answer",
+      "Choice A",
+      "Choice B",
+      "Choice C",
+      "Choice D",
+      "Answer_label"
+    ],
+    "pmcvqa_train_2_prefix": [
+      "index",
+      "Figure_path",
+      "Caption",
+      "Question",
+      "Choice A",
+      "Choice B",
+      "Choice C",
+      "Choice D",
+      "Answer",
+      "split"
+    ],
+    "pmcvqa_license_prefix": [
+      "File",
+      "Article Citation",
+      "Accession ID",
+      "Last Updated (YYYY-MM-DD HH:MM:SS)",
+      "PMID",
+      "License"
+    ]
+  },
+  "roco": {
+    "license_rows": 79789,
+    "license_unique_ids": 79789,
+    "train_manual_rows": 59958,
+    "train_manual_unique_ids": 59958,
+    "train_caption_rows": 59958,
+    "train_caption_unique_ids": 59958,
+    "train_id_sets_identical": true,
+    "partition_image_counts_from_license_metadata": {
+      "train": 59958,
+      "valid": 9904,
+      "test": 9927
+    },
+    "partition_article_counts_from_license_metadata": {
+      "train": 33814,
+      "valid": 7759,
+      "test": 7819
+    },
+    "article_intersections_from_license_metadata": {
+      "train__valid": 0,
+      "train__test": 0,
+      "valid__test": 4417
+    },
+    "training_license_assertion_prefixes": {
+      "CC BY": 46627,
+      "CC BY-NC": 13315,
+      "PUBLIC DOMAIN": 14,
+      "other_exact_string_requires_review": 2
+    },
+    "all_license_assertion_prefixes": {
+      "CC BY": 60980,
+      "CC BY-NC": 18793,
+      "PUBLIC DOMAIN": 14,
+      "other_exact_string_requires_review": 2
+    },
+    "unusual_training_license_assertions": [
+      {
+        "ID": "ROCOv2_2023_train_002608",
+        "PMCID": "PMC2199309",
+        "Attribution": "PUBLIC DOMAIN Abejie et al. (2008)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2199309"
+      },
+      {
+        "ID": "ROCOv2_2023_train_012136",
+        "PMCID": "PMC1892149",
+        "Attribution": "PUBLIC DOMAIN Szeinuk et al. (2007)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1892149"
+      },
+      {
+        "ID": "ROCOv2_2023_train_012137",
+        "PMCID": "PMC1892149",
+        "Attribution": "PUBLIC DOMAIN Szeinuk et al. (2007)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1892149"
+      },
+      {
+        "ID": "ROCOv2_2023_train_014015",
+        "PMCID": "PMC1257604",
+        "Attribution": "PUBLIC DOMAIN Beckett et al. (2005)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1257604"
+      },
+      {
+        "ID": "ROCOv2_2023_train_017310",
+        "PMCID": "PMC6360002",
+        "Attribution": "CC  Sabetian et al. (2019)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6360002"
+      },
+      {
+        "ID": "ROCOv2_2023_train_017888",
+        "PMCID": "PMC5919507",
+        "Attribution": "PUBLIC DOMAIN Reiter et al. (2018)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5919507"
+      },
+      {
+        "ID": "ROCOv2_2023_train_021154",
+        "PMCID": "PMC4072678",
+        "Attribution": "PUBLIC DOMAIN Woldehawariat et al. (2014)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4072678"
+      },
+      {
+        "ID": "ROCOv2_2023_train_024814",
+        "PMCID": "PMC1280426",
+        "Attribution": "PUBLIC DOMAIN Szpir et al. (2005)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1280426"
+      },
+      {
+        "ID": "ROCOv2_2023_train_037219",
+        "PMCID": "PMC3930696",
+        "Attribution": "PUBLIC DOMAIN Qu et al. (2014)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3930696"
+      },
+      {
+        "ID": "ROCOv2_2023_train_040006",
+        "PMCID": "PMC4670078",
+        "Attribution": "PUBLIC DOMAIN Cramer et al. (2015)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4670078"
+      },
+      {
+        "ID": "ROCOv2_2023_train_042396",
+        "PMCID": "PMC1570091",
+        "Attribution": "PUBLIC DOMAIN Calder\u00f3n-Garcidue\u00f1as et al. (2006)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1570091"
+      },
+      {
+        "ID": "ROCOv2_2023_train_042397",
+        "PMCID": "PMC1570091",
+        "Attribution": "PUBLIC DOMAIN Calder\u00f3n-Garcidue\u00f1as et al. (2006)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1570091"
+      },
+      {
+        "ID": "ROCOv2_2023_train_042398",
+        "PMCID": "PMC1570091",
+        "Attribution": "PUBLIC DOMAIN Calder\u00f3n-Garcidue\u00f1as et al. (2006)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1570091"
+      },
+      {
+        "ID": "ROCOv2_2023_train_042399",
+        "PMCID": "PMC1570091",
+        "Attribution": "PUBLIC DOMAIN Calder\u00f3n-Garcidue\u00f1as et al. (2006)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1570091"
+      },
+      {
+        "ID": "ROCOv2_2023_train_044353",
+        "PMCID": "PMC6533034",
+        "Attribution": "CC CC-BY Zanini et al. (2019)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6533034"
+      },
+      {
+        "ID": "ROCOv2_2023_train_059355",
+        "PMCID": "PMC3066194",
+        "Attribution": "PUBLIC DOMAIN Figueroa et al. (2011)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3066194"
+      }
+    ],
+    "training_license_blank_fields": {
+      "ID": 0,
+      "PMCID": 0,
+      "Attribution": 0,
+      "Link": 0
+    },
+    "empty_manual_concept_rows": 493,
+    "unknown_manual_cuis": [],
+    "manual_cuis_not_categorized": [],
+    "manual_label_repeats_within_row": 0,
+    "category_label_count_distribution": {
+      "modality": {
+        "0": 493,
+        "1": 59465
+      },
+      "anatomy": {
+        "0": 43734,
+        "1": 16224
+      },
+      "directionality": {
+        "0": 47557,
+        "1": 12401
+      }
+    },
+    "anatomy_without_plain_xray": 0,
+    "directionality_without_plain_xray": 0,
+    "manual_concepts": [
+      {
+        "cui": "C0000726",
+        "canonical_name": "Abdomen",
+        "count": 1747,
+        "category": "anatomy"
+      },
+      {
+        "cui": "C0002978",
+        "canonical_name": "angiogram",
+        "count": 3958,
+        "category": "modality"
+      },
+      {
+        "cui": "C0006141",
+        "canonical_name": "Breast",
+        "count": 56,
+        "category": "anatomy"
+      },
+      {
+        "cui": "C0023216",
+        "canonical_name": "Lower Extremity",
+        "count": 2293,
+        "category": "anatomy"
+      },
+      {
+        "cui": "C0024485",
+        "canonical_name": "Magnetic Resonance Imaging",
+        "count": 9790,
+        "category": "modality"
+      },
+      {
+        "cui": "C0030797",
+        "canonical_name": "Pelvis",
+        "count": 1257,
+        "category": "anatomy"
+      },
+      {
+        "cui": "C0032743",
+        "canonical_name": "Positron-Emission Tomography",
+        "count": 350,
+        "category": "modality"
+      },
+      {
+        "cui": "C0037303",
+        "canonical_name": "Bone structure of cranium",
+        "count": 3216,
+        "category": "anatomy"
+      },
+      {
+        "cui": "C0037949",
+        "canonical_name": "Vertebral column",
+        "count": 1073,
+        "category": "anatomy"
+      },
+      {
+        "cui": "C0040405",
+        "canonical_name": "X-Ray Computed Tomography",
+        "count": 20459,
+        "category": "modality"
+      },
+      {
+        "cui": "C0041618",
+        "canonical_name": "Ultrasonography",
+        "count": 8305,
+        "category": "modality"
+      },
+      {
+        "cui": "C0205106",
+        "canonical_name": "Transverse - anatomical location",
+        "count": 29,
+        "category": "directionality"
+      },
+      {
+        "cui": "C0205129",
+        "canonical_name": "Sagittal",
+        "count": 1868,
+        "category": "directionality"
+      },
+      {
+        "cui": "C0817096",
+        "canonical_name": "Chest",
+        "count": 5463,
+        "category": "anatomy"
+      },
+      {
+        "cui": "C1140618",
+        "canonical_name": "Upper Extremity",
+        "count": 1119,
+        "category": "anatomy"
+      },
+      {
+        "cui": "C1306645",
+        "canonical_name": "Plain x-ray",
+        "count": 16603,
+        "category": "modality"
+      },
+      {
+        "cui": "C1996865",
+        "canonical_name": "Postero-Anterior",
+        "count": 3393,
+        "category": "directionality"
+      },
+      {
+        "cui": "C1999039",
+        "canonical_name": "Anterior-Posterior",
+        "count": 7111,
+        "category": "directionality"
+      }
+    ],
+    "blank_training_captions": 0,
+    "max_training_images_per_article": 28
+  },
+  "pmcvqa": {
+    "repository_revision": "b56ae594f794867893143b337b4118a835794647",
+    "train_rows": 176948,
+    "train_unique_figures": 115821,
+    "train_article_count_from_filename": 85778,
+    "train_unparseable_figure_path_count": 0,
+    "train_blank_fields": {
+      "Figure_path": 0,
+      "Question": 0,
+      "Answer": 0,
+      "Choice A": 0,
+      "Choice B": 0,
+      "Choice C": 0,
+      "Choice D": 0,
+      "Answer_label": 0
+    },
+    "train_answer_label_distribution": {
+      "\"": 3,
+      "'": 11,
+      "A": 43421,
+      "B": 54217,
+      "C": 50791,
+      "D": 28505
+    },
+    "train_duplicate_full_rows": 1,
+    "train_same_figure_question_multiple_exact_normalized_answers": 8,
+    "train_answer_option_dependency_heuristic_count": 2409,
+    "train_answer_option_dependency_heuristic_is_not_exhaustive_or_a_quality_estimate": true,
+    "train2_prefix_only_complete_records": 357,
+    "train2_prefix_split_distribution": {
+      "train": 357
+    },
+    "train2_prefix_answer_distribution": {
+      "A": 50,
+      "B": 111,
+      "C": 151,
+      "D": 45
+    },
+    "license_prefix_only_complete_records": 2325,
+    "license_prefix_only_assertions": {
+      "CC BY": 2311,
+      "CC0": 14
+    },
+    "train_articles_found_in_license_prefix_only": 83,
+    "full_license_table_not_downloaded_or_joined": true,
+    "roco_article_intersections_by_source_partition": {
+      "train": 12078,
+      "valid": 9,
+      "test": 12
+    },
+    "roco_train_images_with_article_in_pmcvqa_train": 23548,
+    "article_intersection_is_not_an_exact_image_duplicate_count": true,
+    "heldout_pmcvqa_files_not_downloaded": true
+  },
+  "integrity_checks": {
+    "roco_local_md5_matches_publisher": {
+      "license_information.csv": true,
+      "train_concepts_manual.csv": true,
+      "train_captions.csv": true,
+      "cui_mapping.csv": true
+    },
+    "pmcvqa_train_sha256_matches_hub_lfs": true
+  },
+  "total_saved_response_body_bytes": 61188175,
+  "retrievals": [
+    {
+      "url": "https://zenodo.org/api/records/10821435",
+      "path": "work/source-expansion/roco-zenodo-api.json",
+      "retrieved_at_utc": "2026-10-04T17:24:13.997726+00:00",
+      "status": 200,
+      "final_url": "https://zenodo.org/api/records/10821435",
+      "headers": {
+        "server": "nginx",
+        "date": "Sun, 04 Oct 2026 17:24:14 GMT",
+        "content-type": "application/json",
+        "content-length": "11544",
+        "vary": "Accept-Encoding",
+        "etag": "\"8\"",
+        "link": "<https://zenodo.org/api/records/10821435> ; rel=\"linkset\" ; type=\"application/linkset+json\"",
+        "access-control-allow-origin": "*",
+        "access-control-expose-headers": "Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset",
+        "x-ratelimit-limit": "133",
+        "x-ratelimit-remaining": "132",
+        "x-ratelimit-reset": "1791134715",
+        "retry-after": "60",
+        "permissions-policy": "interest-cohort=()",
+        "x-frame-options": "sameorigin",
+        "x-xss-protection": "1; mode=block",
+        "x-content-type-options": "nosniff",
+        "content-security-policy": "default-src 'self' fonts.googleapis.com *.gstatic.com data: 'unsafe-inline' 'unsafe-eval' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch maxcdn.bootstrapcdn.com cdnjs.cloudflare.com ajax.googleapis.com webanalytics.web.cern.ch",
+        "strict-transport-security": "max-age=31556926; includeSubDomains",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-source": "api",
+        "connection": "close"
+      },
+      "bytes": 11544,
+      "sha256": "1db1d7654e85efc9f1b5fb67897f5feb2346d98419a5c05a7fe0a39c00b842da",
+      "md5": "3e0e66ba281743b69f427140f07dd34b",
+      "exit_code": 0
+    },
+    {
+      "url": "https://zenodo.org/records/10821435/files/license_information.csv?download=1",
+      "path": "work/source-expansion/roco-license_information.csv",
+      "retrieved_at_utc": "2026-10-04T17:24:14.542131+00:00",
+      "status": 200,
+      "final_url": "https://zenodo.org/records/10821435/files/license_information.csv?download=1",
+      "headers": {
+        "server": "nginx",
+        "date": "Sun, 04 Oct 2026 17:24:14 GMT",
+        "content-type": "text/plain; charset=utf-8",
+        "content-length": "9446130",
+        "vary": "Accept-Encoding",
+        "content-disposition": "attachment; filename=license_information.csv",
+        "set-cookie": "[REDACTED: response cookie omitted from team export]",
+        "oc-checksum": "MD5:65f21bc4620778259b530a2c033cd4e7",
+        "accept-ranges": "bytes",
+        "content-security-policy": "default-src 'self' fonts.googleapis.com *.gstatic.com data: 'unsafe-inline' 'unsafe-eval' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch maxcdn.bootstrapcdn.com cdnjs.cloudflare.com ajax.googleapis.com webanalytics.web.cern.ch",
+        "x-content-type-options": "nosniff",
+        "x-download-options": "noopen",
+        "x-permitted-cross-domain-policies": "none",
+        "x-frame-options": "sameorigin",
+        "x-xss-protection": "1; mode=block",
+        "x-ratelimit-limit": "133",
+        "x-ratelimit-remaining": "131",
+        "x-ratelimit-reset": "1791134715",
+        "retry-after": "60",
+        "strict-transport-security": "max-age=31556926; includeSubDomains",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-source": "files-primary",
+        "connection": "close"
+      },
+      "bytes": 9446130,
+      "sha256": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "md5": "65f21bc4620778259b530a2c033cd4e7",
+      "exit_code": 0
+    },
+    {
+      "url": "https://zenodo.org/records/10821435/files/train_concepts_manual.csv?download=1",
+      "path": "work/source-expansion/roco-train_concepts_manual.csv",
+      "retrieved_at_utc": "2026-10-04T17:24:24.909998+00:00",
+      "status": 200,
+      "final_url": "https://zenodo.org/records/10821435/files/train_concepts_manual.csv?download=1",
+      "headers": {
+        "server": "nginx",
+        "date": "Sun, 04 Oct 2026 17:24:25 GMT",
+        "content-type": "text/plain; charset=utf-8",
+        "content-length": "2352220",
+        "vary": "Accept-Encoding",
+        "content-disposition": "attachment; filename=train_concepts_manual.csv",
+        "set-cookie": "[REDACTED: response cookie omitted from team export]",
+        "oc-checksum": "MD5:29c00284c410665b6fe6ddc7f0b72f0a",
+        "accept-ranges": "bytes",
+        "content-security-policy": "default-src 'self' fonts.googleapis.com *.gstatic.com data: 'unsafe-inline' 'unsafe-eval' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch maxcdn.bootstrapcdn.com cdnjs.cloudflare.com ajax.googleapis.com webanalytics.web.cern.ch",
+        "x-content-type-options": "nosniff",
+        "x-download-options": "noopen",
+        "x-permitted-cross-domain-policies": "none",
+        "x-frame-options": "sameorigin",
+        "x-xss-protection": "1; mode=block",
+        "x-ratelimit-limit": "133",
+        "x-ratelimit-remaining": "130",
+        "x-ratelimit-reset": "1791134715",
+        "retry-after": "49",
+        "strict-transport-security": "max-age=31556926; includeSubDomains",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-source": "files-primary",
+        "connection": "close"
+      },
+      "bytes": 2352220,
+      "sha256": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "md5": "29c00284c410665b6fe6ddc7f0b72f0a",
+      "exit_code": 0
+    },
+    {
+      "url": "https://zenodo.org/records/10821435/files/train_captions.csv?download=1",
+      "path": "work/source-expansion/roco-train_captions.csv",
+      "retrieved_at_utc": "2026-10-04T17:24:28.303313+00:00",
+      "status": 200,
+      "final_url": "https://zenodo.org/records/10821435/files/train_captions.csv?download=1",
+      "headers": {
+        "server": "nginx",
+        "date": "Sun, 04 Oct 2026 17:24:28 GMT",
+        "content-type": "text/plain; charset=utf-8",
+        "content-length": "10100161",
+        "vary": "Accept-Encoding",
+        "content-disposition": "attachment; filename=train_captions.csv",
+        "set-cookie": "[REDACTED: response cookie omitted from team export]",
+        "oc-checksum": "MD5:fac7fc6bd570408f451e7558b994518a",
+        "accept-ranges": "bytes",
+        "content-security-policy": "default-src 'self' fonts.googleapis.com *.gstatic.com data: 'unsafe-inline' 'unsafe-eval' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch maxcdn.bootstrapcdn.com cdnjs.cloudflare.com ajax.googleapis.com webanalytics.web.cern.ch",
+        "x-content-type-options": "nosniff",
+        "x-download-options": "noopen",
+        "x-permitted-cross-domain-policies": "none",
+        "x-frame-options": "sameorigin",
+        "x-xss-protection": "1; mode=block",
+        "x-ratelimit-limit": "133",
+        "x-ratelimit-remaining": "129",
+        "x-ratelimit-reset": "1791134715",
+        "retry-after": "46",
+        "strict-transport-security": "max-age=31556926; includeSubDomains",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-source": "files-primary",
+        "connection": "close"
+      },
+      "bytes": 10100161,
+      "sha256": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "md5": "fac7fc6bd570408f451e7558b994518a",
+      "exit_code": 0
+    },
+    {
+      "url": "https://zenodo.org/records/10821435/files/cui_mapping.csv?download=1",
+      "path": "work/source-expansion/roco-cui_mapping.csv",
+      "retrieved_at_utc": "2026-10-04T17:24:36.826966+00:00",
+      "status": 200,
+      "final_url": "https://zenodo.org/records/10821435/files/cui_mapping.csv?download=1",
+      "headers": {
+        "server": "nginx",
+        "date": "Sun, 04 Oct 2026 17:24:37 GMT",
+        "content-type": "text/plain; charset=utf-8",
+        "content-length": "62591",
+        "vary": "Accept-Encoding",
+        "content-disposition": "attachment; filename=cui_mapping.csv",
+        "set-cookie": "[REDACTED: response cookie omitted from team export]",
+        "oc-checksum": "MD5:b12e7e3627b599b18c68dd3091294ef6",
+        "accept-ranges": "bytes",
+        "content-security-policy": "default-src 'self' fonts.googleapis.com *.gstatic.com data: 'unsafe-inline' 'unsafe-eval' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch maxcdn.bootstrapcdn.com cdnjs.cloudflare.com ajax.googleapis.com webanalytics.web.cern.ch",
+        "x-content-type-options": "nosniff",
+        "x-download-options": "noopen",
+        "x-permitted-cross-domain-policies": "none",
+        "x-frame-options": "sameorigin",
+        "x-xss-protection": "1; mode=block",
+        "x-ratelimit-limit": "133",
+        "x-ratelimit-remaining": "128",
+        "x-ratelimit-reset": "1791134715",
+        "retry-after": "37",
+        "strict-transport-security": "max-age=31556926; includeSubDomains",
+        "referrer-policy": "strict-origin-when-cross-origin",
+        "x-source": "files-primary",
+        "connection": "close"
+      },
+      "bytes": 62591,
+      "sha256": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502",
+      "md5": "b12e7e3627b599b18c68dd3091294ef6",
+      "exit_code": 0
+    },
+    {
+      "url": "https://huggingface.co/api/datasets/RadGenome/PMC-VQA/tree/b56ae594f794867893143b337b4118a835794647?recursive=true&expand=false",
+      "path": "work/source-expansion/pmcvqa-tree.json",
+      "retrieved_at_utc": "2026-10-04T17:24:37.751120+00:00",
+      "status": 200,
+      "final_url": "https://huggingface.co/api/datasets/RadGenome/PMC-VQA/tree/b56ae594f794867893143b337b4118a835794647?recursive=true&expand=false",
+      "headers": {
+        "Content-Type": "application/json; charset=utf-8",
+        "Content-Length": "2379",
+        "Connection": "close",
+        "Date": "Sun, 04 Oct 2026 17:24:37 GMT",
+        "ETag": "W/\"94b-8H+OEomA1QFrmKBk4RowQD6Pc4s\"",
+        "X-Powered-By": "huggingface-moon",
+        "X-Request-Id": "Root=1-6ac28bd5-18dde3f5479ea105764d46c4",
+        "RateLimit": "\"api\";r=499;t=255",
+        "RateLimit-Policy": "\"fixed window\";\"api\";q=500;w=300",
+        "cross-origin-opener-policy": "same-origin",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Access-Control-Max-Age": "86400",
+        "Access-Control-Allow-Origin": "https://huggingface.co",
+        "Vary": "Origin",
+        "Access-Control-Expose-Headers": "X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash",
+        "X-Cache": "Miss from cloudfront",
+        "Via": "1.1 a47b6cdbaadf18de6b360af380eea05a.cloudfront.net (CloudFront)",
+        "X-Amz-Cf-Pop": "ORD58-P13",
+        "Alt-Svc": "h3=\":443\"; ma=86400",
+        "X-Amz-Cf-Id": "pomqePOlDN1P__A-9KlgYaDW6hPhDye6f6jicY4xVKkoPH5RRLXs2g==",
+        "Strict-Transport-Security": "max-age=31536000"
+      },
+      "bytes": 2379,
+      "sha256": "2fd360b8a11e35e7502ea65bcdef9c214e7b9775719388ff8697b01704f50704",
+      "md5": "f843b29ad0aa82b5d3de851fa68fad72",
+      "exit_code": 0
+    },
+    {
+      "url": "https://huggingface.co/datasets/RadGenome/PMC-VQA/resolve/b56ae594f794867893143b337b4118a835794647/README.md",
+      "path": "work/source-expansion/pmcvqa-README.md",
+      "retrieved_at_utc": "2026-10-04T17:24:37.884493+00:00",
+      "status": 200,
+      "final_url": "https://huggingface.co/api/resolve-cache/datasets/RadGenome/PMC-VQA/b56ae594f794867893143b337b4118a835794647/README.md?%2Fdatasets%2FRadGenome%2FPMC-VQA%2Fresolve%2Fb56ae594f794867893143b337b4118a835794647%2FREADME.md=&etag=%22058f7e5534c058473614916acb0424f96a52f570%22",
+      "headers": {
+        "Content-Type": "text/plain; charset=utf-8",
+        "Content-Length": "1925",
+        "Connection": "close",
+        "Date": "Sun, 04 Oct 2026 17:24:38 GMT",
+        "ETag": "\"058f7e5534c058473614916acb0424f96a52f570\"",
+        "X-Powered-By": "huggingface-moon",
+        "X-Request-Id": "Root=1-6ac28bd6-7a71056e17439d220609c7a2",
+        "RateLimit": "\"resolvers\";r=2998;t=254",
+        "RateLimit-Policy": "\"fixed window\";\"resolvers\";q=3000;w=300",
+        "cross-origin-opener-policy": "same-origin",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Access-Control-Max-Age": "86400",
+        "Access-Control-Allow-Origin": "https://huggingface.co",
+        "Access-Control-Expose-Headers": "X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash",
+        "X-Repo-Commit": "b56ae594f794867893143b337b4118a835794647",
+        "Accept-Ranges": "bytes",
+        "Content-Disposition": "inline; filename*=UTF-8''README.md; filename=\"README.md\";",
+        "Content-Security-Policy": "default-src 'none'; sandbox",
+        "Vary": "Origin",
+        "X-Cache": "Miss from cloudfront",
+        "Via": "1.1 f649a7c6e5fc5f853b7307be97ce7892.cloudfront.net (CloudFront)",
+        "X-Amz-Cf-Pop": "ORD58-P13",
+        "Alt-Svc": "h3=\":443\"; ma=86400",
+        "X-Amz-Cf-Id": "6fjztWGA5eSherNixPeoz-0riqFhdBjebp8yuNn_37p6B5R7U_m0lQ==",
+        "Strict-Transport-Security": "max-age=31536000"
+      },
+      "bytes": 1925,
+      "sha256": "307211b63ba7c043118913efde4a2181f3e56356d0a9ec4ede0e4cc3df8b4357",
+      "md5": "a350ac0580c1bdbf86d27b34d8f862a8",
+      "exit_code": 0
+    },
+    {
+      "url": "https://arxiv.org/html/2305.10415v6",
+      "path": "work/source-expansion/pmcvqa-paper.html",
+      "retrieved_at_utc": "2026-10-04T17:24:38.208326+00:00",
+      "status": 200,
+      "final_url": "https://arxiv.org/html/2305.10415v6",
+      "headers": {
+        "Connection": "close",
+        "Content-Length": "314698",
+        "server": "Google Frontend",
+        "content-type": "text/html; charset=utf-8",
+        "etag": "\"CMuolsuVupYDEAE=\"",
+        "access-control-allow-origin": "*",
+        "via": "1.1 google, 1.1 varnish, 1.1 varnish, 1.1 varnish",
+        "x-robots-tag": "nofollow",
+        "last-modified": "Mon, 24 Aug 2026 21:05:43 GMT",
+        "link": "<https://arxiv.org/html/2305.10415>; rel='canonical'",
+        "Accept-Ranges": "bytes",
+        "Age": "503496",
+        "Date": "Sun, 04 Oct 2026 17:24:38 GMT",
+        "X-Served-By": "cache-lga-kjfk8660042-LGA, cache-lga-kjfk8660042-LGA, cache-lga-kjfk8660042-LGA, cache-chi-kigq8000085-CHI",
+        "X-Cache": "MISS, HIT, HIT",
+        "X-Timer": "S1791134678.339936,VS0,VE2"
+      },
+      "bytes": 314698,
+      "sha256": "4a895df3db0fef020239b60c1bbd791cb2bea0019c94b6a6e28e5a9bc42536fe",
+      "md5": "3ae3eba97a4cf599ca26638c73924a80",
+      "exit_code": 0
+    },
+    {
+      "url": "https://www.nature.com/articles/s41597-024-03496-6",
+      "path": "work/source-expansion/roco-paper.html",
+      "retrieved_at_utc": "2026-10-04T17:25:32.297090+00:00",
+      "max_bytes": 1000000,
+      "partial": false,
+      "status": 200,
+      "final_url": "https://www.nature.com/articles/s41597-024-03496-6?error=cookies_not_supported&code=7b645643-ab94-4cfa-a9f2-a30e40a6e3d5",
+      "headers": {
+        "Connection": "close",
+        "x-vcap-request-id": "7fbb2a34-6570-469a-49a3-7454cc9ae870",
+        "x-robots-tag": "nocache",
+        "traceparent": "00-7fbb2a346570469a49a37454cc9ae870-a2465315b15a117e-01",
+        "server": "Oscar Platform 0.2467.0",
+        "set-cookie": "[REDACTED: response cookie omitted from team export]",
+        "tracestate": "gorouter=98f4c1e1f9ab4541",
+        "accept-ranges": "bytes",
+        "cache-control": "private, must-revalidate",
+        "age": "0",
+        "x-frame-options": "DENY",
+        "via": "1.1 google, 1.1 varnish",
+        "content-type": "text/html; charset=utf-8",
+        "x-content-type-options": "nosniff",
+        "strict-transport-security": "max-age=31536000;preload",
+        "Date": "Sun, 04 Oct 2026 17:25:33 GMT",
+        "X-Served-By": "cache-5d90f688-internal, cache-chi-kigq8000089-CHI, cache-chi-klot8100127-CHI",
+        "X-Cache": "MISS, MISS, MISS",
+        "X-Cache-Hits": "0, 0",
+        "X-Timer": "S1791134733.417525,VS0,VE303",
+        "Vary": "X-Oscar-Cache-Mode,x-frame-options, Accept-Encoding",
+        "alt-svc": "h3=\":443\";ma=86400,h3-29=\":443\";ma=86400,h3-27=\":443\";ma=86400",
+        "transfer-encoding": "chunked"
+      },
+      "bytes": 421604,
+      "sha256": "dacb828c171b13d17afb1abe2c7550c213d6d7e89b39651437d9177e14adb188",
+      "md5": "46fb725d7704cea30a492b96a073dc3b",
+      "exit_code": 0
+    },
+    {
+      "url": "https://huggingface.co/datasets/RadGenome/PMC-VQA/resolve/b56ae594f794867893143b337b4118a835794647/train.csv",
+      "path": "work/source-expansion/pmcvqa-train.csv",
+      "retrieved_at_utc": "2026-10-04T17:25:34.269700+00:00",
+      "max_bytes": 39000000,
+      "partial": false,
+      "status": 200,
+      "final_url": "https://us.aws.cdn.hf.co/xet-bridge-us/646dfc4340e741b19139d854/6efbebebf2b9c2889f324754a289cf3798f21081d8115262e3fed19d83425e4b?X-Xet-Cas-Uid=public&xip=DTObS7tk0pc&response-content-type=text%2Fcsv%3B+charset%3Dutf-8&response-content-disposition=inline%3B+filename*%3DUTF-8%27%27train.csv%3B+filename%3D%22train.csv%22%3B&user_id=public&Expires=1791138334&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly91cy5hd3MuY2RuLmhmLmNvL3hldC1icmlkZ2UtdXMvNjQ2ZGZjNDM0MGU3NDFiMTkxMzlkODU0LzZlZmJlYmViZjJiOWMyODg5ZjMyNDc1NGEyODljZjM3OThmMjEwODFkODExNTI2MmUzZmVkMTlkODM0MjVlNGJcXD9YLVhldC1DYXMtVWlkPXB1YmxpYyZ4aXA9RFRPYlM3dGswcGMmcmVzcG9uc2UtY29udGVudC10eXBlPXRleHQlMkZjc3YlM0IrY2hhcnNldCUzRHV0Zi04JnJlc3BvbnNlLWNvbnRlbnQtZGlzcG9zaXRpb249aW5saW5lJTNCK2ZpbGVuYW1lJTJBJTNEVVRGLTglMjclMjd0cmFpbi5jc3YlM0IrZmlsZW5hbWUlM0QlMjJ0cmFpbi5jc3YlMjIlM0ImdXNlcl9pZD1wdWJsaWMiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkVwb2NoVGltZSI6MTc5MTEzODMzNH19fV19&Signature=MEUCIQC8V6aS66J%7E8JYliYDWtiXq52ykm-m8S4Bi9t0P50hvmQIgNyue1OeV4VehcbyvuNzTJmewEmI%7ElujwpyvOFDIwtbM_&Key-Pair-Id=01KXEF4KZ1B6FV465MAWR4M21F&Hash-Algorithm=SHA256",
+      "headers": {
+        "content-type": "text/csv; charset=utf-8",
+        "accept-ranges": "bytes",
+        "content-disposition": "inline; filename*=UTF-8''train.csv; filename=\"train.csv\";",
+        "etag": "\"6efbebebf2b9c2889f324754a289cf3798f21081d8115262e3fed19d83425e4b\"",
+        "access-control-allow-headers": "Content-Range, Content-Type, Content-Disposition, ETag",
+        "access-control-expose-headers": "*",
+        "content-length": "38081707",
+        "vary": "origin, access-control-request-method, access-control-request-headers",
+        "access-control-allow-origin": "*",
+        "x-request-id": "01M43Z66VJEW4SNDTQTGD4E2D4",
+        "x-hf-cdn-pop": "aws-us-east-1",
+        "date": "Sun, 04 Oct 2026 17:25:35 GMT",
+        "connection": "close"
+      },
+      "bytes": 38081707,
+      "sha256": "24b4e287546bbfc96ce47aadda59f43fe948b15b82820ac533363e51c1adc029",
+      "md5": "8a80558aa5b6c447a094d9789734cc7f",
+      "exit_code": 0
+    },
+    {
+      "url": "https://huggingface.co/datasets/RadGenome/PMC-VQA/resolve/b56ae594f794867893143b337b4118a835794647/train_2.csv",
+      "path": "work/source-expansion/pmcvqa-train_2.prefix.csv",
+      "retrieved_at_utc": "2026-10-04T17:25:49.250374+00:00",
+      "max_bytes": 131072,
+      "partial": true,
+      "status": 206,
+      "final_url": "https://us.aws.cdn.hf.co/xet-bridge-us/646dfc4340e741b19139d854/f7a1cc890073700050a5cfd3727bd7c7d35e9dfc8615c111df8e75c405d0e48e?X-Xet-Cas-Uid=public&response-content-disposition=inline%3B+filename*%3DUTF-8%27%27train_2.csv%3B+filename%3D%22train_2.csv%22%3B&xip=DTObS7tk0pc&response-content-type=text%2Fcsv%3B+charset%3Dutf-8&user_id=public&Expires=1791138349&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly91cy5hd3MuY2RuLmhmLmNvL3hldC1icmlkZ2UtdXMvNjQ2ZGZjNDM0MGU3NDFiMTkxMzlkODU0L2Y3YTFjYzg5MDA3MzcwMDA1MGE1Y2ZkMzcyN2JkN2M3ZDM1ZTlkZmM4NjE1YzExMWRmOGU3NWM0MDVkMGU0OGVcXD9YLVhldC1DYXMtVWlkPXB1YmxpYyZyZXNwb25zZS1jb250ZW50LWRpc3Bvc2l0aW9uPWlubGluZSUzQitmaWxlbmFtZSUyQSUzRFVURi04JTI3JTI3dHJhaW5fMi5jc3YlM0IrZmlsZW5hbWUlM0QlMjJ0cmFpbl8yLmNzdiUyMiUzQiZ4aXA9RFRPYlM3dGswcGMmcmVzcG9uc2UtY29udGVudC10eXBlPXRleHQlMkZjc3YlM0IrY2hhcnNldCUzRHV0Zi04JnVzZXJfaWQ9cHVibGljIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJFcG9jaFRpbWUiOjE3OTExMzgzNDl9fX1dfQ__&Signature=MEYCIQDOqWoCrikU6wwKyYiATvVjCCtcMwFHg5ZHPjlJilaZRAIhAIw3TKXWNQvK371K7lR-ZC4G1dpqJ-hW%7EQkwwfOXA2BW&Key-Pair-Id=01KXEF4KZ1B6FV465MAWR4M21F&Hash-Algorithm=SHA256",
+      "headers": {
+        "content-type": "text/csv; charset=utf-8",
+        "accept-ranges": "bytes",
+        "content-disposition": "inline; filename*=UTF-8''train_2.csv; filename=\"train_2.csv\";",
+        "etag": "\"f7a1cc890073700050a5cfd3727bd7c7d35e9dfc8615c111df8e75c405d0e48e\"",
+        "access-control-allow-headers": "Content-Range, Content-Type, Content-Disposition, ETag",
+        "access-control-expose-headers": "*",
+        "content-length": "131072",
+        "content-range": "bytes 0-131071/56703454",
+        "vary": "origin, access-control-request-method, access-control-request-headers",
+        "access-control-allow-origin": "*",
+        "x-request-id": "01M43Z6MVAZDFZ64AYX10JM14S",
+        "x-hf-cdn-pop": "aws-us-east-1",
+        "date": "Sun, 04 Oct 2026 17:25:49 GMT",
+        "connection": "close"
+      },
+      "bytes": 131072,
+      "sha256": "875d17edebf10de371c008de16f784a48e0c67b99a1764761f93ca2ba4dde3fe",
+      "md5": "9c88d7c0eb752da8a0ee6ae1a1def487",
+      "exit_code": 0
+    },
+    {
+      "url": "https://huggingface.co/datasets/RadGenome/PMC-VQA/resolve/b56ae594f794867893143b337b4118a835794647/oa_comm_use_file_list.csv",
+      "path": "work/source-expansion/pmcvqa-license-list.prefix.csv",
+      "retrieved_at_utc": "2026-10-04T17:25:50.114098+00:00",
+      "max_bytes": 262144,
+      "partial": true,
+      "status": 206,
+      "final_url": "https://us.aws.cdn.hf.co/xet-bridge-us/646dfc4340e741b19139d854/027e3ff77a0b483759d73f9e8b4b5a62bab7519160a96d8d258e12b7ce4a22a8?user_id=public&X-Xet-Cas-Uid=public&response-content-disposition=inline%3B+filename*%3DUTF-8%27%27oa_comm_use_file_list.csv%3B+filename%3D%22oa_comm_use_file_list.csv%22%3B&response-content-type=text%2Fcsv%3B+charset%3Dutf-8&xip=DTObS7tk0pc&Expires=1791138350&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly91cy5hd3MuY2RuLmhmLmNvL3hldC1icmlkZ2UtdXMvNjQ2ZGZjNDM0MGU3NDFiMTkxMzlkODU0LzAyN2UzZmY3N2EwYjQ4Mzc1OWQ3M2Y5ZThiNGI1YTYyYmFiNzUxOTE2MGE5NmQ4ZDI1OGUxMmI3Y2U0YTIyYThcXD91c2VyX2lkPXB1YmxpYyZYLVhldC1DYXMtVWlkPXB1YmxpYyZyZXNwb25zZS1jb250ZW50LWRpc3Bvc2l0aW9uPWlubGluZSUzQitmaWxlbmFtZSUyQSUzRFVURi04JTI3JTI3b2FfY29tbV91c2VfZmlsZV9saXN0LmNzdiUzQitmaWxlbmFtZSUzRCUyMm9hX2NvbW1fdXNlX2ZpbGVfbGlzdC5jc3YlMjIlM0ImcmVzcG9uc2UtY29udGVudC10eXBlPXRleHQlMkZjc3YlM0IrY2hhcnNldCUzRHV0Zi04JnhpcD1EVE9iUzd0azBwYyIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiRXBvY2hUaW1lIjoxNzkxMTM4MzUwfX19XX0_&Signature=MEYCIQCb%7E5Wpwmuki1aOzN-w1QM5UFtA17KySUjmwcX4d53PWgIhAJOCq43Ir8r5vVqw2gIuXIzasZTn6GsciokN-egDILuF&Key-Pair-Id=01KXEF4KZ1B6FV465MAWR4M21F&Hash-Algorithm=SHA256",
+      "headers": {
+        "content-type": "text/csv; charset=utf-8",
+        "accept-ranges": "bytes",
+        "content-disposition": "inline; filename*=UTF-8''oa_comm_use_file_list.csv; filename=\"oa_comm_use_file_list.csv\";",
+        "etag": "\"027e3ff77a0b483759d73f9e8b4b5a62bab7519160a96d8d258e12b7ce4a22a8\"",
+        "access-control-allow-headers": "Content-Range, Content-Type, Content-Disposition, ETag",
+        "access-control-expose-headers": "*",
+        "content-length": "262144",
+        "content-range": "bytes 0-262143/496021536",
+        "vary": "origin, access-control-request-method, access-control-request-headers",
+        "access-control-allow-origin": "*",
+        "x-request-id": "01M43Z6NQ48HVVG2DQWZG973S9",
+        "x-hf-cdn-pop": "aws-us-east-1",
+        "date": "Sun, 04 Oct 2026 17:25:50 GMT",
+        "connection": "close"
+      },
+      "bytes": 262144,
+      "sha256": "41794c038f5ecfaf3ad14dd5e52d576e5fc790f0216de86b21c5beda8a6c5073",
+      "md5": "56228181c527bea72fd7d4e62170bf31",
+      "exit_code": 0
+    }
+  ],
+  "archive_head": {
+    "url": "https://zenodo.org/api/records/10821435/files/train_images.zip/content",
+    "method": "HEAD",
+    "retrieved_at_utc": "2026-10-04T17:26:42.994605+00:00",
+    "exit_code": 0,
+    "status": 200,
+    "headers": {
+      "server": "nginx",
+      "content-type": "application/octet-stream",
+      "content-length": "4611440786",
+      "content-security-policy": "default-src 'self' fonts.googleapis.com *.gstatic.com data: 'unsafe-inline' 'unsafe-eval' blob: zenodo-broker.web.cern.ch zenodo-broker-qa.web.cern.ch maxcdn.bootstrapcdn.com cdnjs.cloudflare.com ajax.googleapis.com webanalytics.web.cern.ch",
+      "x-content-type-options": "nosniff",
+      "x-download-options": "noopen",
+      "x-permitted-cross-domain-policies": "none",
+      "x-frame-options": "sameorigin",
+      "x-xss-protection": "1; mode=block",
+      "content-disposition": "attachment; filename=train_images.zip",
+      "last-modified": "Wed, 19 Aug 2026 06:09:27 GMT",
+      "cache-control": "no-cache",
+      "date": "Sun, 04 Oct 2026 17:26:43 GMT",
+      "access-control-allow-origin": "*",
+      "access-control-expose-headers": "Content-Type, ETag, Link, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset",
+      "x-ratelimit-limit": "133",
+      "x-ratelimit-remaining": "132",
+      "x-ratelimit-reset": "1791134864",
+      "retry-after": "60",
+      "permissions-policy": "interest-cohort=()",
+      "strict-transport-security": "max-age=31556926; includeSubDomains",
+      "referrer-policy": "strict-origin-when-cross-origin",
+      "x-source": "api",
+      "connection": "close"
+    },
+    "final_url": "https://zenodo.org/api/records/10821435/files/train_images.zip/content"
+  },
+  "analysis_inputs": [
+    {
+      "path": "work/source-expansion/analyze.py",
+      "bytes": 9846,
+      "sha256": "20fb7cbe411b16d397fd52c9e30b83688a3b191f5026c12859c8fedf179f6b78"
+    },
+    {
+      "path": "work/source-expansion/pmcvqa-README.md",
+      "bytes": 1925,
+      "sha256": "307211b63ba7c043118913efde4a2181f3e56356d0a9ec4ede0e4cc3df8b4357"
+    },
+    {
+      "path": "work/source-expansion/pmcvqa-license-list.prefix.csv",
+      "bytes": 262144,
+      "sha256": "41794c038f5ecfaf3ad14dd5e52d576e5fc790f0216de86b21c5beda8a6c5073"
+    },
+    {
+      "path": "work/source-expansion/pmcvqa-paper.html",
+      "bytes": 314698,
+      "sha256": "4a895df3db0fef020239b60c1bbd791cb2bea0019c94b6a6e28e5a9bc42536fe"
+    },
+    {
+      "path": "work/source-expansion/pmcvqa-train.csv",
+      "bytes": 38081707,
+      "sha256": "24b4e287546bbfc96ce47aadda59f43fe948b15b82820ac533363e51c1adc029"
+    },
+    {
+      "path": "work/source-expansion/pmcvqa-train_2.prefix.csv",
+      "bytes": 131072,
+      "sha256": "875d17edebf10de371c008de16f784a48e0c67b99a1764761f93ca2ba4dde3fe"
+    },
+    {
+      "path": "work/source-expansion/pmcvqa-tree.json",
+      "bytes": 2379,
+      "sha256": "2fd360b8a11e35e7502ea65bcdef9c214e7b9775719388ff8697b01704f50704"
+    },
+    {
+      "path": "work/source-expansion/retrieval-ledger.json",
+      "bytes": 23629,
+      "sha256": "70cefcac8f861196896f801b6e629e449d99ca5898a519828bf97c9c5785e1e0"
+    },
+    {
+      "path": "work/source-expansion/roco-cui_mapping.csv",
+      "bytes": 62591,
+      "sha256": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    },
+    {
+      "path": "work/source-expansion/roco-license_information.csv",
+      "bytes": 9446130,
+      "sha256": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3"
+    },
+    {
+      "path": "work/source-expansion/roco-paper.html",
+      "bytes": 421604,
+      "sha256": "dacb828c171b13d17afb1abe2c7550c213d6d7e89b39651437d9177e14adb188"
+    },
+    {
+      "path": "work/source-expansion/roco-train-images-head.json",
+      "bytes": 1619,
+      "sha256": "d821609cdaf04380defeba4804a252f436261c68f720bbb74e6a0499c1c8f6c0"
+    },
+    {
+      "path": "work/source-expansion/roco-train_captions.csv",
+      "bytes": 10100161,
+      "sha256": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81"
+    },
+    {
+      "path": "work/source-expansion/roco-train_concepts_manual.csv",
+      "bytes": 2352220,
+      "sha256": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd"
+    },
+    {
+      "path": "work/source-expansion/roco-zenodo-api.json",
+      "bytes": 11544,
+      "sha256": "1db1d7654e85efc9f1b5fb67897f5feb2346d98419a5c05a7fe0a39c00b842da"
+    }
+  ],
+  "analysis_exit_code": 0
+}

@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/Users/sathvikloke/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests",
+    "-p",
+    "test_duplicates.py",
+    "-v"
+  ],
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "test_aspect_filter (test_duplicates.DuplicateTests.test_aspect_filter) ... ok\ntest_bounds (test_duplicates.DuplicateTests.test_bounds) ... ok\ntest_change_after_inspection_fails (test_duplicates.DuplicateTests.test_change_after_inspection_fails) ... ok\ntest_hash_tampering_fails (test_duplicates.DuplicateTests.test_hash_tampering_fails) ... ok\ntest_inclusive_aspect_boundary (test_duplicates.DuplicateTests.test_inclusive_aspect_boundary) ... ok\ntest_native16_rejected (test_duplicates.DuplicateTests.test_native16_rejected) ... ok\ntest_readonly_deterministic (test_duplicates.DuplicateTests.test_readonly_deterministic) ... ok\ntest_resize_brightness_candidates_without_merge (test_duplicates.DuplicateTests.test_resize_brightness_candidates_without_merge) ... ok\ntest_uniform_hash_collision_is_marked_weak (test_duplicates.DuplicateTests.test_uniform_hash_collision_is_marked_weak) ... ok\n\n----------------------------------------------------------------------\nRan 9 tests in 0.029s\n\nOK\n",
+  "test_file_sha256": "0b0823aace72e26c42f6770f3e8f95b17ca77d017016154852708deaf993f081"
+}

@@ -1,0 +1,1453 @@
+[
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_024386:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_024386",
+    "pmcid": "PMC7935576",
+    "group_id": "pmc-literature:PMC7935576",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7935576",
+    "raw_attribution": "CC BY Vijaykumar et al. (2021)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "Diagnostic angiogram showing extra-anatomic bypass.",
+    "raw_manual_cuis": "C0002978",
+    "manual_cuis": [
+      "C0002978"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C0002978",
+        "canonical_name": "angiogram"
+      }
+    ],
+    "modality_cui": "C0002978",
+    "modality_label": "angiogram",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "angiogram",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_000571:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_000571",
+    "pmcid": "PMC3408669",
+    "group_id": "pmc-literature:PMC3408669",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3408669",
+    "raw_attribution": "CC BY Pomier-Layrargues et al. (2012)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "Cavography in a patient with Budd Chiari syndrome. Note that the right hepatic vein was almost completely occluded (arrow).",
+    "raw_manual_cuis": "C0002978",
+    "manual_cuis": [
+      "C0002978"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C0002978",
+        "canonical_name": "angiogram"
+      }
+    ],
+    "modality_cui": "C0002978",
+    "modality_label": "angiogram",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "angiogram",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_059923:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_059923",
+    "pmcid": "PMC8346277",
+    "group_id": "pmc-literature:PMC8346277",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8346277",
+    "raw_attribution": "CC BY Muacevic et al. (2021)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "Coronary angiogram showing a 90% stenotic lesion of the proximal portion of the right coronary artery.",
+    "raw_manual_cuis": "C0002978",
+    "manual_cuis": [
+      "C0002978"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C0002978",
+        "canonical_name": "angiogram"
+      }
+    ],
+    "modality_cui": "C0002978",
+    "modality_label": "angiogram",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "angiogram",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_047764:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_047764",
+    "pmcid": "PMC4312640",
+    "group_id": "pmc-literature:PMC4312640",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4312640",
+    "raw_attribution": "CC BY Rana et al. (2015)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "Angiogram showing mobile fractured in-stent stenosis in diastole.",
+    "raw_manual_cuis": "C0002978",
+    "manual_cuis": [
+      "C0002978"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C0002978",
+        "canonical_name": "angiogram"
+      }
+    ],
+    "modality_cui": "C0002978",
+    "modality_label": "angiogram",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "angiogram",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_040197:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_040197",
+    "pmcid": "PMC8336382",
+    "group_id": "pmc-literature:PMC8336382",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8336382",
+    "raw_attribution": "CC BY Muacevic et al. (2021)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "MRI of thoracic spine, T2 sagittal view.No evidence of disease recurrence.",
+    "raw_manual_cuis": "C0024485",
+    "manual_cuis": [
+      "C0024485"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C0024485",
+        "canonical_name": "Magnetic Resonance Imaging"
+      }
+    ],
+    "modality_cui": "C0024485",
+    "modality_label": "Magnetic Resonance Imaging",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "Magnetic Resonance Imaging",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_046920:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_046920",
+    "pmcid": "PMC4776813",
+    "group_id": "pmc-literature:PMC4776813",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4776813",
+    "raw_attribution": "CC BY U. et al. (2013)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "Sagital enhanced T1W image showing pituitary microadenoma and enlargement of diploe, frontal and sphenoidal sinuses",
+    "raw_manual_cuis": "C0024485",
+    "manual_cuis": [
+      "C0024485"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C0024485",
+        "canonical_name": "Magnetic Resonance Imaging"
+      }
+    ],
+    "modality_cui": "C0024485",
+    "modality_label": "Magnetic Resonance Imaging",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "Magnetic Resonance Imaging",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_003162:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_003162",
+    "pmcid": "PMC4783311",
+    "group_id": "pmc-literature:PMC4783311",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4783311",
+    "raw_attribution": "CC BY Igala et al. (2016)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "Medullary relapse of lymphoma",
+    "raw_manual_cuis": "C0024485",
+    "manual_cuis": [
+      "C0024485"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C0024485",
+        "canonical_name": "Magnetic Resonance Imaging"
+      }
+    ],
+    "modality_cui": "C0024485",
+    "modality_label": "Magnetic Resonance Imaging",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "Magnetic Resonance Imaging",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_006911:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_006911",
+    "pmcid": "PMC6263494",
+    "group_id": "pmc-literature:PMC6263494",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6263494",
+    "raw_attribution": "CC BY Muacevic et al. (2018)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "Coronal T1 (Post-operative)Post-operative brain MRI approximately 8 weeks after surgical resection of the lesion.\u00a0",
+    "raw_manual_cuis": "C0024485",
+    "manual_cuis": [
+      "C0024485"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C0024485",
+        "canonical_name": "Magnetic Resonance Imaging"
+      }
+    ],
+    "modality_cui": "C0024485",
+    "modality_label": "Magnetic Resonance Imaging",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "Magnetic Resonance Imaging",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_045777:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_045777",
+    "pmcid": "PMC4912502",
+    "group_id": "pmc-literature:PMC4912502",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4912502",
+    "raw_attribution": "CC BY Nagano et al. (2016)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "FDG-PET/CT imaging demonstrated higher FDG uptake in cervical and supraclavicular lymph nodes",
+    "raw_manual_cuis": "C0032743",
+    "manual_cuis": [
+      "C0032743"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C0032743",
+        "canonical_name": "Positron-Emission Tomography"
+      }
+    ],
+    "modality_cui": "C0032743",
+    "modality_label": "Positron-Emission Tomography",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "Positron-Emission Tomography",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_036012:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_036012",
+    "pmcid": "PMC2769440",
+    "group_id": "pmc-literature:PMC2769440",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2769440",
+    "raw_attribution": "CC BY G\u00fcnal et al. (2009)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "Right lower quadrant mass in axial PET scan.",
+    "raw_manual_cuis": "C0032743",
+    "manual_cuis": [
+      "C0032743"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C0032743",
+        "canonical_name": "Positron-Emission Tomography"
+      }
+    ],
+    "modality_cui": "C0032743",
+    "modality_label": "Positron-Emission Tomography",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "Positron-Emission Tomography",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_011831:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_011831",
+    "pmcid": "PMC6478494",
+    "group_id": "pmc-literature:PMC6478494",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6478494",
+    "raw_attribution": "CC BY Muacevic et al. (2019)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "Positron emission tomography (PET) scan dated 01/25/2015 after 15 cycles of nivolumab. There is no longer any uptake in the left lung.The left adrenal mass is now 2.2 cm and the SUV is 2.2.",
+    "raw_manual_cuis": "C0032743",
+    "manual_cuis": [
+      "C0032743"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C0032743",
+        "canonical_name": "Positron-Emission Tomography"
+      }
+    ],
+    "modality_cui": "C0032743",
+    "modality_label": "Positron-Emission Tomography",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "Positron-Emission Tomography",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_022485:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_022485",
+    "pmcid": "PMC4898465",
+    "group_id": "pmc-literature:PMC4898465",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4898465",
+    "raw_attribution": "CC BY Rauscher et al. (2016)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "Maximum intensity protection (MIP) images of a patient with physiological distribution of 68Ga-PSMA ligand. Accumulation is seen in lacrimal and salivary glands, nasal mucosa, liver, spleen, bowel, kidneys and bladder",
+    "raw_manual_cuis": "C0032743",
+    "manual_cuis": [
+      "C0032743"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C0032743",
+        "canonical_name": "Positron-Emission Tomography"
+      }
+    ],
+    "modality_cui": "C0032743",
+    "modality_label": "Positron-Emission Tomography",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "Positron-Emission Tomography",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_049219:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_049219",
+    "pmcid": "PMC5543582",
+    "group_id": "pmc-literature:PMC5543582",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5543582",
+    "raw_attribution": "CC BY Ono et al. (2017)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "Findings of computed tomography after treatment. Focal atrophy of kidneys. Mass-like regions before treatment did not show atrophic change by computed tomography",
+    "raw_manual_cuis": "C0040405",
+    "manual_cuis": [
+      "C0040405"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C0040405",
+        "canonical_name": "X-Ray Computed Tomography"
+      }
+    ],
+    "modality_cui": "C0040405",
+    "modality_label": "X-Ray Computed Tomography",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "X-Ray Computed Tomography",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_002716:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_002716",
+    "pmcid": "PMC7455822",
+    "group_id": "pmc-literature:PMC7455822",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7455822",
+    "raw_attribution": "CC BY Liu et al. (2020)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "CT scan revealed a lesion at the gastric cardia with slightly low density, it was with a cystic wall-like structure, protruding outward, and adjacent vessels were found.",
+    "raw_manual_cuis": "C0040405",
+    "manual_cuis": [
+      "C0040405"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C0040405",
+        "canonical_name": "X-Ray Computed Tomography"
+      }
+    ],
+    "modality_cui": "C0040405",
+    "modality_label": "X-Ray Computed Tomography",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "X-Ray Computed Tomography",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_036451:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_036451",
+    "pmcid": "PMC1914059",
+    "group_id": "pmc-literature:PMC1914059",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1914059",
+    "raw_attribution": "CC BY Kubal et al. (2007)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "C T scan showing right-sided pleural effusion along with compressive atelectasis in the right lower lobe without thickening of visceral or parietal pleura.",
+    "raw_manual_cuis": "C0040405",
+    "manual_cuis": [
+      "C0040405"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C0040405",
+        "canonical_name": "X-Ray Computed Tomography"
+      }
+    ],
+    "modality_cui": "C0040405",
+    "modality_label": "X-Ray Computed Tomography",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "X-Ray Computed Tomography",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_005416:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_005416",
+    "pmcid": "PMC6093752",
+    "group_id": "pmc-literature:PMC6093752",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6093752",
+    "raw_attribution": "CC BY Muacevic et al. (2018)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "Axial computed tomography (CT) scan. Large sacral and pre-sacral mass.",
+    "raw_manual_cuis": "C0040405",
+    "manual_cuis": [
+      "C0040405"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C0040405",
+        "canonical_name": "X-Ray Computed Tomography"
+      }
+    ],
+    "modality_cui": "C0040405",
+    "modality_label": "X-Ray Computed Tomography",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "X-Ray Computed Tomography",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_055358:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_055358",
+    "pmcid": "PMC8404122",
+    "group_id": "pmc-literature:PMC8404122",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8404122",
+    "raw_attribution": "CC BY Tharwat et al. (2021)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "Ultrasonographic findings in a ram with ruptured urethra; a calculus within the penile body appears as an acoustic enhancement (stone) with distal acoustic shadowing (AS). Image was taking using a 7.5 MHz convex transducer.",
+    "raw_manual_cuis": "C0041618",
+    "manual_cuis": [
+      "C0041618"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C0041618",
+        "canonical_name": "Ultrasonography"
+      }
+    ],
+    "modality_cui": "C0041618",
+    "modality_label": "Ultrasonography",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "Ultrasonography",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_001828:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_001828",
+    "pmcid": "PMC7884066",
+    "group_id": "pmc-literature:PMC7884066",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7884066",
+    "raw_attribution": "CC BY Campagnano et al. (2021)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "Normal lung US: A-lines are visible, indicating the presence of air below the pleural line",
+    "raw_manual_cuis": "C0041618",
+    "manual_cuis": [
+      "C0041618"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C0041618",
+        "canonical_name": "Ultrasonography"
+      }
+    ],
+    "modality_cui": "C0041618",
+    "modality_label": "Ultrasonography",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "Ultrasonography",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_055240:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_055240",
+    "pmcid": "PMC2277428",
+    "group_id": "pmc-literature:PMC2277428",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2277428",
+    "raw_attribution": "CC BY Christianakis et al. (2008)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "Preoperative ultrasound showing the large pseudopolyp in the jejunoileal region.",
+    "raw_manual_cuis": "C0041618",
+    "manual_cuis": [
+      "C0041618"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C0041618",
+        "canonical_name": "Ultrasonography"
+      }
+    ],
+    "modality_cui": "C0041618",
+    "modality_label": "Ultrasonography",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "Ultrasonography",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_055075:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_055075",
+    "pmcid": "PMC3017926",
+    "group_id": "pmc-literature:PMC3017926",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3017926",
+    "raw_attribution": "CC BY Khoury et al. (2010)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "TEE view of right-coronary (RC) sinus fistula (F) into right ventricle (RV); left coronary (LC) and non-coronary (NC) cusps",
+    "raw_manual_cuis": "C0041618",
+    "manual_cuis": [
+      "C0041618"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C0041618",
+        "canonical_name": "Ultrasonography"
+      }
+    ],
+    "modality_cui": "C0041618",
+    "modality_label": "Ultrasonography",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "Ultrasonography",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_007674:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_007674",
+    "pmcid": "PMC4564414",
+    "group_id": "pmc-literature:PMC4564414",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4564414",
+    "raw_attribution": "CC BY Hani et al. (2015)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "Post reduction radiograph showing the right hip congruency",
+    "raw_manual_cuis": "C1306645;C0030797;C1999039",
+    "manual_cuis": [
+      "C1306645",
+      "C0030797",
+      "C1999039"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C1306645",
+        "canonical_name": "Plain x-ray"
+      },
+      {
+        "cui": "C0030797",
+        "canonical_name": "Pelvis"
+      },
+      {
+        "cui": "C1999039",
+        "canonical_name": "Anterior-Posterior"
+      }
+    ],
+    "modality_cui": "C1306645",
+    "modality_label": "Plain x-ray",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "Plain x-ray",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_056560:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_056560",
+    "pmcid": "PMC4391505",
+    "group_id": "pmc-literature:PMC4391505",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4391505",
+    "raw_attribution": "CC BY Watanobe et al. (2015)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "Barium esophagography. The image reveals extrinsic compression by a mass with a smooth surface (arrow) in the intra-abdominal esophageal region. Extension of the esophageal wall was good.",
+    "raw_manual_cuis": "C1306645;C0817096",
+    "manual_cuis": [
+      "C1306645",
+      "C0817096"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C1306645",
+        "canonical_name": "Plain x-ray"
+      },
+      {
+        "cui": "C0817096",
+        "canonical_name": "Chest"
+      }
+    ],
+    "modality_cui": "C1306645",
+    "modality_label": "Plain x-ray",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "Plain x-ray",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_023807:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_023807",
+    "pmcid": "PMC7786393",
+    "group_id": "pmc-literature:PMC7786393",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7786393",
+    "raw_attribution": "CC BY Van Praet et al. (2020)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "Pre-operative pyeloureterography demonstrating right-side mid-ureteral stricture at the level of the sacro-iliac joint.",
+    "raw_manual_cuis": "C1306645;C0000726;C1999039",
+    "manual_cuis": [
+      "C1306645",
+      "C0000726",
+      "C1999039"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C1306645",
+        "canonical_name": "Plain x-ray"
+      },
+      {
+        "cui": "C0000726",
+        "canonical_name": "Abdomen"
+      },
+      {
+        "cui": "C1999039",
+        "canonical_name": "Anterior-Posterior"
+      }
+    ],
+    "modality_cui": "C1306645",
+    "modality_label": "Plain x-ray",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "Plain x-ray",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  },
+  {
+    "schema_version": 1,
+    "record_kind": "quarantined_source_training_metadata",
+    "metadata_record_id": "rocov2:ROCOv2_2023_train_018974:manual-modality",
+    "metadata_only": true,
+    "training_ready": false,
+    "source_id": "rocov2",
+    "source_family": "pmc-literature",
+    "source_version": "2.0.1",
+    "source_doi": "10.5281/zenodo.10821435",
+    "source_partition": "train",
+    "source_image_id": "ROCOv2_2023_train_018974",
+    "pmcid": "PMC4863867",
+    "group_id": "pmc-literature:PMC4863867",
+    "original_figure_id": null,
+    "patient_id": null,
+    "article_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4863867",
+    "raw_attribution": "CC BY FREITAS et al. (2016)",
+    "attribution_prefix": "CC BY",
+    "aggregate_license": "CC-BY-NC-4.0",
+    "upstream_license_version": null,
+    "upstream_license_uri": null,
+    "raw_caption": "Anterior posterior radiograph of the right hip showing a fracture or avulsion of the apophysis of the greater trochanter with a slight deviation to the top.",
+    "raw_manual_cuis": "C1306645;C0023216;C1999039",
+    "manual_cuis": [
+      "C1306645",
+      "C0023216",
+      "C1999039"
+    ],
+    "manual_concepts": [
+      {
+        "cui": "C1306645",
+        "canonical_name": "Plain x-ray"
+      },
+      {
+        "cui": "C0023216",
+        "canonical_name": "Lower Extremity"
+      },
+      {
+        "cui": "C1999039",
+        "canonical_name": "Anterior-Posterior"
+      }
+    ],
+    "modality_cui": "C1306645",
+    "modality_label": "Plain x-ray",
+    "annotation_origin": "source-manual-concepts",
+    "conversion_version": "rocov2-manual-modality-metadata-v1",
+    "proposed_task": "global_classification",
+    "proposed_subtype": "modality",
+    "proposed_question": "Which imaging modality is shown in this image?",
+    "proposed_answer": "Plain x-ray",
+    "review_status": "pending",
+    "allowed_purposes": [],
+    "review_flags": [
+      "image_not_acquired",
+      "conversion_not_visually_reviewed",
+      "aggregate_nc_license",
+      "upstream_license_version_unverified",
+      "original_figure_lineage_unknown",
+      "model_use_not_approved"
+    ],
+    "shortlist_exclusion_reasons": [],
+    "metadata_sha256": {
+      "train_concepts_manual.csv": "1da272c7fbb2fd08b2a932e6bbff811bd5dfc5b50c5bef60df16b7bd0d1badbd",
+      "train_captions.csv": "2b219f3579b24750e3e170a1b1eb1edfb50361c45acba2bba34560a0fe867b81",
+      "license_information.csv": "f56f9c6959b2d4152743c001cda7c126052961b9e10c03b7486cf8d7f50559e3",
+      "cui_mapping.csv": "63cf714611563e3bc3e564cc0b47ef32f267cb13cb90f7465a1ed293976ab502"
+    }
+  }
+]

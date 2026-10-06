@@ -1,0 +1,12 @@
+test_bad_or_missing_grades_duplicate_ids_sampling_rejected (test_diagnostics.CalibrationTests.test_bad_or_missing_grades_duplicate_ids_sampling_rejected) ... ok
+test_random_and_targeted_samples_are_not_pooled (test_diagnostics.CalibrationTests.test_random_and_targeted_samples_are_not_pooled) ... ok
+test_undefined_denominators_are_null (test_diagnostics.CalibrationTests.test_undefined_denominators_are_null) ... ok
+test_counting_groups_with_global_but_stays_separate_diagnostic (test_diagnostics.DiagnosticTests.test_counting_groups_with_global_but_stays_separate_diagnostic) ... ok
+test_misaligned_candidates_fail_before_subgroup_intersection (test_diagnostics.DiagnosticTests.test_misaligned_candidates_fail_before_subgroup_intersection) ... ok
+test_missing_task_groups_give_partial_diagnostics_not_fake_balanced_score (test_diagnostics.DiagnosticTests.test_missing_task_groups_give_partial_diagnostics_not_fake_balanced_score) ... ok
+test_reweighting_can_reverse_order_without_declaring_winner (test_diagnostics.DiagnosticTests.test_reweighting_can_reverse_order_without_declaring_winner) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.056s
+
+OK

@@ -1,0 +1,27 @@
+[
+  {
+    "file": "mmbu-public-card.html",
+    "bytes": 138827,
+    "sha256": "4de94707131d8a05a97d5c91d3473657a304f9bb530e62ac6f6deec4c712f0f2"
+  },
+  {
+    "file": "mmbu-public-card-visible.txt",
+    "bytes": 7607,
+    "sha256": "5e072c7c5823bc9ce87f2086c2148b3885f97caf02b0ffaa1a5d4ce997a53ef7"
+  },
+  {
+    "file": "mmbu-public-api.json",
+    "bytes": 190269,
+    "sha256": "345df38e3becea6b2cc73b9288fa1e70e2aeae826fa4751da3cd3236b14a8d41"
+  },
+  {
+    "file": "acceptance-email-excerpts.txt",
+    "bytes": 1344,
+    "sha256": "892a54e446f6999af8ae773b058806890081c2f17abfda47234b6b58c5fd5c64"
+  },
+  {
+    "file": "source-recheck.json",
+    "bytes": 300,
+    "sha256": "ffffb5c43b89fb6975084356dee98a009b89ae71cc3293fb849fbfe83a9721db"
+  }
+]

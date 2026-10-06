@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "results": [
+    {
+      "case": "real_sample_replay_and_consistency",
+      "status": "passed",
+      "files_reproduced_identically": 53,
+      "records": 24,
+      "article_groups": 24,
+      "raw_modes": {
+        "RGB": 13,
+        "L": 11
+      },
+      "model_use_gate_error_codes": {
+        "source_ineligible": 24,
+        "purpose_not_permitted": 24,
+        "split_not_permitted": 24,
+        "record_not_approved": 24
+      }
+    },
+    {
+      "case": "changed_member_hash",
+      "status": "passed",
+      "rejection": "Acquired image differs from receipt"
+    },
+    {
+      "case": "missing_receipt_member",
+      "status": "passed",
+      "rejection": "Acquisition receipt differs from the fixed sample"
+    },
+    {
+      "case": "duplicated_receipt_member",
+      "status": "passed",
+      "rejection": "Acquisition receipt differs from the fixed sample"
+    },
+    {
+      "case": "existing_output_preserved",
+      "status": "passed"
+    },
+    {
+      "case": "missing_acquired_file",
+      "status": "passed",
+      "rejection": "Unsafe or missing source image"
+    },
+    {
+      "case": "changed_acquired_bytes",
+      "status": "passed",
+      "rejection": "Acquired image differs from receipt"
+    },
+    {
+      "case": "source_member_symlink",
+      "status": "passed",
+      "rejection": "Unsafe or missing source image"
+    },
+    {
+      "case": "unsupported_presentation_after_staging",
+      "status": "passed",
+      "rejection": "Only RGB8, grayscale8 or explicitly windowed native uint16 is supported"
+    },
+    {
+      "case": "changed_pinned_metadata_bytes",
+      "status": "passed",
+      "rejection": "Metadata differs from the pinned publisher files"
+    },
+    {
+      "case": "contradictory_receipt_provenance",
+      "status": "accepted",
+      "finding": "Coordinator ignores source identity/partition/URL and shortlist digest assertions in receipt; member bytes still matched original sample in this probe."
+    }
+  ],
+  "sources_and_existing_output_unchanged": true,
+  "coordinator_sha256": "b6c394be5b42b09651c77671d83a786c040a3dd02be5847c6c48fec3854e6d85",
+  "acquisition_receipt_sha256": "5572860a78193a1f53ee7755e7d647b18fbfef96c7f84d950e09c25e597cf7cd",
+  "shortlist_sha256": "d815b2238224f8e92cf5f321aba387e9a4ca3686bfd4dab13bf1c3b4377b9014",
+  "script_sha256": "2cc9a812c75ac7dcb310ed1d85c271cb2523ff02ca9e9b3210d0302bb6173ebe",
+  "production_code_modified": false,
+  "model_use_approval": false,
+  "network_requests": 0
+}

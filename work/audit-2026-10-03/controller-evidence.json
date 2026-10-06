@@ -1,0 +1,55 @@
+{
+  "artifact_inventory": [
+    {
+      "path": "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/work/audit-2026-10-03/plan-v1-frozen.md",
+      "sha256": "a2ee7b1dfe0882e1f4db3a6578733479aca74ffd86b04eb6d7aa0cbe5f1b23db",
+      "bytes": 30304,
+      "mtime_ns": 1791071983723689463
+    },
+    {
+      "path": "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/work/MMBU_challenge_update.pdf",
+      "sha256": "72589a77da294da10e1e953b7bc93c62fc3d511685bdd290a0f046f67348d362",
+      "bytes": 4354651,
+      "mtime_ns": 1791071339585447935
+    },
+    {
+      "path": "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/work/MMBU_challenge_update.txt",
+      "sha256": "55ce42b3890d44139523131e0a743843391750193c6e34895db0e368748a3d86",
+      "bytes": 32189,
+      "mtime_ns": 1791071354840789460
+    }
+  ],
+  "controller_commands": [
+    {
+      "command": [
+        "sentinel",
+        "verify"
+      ],
+      "returncode": 127,
+      "stdout": "",
+      "stderr": "[Errno 2] No such file or directory: 'sentinel'"
+    },
+    {
+      "command": [
+        "sentinel",
+        "ledger",
+        "--json"
+      ],
+      "returncode": 127,
+      "stdout": "",
+      "stderr": "[Errno 2] No such file or directory: 'sentinel'"
+    }
+  ],
+  "independent_arithmetic_checks": {
+    "score_example_A": 0.10400000000000001,
+    "score_example_B": 0.061999999999999986,
+    "dS_dT_finite_difference": 0.6800000000029005,
+    "dS_dT_formula": 0.68,
+    "dS_dC_finite_difference": 0.04000000000670134,
+    "dS_dC_formula": 0.04000000000000001,
+    "compute_percent_total": 100,
+    "training_percent_total": 100,
+    "deadline_chicago": "2027-01-01T06:00:00-06:00"
+  },
+  "scope": "Prospective competition plan only. No model, data manifests, training logs, predictions, official harness, confirmed compute or team hours were supplied."
+}

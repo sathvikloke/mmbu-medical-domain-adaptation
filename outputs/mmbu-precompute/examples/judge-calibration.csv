@@ -1,0 +1,1 @@
+record_id,blinded_output_id,sample_type_random_or_disagreement,source_id,task,context_field,raw_output_artifact,judge_label,reviewer_id,human_label,uncertainty,adjudication,candidate_mapping_separate

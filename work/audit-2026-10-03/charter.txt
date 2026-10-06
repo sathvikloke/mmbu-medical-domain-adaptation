@@ -1,0 +1,6 @@
+Objective: Audit and improve the supplied prospective MMBU Medical Domain Adaptation competition plan.
+Success: Check official-rule alignment, traceable factual claims, experimental design, independence, feasible resourcing and operational prioritization. Distinguish demonstrated plan defects from unknown future outcomes and external dependencies. Winning probability is not estimable.
+Protected constraints: Do not edit frozen input. Do not send messages, redeem accounts, run training, spend money, reveal or reconstruct hidden test examples, or access private team systems.
+Scope: Plan-readiness assessment; absence of completed experiments is not itself a defect because no empirical results are claimed.
+Custom lenses: adaptation-score estimand; baseline fairness; source-shift and clustering; source/label validity; classifier versus localization/metadata tasks; two independent inference passes; BF16/FP16 export; model-family selection; resource and calendar dependencies; validation-selection versus confirmation; current primary-source support.
+Controller limitation: sentinel CLI is unavailable (exit 127); local hashed receipts are supplied, without claiming a SENTINEL hash chain or parser-accepted verdict.

@@ -1,0 +1,11 @@
+test_batch_padding_masks_padding_but_retains_supervised_eos (test_supervision.SupervisionTests.test_batch_padding_masks_padding_but_retains_supervised_eos) ... ok
+test_empty_targets_oversize_and_special_target_tokens_rejected (test_supervision.SupervisionTests.test_empty_targets_oversize_and_special_target_tokens_rejected) ... ok
+test_inconsistent_labels_missing_supervision_and_rounding_over_cap_rejected (test_supervision.SupervisionTests.test_inconsistent_labels_missing_supervision_and_rounding_over_cap_rejected) ... ok
+test_only_exact_native_suffix_gets_loss (test_supervision.SupervisionTests.test_only_exact_native_suffix_gets_loss) ... ok
+test_thinking_prefix_mismatch_never_guesses_target_boundary (test_supervision.SupervisionTests.test_thinking_prefix_mismatch_never_guesses_target_boundary) ... ok
+test_unmasked_first_position_cannot_count_as_causal_target (test_supervision.SupervisionTests.test_unmasked_first_position_cannot_count_as_causal_target) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.002s
+
+OK

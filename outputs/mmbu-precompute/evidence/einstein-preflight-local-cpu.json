@@ -1,0 +1,80 @@
+{
+  "allocation_verified": false,
+  "created_at_utc": "2026-10-04T18:10:49.347685+00:00",
+  "interpretation": "Observations from this process only; no worker allocation, usable GPU memory, GPU hours, model fit, or training readiness inferred.",
+  "kind": "einstein_read_only_worker_diagnostic",
+  "nvidia_smi": {
+    "exit_code": null,
+    "gpus": [],
+    "status": "missing_tool"
+  },
+  "packages": {
+    "Pillow": {
+      "status": "missing",
+      "version": null
+    },
+    "accelerate": {
+      "status": "missing",
+      "version": null
+    },
+    "bitsandbytes": {
+      "status": "missing",
+      "version": null
+    },
+    "numpy": {
+      "status": "missing",
+      "version": null
+    },
+    "peft": {
+      "status": "missing",
+      "version": null
+    },
+    "safetensors": {
+      "status": "missing",
+      "version": null
+    },
+    "tokenizers": {
+      "status": "missing",
+      "version": null
+    },
+    "torch": {
+      "status": "missing",
+      "version": null
+    },
+    "torchvision": {
+      "status": "missing",
+      "version": null
+    },
+    "transformers": {
+      "status": "missing",
+      "version": null
+    }
+  },
+  "platform": {
+    "machine": "arm64",
+    "release": "27.0.0",
+    "system": "Darwin"
+  },
+  "python": {
+    "implementation": "CPython",
+    "version": "3.14.7"
+  },
+  "query_timeout_seconds": 10.0,
+  "readiness_assessed": false,
+  "scheduler_executables": {
+    "bjobs": false,
+    "bsub": false,
+    "qstat": false,
+    "qsub": false,
+    "salloc": false,
+    "sbatch": false,
+    "sinfo": false,
+    "squeue": false,
+    "srun": false
+  },
+  "schema_version": 1,
+  "script_sha256": "7290386c4ee7893a6112f0c01149912b8faeef3221b330614d79e1fe152e21f2",
+  "torch_cuda": {
+    "status": "not_requested"
+  }
+}

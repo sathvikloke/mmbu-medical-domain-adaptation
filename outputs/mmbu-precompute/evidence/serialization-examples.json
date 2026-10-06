@@ -1,0 +1,264 @@
+{
+  "schema_version": 1,
+  "purpose": "Synthetic engineering examples, not biomedical annotations or model results",
+  "task_examples": [
+    {
+      "task": "global_classification",
+      "answer": "synthetic blue shape",
+      "profile": "brief_json",
+      "rationale": "Explicitly supplied synthetic engineering rationale.",
+      "serialized_target": "{\"answer\":\"synthetic blue shape\",\"rationale\":\"Explicitly supplied synthetic engineering rationale.\"}",
+      "parser_result": {
+        "profile": "brief_json",
+        "raw": "{\"answer\":\"synthetic blue shape\",\"rationale\":\"Explicitly supplied synthetic engineering rationale.\"}",
+        "ok": true,
+        "parsed": {
+          "answer": "synthetic blue shape",
+          "rationale": "Explicitly supplied synthetic engineering rationale."
+        },
+        "diagnostics": []
+      }
+    },
+    {
+      "task": "global_classification",
+      "answer": "synthetic blue shape",
+      "profile": "public_card",
+      "rationale": "Explicitly supplied synthetic engineering rationale.",
+      "serialized_target": "Explicitly supplied synthetic engineering rationale.\n{\"answer\":\"synthetic blue shape\"}",
+      "parser_result": {
+        "profile": "public_card",
+        "raw": "Explicitly supplied synthetic engineering rationale.\n{\"answer\":\"synthetic blue shape\"}",
+        "ok": true,
+        "parsed": {
+          "answer": "synthetic blue shape"
+        },
+        "diagnostics": []
+      }
+    },
+    {
+      "task": "counting",
+      "answer": "2",
+      "profile": "brief_json",
+      "rationale": "Explicitly supplied synthetic engineering rationale.",
+      "serialized_target": "{\"answer\":\"2\",\"rationale\":\"Explicitly supplied synthetic engineering rationale.\"}",
+      "parser_result": {
+        "profile": "brief_json",
+        "raw": "{\"answer\":\"2\",\"rationale\":\"Explicitly supplied synthetic engineering rationale.\"}",
+        "ok": true,
+        "parsed": {
+          "answer": "2",
+          "rationale": "Explicitly supplied synthetic engineering rationale."
+        },
+        "diagnostics": []
+      }
+    },
+    {
+      "task": "counting",
+      "answer": "2",
+      "profile": "public_card",
+      "rationale": "Explicitly supplied synthetic engineering rationale.",
+      "serialized_target": "Explicitly supplied synthetic engineering rationale.\n{\"answer\":\"2\"}",
+      "parser_result": {
+        "profile": "public_card",
+        "raw": "Explicitly supplied synthetic engineering rationale.\n{\"answer\":\"2\"}",
+        "ok": true,
+        "parsed": {
+          "answer": "2"
+        },
+        "diagnostics": []
+      }
+    },
+    {
+      "task": "counting",
+      "answer": 2,
+      "profile": "brief_json",
+      "rationale": "Explicitly supplied synthetic engineering rationale.",
+      "serialized_target": "{\"answer\":2,\"rationale\":\"Explicitly supplied synthetic engineering rationale.\"}",
+      "parser_result": {
+        "profile": "brief_json",
+        "raw": "{\"answer\":2,\"rationale\":\"Explicitly supplied synthetic engineering rationale.\"}",
+        "ok": true,
+        "parsed": {
+          "answer": 2,
+          "rationale": "Explicitly supplied synthetic engineering rationale."
+        },
+        "diagnostics": []
+      }
+    },
+    {
+      "task": "counting",
+      "answer": 2,
+      "profile": "public_card",
+      "rationale": "Explicitly supplied synthetic engineering rationale.",
+      "serialized_target": "Explicitly supplied synthetic engineering rationale.\n{\"answer\":2}",
+      "parser_result": {
+        "profile": "public_card",
+        "raw": "Explicitly supplied synthetic engineering rationale.\n{\"answer\":2}",
+        "ok": true,
+        "parsed": {
+          "answer": 2
+        },
+        "diagnostics": []
+      }
+    },
+    {
+      "task": "box_classification",
+      "answer": "synthetic square",
+      "profile": "brief_json",
+      "rationale": "Explicitly supplied synthetic engineering rationale.",
+      "serialized_target": "{\"answer\":\"synthetic square\",\"rationale\":\"Explicitly supplied synthetic engineering rationale.\"}",
+      "parser_result": {
+        "profile": "brief_json",
+        "raw": "{\"answer\":\"synthetic square\",\"rationale\":\"Explicitly supplied synthetic engineering rationale.\"}",
+        "ok": true,
+        "parsed": {
+          "answer": "synthetic square",
+          "rationale": "Explicitly supplied synthetic engineering rationale."
+        },
+        "diagnostics": []
+      }
+    },
+    {
+      "task": "box_classification",
+      "answer": "synthetic square",
+      "profile": "public_card",
+      "rationale": "Explicitly supplied synthetic engineering rationale.",
+      "serialized_target": "Explicitly supplied synthetic engineering rationale.\n{\"answer\":\"synthetic square\"}",
+      "parser_result": {
+        "profile": "public_card",
+        "raw": "Explicitly supplied synthetic engineering rationale.\n{\"answer\":\"synthetic square\"}",
+        "ok": true,
+        "parsed": {
+          "answer": "synthetic square"
+        },
+        "diagnostics": []
+      }
+    },
+    {
+      "task": "mask_classification",
+      "answer": [
+        "synthetic circle",
+        "synthetic square"
+      ],
+      "profile": "brief_json",
+      "rationale": "Explicitly supplied synthetic engineering rationale.",
+      "serialized_target": "{\"answer\":[\"synthetic circle\",\"synthetic square\"],\"rationale\":\"Explicitly supplied synthetic engineering rationale.\"}",
+      "parser_result": {
+        "profile": "brief_json",
+        "raw": "{\"answer\":[\"synthetic circle\",\"synthetic square\"],\"rationale\":\"Explicitly supplied synthetic engineering rationale.\"}",
+        "ok": true,
+        "parsed": {
+          "answer": [
+            "synthetic circle",
+            "synthetic square"
+          ],
+          "rationale": "Explicitly supplied synthetic engineering rationale."
+        },
+        "diagnostics": []
+      }
+    },
+    {
+      "task": "mask_classification",
+      "answer": [
+        "synthetic circle",
+        "synthetic square"
+      ],
+      "profile": "public_card",
+      "rationale": "Explicitly supplied synthetic engineering rationale.",
+      "serialized_target": "Explicitly supplied synthetic engineering rationale.\n{\"answer\":[\"synthetic circle\",\"synthetic square\"]}",
+      "parser_result": {
+        "profile": "public_card",
+        "raw": "Explicitly supplied synthetic engineering rationale.\n{\"answer\":[\"synthetic circle\",\"synthetic square\"]}",
+        "ok": true,
+        "parsed": {
+          "answer": [
+            "synthetic circle",
+            "synthetic square"
+          ]
+        },
+        "diagnostics": []
+      }
+    },
+    {
+      "task": "detection",
+      "answer": [
+        [
+          1,
+          2.5,
+          3,
+          4.0
+        ]
+      ],
+      "profile": "brief_json",
+      "rationale": "Explicitly supplied synthetic engineering rationale.",
+      "image_width": 10,
+      "image_height": 12,
+      "serialized_target": "{\"answer\":[[1,2.5,3,4.0]],\"rationale\":\"Explicitly supplied synthetic engineering rationale.\"}",
+      "parser_result": {
+        "profile": "brief_json",
+        "raw": "{\"answer\":[[1,2.5,3,4.0]],\"rationale\":\"Explicitly supplied synthetic engineering rationale.\"}",
+        "ok": true,
+        "parsed": {
+          "answer": [
+            [
+              1,
+              2.5,
+              3,
+              4.0
+            ]
+          ],
+          "rationale": "Explicitly supplied synthetic engineering rationale."
+        },
+        "diagnostics": []
+      }
+    },
+    {
+      "task": "detection",
+      "answer": [
+        [
+          1,
+          2.5,
+          3,
+          4.0
+        ]
+      ],
+      "profile": "public_card",
+      "rationale": "Explicitly supplied synthetic engineering rationale.",
+      "image_width": 10,
+      "image_height": 12,
+      "serialized_target": "Explicitly supplied synthetic engineering rationale.\n{\"answer\":[[1,2.5,3,4.0]]}",
+      "parser_result": {
+        "profile": "public_card",
+        "raw": "Explicitly supplied synthetic engineering rationale.\n{\"answer\":[[1,2.5,3,4.0]]}",
+        "ok": true,
+        "parsed": {
+          "answer": [
+            [
+              1,
+              2.5,
+              3,
+              4.0
+            ]
+          ]
+        },
+        "diagnostics": []
+      }
+    }
+  ],
+  "context_example": {
+    "profile": "local_internal_underscore_json",
+    "requested_fields": [
+      "modality",
+      "body_part"
+    ],
+    "values": {
+      "modality": "synthetic",
+      "body_part": "explicit synthetic placeholder"
+    },
+    "serialized_target": "{\"context\":{\"modality\":\"synthetic\",\"body_part\":\"explicit synthetic placeholder\"}}"
+  },
+  "model_run": false,
+  "training_run": false,
+  "data_use_approval": false,
+  "official_schema_claim": false
+}

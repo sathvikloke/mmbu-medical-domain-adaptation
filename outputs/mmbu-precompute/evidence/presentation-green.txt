@@ -1,0 +1,8 @@
+test_16bit_requires_explicit_window_then_maps_without_changing_frame (test_presentation.PresentationTests.test_16bit_requires_explicit_window_then_maps_without_changing_frame) ... ok
+test_float_orientation_transparency_and_bad_windows_rejected (test_presentation.PresentationTests.test_float_orientation_transparency_and_bad_windows_rejected) ... ok
+test_rgb_sample_values_survive_png_output (test_presentation.PresentationTests.test_rgb_sample_values_survive_png_output) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.044s
+
+OK

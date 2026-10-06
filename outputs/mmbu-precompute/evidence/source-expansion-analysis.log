@@ -1,0 +1,339 @@
+{
+  "report": "/Users/sathvikloke/Documents/Codex/2026-10-01/https-akiranishii-github-io-mmbu-challenge/outputs/mmbu-precompute/evidence/source-expansion.json",
+  "roco": {
+    "license_rows": 79789,
+    "license_unique_ids": 79789,
+    "train_manual_rows": 59958,
+    "train_manual_unique_ids": 59958,
+    "train_caption_rows": 59958,
+    "train_caption_unique_ids": 59958,
+    "train_id_sets_identical": true,
+    "partition_image_counts_from_license_metadata": {
+      "train": 59958,
+      "valid": 9904,
+      "test": 9927
+    },
+    "partition_article_counts_from_license_metadata": {
+      "train": 33814,
+      "valid": 7759,
+      "test": 7819
+    },
+    "article_intersections_from_license_metadata": {
+      "train__valid": 0,
+      "train__test": 0,
+      "valid__test": 4417
+    },
+    "training_license_assertion_prefixes": {
+      "CC BY": 46627,
+      "CC BY-NC": 13315,
+      "PUBLIC DOMAIN": 14,
+      "other_exact_string_requires_review": 2
+    },
+    "all_license_assertion_prefixes": {
+      "CC BY": 60980,
+      "CC BY-NC": 18793,
+      "PUBLIC DOMAIN": 14,
+      "other_exact_string_requires_review": 2
+    },
+    "unusual_training_license_assertions": [
+      {
+        "ID": "ROCOv2_2023_train_002608",
+        "PMCID": "PMC2199309",
+        "Attribution": "PUBLIC DOMAIN Abejie et al. (2008)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2199309"
+      },
+      {
+        "ID": "ROCOv2_2023_train_012136",
+        "PMCID": "PMC1892149",
+        "Attribution": "PUBLIC DOMAIN Szeinuk et al. (2007)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1892149"
+      },
+      {
+        "ID": "ROCOv2_2023_train_012137",
+        "PMCID": "PMC1892149",
+        "Attribution": "PUBLIC DOMAIN Szeinuk et al. (2007)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1892149"
+      },
+      {
+        "ID": "ROCOv2_2023_train_014015",
+        "PMCID": "PMC1257604",
+        "Attribution": "PUBLIC DOMAIN Beckett et al. (2005)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1257604"
+      },
+      {
+        "ID": "ROCOv2_2023_train_017310",
+        "PMCID": "PMC6360002",
+        "Attribution": "CC  Sabetian et al. (2019)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6360002"
+      },
+      {
+        "ID": "ROCOv2_2023_train_017888",
+        "PMCID": "PMC5919507",
+        "Attribution": "PUBLIC DOMAIN Reiter et al. (2018)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5919507"
+      },
+      {
+        "ID": "ROCOv2_2023_train_021154",
+        "PMCID": "PMC4072678",
+        "Attribution": "PUBLIC DOMAIN Woldehawariat et al. (2014)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4072678"
+      },
+      {
+        "ID": "ROCOv2_2023_train_024814",
+        "PMCID": "PMC1280426",
+        "Attribution": "PUBLIC DOMAIN Szpir et al. (2005)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1280426"
+      },
+      {
+        "ID": "ROCOv2_2023_train_037219",
+        "PMCID": "PMC3930696",
+        "Attribution": "PUBLIC DOMAIN Qu et al. (2014)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3930696"
+      },
+      {
+        "ID": "ROCOv2_2023_train_040006",
+        "PMCID": "PMC4670078",
+        "Attribution": "PUBLIC DOMAIN Cramer et al. (2015)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4670078"
+      },
+      {
+        "ID": "ROCOv2_2023_train_042396",
+        "PMCID": "PMC1570091",
+        "Attribution": "PUBLIC DOMAIN Calder\u00f3n-Garcidue\u00f1as et al. (2006)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1570091"
+      },
+      {
+        "ID": "ROCOv2_2023_train_042397",
+        "PMCID": "PMC1570091",
+        "Attribution": "PUBLIC DOMAIN Calder\u00f3n-Garcidue\u00f1as et al. (2006)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1570091"
+      },
+      {
+        "ID": "ROCOv2_2023_train_042398",
+        "PMCID": "PMC1570091",
+        "Attribution": "PUBLIC DOMAIN Calder\u00f3n-Garcidue\u00f1as et al. (2006)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1570091"
+      },
+      {
+        "ID": "ROCOv2_2023_train_042399",
+        "PMCID": "PMC1570091",
+        "Attribution": "PUBLIC DOMAIN Calder\u00f3n-Garcidue\u00f1as et al. (2006)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1570091"
+      },
+      {
+        "ID": "ROCOv2_2023_train_044353",
+        "PMCID": "PMC6533034",
+        "Attribution": "CC CC-BY Zanini et al. (2019)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6533034"
+      },
+      {
+        "ID": "ROCOv2_2023_train_059355",
+        "PMCID": "PMC3066194",
+        "Attribution": "PUBLIC DOMAIN Figueroa et al. (2011)",
+        "Link": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3066194"
+      }
+    ],
+    "training_license_blank_fields": {
+      "ID": 0,
+      "PMCID": 0,
+      "Attribution": 0,
+      "Link": 0
+    },
+    "empty_manual_concept_rows": 493,
+    "unknown_manual_cuis": [],
+    "manual_cuis_not_categorized": [],
+    "manual_label_repeats_within_row": 0,
+    "category_label_count_distribution": {
+      "modality": {
+        "0": 493,
+        "1": 59465
+      },
+      "anatomy": {
+        "0": 43734,
+        "1": 16224
+      },
+      "directionality": {
+        "0": 47557,
+        "1": 12401
+      }
+    },
+    "anatomy_without_plain_xray": 0,
+    "directionality_without_plain_xray": 0,
+    "manual_concepts": [
+      {
+        "cui": "C0000726",
+        "canonical_name": "Abdomen",
+        "count": 1747,
+        "category": "anatomy"
+      },
+      {
+        "cui": "C0002978",
+        "canonical_name": "angiogram",
+        "count": 3958,
+        "category": "modality"
+      },
+      {
+        "cui": "C0006141",
+        "canonical_name": "Breast",
+        "count": 56,
+        "category": "anatomy"
+      },
+      {
+        "cui": "C0023216",
+        "canonical_name": "Lower Extremity",
+        "count": 2293,
+        "category": "anatomy"
+      },
+      {
+        "cui": "C0024485",
+        "canonical_name": "Magnetic Resonance Imaging",
+        "count": 9790,
+        "category": "modality"
+      },
+      {
+        "cui": "C0030797",
+        "canonical_name": "Pelvis",
+        "count": 1257,
+        "category": "anatomy"
+      },
+      {
+        "cui": "C0032743",
+        "canonical_name": "Positron-Emission Tomography",
+        "count": 350,
+        "category": "modality"
+      },
+      {
+        "cui": "C0037303",
+        "canonical_name": "Bone structure of cranium",
+        "count": 3216,
+        "category": "anatomy"
+      },
+      {
+        "cui": "C0037949",
+        "canonical_name": "Vertebral column",
+        "count": 1073,
+        "category": "anatomy"
+      },
+      {
+        "cui": "C0040405",
+        "canonical_name": "X-Ray Computed Tomography",
+        "count": 20459,
+        "category": "modality"
+      },
+      {
+        "cui": "C0041618",
+        "canonical_name": "Ultrasonography",
+        "count": 8305,
+        "category": "modality"
+      },
+      {
+        "cui": "C0205106",
+        "canonical_name": "Transverse - anatomical location",
+        "count": 29,
+        "category": "directionality"
+      },
+      {
+        "cui": "C0205129",
+        "canonical_name": "Sagittal",
+        "count": 1868,
+        "category": "directionality"
+      },
+      {
+        "cui": "C0817096",
+        "canonical_name": "Chest",
+        "count": 5463,
+        "category": "anatomy"
+      },
+      {
+        "cui": "C1140618",
+        "canonical_name": "Upper Extremity",
+        "count": 1119,
+        "category": "anatomy"
+      },
+      {
+        "cui": "C1306645",
+        "canonical_name": "Plain x-ray",
+        "count": 16603,
+        "category": "modality"
+      },
+      {
+        "cui": "C1996865",
+        "canonical_name": "Postero-Anterior",
+        "count": 3393,
+        "category": "directionality"
+      },
+      {
+        "cui": "C1999039",
+        "canonical_name": "Anterior-Posterior",
+        "count": 7111,
+        "category": "directionality"
+      }
+    ],
+    "blank_training_captions": 0,
+    "max_training_images_per_article": 28
+  },
+  "pmcvqa": {
+    "repository_revision": "b56ae594f794867893143b337b4118a835794647",
+    "train_rows": 176948,
+    "train_unique_figures": 115821,
+    "train_article_count_from_filename": 85778,
+    "train_unparseable_figure_path_count": 0,
+    "train_blank_fields": {
+      "Figure_path": 0,
+      "Question": 0,
+      "Answer": 0,
+      "Choice A": 0,
+      "Choice B": 0,
+      "Choice C": 0,
+      "Choice D": 0,
+      "Answer_label": 0
+    },
+    "train_answer_label_distribution": {
+      "\"": 3,
+      "'": 11,
+      "A": 43421,
+      "B": 54217,
+      "C": 50791,
+      "D": 28505
+    },
+    "train_duplicate_full_rows": 1,
+    "train_same_figure_question_multiple_exact_normalized_answers": 8,
+    "train_answer_option_dependency_heuristic_count": 2409,
+    "train_answer_option_dependency_heuristic_is_not_exhaustive_or_a_quality_estimate": true,
+    "train2_prefix_only_complete_records": 357,
+    "train2_prefix_split_distribution": {
+      "train": 357
+    },
+    "train2_prefix_answer_distribution": {
+      "A": 50,
+      "B": 111,
+      "C": 151,
+      "D": 45
+    },
+    "license_prefix_only_complete_records": 2325,
+    "license_prefix_only_assertions": {
+      "CC BY": 2311,
+      "CC0": 14
+    },
+    "train_articles_found_in_license_prefix_only": 83,
+    "full_license_table_not_downloaded_or_joined": true,
+    "roco_article_intersections_by_source_partition": {
+      "train": 12078,
+      "valid": 9,
+      "test": 12
+    },
+    "roco_train_images_with_article_in_pmcvqa_train": 23548,
+    "article_intersection_is_not_an_exact_image_duplicate_count": true,
+    "heldout_pmcvqa_files_not_downloaded": true
+  },
+  "integrity_checks": {
+    "roco_local_md5_matches_publisher": {
+      "license_information.csv": true,
+      "train_concepts_manual.csv": true,
+      "train_captions.csv": true,
+      "cui_mapping.csv": true
+    },
+    "pmcvqa_train_sha256_matches_hub_lfs": true
+  },
+  "total_saved_response_body_bytes": 61188175
+}

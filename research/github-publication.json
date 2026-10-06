@@ -1,0 +1,69 @@
+{
+  "verified_at_utc": "2026-10-06T01:26:46.261547+00:00",
+  "repository": {
+    "full_name": "sathvikloke/mmbu-medical-domain-adaptation",
+    "private": true,
+    "url": "https://github.com/sathvikloke/mmbu-medical-domain-adaptation"
+  },
+  "release_commit": "bccc0e776d38503835943d5f1f380c7697fa95fc",
+  "remote_file_tree_matches_local_commit": true,
+  "git_tracked_files": 503,
+  "release": {
+    "url": "https://github.com/sathvikloke/mmbu-medical-domain-adaptation/releases/tag/team-handoff-v0.3",
+    "tag": "team-handoff-v0.3",
+    "draft": false,
+    "assets": [
+      {
+        "name": "workspace-data-manifest.json",
+        "bytes": 114705,
+        "digest": "sha256:e69b2733b7282e6df6bfe0f9274c99148b54927fcce914976011e15587c44307",
+        "state": "uploaded"
+      },
+      {
+        "name": "workspace-data.sha256",
+        "bytes": 85,
+        "digest": "sha256:bf218fbebcd0aa2002fcfb80a1f3e5d5f46f1596b95af67033430b45396eb8d7",
+        "state": "uploaded"
+      },
+      {
+        "name": "workspace-data.zip",
+        "bytes": 175135253,
+        "digest": "sha256:57be1f6894748047da8a03b30559ea87b1e298ea9efb69ff90d0f4f297eef5e3",
+        "state": "uploaded"
+      }
+    ]
+  },
+  "hosted_ci": {
+    "url": "https://github.com/sathvikloke/mmbu-medical-domain-adaptation/actions/runs/37399022382",
+    "head_sha": "bccc0e776d38503835943d5f1f380c7697fa95fc",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "name": "Optional images / Python 3.12",
+        "conclusion": "success"
+      },
+      {
+        "name": "Core / Python 3.11",
+        "conclusion": "success"
+      },
+      {
+        "name": "Core / Python 3.12",
+        "conclusion": "success"
+      },
+      {
+        "name": "Core / Python 3.14",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "authenticated_download_verification": {
+    "command": "python3 tools/restore_workspace.py --download --dry-run",
+    "cwd": "repository root",
+    "exit_code": 0,
+    "verified_files": 561,
+    "existing_identical": 167,
+    "restored_files": 0,
+    "model_use_approved": false
+  },
+  "note": "Release commit is preserved. Later commits add publication receipts/docs; their CI is visible separately on GitHub."
+}

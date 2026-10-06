@@ -36,6 +36,6 @@
 ## Task 4 — Independent review and publication
 
 - [x] Fresh unit/CLI/link/integrity checks and separate-author review of documentation/completeness/security boundaries.
-- [ ] Initialize and commit repository, create private remote, push, upload release assets and verify remote identity/visibility/commit/content.
-- [ ] Invite exactly the four requested accounts with push/write access and verify accepted versus pending status accurately.
-- [ ] Report the repository URL, release access and each invitation status, with any genuine remaining blocker.
+- [x] Initialize and commit repository, create private remote, push, upload release assets and verify remote identity/visibility/commit/content.
+- [x] Invite exactly the four requested accounts with push/write access and verify accepted versus pending status accurately.
+- [x] Report the repository URL, release access and each invitation status, with any genuine remaining blocker.

@@ -1,0 +1,74 @@
+{
+  "checked_at_utc": "2026-10-06T01:25:22.284049+00:00",
+  "repository": "sathvikloke/mmbu-medical-domain-adaptation",
+  "private": true,
+  "authorization": "User explicitly requested sharing all project code/results with these four GitHub accounts.",
+  "actions": [
+    {
+      "username": "adityaraut09",
+      "requested_permission": "push",
+      "exit_code": 0,
+      "invitation_id": 336267198,
+      "invitee_login": "adityaraut09",
+      "permissions": "write",
+      "created_at": "2026-10-06T01:25:19Z"
+    },
+    {
+      "username": "s1g6r",
+      "requested_permission": "push",
+      "exit_code": 0,
+      "invitation_id": 336267200,
+      "invitee_login": "s1g6r",
+      "permissions": "write",
+      "created_at": "2026-10-06T01:25:20Z"
+    },
+    {
+      "username": "suhritb",
+      "requested_permission": "push",
+      "exit_code": 0,
+      "invitation_id": 336267201,
+      "invitee_login": "suhritb",
+      "permissions": "write",
+      "created_at": "2026-10-06T01:25:20Z"
+    },
+    {
+      "username": "nmovva-lab",
+      "requested_permission": "push",
+      "exit_code": 0,
+      "invitation_id": 336267202,
+      "invitee_login": "nmovva-lab",
+      "permissions": "write",
+      "created_at": "2026-10-06T01:25:21Z"
+    }
+  ],
+  "access": [
+    {
+      "username": "adityaraut09",
+      "status": "invitation_pending",
+      "permission": "write",
+      "invitation_id": 336267198,
+      "created_at": "2026-10-06T01:25:19Z"
+    },
+    {
+      "username": "s1g6r",
+      "status": "invitation_pending",
+      "permission": "write",
+      "invitation_id": 336267200,
+      "created_at": "2026-10-06T01:25:20Z"
+    },
+    {
+      "username": "suhritb",
+      "status": "invitation_pending",
+      "permission": "write",
+      "invitation_id": 336267201,
+      "created_at": "2026-10-06T01:25:20Z"
+    },
+    {
+      "username": "nmovva-lab",
+      "status": "invitation_pending",
+      "permission": "write",
+      "invitation_id": 336267202,
+      "created_at": "2026-10-06T01:25:21Z"
+    }
+  ]
+}

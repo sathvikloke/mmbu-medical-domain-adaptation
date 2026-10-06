@@ -4,7 +4,7 @@ This handoff is ready for CPU development and review. The next scientific milest
 
 ## Access and clone
 
-Owner: `sathvikloke`. Requested collaborators: `adityaraut09`, `s1g6r`, `suhritb`, `nmovva-lab`. Each account must accept its GitHub invitation before private repository and release access works. Being named in this document does not establish accepted access; inspect GitHub's current status.
+Owner: `sathvikloke`. Invited collaborators (write access): `adityaraut09`, `s1g6r`, `suhritb`, `nmovva-lab`. Each account must accept its GitHub invitation before private repository and release access works. Being named in this document does not establish accepted access; inspect GitHub's current status.
 
 After accepting access, clone with your own authenticated GitHub account:
 

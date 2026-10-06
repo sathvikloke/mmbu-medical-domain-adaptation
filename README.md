@@ -46,7 +46,7 @@ These checks validate software and saved artifacts. They cannot establish source
 
 ## Team and research boundaries
 
-Repository owner: **sathvikloke**. Requested collaborators: **adityaraut09**, **s1g6r**, **suhritb**, and **nmovva-lab**. Access acceptance is separate from being listed here; verify the current invitation or collaborator status in GitHub. Research roles are unassigned until the team records them.
+Repository owner: **sathvikloke**. Invited collaborators (write access): **adityaraut09**, **s1g6r**, **suhritb**, and **nmovva-lab**. Access acceptance is separate from being listed here; verify the current invitation or collaborator status in GitHub. The [publication-time access receipt](research/github-access.json) records the sent invitations; GitHub shows current acceptance. Research roles are unassigned until the team records them.
 
 Historical “independent reviews” were performed by separate AI agents. They are not human peer review, biomedical adjudication, or legal approval. No organizer message or acceptance of gated data terms is recorded in the preparation milestone.
 

@@ -116,7 +116,7 @@ When runtime fails before generation, generation fields may be null and downstre
 - real native collator, forward/backward, declared trainable-module gradients, minimal adapter save, and fresh-process reload;
 - same-environment greedy token-ID and adapter/config hash replay;
 - measured GPU/runtime record rather than estimates;
-- local dummy release preflight only.
+- local dummy release preflight only, including canonical closed-file inventory, safe-serialization allowlist, path/symlink/alias rejection, secret/private-path scan, dependency-closure checks, synthetic unresolved-blob and hidden-fetch failures, and a dummy build receipt. Phase 1 does not create or upload a Hugging Face repository.
 
 Multi-image support is out of Phase 1 unless an official need, ordered-image schema, fixture, and acceptance test are added.
 

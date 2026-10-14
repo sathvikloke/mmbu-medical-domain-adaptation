@@ -1,6 +1,6 @@
 # Start here
 
-This handoff is ready for CPU development and review. The next scientific milestone is E00–E02 once the evaluation contract, usable data, and compute are established. There is no trained model or baseline performance result yet.
+This handoff is ready for CPU development and review. The next step is Phase 1 engineering under the clone-resident [Phase 1 contract](../phase1/CONTRACT.md), [official-source map](../phase1/OFFICIAL_SOURCE_MAP.md), and [B1 pin](../phase1/b1-pin.json). The historical package remains reproducible but is not the destination for new code. There is no trained model or baseline performance result yet.
 
 ## Access and clone
 
@@ -13,7 +13,7 @@ gh repo clone sathvikloke/mmbu-medical-domain-adaptation
 cd mmbu-medical-domain-adaptation
 ```
 
-The core tests and demo need only this checkout. Real-image and cached native-processor replays also need the private release inputs described in [Data and models](DATA_AND_MODELS.md). Credentials and installed environments are never shared through the repository.
+The historical tests and demo need only this checkout. New work uses `src/mmbu_phase1` and `tests/phase1` once those paths are implemented. Real-image and cached native-processor replays also need the private release inputs described in [Data and models](DATA_AND_MODELS.md). Credentials and installed environments are never shared through the repository.
 
 ## First local run
 
@@ -48,15 +48,20 @@ python3 tools/team.py verify-evidence
 
 With supported Pillow installed, `python3 tools/team.py test --images` requires image coverage rather than silently accepting a missing dependency. This helper also runs the additional team-tool tests. See [Development](DEVELOPMENT.md) for the wrapper and CI details.
 
+The current `python3 tools/team.py test` is historical-only and can pass while every Phase 1 path is absent. That is expected before implementation and is not an acceptance signal. Phase 1 must change the root test command to fail closed when `src/mmbu_phase1`, `tests/phase1`, or `config/phase1/current-status.json` is absent, always run `PYTHONPATH=src python3 -m unittest discover -s tests/phase1 -v`, and report a nonzero Phase 1 test count. Model and GPU checks remain a separate explicit entry point and environment; ordinary CI must not pretend to provide that evidence.
+
 For native processors, use the separate environment and exact pins in [processor compatibility](../../outputs/mmbu-precompute/docs/processor-compatibility.md). Do not install the entire native stack just to run the standard-library demo. Native probes use tokenizer/config/template artifacts; they do not load model weights.
 
 ## Read in this order
 
-1. [Results and limits](RESULTS.md): distinguish verified CPU work from pending research.
-2. [Repository map](REPOSITORY_MAP.md): locate the module, raw result, and historical script relevant to your task.
-3. [Audited strategy v2](../../outputs/MMBU-domain-adaptation-plan-v2.md): understand the hypothesis, controlled comparisons, and promotion gates.
-4. [Decisions](DECISIONS.md) and [experiment workflow](EXPERIMENT_WORKFLOW.md): identify what evidence permits your next action.
-5. [Contributing](../../CONTRIBUTING.md): open a scoped branch and request review.
+1. [Phase 1 contract](../phase1/CONTRACT.md): follow the new package, firewall, evidence, and acceptance boundaries.
+2. [Official-source map](../phase1/OFFICIAL_SOURCE_MAP.md): see which official pages support each sanitized rule assertion and what remains unresolved.
+3. [B1 pin](../phase1/b1-pin.json): use the exact model and processor identity; never float to `main`.
+4. [Results and limits](RESULTS.md): distinguish verified CPU work from pending research.
+5. [Repository map](REPOSITORY_MAP.md): locate the historical module, raw result, and script relevant to compatibility work.
+6. [Audited strategy v2](../../outputs/MMBU-domain-adaptation-plan-v2.md): treat this as historical scientific context, not the current implementation contract.
+7. [Decisions](DECISIONS.md) and [experiment workflow](EXPERIMENT_WORKFLOW.md): identify what evidence permits your next action.
+8. [Contributing](../../CONTRIBUTING.md): open a scoped branch and request review.
 
 ## Choose a first contribution
 
@@ -68,7 +73,7 @@ Useful work can proceed in parallel:
 | --- | --- | --- |
 | Contract | Review the [organizer question draft](../../outputs/mmbu-precompute/docs/organizer-questions.md) and six protocol conflicts | Authoritative reply, pinned harness, and fixtures; the draft has not been sent |
 | Data | Inspect the BBBC039 and ROCO review queues in [Results](RESULTS.md) | Recorded source decisions and suitable biomedical review; records remain pending meanwhile |
-| Compute | Run the [Einstein preflight](../../outputs/mmbu-precompute/docs/einstein-preflight.md) in the allocated environment | Hardware, allocation, runtime, quota, scheduler, and cost facts |
+| Compute | Use the current UTC MOCS runbook supplied with the Phase 1 work order; treat the historical [Einstein preflight](../../outputs/mmbu-precompute/docs/einstein-preflight.md) as obsolete context only | Hardware, allocation, runtime, quota, scheduler, and cost facts from the actual MOCS account |
 | Software | Reproduce a focused test or investigate a recorded counterexample | New command/output receipt and a reviewed regression fix |
 
 Do not run every historical acquisition script as an onboarding step. Some scripts access upstream networks or refer to old local paths. Start with the packaged CLI, then select a documented replay with its required inputs.

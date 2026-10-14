@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "contract_revision": "2026-10-14-cycle-19",
+  "files": {
+    "docs/phase1/CONTRACT.md": {
+      "bytes": 12382,
+      "sha256": "6c78405f0080efc0eff19791689a5a22d9740ca29e15fbf74e64a34ca30ae722"
+    },
+    "docs/phase1/OFFICIAL_SOURCE_MAP.md": {
+      "bytes": 5591,
+      "sha256": "dcb88cc5fe85a1d468e79dda08538eb3e303039d0a973c5be30714dcd1d2f044"
+    },
+    "docs/phase1/b1-pin.json": {
+      "bytes": 375,
+      "sha256": "1b6261bb691742d35147043f26dbccb597a1741755d45430edf7ec1cf840a923"
+    }
+  },
+  "official_source_hashes": {
+    "MMBU_challenge_update.pdf": "68fb4c2685d3d3b501da6f92f0906f970d851b596e98fddede26fb6e2b6e4ba0",
+    "mmbu-challenge-official-rules.pdf": "30fb3241bd331eeaf0602b4ec24faf66b50f97c5d430cf814fdda80d62b80c8e"
+  },
+  "inventory_policy": "exact: no missing or extra binding contract members",
+  "note": "This manifest pins the clone-resident sanitized Phase 1 contract, source receipt, and B1 identity. Official source hash changes require a fresh review and contract revision."
+}

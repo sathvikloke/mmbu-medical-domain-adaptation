@@ -11,14 +11,16 @@
 | `MMBU_challenge_update.pdf` | `68fb4c2685d3d3b501da6f92f0906f970d851b596e98fddede26fb6e2b6e4ba0` | pages 3, 5–12; rule-bearing text only |
 | `mmbu-challenge-official-rules.pdf` | `30fb3241bd331eeaf0602b4ec24faf66b50f97c5d430cf814fdda80d62b80c8e` | pages 1–2; sections 1–11 |
 
-The manifest in this directory pins this receipt and `CONTRACT.md`. A source-byte or receipt-byte change requires a new contract revision and review.
+An authenticated October 9 registered-team organizer bulletin, held outside this sanitized clone, directs teams to the challenge website and pinned Discord messages for details and answers. This metadata is an external audit warning, not clone-resident rule authority: the bulletin bytes and current pinned posts are not yet captured or hashed here. A Discord clarification can become contract authority only after an authorized read-only capture records exact content bytes or screenshot hash, organizer identity, server/channel, timestamp, pin state, and scope, followed by a reviewed contract revision.
+
+The exact seven-member manifest in this directory pins this receipt alongside the other binding Phase 1 contract members. A source-byte or receipt-byte change requires a new contract revision and review.
 
 ## Sanitized assertion map
 
 | Contract assertion | Primary locator |
 |---|---|
 | Four task families; detection uses `[x, y, width, height]` and IoU at least 0.5 | brief page 3 |
-| Track 2 is medical domain adaptation; the exact base must be disclosed; models above 27B active parameters use an API-key evaluation route | brief page 5 |
+| Track 2 is medical domain adaptation; the exact base must be disclosed; models above 27B active parameters use an API-key evaluation route. Whether that route supplements or replaces public/ungated release conflicts across published sources; exactly 27B is not resolved. | brief page 5 read with page 10 Rule 1 and current website FAQ |
 | Task and biomedical-context evaluation are independent passes; six possible context fields are scored only when annotated | brief pages 6–7 |
 | Malformed or unparsable JSON gets no credit in the affected pass | brief page 7 and page 11 Rule 8 |
 | Task grades may be fractional; context is averaged within example and then across examples | brief page 8 |
@@ -59,6 +61,10 @@ These are two independent machine-assisted reviews, not human legal advice and n
 - adapter-only versus merged/full-weight eligibility;
 - quantized stored-weight and mixed-kernel eligibility;
 - treatment of independent training splits from MMBU-contributing source datasets;
-- exact active-parameter definition for any future MoE candidate.
+- exact active-parameter definition for any future MoE candidate;
+- whether above-27B models require both public/ungated Hugging Face release and an API, and the treatment of exactly 27B;
+- current rule-bearing pinned Discord clarifications and office-hour notices; no irreversible rule-sensitive choice may treat this source inventory as complete until an authorized capture is reviewed.
 
-An unresolved item stays unresolved until a written organizer artifact is added with its own hash, scope, and contract revision.
+Authority precedence is: later formal rules or a scope-specific written organizer clarification/material-change notice; then the published challenge brief and current official site for nonconflicting statements; then provisional summaries. Captured pinned organizer posts and written bulletins enter at the scope their text supports, never by channel name alone. Conflicts are quarantined rather than silently resolved.
+
+An unresolved item stays unresolved until a written organizer artifact or authenticated captured pin is added with its own hash, author/channel, timestamp, scope, and contract revision.

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "contract_revision": "2026-10-14-cycle-36",
+  "contract_revision": "2026-10-14-cycle-37",
   "files": {
     "docs/phase1/CONTRACT.md": {
       "bytes": 17737,
@@ -23,8 +23,8 @@
       "sha256": "5d1286638571f886e6692064dd444e4ddba62c72d75f5fe2ca4b090793c2982b"
     },
     "docs/phase1/OFFICIAL_SOURCE_MAP.md": {
-      "bytes": 5807,
-      "sha256": "4bd4cffe23ea1c7fc38f0be1718342ad327f14e8237978711bd82245472a8cd7"
+      "bytes": 7450,
+      "sha256": "881c91031cc4fd0eddec1f1b8a51292ef84b9ce20dc2cf66789583211ffa3905"
     },
     "docs/phase1/b1-pin.json": {
       "bytes": 3757,

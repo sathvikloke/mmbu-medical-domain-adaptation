@@ -1,6 +1,6 @@
 # Phase 1 execution reproducibility contract
 
-**Revision:** 2026-10-14-cycle-30  
+**Revision:** 2026-10-14-cycle-34
 **Status:** binding design contract; unimplemented and unexecuted  
 **Scope:** engineering inference, one-step training, save/reload, resume, evidence generation, and later experiment runs
 

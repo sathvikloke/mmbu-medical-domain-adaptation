@@ -14,6 +14,8 @@ This repository file is the clone-resident source of truth for Phase 1. Machine-
 
 `docs/phase1/REPRODUCIBILITY.md` is the manifest-covered execution contract. It defines identity, bit, numerical, and statistical reproduction levels; complete environment, RNG, and data-order records; cache isolation; fresh reload; interrupted resume; negative tests; and the limits of Phase 1 claims.
 
+`docs/phase1/B1_RUNTIME_GATE.md` is the manifest-covered native-model admission contract. It fixes the exact dependency candidate, conservative image-only reference condition, preprocessing/geometry record, and adversarial single/batch/state/cache/training/reload gates. A nominal baseline cannot bypass it.
+
 ## Fixed repository layout
 
 - new package: `src/mmbu_phase1/`
@@ -109,6 +111,7 @@ When runtime fails before generation, generation fields may be null and downstre
 ## Required mechanics
 
 - exact pinned B1 model and processor load from `docs/phase1/b1-pin.json`: model and processor `Qwen/Qwen2.5-VL-7B-Instruct` at repository revision `cc594898137f460bfe9f0759e9844b3ce807cfb5`; floating revisions are forbidden; before model load, the downloaded tensor index must match its recorded size/hash, name exactly the five pinned shards and no others, and every local shard must match its recorded byte size and SHA-256; range/header parsing must reproduce the recorded tensor count, BF16 element count, and payload bytes; config, preprocessor, generation, tokenizer, and chat-template metadata must also match the recorded hashes; the runner records which template source the processor resolved and its canonical hash; `trust_remote_code` is false unless a later reviewed pin explicitly changes it;
+- exact B1 runtime admission under `docs/phase1/B1_RUNTIME_GATE.md`: Transformers 5.19.0 D1 is a candidate, not proof; use the concrete multimodal class, PIL image backend, left padding, BF16 on a named compatible GPU, one GPU, SDPA, dynamic cache, and local decoded images; remote/optional kernels, the convenience vision utility, packing, static cache, chunked/continuous generation, distributed execution, compilation, gradient checkpointing, and FlashAttention 2 stay outside the reference path; bind raw-to-processed geometry and visual tokens; pass image-intervention, heterogeneous single/batch, repeated-call/order, MRoPE, cached/uncached, label/CE/accumulation, finite native forward/backward, parameter, identity-preserving save/reload, offline, and resource gates before calling B1 mechanically admitted;
 - explicit engineering decoding from the pin: never inherit the repository `generation_config.json`; construct the call from the allowlisted fields, including `do_sample=false`, one beam/return sequence, neutral sampling fields, and `repetition_penalty=1.0`; bind task-specific token and stop limits in the versioned prompt contract. A missing, extra, silently ignored, or upstream-inherited generation setting rejects the run. This is the external engineering/tournament condition, not a claim about the still-unpublished official harness;
 - native one-image preprocessing and stateless task/context calls;
 - synthetic fixture covering classification, counting, one/many boxes, dynamic context subsets, malformed output, missing/inapplicable context, and failure states;

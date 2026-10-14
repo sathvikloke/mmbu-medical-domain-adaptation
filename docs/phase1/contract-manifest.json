@@ -1,30 +1,30 @@
 {
   "schema_version": 1,
-  "contract_revision": "2026-10-14-cycle-37",
+  "contract_revision": "2026-10-14-cycle-38",
   "files": {
     "docs/phase1/CONTRACT.md": {
-      "bytes": 17737,
-      "sha256": "8c3e9cce83e69dd33f55ce285d36a9c95c40fca3bbe8678184f491369a8d0b21"
+      "bytes": 17784,
+      "sha256": "855b768dfb7c5e8ed9a7cccf3dc29aa034abb77dddf387954744b94c5b4bc90f"
     },
     "docs/phase1/ACCEPTANCE.md": {
-      "bytes": 15366,
-      "sha256": "13c31905762238f52be194f5ce8ff33dc68725e618816d4226d9be944fab5a8a"
+      "bytes": 15869,
+      "sha256": "315ee5dc79368c8443d8791b5bb211816362afa72a5d1e17274f42771fdf0df4"
     },
     "docs/phase1/SCHEMAS.md": {
-      "bytes": 30995,
-      "sha256": "9669315536863aa7312be212dd3a3aec9c5e9c93754401b572f9ce47fd0905de"
+      "bytes": 40002,
+      "sha256": "e1a3db253620555af8e74a2e8c7b45e858f7269ab0de71f0db840b67171c172a"
     },
     "docs/phase1/REPRODUCIBILITY.md": {
-      "bytes": 9767,
-      "sha256": "b664c5be3e9141d9a28e4db8aa5e801c82b7f5515a1ba1d315925d7b46338203"
+      "bytes": 10754,
+      "sha256": "0a4b676c2c0ddd3e938792c35e37c7f53b28ae034d01fb809d145dc81e055058"
     },
     "docs/phase1/B1_RUNTIME_GATE.md": {
       "bytes": 8281,
       "sha256": "5d1286638571f886e6692064dd444e4ddba62c72d75f5fe2ca4b090793c2982b"
     },
     "docs/phase1/OFFICIAL_SOURCE_MAP.md": {
-      "bytes": 7450,
-      "sha256": "881c91031cc4fd0eddec1f1b8a51292ef84b9ce20dc2cf66789583211ffa3905"
+      "bytes": 7593,
+      "sha256": "8acc59c6ce6d1beeb3a90c0aaa1c8673f162af6a3ad45820421e15709fc17e3b"
     },
     "docs/phase1/b1-pin.json": {
       "bytes": 3757,

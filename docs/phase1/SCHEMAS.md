@@ -113,15 +113,27 @@ Required fields: `schema_id`, `schema_version`, `run_id`, `experiment_digest`, `
 
 ## `mmbu.phase1.prospective_lock`
 
-Required fields: `schema_id`, `schema_version`, `lock_id`, `scope`, `source_state_digest`, `input_artifact_digests`, `excluded_result_digests`, `candidate_ids`, `seed_ids`, `thresholds`, `groups`, `evaluator_digest`, `multiplicity_rule`, `compute_plan_digest`, `decision_function_digest`, `claim_boundary`, `planned_opening_event`, `created_at`, `supersedes_digest`, `amendment_reason`, and `record_digest`.
+Required fields: `schema_id`, `schema_version`, `lock_id`, `scope`, `source_state_digest`, `input_artifact_digests`, `excluded_result_digests`, `candidate_ids`, `seed_ids`, `thresholds`, `groups`, `evaluator_digest`, `multiplicity_rule`, `compute_plan_digest`, `decision_function_digest`, `claim_boundary`, `planned_opening_event`, `retry_policies`, `created_at`, `supersedes_digest`, `amendment_reason`, and `record_digest`.
 
-`thresholds` and `groups` are closed-schema arrays whose members include stable ID, value/definition, estimand, unit, direction, and underpowered disposition. `supersedes_digest` and `amendment_reason` are both null for the first lock and both non-null for a successor. A successor created before any opening may govern only if it records the old digest and changed fields. After any governed opening, a successor creates exploratory lineage and cannot preserve the old confirmation claim.
+The following values are closed:
+
+| Field | Exact member shape and rule |
+|---|---|
+| `scope` | Object with exactly `scope_id`, `purpose`, `phase`, `primary_estimand_id`, `comparison_ids`, and `analysis_population_digest`. Purpose uses the common enum; phase is `engineering`, `discovery`, `confirmation`, or `release`; comparison IDs are a nonempty unique sorted array. |
+| `thresholds` | Unique `threshold_id`-sorted array of objects with exactly `threshold_id`, `metric_id`, `estimand_id`, `value`, `unit`, `direction`, and `underpowered_disposition`. Value is finite; direction is `at_least`, `at_most`, or `within`; disposition is `block`, `narrow_claim`, or `exploratory_only`. Every metric/estimand resolves inside the bound evaluator or decision-function artifact. |
+| `groups` | Unique `group_id`-sorted array of objects with exactly `group_id`, `definition_digest`, `parent_unit`, `minimum_parents`, `role`, and `underpowered_disposition`. Minimum parents is a positive integer; role is `primary`, `multiplicity_family`, `diagnostic`, or `excluded`; diagnostic groups cannot decide the primary claim. |
+| `multiplicity_rule` | Object with exactly `family_id`, `alpha`, `method`, `hypothesis_ids`, and `rule_digest`. Alpha is finite in `(0,1)`; method is `bonferroni`, `holm`, `fixed_sequence`, or `none`; hypothesis IDs are unique and sorted. `none` is legal only for one hypothesis. |
+| `claim_boundary` | Object with exactly `primary_claim_id`, `allowed_claim_ids`, `prohibited_claim_ids`, and `failure_claim_id`; arrays are disjoint, unique, sorted, and the primary ID is in the allowed set. |
+| `planned_opening_event` | Object with exactly `opening_kind`, `trigger`, `not_before`, `operator_role`, `protected_artifact_digests`, and `command_template_digest`. Opening kind uses the opening-receipt enum; `not_before` is UTC; protected digests are nonempty, unique, and sorted. |
+| `retry_policies` | Unique `retry_policy_id`-sorted array of objects with exactly `retry_policy_id`, `failure_classes`, `maximum_attempts`, `mutable_fields`, `invariant_digests`, and `decision`. Failure classes and mutable fields are unique sorted strings; maximum attempts is a positive integer; invariant digests are nonempty; decision is `retry_same_condition`, `new_exploratory_lineage`, or `stop`. A retry may change only named mutable fields and never a candidate, seed, threshold, group, evaluator, multiplicity rule, estimand, or claim boundary under `retry_same_condition`. |
+
+`supersedes_digest` and `amendment_reason` are both null for the first lock and both non-null for a successor. A successor created before any opening may govern only if it records the old digest and changed fields. After any governed opening, a successor creates exploratory lineage and cannot preserve the old confirmation claim.
 
 ## `mmbu.phase1.opening_receipt`
 
-Required fields: `schema_id`, `schema_version`, `opening_id`, `lock_digest`, `source_state_digest`, `manifest_digests`, `command_digest`, `environment_digest`, `operator_id`, `opening_kind`, `first_access_at`, `expected_run_ids`, `observed_failure_ids`, `retry_ids`, and `record_digest`.
+Required fields: `schema_id`, `schema_version`, `opening_id`, `lock_digest`, `source_state_digest`, `manifest_digests`, `command_digest`, `environment_digest`, `operator_id`, `opening_kind`, `first_access_at`, `expected_run_ids`, `observed_failure_ids`, `retries`, and `record_digest`.
 
-`opening_kind` is `first_output` or `protected_access`. `first_access_at` must be strictly later than the governing lock's `created_at`. Expected, failure, and retry arrays are unique and sorted. Every retry names a prospectively allowed retry policy in the lock; otherwise the governed result is exploratory. A result-selected seed, comparator, threshold, group, or analysis digest not bound before `first_access_at` invalidates confirmation.
+`opening_kind` is `first_output` or `protected_access`. `first_access_at` must be strictly later than the governing lock's `created_at`. Expected and failure arrays are unique and sorted. `retries` is a unique `retry_id`-sorted array of closed objects with exactly `retry_id`, `retry_policy_id`, `failed_run_id`, `attempt`, `changed_fields`, `command_digest`, and `started_at`; attempt is a positive integer, changed fields are unique/sorted and a subset of the referenced frozen policy, and the attempt cannot exceed that policy's maximum. Every retry resolves one prospectively allowed policy in the lock and obeys its invariant digests and decision; otherwise the governed result is exploratory. A result-selected seed, comparator, threshold, group, or analysis digest not bound before `first_access_at` invalidates confirmation.
 
 ## `mmbu.phase1.reproducibility`
 
@@ -145,6 +157,40 @@ The following nested objects are closed; listed scalar strings are nonempty, int
 `locale`, `timezone`, and `filesystem` are nonempty effective values. `environment_variables` is a UTF-8-name-sorted array of closed objects with `name`, `present`, `secret`, and `value_digest`; `value_digest` is required for a present nonsecret value and null for an absent or secret value. Secret values are never hashed into portable evidence; their name and presence are retained. The registry includes every variable class named in `REPRODUCIBILITY.md`, not only variables the command author remembers setting.
 
 `reproduction_status` is `not_requested`, `matched`, `within_tolerance`, `mismatch`, or `unavailable`. `compared_run_digest` is null only for `not_requested` or `unavailable`; otherwise it resolves to a finalized run. `observed_differences` is a sorted array of closed objects with `object_id`, `comparison_kind`, `metric`, `observed`, `allowed`, and `pass`; `comparison_kind` is `byte_equal` or `numeric`. For byte equality, `observed` and `allowed` are null and the compared artifact digests establish the result. For numeric comparison they are finite numbers. The array is empty only for `not_requested` or `unavailable`; a comparison status requires at least one row. `reproduction_limitation` is nonempty only for `unavailable`, otherwise null. Status must agree with all difference rows and the declared R-I/R-B/R-N/R-S level; a mismatch cannot be relabeled within tolerance.
+
+## `mmbu.phase1.resource_measurement`
+
+Required fields: `schema_id`, `schema_version`, `measurement_id`, `source_state_digest`, `experiment_digest`, `command_digest`, `condition_digest`, `measurement_scope`, `device_ids`, `memory`, `timing`, `throughput`, `terminal_status`, `evidence_digests`, `limitations`, `created_at`, and `record_digest`.
+
+This is an observed execution-payload record created before the reproducibility record that later binds it through `output_digests`; it never contains a reproducibility or run digest. `condition_digest` covers the exact model, processor, inputs, batch/sequence/image geometry, numeric settings, and warmup/measurement policy. `device_ids` is a unique ordered array of allocated GPU UUIDs or the singleton string `cpu`; public hardware specifications and scheduler requests cannot substitute for observed allocation.
+
+The nested objects are closed:
+
+| Object | Exact fields and rules |
+|---|---|
+| `measurement_scope` | `stage`, `warmup_iterations`, `measured_iterations`, `independent_units`, `records`, `input_tokens`, `target_tokens`, `generated_tokens`; stage is `load`, `inference`, `forward_backward`, `save_reload`, or `resume`; counts are nonnegative integers, inapplicable token counts are null, and measured iterations must be positive for a successful record. |
+| `memory` | `method`, `reset_receipt_digest`, `baseline_bytes`, `peak_allocated_bytes`, `peak_reserved_bytes`, `process_peak_bytes`, `system_peak_bytes`; method is a nonempty observed-counter description, reset receipt is required for a GPU peak, byte values are nonnegative integers or null only when the named counter is unavailable. At least one peak counter is non-null on success. |
+| `timing` | `clock`, `synchronization_policy`, `started_at`, `ended_at`, `wall_time_seconds`; clock and policy are nonempty, timestamps are UTC, wall time is finite and nonnegative, and it agrees with the timestamp interval within a prospectively declared clock-resolution tolerance. |
+
+`throughput` is a unique UTF-8-ID-sorted array of closed objects containing exactly `metric_id`, `numerator_value`, `numerator_unit`, `wall_time_seconds`, and `rate_per_second`. Values are finite and nonnegative; the rate must equal numerator divided by the same recorded positive wall time within a predeclared machine-precision tolerance. Permitted numerator units are `independent_units`, `records`, `input_tokens`, `target_tokens`, and `generated_tokens`, and the numerator must equal the corresponding non-null scope count. Empty throughput is legal only for a failed, cancelled, or preempted measurement.
+
+`terminal_status` uses the finalized run enum. A successful record requires positive measured iterations, a non-null observed peak, positive wall time, at least one throughput row, and nonempty raw counter/log `evidence_digests`. Failed/cancelled/preempted records retain partial measurements and a nonempty limitation. Estimated or extrapolated memory, timing, and throughput are invalid; a changed warmup, geometry, batch, precision, kernel, device, or synchronization policy creates a different `condition_digest` and cannot be compared as the same condition.
+
+## `mmbu.phase1.forward_backward`
+
+Required fields: `schema_id`, `schema_version`, `probe_id`, `source_state_digest`, `experiment_digest`, `command_digest`, `model_digest`, `processor_digest`, `batch_digest`, `label_mask_digest`, `declared_trainable_patterns`, `parameter_inventory_digest`, `effective_settings_digest`, `loss`, `gradient_modules`, `optimizer_step`, `accumulation_comparison`, `output_digests`, `terminal_status`, `started_at`, `ended_at`, `limitations`, `record_digest`.
+
+This is also an execution payload and therefore never points to the later reproducibility or finalized run records. `declared_trainable_patterns` is a nonempty unique UTF-8-sorted array. `gradient_modules` is a closed UTF-8-module-name-sorted array with exactly `module_name`, `declared_trainable`, `parameter_count`, `gradient_parameter_count`, `finite_gradient_count`, `nonfinite_gradient_count`, `gradient_norm`, and `updated_parameter_count`; counts are nonnegative integers, the norm is finite or null exactly when no gradient exists, undeclared modules require zero gradient and update counts, and every declared trainable pattern must match at least one inventoried module.
+
+The nested objects are closed:
+
+| Object | Exact fields and rules |
+|---|---|
+| `loss` | `framework_loss`, `manual_shifted_ce`, `absolute_difference`, `allowed_difference`, `target_token_count`, `ignored_token_count`, `finite`; numeric values are finite, counts are positive/nonnegative as applicable, `finite` is literal true on success, and the observed difference cannot exceed a nonnegative tolerance fixed in `effective_settings_digest` before execution. |
+| `optimizer_step` | `optimizer_id`, `learning_rate`, `pre_step_parameter_digest`, `post_step_parameter_digest`, `changed_parameter_count`, `step_succeeded`; learning rate is finite and nonnegative; success requires distinct pre/post digests and at least one changed declared-trainable parameter, while undeclared parameters remain byte-identical. |
+| `accumulation_comparison` | `status`, `full_batch_digest`, `microbatch_digest`, `exposure_digest`, `metric`, `observed_difference`, `allowed_difference`, `pre_result_rule_digest`; status is `not_requested`, `matched`, `within_tolerance`, `mismatch`, or `unavailable`; all comparison fields are null only for `not_requested` or `unavailable`, whose reason appears in `limitations`; otherwise exposure must be identical and tolerance must be nonnegative and prospectively bound. |
+
+`effective_settings_digest` binds `use_cache=false`, microbatch size, accumulation steps, precision, loss reduction, optimizer, clipping, and deterministic settings. `output_digests` binds raw logs and any minimal checkpoint payload, not later provenance records. Success requires target-only masking, agreement with manually shifted cross entropy, finite loss and gradients, coverage of all declared trainable patterns, no undeclared gradient/update, and a successful optimizer step. A toy tensor path, model output detached from the native processor, finite scalar without mask/shift proof, or result-chosen tolerance invalidates the record.
 
 ## Evaluation layers
 

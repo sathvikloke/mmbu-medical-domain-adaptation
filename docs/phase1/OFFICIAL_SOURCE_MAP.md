@@ -13,6 +13,8 @@
 
 An authenticated October 9 registered-team organizer bulletin, held outside this sanitized clone, directs teams to the challenge website and pinned Discord messages for details and answers. This metadata is an external audit warning, not clone-resident rule authority: the bulletin bytes and current pinned posts are not yet captured or hashed here. A Discord clarification can become contract authority only after an authorized read-only capture records exact content bytes or screenshot hash, organizer identity, server/channel, timestamp, pin state, and scope, followed by a reviewed contract revision.
 
+Mutable website and Luma observations are likewise external freshness warnings, not support for any assertion in the binding map below, because their reviewed bytes are not in this manifest. They may identify a conflict or trigger recapture, but only a hashed capture added by reviewed contract revision may supply rule authority.
+
 The exact seven-member manifest in this directory pins this receipt alongside the other binding Phase 1 contract members. A source-byte or receipt-byte change requires a new contract revision and review.
 
 ## Sanitized assertion map
@@ -20,7 +22,7 @@ The exact seven-member manifest in this directory pins this receipt alongside th
 | Contract assertion | Primary locator |
 |---|---|
 | Four task families; detection uses `[x, y, width, height]` and IoU at least 0.5 | brief page 3 |
-| Track 2 is medical domain adaptation; the exact base must be disclosed; models above 27B active parameters use an API-key evaluation route. Whether that route supplements or replaces public/ungated release conflicts across published sources; exactly 27B is not resolved. | brief page 5 read with page 10 Rule 1 and current website FAQ |
+| Track 2 is medical domain adaptation; the exact base must be disclosed; the brief describes an API-key evaluation route for models above 27B active parameters while Rule 1 gives public/ungated release wording for models below 27B. Whether both obligations apply above 27B and the treatment of exactly 27B are unresolved. | brief page 5 read with page 10 Rule 1 |
 | Task and biomedical-context evaluation are independent passes; six possible context fields are scored only when annotated | brief pages 6–7 |
 | Malformed or unparsable JSON gets no credit in the affected pass | brief page 7 and page 11 Rule 8 |
 | Task grades may be fractional; context is averaged within example and then across examples | brief page 8 |
@@ -34,7 +36,7 @@ The exact seven-member manifest in this directory pins this receipt alongside th
 | Organizer inference uses BF16 or FP16; one frozen final model must be designated and uploaded per track before the deadline | brief pages 10–11 Rule 7 |
 | Hardware, memory, runtime, and inference constraints are organizer-specified; participant failures do not automatically receive reruns | brief page 11 Rules 8–9 |
 | Team acceptance, one-team membership, anti-collusion, and evaluation-integrity requirements | brief page 11 Rules 11–14 |
-| Registration closes October 31, 2026; submission deadline is December 31, 2026; exact cutoff time/timezone is not supplied. The Luma page still contains stale/conflicting September 30 copy even though its live application state is open; its event timezone is not submission-deadline evidence. | official rules page 1 section 3; official Luma application checked 2026-10-14 |
+| Registration closes October 31, 2026; submission deadline is December 31, 2026; exact cutoff time/timezone is not supplied. | official rules page 1 section 3 |
 | Prize/conflict exclusions include GXL, Anthropic, AWS, Highlanders, Biohub, Stanford AI Lab, organizers, holders of hidden evaluation material, judges/reviewers/evaluators, and Stanford MARVL | official rules page 1 section 5 |
 | Entry requires model outputs and a short method write-up through Hugging Face | official rules page 1 section 6 |
 | Participants retain model/code ownership and grant publication rights for team name, scores, and method summary | official rules page 2 section 9 |

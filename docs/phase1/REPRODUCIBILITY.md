@@ -36,6 +36,8 @@ Every execution emits a schema-validated `reproducibility-record.json` before a 
 13. optimizer, scheduler, scaler, gradient, RNG, sampler/data cursor, accumulation remainder, and checkpoint state needed for exact resume;
 14. requested reproduction level, compared run, equality/tolerance rules fixed before replay, observed differences, and final reproduction status.
 
+Peak memory, wall time, throughput, and the native forward/backward result do not enter this closed record as ad hoc fields. They are separate `mmbu.phase1.resource_measurement` and `mmbu.phase1.forward_backward` execution payloads under `SCHEMAS.md`, created before and hash-bound through this record's `output_digests`. Their raw counters and logs remain separate evidence members. This one-way binding prevents a provenance cycle while making estimated resources, changed synchronization, denominator drift, undeclared gradients, and result-chosen tolerances mechanically rejectable.
+
 `pip freeze` alone is insufficient: it does not prove resolver inputs, wheel/source bytes, system libraries, drivers, build flags, or imported runtime state.
 
 ## Randomness and data-order registry
@@ -90,6 +92,8 @@ Stable tests or an explicit behavior map must cover:
 - tolerance absent, result-chosen, applied to the wrong object, or used to excuse deterministic token drift;
 - stdout/stderr/exit code omitted or a failed command reported as successful;
 - secret value retained in evidence or redaction deleting the fact that a credential was required.
+- resource record uses an estimate/public hardware specification, omits counter reset or synchronization, changes its condition, or reports throughput whose numerator and wall time do not recompute;
+- forward/backward record omits a declared trainable pattern, records an undeclared gradient/update, lacks target-mask/manual-shifted-CE proof, or chooses its accumulation tolerance after the result.
 
 ## Acceptance and claim boundary
 

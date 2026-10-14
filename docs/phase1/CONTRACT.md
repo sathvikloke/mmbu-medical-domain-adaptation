@@ -78,7 +78,7 @@ Governance authority is not training ancestry. Every reference edge is typed as 
 
 ## Executable V2 schemas
 
-Publish strict JSON Schemas or equivalent typed validators for source, split, purpose, the authoritative authorization registry, lineage, experiment, run, current-status overlay, legacy migration, prompt/schema contract, prospective lock, opening receipt, reproducibility record, and the four evaluation layers. Every schema fixes:
+Publish strict JSON Schemas or equivalent typed validators for source, split, purpose, the authoritative authorization registry, lineage, experiment, run, current-status overlay, legacy migration, prompt/schema contract, prospective lock, opening receipt, reproducibility record, resource measurement, native forward/backward, and the four evaluation layers. Every schema fixes:
 
 - schema name and version;
 - required, optional, and nullable keys;

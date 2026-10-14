@@ -3,8 +3,8 @@
   "contract_revision": "2026-10-14-cycle-19",
   "files": {
     "docs/phase1/CONTRACT.md": {
-      "bytes": 12382,
-      "sha256": "6c78405f0080efc0eff19791689a5a22d9740ca29e15fbf74e64a34ca30ae722"
+      "bytes": 13091,
+      "sha256": "91f525131f538426f61111f335b1e82c3b51d50041ea7b4d26b3879e58c86bb8"
     },
     "docs/phase1/OFFICIAL_SOURCE_MAP.md": {
       "bytes": 5591,

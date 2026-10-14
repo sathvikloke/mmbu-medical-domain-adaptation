@@ -69,7 +69,7 @@ Governance authority is not training ancestry. Every reference edge is typed as 
 
 ## Executable V2 schemas
 
-Publish strict JSON Schemas or equivalent typed validators for source, split, purpose, lineage, experiment, run, current-status overlay, legacy migration, prompt/schema contract, and the four evaluation layers. Every schema fixes:
+Publish strict JSON Schemas or equivalent typed validators for source, split, purpose, lineage, experiment, run, current-status overlay, legacy migration, prompt/schema contract, prospective lock, opening receipt, and the four evaluation layers. Every schema fixes:
 
 - schema name and version;
 - required, optional, and nullable keys;
@@ -80,6 +80,8 @@ Publish strict JSON Schemas or equivalent typed validators for source, split, pu
 - digest and ancestry rules.
 
 The runner validates and consumes the exact experiment-record digest, traverses all registered ancestors, verifies the requested purpose, and emits the consumed digest. A valid record beside an unrelated command proves nothing.
+
+A prospective lock records its decision scope, source state, inputs, excluded results, exact opening event, candidates, seeds, thresholds, groups, evaluator, multiplicity family, compute plan, deterministic decision function, and claim boundary. An opening receipt binds the lock digest, source state, manifests, command/environment, operator, first output or protected-access time, expected runs, failures, and retries. Phase 1 implements only the schemas, chronology validator, and synthetic positive/negative tests; it does not fabricate an empirical lock. A late or changed lock can support a new exploratory lineage but cannot rescue the governed confirmatory result.
 
 `config/phase1/current-status.json` is the only repository status authority. Evidence bundles contain only a byte-identical copy and digest.
 

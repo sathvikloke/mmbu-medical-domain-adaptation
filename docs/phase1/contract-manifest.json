@@ -1,18 +1,18 @@
 {
   "schema_version": 1,
-  "contract_revision": "2026-10-14-cycle-38e",
+  "contract_revision": "2026-10-14-cycle-38f",
   "files": {
     "docs/phase1/CONTRACT.md": {
-      "bytes": 18424,
-      "sha256": "e3939f47914323c88e094e2abcc7cdf0ca29763638506bcff4c0bc5f49957e88"
+      "bytes": 18580,
+      "sha256": "d816ed4cd41d09f0358b361f2473c38fab3d4605c222096fb8b249907f4f734f"
     },
     "docs/phase1/ACCEPTANCE.md": {
-      "bytes": 16462,
-      "sha256": "2fcec984f83e1a9f9e9cfa6a1d473bb4f03431621633698a2bfc6d5e67969bfb"
+      "bytes": 16553,
+      "sha256": "9340f05f9d56cbaaee9b34a16ba806ef2b53b10b81c2885e82d1580fa0ef3879"
     },
     "docs/phase1/SCHEMAS.md": {
-      "bytes": 45396,
-      "sha256": "92b89144260f6fd0aabc809ecff206e832df7cae0bc9e4b056485a3cdb8357fc"
+      "bytes": 46330,
+      "sha256": "a707f5bcd4c7bf5ec6b49ed140753c960fdc6071f4bc1c902c77cfcdaf5be8db"
     },
     "docs/phase1/REPRODUCIBILITY.md": {
       "bytes": 10783,

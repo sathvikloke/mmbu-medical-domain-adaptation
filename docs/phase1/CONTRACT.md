@@ -12,6 +12,8 @@ This repository file is the clone-resident source of truth for Phase 1. Machine-
 
 `docs/phase1/OFFICIAL_SOURCE_MAP.md` is the manifest-covered sanitized extraction receipt for the official-rule assertions used here. It records source hashes, exact page/section locators, excluded content classes, independent review dispositions, and unresolved items.
 
+`docs/phase1/REPRODUCIBILITY.md` is the manifest-covered execution contract. It defines identity, bit, numerical, and statistical reproduction levels; complete environment, RNG, and data-order records; cache isolation; fresh reload; interrupted resume; negative tests; and the limits of Phase 1 claims.
+
 ## Fixed repository layout
 
 - new package: `src/mmbu_phase1/`
@@ -69,7 +71,7 @@ Governance authority is not training ancestry. Every reference edge is typed as 
 
 ## Executable V2 schemas
 
-Publish strict JSON Schemas or equivalent typed validators for source, split, purpose, lineage, experiment, run, current-status overlay, legacy migration, prompt/schema contract, prospective lock, opening receipt, and the four evaluation layers. Every schema fixes:
+Publish strict JSON Schemas or equivalent typed validators for source, split, purpose, lineage, experiment, run, current-status overlay, legacy migration, prompt/schema contract, prospective lock, opening receipt, reproducibility record, and the four evaluation layers. Every schema fixes:
 
 - schema name and version;
 - required, optional, and nullable keys;
@@ -79,7 +81,7 @@ Publish strict JSON Schemas or equivalent typed validators for source, split, pu
 - legal state transitions;
 - digest and ancestry rules.
 
-The runner validates and consumes the exact experiment-record digest, traverses all registered ancestors, verifies the requested purpose, and emits the consumed digest. A valid record beside an unrelated command proves nothing.
+The runner validates and consumes the exact experiment-record and reproducibility-record digests, traverses all registered ancestors, verifies the requested purpose, and emits the consumed digests. A valid record beside an unrelated command proves nothing.
 
 A prospective lock records its decision scope, source state, inputs, excluded results, exact opening event, candidates, seeds, thresholds, groups, evaluator, multiplicity family, compute plan, deterministic decision function, and claim boundary. An opening receipt binds the lock digest, source state, manifests, command/environment, operator, first output or protected-access time, expected runs, failures, and retries. Phase 1 implements only the schemas, chronology validator, and synthetic positive/negative tests; it does not fabricate an empirical lock. A late or changed lock can support a new exploratory lineage but cannot rescue the governed confirmatory result.
 
@@ -116,6 +118,7 @@ When runtime fails before generation, generation fields may be null and downstre
 - no silent box repair;
 - real native collator, forward/backward, declared trainable-module gradients, minimal adapter save, and fresh-process reload;
 - same-environment explicit-decoding token-ID and adapter/config hash replay;
+- complete execution provenance and determinism classification under `docs/phase1/REPRODUCIBILITY.md`, including backend-effective kernel, precision, and distributed settings; purpose-namespaced seeds; ordered data exposure; cache/network state; exact command/log/exit-code capture; and an interrupted native-collator resume comparison that preserves optimizer, scheduler, scaler when used, RNG, sampler/cursor, accumulation, and exposure state;
 - measured GPU/runtime record rather than estimates;
 - local dummy release preflight only, including canonical closed-file inventory, safe-serialization allowlist, path/symlink/alias rejection, secret/private-path scan, dependency-closure checks, synthetic unresolved-blob and hidden-fetch failures, and a dummy build receipt. Phase 1 does not create or upload a Hugging Face repository.
 

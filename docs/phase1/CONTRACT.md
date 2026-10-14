@@ -16,11 +16,16 @@ This repository file is the clone-resident source of truth for Phase 1. Machine-
 
 `docs/phase1/B1_RUNTIME_GATE.md` is the manifest-covered native-model admission contract. It fixes the exact dependency candidate, conservative image-only reference condition, preprocessing/geometry record, and adversarial single/batch/state/cache/training/reload gates. A nominal baseline cannot bypass it.
 
+`docs/phase1/ACCEPTANCE.md` is the manifest-covered normative Phase 1 row registry. It fixes P1-00 through P1-21, stable test behaviors, evidence discovery, claim statuses, automatic rejection, and the non-self-referential phase-decision function. External audit matrices are reviewer commentary only and cannot add an implementation requirement.
+
+`docs/phase1/SCHEMAS.md` is the manifest-covered field-level record contract. It freezes canonicalization, schema IDs, required/null fields, enums, digest domains, references, chronology, state transitions, and minimal valid/invalid examples while leaving unknown official task-output keys behind the versioned prompt/schema adapter.
+
 ## Fixed repository layout
 
 - new package: `src/mmbu_phase1/`
 - dependency-light CPU tests: `tests/phase1/`
 - current-status source: `config/phase1/current-status.json`
+- authorization-registry source: `config/phase1/authorization-registry.json`
 - governing contract: `docs/phase1/`
 - generated evidence: outside tracked source unless a reviewed fixture is intentionally committed
 - historical compatibility reference: `outputs/mmbu-precompute/`, read-only
@@ -73,7 +78,7 @@ Governance authority is not training ancestry. Every reference edge is typed as 
 
 ## Executable V2 schemas
 
-Publish strict JSON Schemas or equivalent typed validators for source, split, purpose, lineage, experiment, run, current-status overlay, legacy migration, prompt/schema contract, prospective lock, opening receipt, reproducibility record, and the four evaluation layers. Every schema fixes:
+Publish strict JSON Schemas or equivalent typed validators for source, split, purpose, the authoritative authorization registry, lineage, experiment, run, current-status overlay, legacy migration, prompt/schema contract, prospective lock, opening receipt, reproducibility record, and the four evaluation layers. Every schema fixes:
 
 - schema name and version;
 - required, optional, and nullable keys;
@@ -83,7 +88,7 @@ Publish strict JSON Schemas or equivalent typed validators for source, split, pu
 - legal state transitions;
 - digest and ancestry rules.
 
-The runner validates and consumes the exact experiment-record and reproducibility-record digests, traverses all registered ancestors, verifies the requested purpose, and emits the consumed digests. A valid record beside an unrelated command proves nothing.
+Execution validates and consumes the exact immutable experiment-record digest, traverses all registered ancestors, and verifies the requested purpose. After execution, the reproducibility record binds that experiment plus the observed environment, command, logs, and payloads; the finalized run binds both digests and emits the exact experiment digest consumed. A valid record beside an unrelated command proves nothing, and execution cannot consume a provenance record that is created from its own later outputs.
 
 A prospective lock records its decision scope, source state, inputs, excluded results, exact opening event, candidates, seeds, thresholds, groups, evaluator, multiplicity family, compute plan, deterministic decision function, and claim boundary. An opening receipt binds the lock digest, source state, manifests, command/environment, operator, first output or protected-access time, expected runs, failures, and retries. Phase 1 implements only the schemas, chronology validator, and synthetic positive/negative tests; it does not fabricate an empirical lock. A late or changed lock can support a new exploratory lineage but cannot rescue the governed confirmatory result.
 
@@ -143,7 +148,7 @@ Only `accepted` can advance to Phase 2. A clean narrative or generic green test 
 
 ## Competition release boundaries
 
-The current sub-27B candidates require public, ungated Hugging Face access and anonymous clean download. The published brief has a separate API route for models above 27B active parameters; such a branch requires organizer-compatible immutable endpoint/model and base access. Quantized-model eligibility is unresolved even though organizer inference is described as BF16/FP16, so disclose every dtype and do not invent a blanket ban.
+The current sub-27B candidates require public, ungated Hugging Face access and anonymous clean download. The published sources conflict on whether an above-27B API supplements or replaces that public-release obligation, and their below/above wording leaves exactly 27B uncovered. Quarantine any exactly-27B or above-27B branch until written organizer disposition. Provisionally require an above-27B branch to satisfy both public/ungated Hugging Face closure and organizer-compatible immutable endpoint/model/base access; only a written organizer exception may narrow that requirement. Quantized-model eligibility is unresolved even though organizer inference is described as BF16/FP16, so disclose every dtype and do not invent a blanket ban.
 
 The submitted system must be one end-to-end VLM. Ensembles, cascades, auxiliary models, external OCR, retrieval, learned preprocessing or postprocessing, and multi-model orchestration are prohibited. Multiple vision encoders are permitted only inside that one submitted VLM and every active parameter must be counted. The prohibition on external information or tool APIs during evaluation does not erase the separately published model-serving endpoint for a submitted model above 27B active parameters.
 

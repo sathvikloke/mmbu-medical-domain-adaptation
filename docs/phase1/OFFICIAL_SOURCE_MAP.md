@@ -32,7 +32,7 @@ The manifest in this directory pins this receipt and `CONTRACT.md`. A source-byt
 | Organizer inference uses BF16 or FP16; one frozen final model must be designated and uploaded per track before the deadline | brief pages 10–11 Rule 7 |
 | Hardware, memory, runtime, and inference constraints are organizer-specified; participant failures do not automatically receive reruns | brief page 11 Rules 8–9 |
 | Team acceptance, one-team membership, anti-collusion, and evaluation-integrity requirements | brief page 11 Rules 11–14 |
-| Registration closes October 31, 2026; submission deadline is December 31, 2026; exact cutoff time/timezone is not supplied | official rules page 1 section 3 |
+| Registration closes October 31, 2026; submission deadline is December 31, 2026; exact cutoff time/timezone is not supplied. The Luma page still contains stale/conflicting September 30 copy even though its live application state is open; its event timezone is not submission-deadline evidence. | official rules page 1 section 3; official Luma application checked 2026-10-14 |
 | Prize/conflict exclusions include GXL, Anthropic, AWS, Highlanders, Biohub, Stanford AI Lab, organizers, holders of hidden evaluation material, judges/reviewers/evaluators, and Stanford MARVL | official rules page 1 section 5 |
 | Entry requires model outputs and a short method write-up through Hugging Face | official rules page 1 section 6 |
 | Participants retain model/code ownership and grant publication rights for team name, scores, and method summary | official rules page 2 section 9 |

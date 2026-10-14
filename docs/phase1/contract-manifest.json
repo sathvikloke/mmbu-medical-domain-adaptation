@@ -1,10 +1,18 @@
 {
   "schema_version": 1,
-  "contract_revision": "2026-10-14-cycle-34",
+  "contract_revision": "2026-10-14-cycle-36",
   "files": {
     "docs/phase1/CONTRACT.md": {
-      "bytes": 16369,
-      "sha256": "044b5ee3365600cceb4e443a895b82cb4ebe7eb7efe2b0b3169cd5ac3877cac5"
+      "bytes": 17737,
+      "sha256": "8c3e9cce83e69dd33f55ce285d36a9c95c40fca3bbe8678184f491369a8d0b21"
+    },
+    "docs/phase1/ACCEPTANCE.md": {
+      "bytes": 15366,
+      "sha256": "13c31905762238f52be194f5ce8ff33dc68725e618816d4226d9be944fab5a8a"
+    },
+    "docs/phase1/SCHEMAS.md": {
+      "bytes": 30995,
+      "sha256": "9669315536863aa7312be212dd3a3aec9c5e9c93754401b572f9ce47fd0905de"
     },
     "docs/phase1/REPRODUCIBILITY.md": {
       "bytes": 9767,
@@ -15,8 +23,8 @@
       "sha256": "5d1286638571f886e6692064dd444e4ddba62c72d75f5fe2ca4b090793c2982b"
     },
     "docs/phase1/OFFICIAL_SOURCE_MAP.md": {
-      "bytes": 5591,
-      "sha256": "dcb88cc5fe85a1d468e79dda08538eb3e303039d0a973c5be30714dcd1d2f044"
+      "bytes": 5807,
+      "sha256": "4bd4cffe23ea1c7fc38f0be1718342ad327f14e8237978711bd82245472a8cd7"
     },
     "docs/phase1/b1-pin.json": {
       "bytes": 3757,
@@ -28,5 +36,5 @@
     "mmbu-challenge-official-rules.pdf": "30fb3241bd331eeaf0602b4ec24faf66b50f97c5d430cf814fdda80d62b80c8e"
   },
   "inventory_policy": "exact: no missing or extra binding contract members",
-  "note": "This manifest pins the clone-resident sanitized Phase 1 contract, reproducibility and B1 runtime gates, source receipt, and B1 identity. Official source hash changes require a fresh review and contract revision."
+  "note": "This manifest pins the clone-resident sanitized Phase 1 contract, normative acceptance registry, field-level schema contract, reproducibility and B1 runtime gates, source receipt, and B1 identity. Official source hash changes require a fresh review and contract revision."
 }

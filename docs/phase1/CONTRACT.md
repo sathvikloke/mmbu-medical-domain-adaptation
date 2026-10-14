@@ -106,7 +106,8 @@ When runtime fails before generation, generation fields may be null and downstre
 
 ## Required mechanics
 
-- exact pinned B1 model and processor load from `docs/phase1/b1-pin.json`: model and processor `Qwen/Qwen2.5-VL-7B-Instruct` at repository revision `cc594898137f460bfe9f0759e9844b3ce807cfb5`; floating revisions are forbidden; `trust_remote_code` is false unless a later reviewed pin explicitly changes it;
+- exact pinned B1 model and processor load from `docs/phase1/b1-pin.json`: model and processor `Qwen/Qwen2.5-VL-7B-Instruct` at repository revision `cc594898137f460bfe9f0759e9844b3ce807cfb5`; floating revisions are forbidden; the downloaded config, preprocessor, generation, and tokenizer metadata must match the recorded hashes before model admission; `trust_remote_code` is false unless a later reviewed pin explicitly changes it;
+- explicit engineering decoding from the pin: never inherit the repository `generation_config.json`; construct the call from the allowlisted fields, including `do_sample=false`, one beam/return sequence, neutral sampling fields, and `repetition_penalty=1.0`; bind task-specific token and stop limits in the versioned prompt contract. A missing, extra, silently ignored, or upstream-inherited generation setting rejects the run. This is the external engineering/tournament condition, not a claim about the still-unpublished official harness;
 - native one-image preprocessing and stateless task/context calls;
 - synthetic fixture covering classification, counting, one/many boxes, dynamic context subsets, malformed output, missing/inapplicable context, and failure states;
 - fractional and weighted task-change identity;
@@ -114,7 +115,7 @@ When runtime fails before generation, generation fields may be null and downstre
 - acquired/retained/lost/never visual-benefit states on verified answer-changing pairs;
 - no silent box repair;
 - real native collator, forward/backward, declared trainable-module gradients, minimal adapter save, and fresh-process reload;
-- same-environment greedy token-ID and adapter/config hash replay;
+- same-environment explicit-decoding token-ID and adapter/config hash replay;
 - measured GPU/runtime record rather than estimates;
 - local dummy release preflight only, including canonical closed-file inventory, safe-serialization allowlist, path/symlink/alias rejection, secret/private-path scan, dependency-closure checks, synthetic unresolved-blob and hidden-fetch failures, and a dummy build receipt. Phase 1 does not create or upload a Hugging Face repository.
 

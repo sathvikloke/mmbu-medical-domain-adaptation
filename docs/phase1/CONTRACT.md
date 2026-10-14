@@ -78,7 +78,7 @@ Governance authority is not training ancestry. Every reference edge is typed as 
 
 ## Executable V2 schemas
 
-Publish strict JSON Schemas or equivalent typed validators for source, split, purpose, the authoritative authorization registry, lineage, experiment, run, current-status overlay, legacy migration, prompt/schema contract, prospective lock, opening receipt, reproducibility record, resource measurement, native forward/backward, and the four evaluation layers. Every schema fixes:
+Publish strict JSON Schemas or equivalent typed validators for source, split, purpose, the authoritative authorization registry, lineage, experiment, run, current-status overlay, legacy migration, prompt/schema contract, prospective lock, opening receipt, the authoritative opening-receipt-head registry, reproducibility record, resource measurement, native forward/backward, and the four evaluation layers. Every schema fixes:
 
 - schema name and version;
 - required, optional, and nullable keys;
@@ -90,7 +90,7 @@ Publish strict JSON Schemas or equivalent typed validators for source, split, pu
 
 Execution validates and consumes the exact immutable experiment-record digest, traverses all registered ancestors, and verifies the requested purpose. After execution, the reproducibility record binds that experiment plus the observed environment, command, logs, and payloads; the finalized run binds both digests and emits the exact experiment digest consumed. A valid record beside an unrelated command proves nothing, and execution cannot consume a provenance record that is created from its own later outputs.
 
-A prospective lock records its decision scope, source state, inputs, excluded results, exact opening event, candidates, seeds, thresholds, groups, evaluator, multiplicity family, compute plan, deterministic decision function, and claim boundary. An opening receipt binds the lock digest, source state, manifests, command/environment, operator, first output or protected-access time, expected runs, failures, and retries. Phase 1 implements only the schemas, chronology validator, and synthetic positive/negative tests; it does not fabricate an empirical lock. A late or changed lock can support a new exploratory lineage but cannot rescue the governed confirmatory result.
+A prospective lock records its decision scope, source state, inputs, excluded results, exact opening event, candidates, seeds, thresholds, groups, evaluator, multiplicity family, compute plan, deterministic decision function, and claim boundary. Immutable opening-receipt successors bind the lock digest, source state, manifests, command/environment, operator, first output or protected-access time, expected runs, finalized failures, stable retry chains, and attempts. `config/phase1/opening-receipt-registry.json` is the exhaustive active-head authority; every retry advances exactly one unbranched receipt chain before execution. Phase 1 implements only the schemas, chronology/head validator, and synthetic positive/negative tests; it does not fabricate an empirical lock. A late or changed lock can support a new exploratory lineage but cannot rescue the governed confirmatory result.
 
 `config/phase1/current-status.json` is the only repository status authority. Evidence bundles contain only a byte-identical copy and digest.
 

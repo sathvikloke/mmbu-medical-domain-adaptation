@@ -22,7 +22,7 @@ Phase 1 deterministic one-image inference and same-environment reload require R-
 Every execution emits a schema-validated `reproducibility-record.json` before a claim can be `verified`. It contains or hash-binds:
 
 1. UTC start/end timestamps, operator, host/job/allocation identifiers, exact command/arguments, working directory, exit code, stdout/stderr hashes, and declared purpose;
-2. Git commit; clean/dirty state; canonical binary patch hash when dirty; source-state digest; contract-manifest digest; experiment/lock/opening-receipt digests;
+2. Git commit; clean/dirty state; canonical binary patch hash when dirty; source-state digest; contract-manifest digest; experiment/lock/opening-receipt and opening-receipt-registry digests;
 3. model, processor, tokenizer, template, tensor-index, shard, adapter, checkpoint, data, split, prompt/schema, evaluator, and output-manifest identities;
 4. OS release, kernel, architecture, Python executable/hash/version, locale, timezone, filesystem type when relevant, and container image name plus immutable digest when used;
 5. GPU model, UUID, compute capability, driver, CUDA runtime/toolkit, cuDNN, NCCL, compiler, PyTorch, Transformers, Accelerate/DeepSpeed/FSDP, attention kernel, quantization library, image decoder, and every imported package version;

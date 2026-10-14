@@ -76,7 +76,7 @@ Batch-size-1 success cannot satisfy item 4. Requested settings cannot replace ba
 
 ## Dependency replacement
 
-D1 may change only after a preserved mechanical failure. The amendment must identify an exact release or commit whose named upstream change directly addresses that failure, update this manifest-covered contract before biomedical or B1/B2 comparative output opens, and repeat every gate. Dependency versions cannot be selected for better MMBU public or external biomedical scores.
+D1 may change only after a preserved mechanical failure. The amendment must identify an exact release or commit whose named upstream change directly addresses that failure, update this manifest-covered contract before any future clean-pool comparative output opens, and repeat every gate. Dependency versions cannot be selected for better MMBU public or external biomedical scores.
 
 ## Optimization promotion
 

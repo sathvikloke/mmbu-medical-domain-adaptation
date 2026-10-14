@@ -1,6 +1,6 @@
 # Start here
 
-The clone-resident [acceptance contract](../phase1/ACCEPTANCE.md) and [schema contract](../phase1/SCHEMAS.md) are the binding P1-00 through P1-21 decision authority and field-level interoperability contract. Read both with the Phase 1 contract before implementation.
+The clone-resident [acceptance contract](../phase1/ACCEPTANCE.md) and [schema contract](../phase1/SCHEMAS.md) are the binding P1-00 through P1-21 decision authority and field-level interoperability contract. Read both with the Phase 1 contract before implementation. Candidate, experiment, hyperparameter, seed, prompt, checkpoint, promotion, and release choices are eligible only when the pre-opening decision plan and hermetic decision-execution receipt required there validate; prose decisions and manually copied rationales do not authorize execution.
 
 This handoff is ready for CPU development and review. The next step is Phase 1 engineering under the clone-resident [Phase 1 contract](../phase1/CONTRACT.md), [official-source map](../phase1/OFFICIAL_SOURCE_MAP.md), and [B1 pin](../phase1/b1-pin.json). The historical package remains reproducible but is not the destination for new code. There is no trained model or baseline performance result yet.
 

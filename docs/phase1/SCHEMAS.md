@@ -223,7 +223,7 @@ Each member has exactly `path`, `bytes`, `sha256`, `media_type`, `schema_id`, an
 
 Required fields: `schema_id`, `schema_version`, `commit_sha`, `dirty`, `patch_sha256`, `inventory`, `created_at`, and `record_digest`.
 
-`patch_sha256` is null exactly when `dirty=false`; otherwise it covers a canonical binary patch that includes staged and unstaged tracked changes plus an explicit untracked-file inventory/content digest. Inventory members have exact path, bytes, SHA-256, and class (`source`, `test`, `config`, `contract`, or `lock`), sorted by path. It must cover every Phase 1 source, test, configuration, binding contract, and lock file.
+`patch_sha256` is null exactly when `dirty=false`; otherwise it covers a canonical binary patch that includes staged and unstaged tracked changes plus an explicit untracked-file inventory/content digest. Inventory members have exact path, bytes, SHA-256, and class (`source`, `test`, `config`, `contract`, or `lock`), sorted by path. It must cover every Phase 1 source, test, immutable implementation configuration, binding contract, and lock file. Here `config` means immutable implementation configuration and explicitly excludes the mutable execution-state authorities `config/phase1/current-status.json`, `config/phase1/authorization-registry.json`, and `config/phase1/opening-receipt-registry.json`. Those files are covered by the evidence manifest and are bound separately by status evidence, the experiment's authorization-registry digest, and the reproducibility record's pre-run opening-receipt-registry digest. Excluding them from `source_state` prevents state/provenance hash cycles; omitting any immutable implementation configuration remains invalid.
 
 ## Claims, trace, and decision
 

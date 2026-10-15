@@ -46,12 +46,32 @@ class ContractManifestTests(unittest.TestCase):
     def test_current_contract_is_accepted(self):
         self.assertEqual(self.contract_manifest.verify_contract_manifest(REPO), [])
 
+    def test_cycle46a_contract_includes_evaluator_mechanics_member(self):
+        evaluator_member = "docs/phase1/EVALUATOR_MECHANICS.md"
+        self.assertEqual(
+            self.contract_manifest.EXPECTED_CONTRACT_REVISION,
+            "2026-10-15-cycle-46a",
+        )
+        self.assertIn(evaluator_member, self.contract_manifest.EXPECTED_MEMBERS)
+        manifest = self.load_manifest()
+        self.assertEqual(manifest["contract_revision"], "2026-10-15-cycle-46a")
+        self.assertEqual(set(manifest["files"]), self.contract_manifest.EXPECTED_MEMBERS)
+        self.assertEqual(self.contract_manifest.verify_contract_manifest(REPO), [])
+
     def test_same_size_member_tampering_is_rejected(self):
         member = self.root / "docs/phase1/SCHEMAS.md"
         raw = member.read_bytes()
         member.write_bytes(raw[:-1] + bytes([raw[-1] ^ 1]))
         errors = "\n".join(self.verify_with_current_fixture_anchor())
         self.assertIn("SCHEMAS.md", errors)
+        self.assertIn("SHA-256", errors)
+
+    def test_evaluator_mechanics_member_hash_is_enforced(self):
+        member = self.root / "docs/phase1/EVALUATOR_MECHANICS.md"
+        raw = member.read_bytes()
+        member.write_bytes(raw[:-1] + bytes([raw[-1] ^ 1]))
+        errors = "\n".join(self.verify_with_current_fixture_anchor())
+        self.assertIn("EVALUATOR_MECHANICS.md", errors)
         self.assertIn("SHA-256", errors)
 
     def test_duplicate_json_key_is_rejected(self):

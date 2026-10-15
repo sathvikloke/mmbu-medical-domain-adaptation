@@ -1,7 +1,7 @@
 # Sanitized organizer clarification receipt
 
 **Status:** binding sanitized governance receipt for this contract revision  
-**Scope:** Track 2 public-development boundaries, external training-source eligibility, evaluator clarifications, enrollment, and submission planning  
+**Scope:** Track 2 public-development boundaries, external training-source eligibility, evaluator clarifications, enrollment, disclosure questions, and submission planning
 **Origin class:** `official_rule_summary`
 
 ## Provenance and review boundary
@@ -22,7 +22,9 @@ This clone-resident receipt intentionally excludes contact identities, addresses
 8. The team is operationally enrolled. Enrollment does not establish prize/conflict eligibility.
 9. The provisional submission route is a later organizer form followed by a Hugging Face upload. Exact form fields, artifact visibility, edit rules, and receipts remain unresolved. The stated deadline timezone is Pacific Standard Time; cutoff clock time remains unresolved.
 10. Additional evaluation information reportedly exists in the registered Discord, but no such Discord content is authority in this clone until exact content, author/channel, timestamp, and any applicable pin state and attachment hashes receive a reviewed contract revision.
+11. The organizer-required treatment for disclosing a medically adapted starting checkpoint or modified vision components remains unresolved. Local disclosure of the exact starting checkpoint, training lineage, and changed modules is conservative project policy, not a claim about fields or detail required by the final organizer form.
+12. Organizers expected additional submission instructions approximately near the beginning of December; this was an estimate, not a guaranteed date. The stated broad sequence is a not-yet-specified Google Form followed by a Hugging Face model upload, with broad form categories for final team members, actual model information, and training-data information. Exact destination, field schema, output/write-up handling, visibility and artifact division, edit policy, receipt, and cutoff clock time remain unresolved.
 
 ## Limits
 
-This receipt does not authorize source download, model use, public-result optimization, training, release, or external upload. It does not resolve duplicate-case scoring, final prompt bytes, official runtime settings, Track 2 parameter-accounting edge cases, exact cutoff time, or the final submission form. A named human remains required for legal, rights, credential, prize-eligibility, and release decisions that cannot be delegated to a machine review.
+This receipt does not authorize source download, model use, public-result optimization, training, release, or external upload. It does not resolve duplicate-case scoring, final prompt bytes, official runtime settings, Track 2 parameter-accounting edge cases, organizer-required disclosure treatment for an adapted starting checkpoint or modified vision components, exact cutoff time, or the final submission form. The approximate instruction window and broad form categories are planning facts only. A named human remains required for legal, rights, credential, prize-eligibility, and release decisions that cannot be delegated to a machine review.

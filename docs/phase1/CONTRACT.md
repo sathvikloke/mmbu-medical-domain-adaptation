@@ -1,6 +1,6 @@
 # Phase 1 engineering contract
 
-**Status:** binding sanitized bootstrap contract; no Phase 1 implementation exists yet  
+**Status:** binding sanitized bootstrap contract; only the contract-integrity gate is implemented
 **Frozen:** 2026-10-14  
 **Scope:** engineering runner, provenance firewall, evaluator plumbing, model/GPU smoke evidence, and local release preflight only
 
@@ -21,6 +21,8 @@ This repository file is the clone-resident source of truth for Phase 1. Machine-
 `docs/phase1/ACCEPTANCE.md` is the manifest-covered normative Phase 1 row registry. It fixes P1-00 through P1-21, stable test behaviors, evidence discovery, claim statuses, automatic rejection, and the non-self-referential phase-decision function. External audit matrices are reviewer commentary only and cannot add an implementation requirement.
 
 `docs/phase1/SCHEMAS.md` is the manifest-covered field-level record contract. It freezes canonicalization, schema IDs, required/null fields, enums, digest domains, references, chronology, state transitions, and minimal valid/invalid examples while leaving unknown official task-output keys behind the versioned prompt/schema adapter.
+
+`docs/phase1/EVALUATOR_MECHANICS.md` is the manifest-covered synthetic/engineering evaluator authority. It closes the example population and execution-output manifests, exact task-change arithmetic, failure/tie/missing-row treatment, original-pixel box validity and IoU, one/many-box matching, aggregate summary records, and normative conformance vectors. It is not an official-harness claim.
 
 ## Fixed repository layout
 
@@ -81,7 +83,7 @@ Governance authority is not training ancestry. Every reference edge is typed as 
 
 ## Executable V2 schemas
 
-Publish strict JSON Schemas or equivalent typed validators for reviewer attestation, pre-download acquisition authorization and execution receipt, source artifact manifest, rights receipt, grouping receipt, closed eligible-population manifest, immutable QA sampling plan, QA receipt, two-stage custody summary, source, split, complete checkpoint/model lineage, purpose authorization including checkpoint-bound release, the authoritative authorization registry, lineage, sanitized rule extraction, decision plan, decision payload, decision-execution receipt, experiment, run, current-status overlay, legacy migration, prompt/schema contract, prospective lock, opening receipt, the authoritative opening-receipt-head registry, reproducibility record, resource measurement, native forward/backward, and the four evaluation layers. Every schema fixes:
+Publish strict JSON Schemas or equivalent typed validators for reviewer attestation, pre-download acquisition authorization and execution receipt, source artifact manifest, rights receipt, grouping receipt, closed eligible-population manifest, immutable QA sampling plan, QA receipt, two-stage custody summary, source, split, complete checkpoint/model lineage, purpose authorization including checkpoint-bound release, the authoritative authorization registry, lineage, sanitized rule extraction, decision plan, decision payload, decision-execution receipt, experiment, run, current-status overlay, legacy migration, prompt/schema contract, prospective lock, opening receipt, the authoritative opening-receipt-head registry, reproducibility record, resource measurement, native forward/backward, example manifest, execution-output manifest, task-change summary, geometry summary, and the four evaluation layers. Every schema fixes:
 
 - schema name and version;
 - required, optional, and nullable keys;
@@ -127,7 +129,8 @@ When runtime fails before generation, generation fields may be null and downstre
 - explicit engineering decoding from the pin: never inherit the repository `generation_config.json`; construct the call from the allowlisted fields, including `do_sample=false`, one beam/return sequence, neutral sampling fields, and `repetition_penalty=1.0`; bind task-specific token and stop limits in the versioned prompt contract. A missing, extra, silently ignored, or upstream-inherited generation setting rejects the run. This is the external engineering/tournament condition, not a claim about the still-unpublished official harness;
 - native one-image preprocessing and stateless task/context calls;
 - synthetic fixture covering classification, counting, one/many boxes, dynamic context subsets, malformed output, missing/inapplicable context, and failure states;
-- fractional and weighted task-change identity;
+- exact manifest-population and output-layer set equality under `docs/phase1/EVALUATOR_MECHANICS.md`;
+- fractional and weighted task-change identity with frozen positive weights, exact failure/tie/missing-row rules, and no result-dependent denominator;
 - primary continuous task-change states `{positive, zero, negative}` plus a separate optional binary transition table;
 - acquired/retained/lost/never visual-benefit states on verified answer-changing pairs;
 - no silent box repair;
@@ -141,7 +144,7 @@ Multi-image support is out of Phase 1 unless an official need, ordered-image sch
 
 ## Evidence root
 
-Each return contains a strict `evidence-manifest.json` governed by an executable schema. It lists every other bundle member's unique normalized POSIX relative path, byte size, SHA-256, media type, and `schema_id`/`schema_version` for schema-governed records or explicit nulls for raw logs and prose. Entries are regular files only: no absolute paths, empty components, `.`, `..`, backslashes, Unicode-normalization aliases, case-colliding aliases, symlinks, hard-link aliases, directories, or self-entry. Sort entries by UTF-8 bytes of the normalized path. Serialize the manifest as duplicate-key-free RFC 8785 canonical JSON encoded as UTF-8 with no BOM; the SHA-256 of those bytes is the deterministic bundle-root digest stored independently before review. Deleting, replacing, renaming, reordering, or aliasing a member must change or invalidate the root.
+Each return contains a strict `evidence-manifest.json` governed by an executable schema. It lists every other bundle member's unique normalized POSIX relative path, byte size, SHA-256, media type, and `schema_id`/`schema_version` for schema-governed records or explicit nulls for raw logs and prose. An evaluator run separately binds one closed execution-output manifest whose entry `sha256` set equals its reproducibility `output_digests` set and whose four layer populations equal the frozen example population; aggregate task-change and geometry summaries bind already-complete condition manifests without entering those manifests. Entries are regular files only: no absolute paths, empty components, `.`, `..`, backslashes, Unicode-normalization aliases, case-colliding aliases, symlinks, hard-link aliases, directories, or self-entry. Sort entries by UTF-8 bytes of the normalized path. Serialize the manifest as duplicate-key-free RFC 8785 canonical JSON encoded as UTF-8 with no BOM; the SHA-256 of those bytes is the deterministic bundle-root digest stored independently before review. Deleting, replacing, renaming, reordering, or aliasing a member must change or invalidate the root.
 
 The bundle also contains `source-state.json`. It records the commit SHA, clean/dirty state, canonical binary patch hash when dirty, and path/size/SHA-256 inventory for every Phase 1 source, test, immutable implementation configuration, contract, and lock file. Mutable execution-state authorities—current status, source/authorization heads, and opening-receipt heads—are explicitly excluded from `source_state` to avoid provenance cycles; the evidence manifest covers their exact bytes, and status, experiment, and reproducibility records bind their appropriate digests separately. Test-command records and run manifests bind the source-state digest. Any immutable source/configuration drift after evidence generation invalidates the bundle.
 

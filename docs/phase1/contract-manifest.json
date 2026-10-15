@@ -1,34 +1,38 @@
 {
   "schema_version": 1,
-  "contract_revision": "2026-10-15-cycle-44a",
+  "contract_revision": "2026-10-15-cycle-46a",
   "files": {
     "docs/phase1/CONTRACT.md": {
-      "bytes": 22784,
-      "sha256": "a7131398397978849a63c6125d4058b3eccb28725cbe4dc9a8ed895a8c8ceb6d"
+      "bytes": 23811,
+      "sha256": "e510a8f5d6ba99eee529f4bc66357551a04caaa091730b986ed3467218139634"
     },
     "docs/phase1/ACCEPTANCE.md": {
-      "bytes": 18960,
-      "sha256": "706e8f096fcca7ec6f45f3a7e7f54fe5d6f6f8f07ec5635e6f808a1c461c5366"
+      "bytes": 19653,
+      "sha256": "63a2b4894e1f88b30356936fbb611f9f21d008e6a9f124dac41ee8df3f530296"
     },
     "docs/phase1/SCHEMAS.md": {
-      "bytes": 83367,
-      "sha256": "a17f79e8ae101977efbfad3f7a332486da777cd58a8415da58863073616c66f5"
+      "bytes": 88400,
+      "sha256": "4eff7252575ba804d5605a27d5cbbe9aba4836cf387d6cc58f022a7646697511"
     },
     "docs/phase1/REPRODUCIBILITY.md": {
-      "bytes": 10783,
-      "sha256": "37bf141ea2c884ac8443cb14da6865ad7311662795020ebcec7270f5bf72a6cb"
+      "bytes": 11199,
+      "sha256": "f00f515affdc46064ba92b4bd6b84fb35763a777046c9a365e2ff8edbb4d17c9"
     },
     "docs/phase1/B1_RUNTIME_GATE.md": {
       "bytes": 8283,
       "sha256": "59979b397f308b7b8f177aa1354256b834b2dcdcbb4829d078ca28575e55da03"
     },
+    "docs/phase1/EVALUATOR_MECHANICS.md": {
+      "bytes": 11227,
+      "sha256": "4fe4130b2e3681bb21f0d9ee2e193b15438c2fb50ad411e2252c0e46a6467110"
+    },
     "docs/phase1/OFFICIAL_SOURCE_MAP.md": {
-      "bytes": 8246,
-      "sha256": "9973c175167a95a73fab1ca71c490c63da0208dd8a3b37dc5c8f142257a3ed2e"
+      "bytes": 9294,
+      "sha256": "b7169b7eb1cf46fe3eeb3b0ab68985aff3847fe5ec8aebe7ea0c7a739e3683fc"
     },
     "docs/phase1/ORGANIZER_CLARIFICATION.md": {
-      "bytes": 4103,
-      "sha256": "191f2d8fdc8d42ab7c2f8732999a3f1be0535eccc18cbb406c5c6b0e313b616e"
+      "bytes": 5167,
+      "sha256": "c32124a47af4fb210f9bf7fd4936600c51818550d9a754b08a64696f4853d672"
     },
     "docs/phase1/b1-pin.json": {
       "bytes": 3757,
@@ -40,5 +44,5 @@
     "mmbu-challenge-official-rules.pdf": "30fb3241bd331eeaf0602b4ec24faf66b50f97c5d430cf814fdda80d62b80c8e"
   },
   "inventory_policy": "exact: no missing or extra binding contract members",
-  "note": "This manifest pins the clone-resident sanitized Phase 1 contract, normative acceptance registry, field-level schema contract, reproducibility and B1 runtime gates, source receipt, and B1 identity. Official source hash changes require a fresh review and contract revision."
+  "note": "This manifest pins the clone-resident sanitized Phase 1 contract, normative acceptance registry, field-level schema contract, reproducibility, B1 runtime and evaluator-mechanics gates, source receipt, and B1 identity. Official source hash changes require a fresh review and contract revision."
 }

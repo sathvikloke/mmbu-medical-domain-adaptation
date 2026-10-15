@@ -10,13 +10,13 @@
 |---|---|---|
 | `MMBU_challenge_update.pdf` | `68fb4c2685d3d3b501da6f92f0906f970d851b596e98fddede26fb6e2b6e4ba0` | pages 3, 5–12; rule-bearing text only |
 | `mmbu-challenge-official-rules.pdf` | `30fb3241bd331eeaf0602b4ec24faf66b50f97c5d430cf814fdda80d62b80c8e` | pages 1–2; sections 1–11 |
-| `docs/phase1/ORGANIZER_CLARIFICATION.md` | manifest member; exact hash in `contract-manifest.json` | scoped statements 1–10; sanitized authenticated registered-team clarification |
+| `docs/phase1/ORGANIZER_CLARIFICATION.md` | manifest member; exact hash in `contract-manifest.json` | scoped statements 1–12; sanitized authenticated registered-team clarification |
 
 An authenticated October 9 registered-team organizer bulletin, held outside this sanitized clone, directs teams to the challenge website and pinned Discord messages for details and answers. This metadata is an external audit warning, not clone-resident rule authority: the bulletin bytes and current pinned posts are not yet captured or hashed here. A Discord clarification can become contract authority only after an authorized read-only capture records exact content bytes or screenshot hash, organizer identity, server/channel, timestamp, pin state, and scope, followed by a reviewed contract revision.
 
 Mutable website and Luma observations are likewise external freshness warnings, not support for any assertion in the binding map below, because their reviewed bytes are not in this manifest. They may identify a conflict or trigger recapture, but only a hashed capture added by reviewed contract revision may supply rule authority.
 
-The exact eight-member manifest in this directory pins this receipt alongside the other binding Phase 1 contract members. A source-byte or receipt-byte change requires a new contract revision and review.
+The exact nine-member manifest in this directory pins this receipt alongside the other binding Phase 1 contract members. A source-byte or receipt-byte change requires a new contract revision and review.
 
 ## Sanitized assertion map
 
@@ -36,12 +36,14 @@ The exact eight-member manifest in this directory pins this receipt alongside th
 | MMBU examples, labels, annotations, and derivatives cannot be used for training, checkpoint selection, or optimization; major training sources and known overlaps must be disclosed | brief page 10 Rule 6 |
 | Independently obtained training splits from MMBU-contributing source datasets are allowed; all training datasets must be disclosed; no organizer overlap-checking service is offered | `ORGANIZER_CLARIFICATION.md` statements 3–4 |
 | The project retains a stricter external-only decision firewall unless a later user-authorized contract revision changes it | `ORGANIZER_CLARIFICATION.md` statement 2 |
+| Organizer-required form treatment for medically adapted starting checkpoints and modified vision components is unresolved; exact-base, training-lineage, and changed-module disclosure remains conservative local policy | `ORGANIZER_CLARIFICATION.md` statement 11 |
 | Organizer inference uses BF16 or FP16; one frozen final model must be designated and uploaded per track before the deadline | brief pages 10–11 Rule 7 |
 | Hardware, memory, runtime, and inference constraints are organizer-specified; participant failures do not automatically receive reruns | brief page 11 Rules 8–9 |
 | Team acceptance, one-team membership, anti-collusion, and evaluation-integrity requirements | brief page 11 Rules 11–14 |
 | Registration closes October 31, 2026; submission deadline is December 31, 2026. The rules supply no clock time/timezone; the scoped organizer clarification fixes the timezone as PST, while cutoff clock time remains unresolved. | official rules page 1 section 3 and `ORGANIZER_CLARIFICATION.md` statement 9 |
 | Prize/conflict exclusions include GXL, Anthropic, AWS, Highlanders, Biohub, Stanford AI Lab, organizers, holders of hidden evaluation material, judges/reviewers/evaluators, and Stanford MARVL | official rules page 1 section 5 |
 | Entry requires model outputs and a short method write-up through Hugging Face | official rules page 1 section 6 |
+| Additional submission instructions were expected approximately near the beginning of December, not guaranteed; broad categories are final team members, actual model information, and training-data information, while exact form fields and artifact division remain unresolved | `ORGANIZER_CLARIFICATION.md` statement 12 |
 | Participants retain model/code ownership and grant publication rights for team name, scores, and method summary | official rules page 2 section 9 |
 
 ## Excluded content classes
@@ -67,6 +69,8 @@ These are two independent machine-assisted reviews, not human legal advice and n
 - quantized stored-weight and mixed-kernel eligibility;
 - exact active-parameter definition for any future MoE candidate;
 - whether above-27B models require both public/ungated Hugging Face release and an API, and the treatment of exactly 27B;
+- organizer-required disclosure treatment for medically adapted starting checkpoints and modified vision components; local exact-base, training-lineage, and changed-module disclosure does not answer the form question;
+- exact final-form fields and destination, output/write-up handling, visibility and artifact division, edit policy, receipt, and cutoff clock time; the approximate early-December instruction window and broad form categories do not resolve them;
 - current rule-bearing pinned Discord clarifications and office-hour notices; no irreversible rule-sensitive choice may treat this source inventory as complete until an authorized capture is reviewed.
 
 Authority precedence is: later formal rules or a scope-specific written organizer clarification/material-change notice; then the published challenge brief and current official site for nonconflicting statements; then provisional summaries. Captured pinned organizer posts and written bulletins enter at the scope their text supports, never by channel name alone. Conflicts are quarantined rather than silently resolved.

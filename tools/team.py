@@ -348,7 +348,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"ERROR: contract integrity: {error}", file=sys.stderr)
             return 1
         if args.command == "verify-contract":
-            print("Verified the exact eight-member Phase 1 contract manifest, byte counts, SHA-256s, paths, and official-source hash agreement.")
+            print("Verified the exact nine-member Phase 1 contract manifest, byte counts, SHA-256s, paths, and official-source hash agreement.")
             return 0
         if args.command in {"verify-evidence", "verify-links"}:
             errors = verify_evidence(root) if args.command == "verify-evidence" else verify_links(root)

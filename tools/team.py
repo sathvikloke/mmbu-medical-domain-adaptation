@@ -19,6 +19,9 @@ from urllib.parse import unquote, urlsplit
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+from mmbu_phase1.contract_manifest import verify_contract_manifest
+
 PACKAGE = Path("outputs/mmbu-precompute")
 MANIFEST = "evidence/bundle-manifest.json"
 # Fixed historical anchors from the original verification receipts, 2026-10-04.
@@ -319,6 +322,13 @@ def package_environment(root: Path) -> dict:
     return env
 
 
+def phase1_environment(root: Path) -> dict:
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(root / "src")
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    return env
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=ROOT, help="repository root (default: this script's parent repository)")
@@ -326,11 +336,20 @@ def main(argv: list[str] | None = None) -> int:
     test = sub.add_parser("test", help="run historical package tests and repository tooling tests")
     test.add_argument("--images", action="store_true", help="require an already installed Pillow >=12.3,<13; never install it")
     sub.add_parser("smoke", help="run offline status, demo, toy comparison and toy diagnostics")
+    sub.add_parser("verify-contract", help="verify the pinned Phase 1 contract manifest and source hashes")
     sub.add_parser("verify-evidence", help="verify historical bytes, hashes and file inventory")
     sub.add_parser("verify-links", help="check maintained root/docs/team Markdown paths and anchors offline")
     args = parser.parse_args(argv)
     root = args.root.resolve()
     try:
+        contract_errors = verify_contract_manifest(root)
+        if contract_errors:
+            for error in contract_errors:
+                print(f"ERROR: contract integrity: {error}", file=sys.stderr)
+            return 1
+        if args.command == "verify-contract":
+            print("Verified the exact eight-member Phase 1 contract manifest, byte counts, SHA-256s, paths, and official-source hash agreement.")
+            return 0
         if args.command in {"verify-evidence", "verify-links"}:
             errors = verify_evidence(root) if args.command == "verify-evidence" else verify_links(root)
             if errors:
@@ -364,7 +383,17 @@ def main(argv: list[str] | None = None) -> int:
                 return result
             if not (root / "tests/test_team_tools.py").is_file():
                 parser.error("missing repository tooling tests")
-            return run_commands([[python, "-m", "unittest", "discover", "-s", "tests", "-v"]], root, env)
+            result = run_commands([[python, "-m", "unittest", "discover", "-s", "tests", "-v"]], root, env)
+            if result:
+                return result
+            phase1_tests = root / "tests/phase1/test_contract_manifest.py"
+            if not phase1_tests.is_file():
+                parser.error("missing Phase 1 contract-integrity tests")
+            return run_commands(
+                [[python, "-m", "unittest", "discover", "-s", "tests/phase1", "-v"]],
+                root,
+                phase1_environment(root),
+            )
         common = ["examples/candidate-grades-toy.json", "--bootstrap", "25", "--seed", "17"]
         commands = [[python, "-m", "mmbu_prep", *parts] for parts in
                     (["status"], ["demo"], ["compare", *common], ["diagnose", *common])]

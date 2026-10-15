@@ -6,11 +6,13 @@
 
 ## Authority
 
-Current official challenge rules, written organizer answers, and the exact official harness override this file. Any override must be recorded as a new contract revision with source hashes. Historical artifacts under `outputs/mmbu-precompute` remain immutable evidence and cannot override this contract for new work.
+Current official challenge rules, written organizer answers, and the exact official harness override this file only when interpreting external competition facts and requirements. They cannot grant project/user execution authority or relax the stricter public-set firewall without a later user-authorized, reviewed contract revision. Any external-authority change must be recorded as a new contract revision with source hashes. Historical artifacts under `outputs/mmbu-precompute` remain immutable evidence and cannot override this contract for new work.
 
 This repository file is the clone-resident source of truth for Phase 1. Machine-specific chat or audit paths are optional provenance, not execution dependencies.
 
 `docs/phase1/OFFICIAL_SOURCE_MAP.md` is the manifest-covered sanitized extraction receipt for the official-rule assertions used here. It records source hashes, exact page/section locators, excluded content classes, independent review dispositions, and unresolved items.
+
+`docs/phase1/ORGANIZER_CLARIFICATION.md` is the manifest-covered sanitized receipt for the authenticated registered-team clarification used by this revision. It contains governance statements only and excludes contact and benchmark-example content.
 
 `docs/phase1/REPRODUCIBILITY.md` is the manifest-covered execution contract. It defines identity, bit, numerical, and statistical reproduction levels; complete environment, RNG, and data-order records; cache isolation; fresh reload; interrupted resume; negative tests; and the limits of Phase 1 claims.
 
@@ -43,7 +45,7 @@ The CPU package remains standard-library-only unless a reviewed extra is frozen.
 1. Do not edit tracked bytes under `outputs/mmbu-precompute` or weaken its verification.
 2. Do not use MMBU public examples, labels, annotations, outputs, statistics, or derivatives for training, prompt/base/checkpoint/seed/hyperparameter selection, early stopping, or promotion.
 3. Developer-facing firewall tests use synthetic canary identities. Only a restricted role may compare against a real official hash index, without exposing example bytes or outcomes to developers.
-4. Do not download or train on a real biomedical source until its exact version has signed rights, lineage, grouping, QA, and purpose approval. Clearly unrelated sources need not wait for a blanket contributor ruling; known or suspected MMBU-contributing sources do.
+4. Do not download or train on a real biomedical source until its exact version has signed rights, lineage, grouping, QA, and purpose approval. The organizer permits independently obtained training splits from datasets that contributed to MMBU and requires disclosure of every training dataset; no organizer overlap-checking service is available. Contributor proximity therefore requires explicit lineage, alias/deduplication, disclosure, and generalization controls but is not an automatic organizer-pending prohibition. The stricter project ban on MMBU-public-result-driven source selection remains separate and controlling.
 5. Do not start serious training, implement the final research loss, upload an external repository, or claim model improvement in Phase 1.
 6. Task and context inference are separate stateless calls. Neither sees the other's output, label, grade, or hidden metadata.
 7. No silent retry, JSON repair, answer extraction, coordinate clamping, field dropping, or denominator removal is allowed.

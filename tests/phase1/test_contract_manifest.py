@@ -46,15 +46,15 @@ class ContractManifestTests(unittest.TestCase):
     def test_current_contract_is_accepted(self):
         self.assertEqual(self.contract_manifest.verify_contract_manifest(REPO), [])
 
-    def test_cycle46a_contract_includes_evaluator_mechanics_member(self):
+    def test_cycle46b_contract_includes_evaluator_mechanics_member(self):
         evaluator_member = "docs/phase1/EVALUATOR_MECHANICS.md"
         self.assertEqual(
             self.contract_manifest.EXPECTED_CONTRACT_REVISION,
-            "2026-10-15-cycle-46a",
+            "2026-10-15-cycle-46b",
         )
         self.assertIn(evaluator_member, self.contract_manifest.EXPECTED_MEMBERS)
         manifest = self.load_manifest()
-        self.assertEqual(manifest["contract_revision"], "2026-10-15-cycle-46a")
+        self.assertEqual(manifest["contract_revision"], "2026-10-15-cycle-46b")
         self.assertEqual(set(manifest["files"]), self.contract_manifest.EXPECTED_MEMBERS)
         self.assertEqual(self.contract_manifest.verify_contract_manifest(REPO), [])
 
@@ -73,6 +73,39 @@ class ContractManifestTests(unittest.TestCase):
         errors = "\n".join(self.verify_with_current_fixture_anchor())
         self.assertIn("EVALUATOR_MECHANICS.md", errors)
         self.assertIn("SHA-256", errors)
+
+    def test_cycle46b_mechanics_freeze_closed_rational_pairing_and_geometry_rules(self):
+        mechanics = (REPO / "docs/phase1/EVALUATOR_MECHANICS.md").read_text(
+            encoding="utf-8"
+        )
+        required_fragments = (
+            '{"denominator":1,"numerator":0}',
+            "gcd(abs(numerator), denominator)=1",
+            "mmbu.phase1.paired_condition_contract",
+            "allowed_difference_fields",
+            "A mismatch in any matched field",
+            "predicted_boxes_digest`, `prediction_count`, `boxes_valid`, `matched_pairs`, and `row_iou` are all null",
+            "reason_code=invalid_prediction_box",
+            "reason_code=prediction_count_mismatch",
+            "zero-based integer `prediction_index`",
+            "ties choose the lexicographically smallest vector",
+        )
+        for fragment in required_fragments:
+            with self.subTest(fragment=fragment):
+                self.assertIn(fragment, mechanics)
+
+    def test_cycle46b_pairing_contract_has_exact_closed_condition_and_identity_fields(self):
+        mechanics = (REPO / "docs/phase1/EVALUATOR_MECHANICS.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            "Its `matched_conditions` object contains exactly `purpose`, `authorization_registry_digest`, `source_record_digests`",
+            mechanics,
+        )
+        self.assertIn(
+            "`allowed_difference_fields` is exactly the sorted set `adapted_from_model_digest`, `candidate_ids`, `model_digest`, `model_lineage_root_digests`, and `model_selection_receipt_digests`",
+            mechanics,
+        )
 
     def test_duplicate_json_key_is_rejected(self):
         raw = self.manifest_path().read_text(encoding="utf-8")

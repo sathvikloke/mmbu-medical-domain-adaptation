@@ -1,30 +1,30 @@
 {
   "schema_version": 1,
-  "contract_revision": "2026-10-15-cycle-46a",
+  "contract_revision": "2026-10-15-cycle-46b",
   "files": {
     "docs/phase1/CONTRACT.md": {
-      "bytes": 23811,
-      "sha256": "e510a8f5d6ba99eee529f4bc66357551a04caaa091730b986ed3467218139634"
+      "bytes": 24298,
+      "sha256": "097b10ed9d5eb2e0a55a785db3f5cbb603a083a0cd6bde67a66aa5f16d846d4d"
     },
     "docs/phase1/ACCEPTANCE.md": {
-      "bytes": 19653,
-      "sha256": "63a2b4894e1f88b30356936fbb611f9f21d008e6a9f124dac41ee8df3f530296"
+      "bytes": 20542,
+      "sha256": "aaa2886b362432ae83205a400fae13f16a55809ed42ff4f34427e13b002d292b"
     },
     "docs/phase1/SCHEMAS.md": {
-      "bytes": 88400,
-      "sha256": "4eff7252575ba804d5605a27d5cbbe9aba4836cf387d6cc58f022a7646697511"
+      "bytes": 91832,
+      "sha256": "16539e9faadbe9bb5df89b20447231bf239a962bf3b926ef12f61a1db7994a87"
     },
     "docs/phase1/REPRODUCIBILITY.md": {
-      "bytes": 11199,
-      "sha256": "f00f515affdc46064ba92b4bd6b84fb35763a777046c9a365e2ff8edbb4d17c9"
+      "bytes": 11816,
+      "sha256": "3c1be75f54143c091f73ae37b4f95d2d57a382fd57f7c81ad24265deb8ee69da"
     },
     "docs/phase1/B1_RUNTIME_GATE.md": {
       "bytes": 8283,
       "sha256": "59979b397f308b7b8f177aa1354256b834b2dcdcbb4829d078ca28575e55da03"
     },
     "docs/phase1/EVALUATOR_MECHANICS.md": {
-      "bytes": 11227,
-      "sha256": "4fe4130b2e3681bb21f0d9ee2e193b15438c2fb50ad411e2252c0e46a6467110"
+      "bytes": 21201,
+      "sha256": "19da53d5563b0246c8f29f35e0be24c1c751d02b4b38bfdd2c7548c59747a663"
     },
     "docs/phase1/OFFICIAL_SOURCE_MAP.md": {
       "bytes": 9294,
@@ -44,5 +44,5 @@
     "mmbu-challenge-official-rules.pdf": "30fb3241bd331eeaf0602b4ec24faf66b50f97c5d430cf814fdda80d62b80c8e"
   },
   "inventory_policy": "exact: no missing or extra binding contract members",
-  "note": "This manifest pins the clone-resident sanitized Phase 1 contract, normative acceptance registry, field-level schema contract, reproducibility, B1 runtime and evaluator-mechanics gates, source receipt, and B1 identity. Official source hash changes require a fresh review and contract revision."
+  "note": "This manifest pins the clone-resident sanitized Phase 1 contract, normative acceptance registry, field-level schema contract, reproducibility, B1 runtime and exact rational/paired-condition/evaluator-mechanics gates, source receipt, and B1 identity. Official source hash changes require a fresh review and contract revision."
 }

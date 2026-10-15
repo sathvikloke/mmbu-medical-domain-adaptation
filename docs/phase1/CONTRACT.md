@@ -22,7 +22,7 @@ This repository file is the clone-resident source of truth for Phase 1. Machine-
 
 `docs/phase1/SCHEMAS.md` is the manifest-covered field-level record contract. It freezes canonicalization, schema IDs, required/null fields, enums, digest domains, references, chronology, state transitions, and minimal valid/invalid examples while leaving unknown official task-output keys behind the versioned prompt/schema adapter.
 
-`docs/phase1/EVALUATOR_MECHANICS.md` is the manifest-covered synthetic/engineering evaluator authority. It closes the exact-rational wire type, prospectively paired base/adapted conditions, example population and execution-output manifests, exact task-change arithmetic, failure/tie/missing-row treatment, original-pixel box validity and IoU, one/many-box matching, aggregate summary records, and normative conformance vectors. It is not an official-harness claim.
+`docs/phase1/EVALUATOR_MECHANICS.md` is the manifest-covered synthetic/engineering evaluator authority. It closes the exact-rational wire type, one complete execution-condition record, prospectively paired base/adapted conditions, example population and execution-output manifests, exact task-change arithmetic, failure/tie/missing-row treatment, original-pixel box validity and IoU, one/many-box matching, aggregate summary records, and normative conformance vectors. It is not an official-harness claim.
 
 ## Fixed repository layout
 
@@ -83,7 +83,7 @@ Governance authority is not training ancestry. Every reference edge is typed as 
 
 ## Executable V2 schemas
 
-Publish strict JSON Schemas or equivalent typed validators for reviewer attestation, pre-download acquisition authorization and execution receipt, source artifact manifest, rights receipt, grouping receipt, closed eligible-population manifest, immutable QA sampling plan, QA receipt, two-stage custody summary, source, split, complete checkpoint/model lineage, purpose authorization including checkpoint-bound release, the authoritative authorization registry, lineage, sanitized rule extraction, decision plan, decision payload, decision-execution receipt, experiment, run, current-status overlay, legacy migration, prompt/schema contract, paired-condition contract, prospective lock, opening receipt, the authoritative opening-receipt-head registry, reproducibility record, resource measurement, native forward/backward, example manifest, execution-output manifest, task-change summary, geometry summary, and the four evaluation layers. Every schema fixes:
+Publish strict JSON Schemas or equivalent typed validators for reviewer attestation, pre-download acquisition authorization and execution receipt, source artifact manifest, rights receipt, grouping receipt, closed eligible-population manifest, immutable QA sampling plan, QA receipt, two-stage custody summary, source, split, complete checkpoint/model lineage, purpose authorization including checkpoint-bound release, the authoritative authorization registry, lineage, sanitized rule extraction, decision plan, decision payload, decision-execution receipt, execution condition, experiment, run, current-status overlay, legacy migration, prompt/schema contract, paired-condition contract, prospective lock, opening receipt, the authoritative opening-receipt-head registry, reproducibility record, resource measurement, native forward/backward, example manifest, execution-output manifest, task-change summary, geometry summary, and the four evaluation layers. Every schema fixes:
 
 - schema name and version;
 - required, optional, and nullable keys;
@@ -130,12 +130,12 @@ When runtime fails before generation, generation fields may be null and downstre
 - native one-image preprocessing and stateless task/context calls;
 - synthetic fixture covering classification, counting, one/many boxes, dynamic context subsets, malformed output, missing/inapplicable context, and failure states;
 - exact manifest-population and output-layer set equality under `docs/phase1/EVALUATOR_MECHANICS.md`;
-- one prospective paired-condition contract that permits differences only in the closed model-identity allowlist and rejects every inference/evaluation-condition mismatch;
+- one closed prospective execution-condition record, transitively bound by experiments, raw records, output manifests, runs, and reproducibility evidence, plus one paired-condition contract that permits differences only in the fixed five-field model-identity allowlist and rejects every condition-leaf mismatch;
 - fractional and weighted task-change identity with frozen positive weights, exact failure/tie/missing-row rules, and no result-dependent denominator;
 - primary continuous task-change states `{positive, zero, negative}` plus a separate optional binary transition table;
 - acquired/retained/lost/never visual-benefit states on verified answer-changing pairs;
 - canonical reduced rational objects for every division-derived aggregate, rate, pair IoU, and row IoU; no decimal approximation;
-- no silent box repair, fabricated empty prediction, undefined match encoding, or open-ended geometry reason;
+- no silent box repair, fabricated empty prediction, undefined match encoding, open-ended geometry reason, or parse/validation failure relabeling;
 - real native collator, forward/backward, declared trainable-module gradients, minimal adapter save, and fresh-process reload;
 - same-environment explicit-decoding token-ID and adapter/config hash replay;
 - complete execution provenance and determinism classification under `docs/phase1/REPRODUCIBILITY.md`, including backend-effective kernel, precision, and distributed settings; purpose-namespaced seeds; ordered data exposure; cache/network state; exact command/log/exit-code capture; and an interrupted native-collator resume comparison that preserves optimizer, scheduler, scaler when used, RNG, sampler/cursor, accumulation, and exposure state;

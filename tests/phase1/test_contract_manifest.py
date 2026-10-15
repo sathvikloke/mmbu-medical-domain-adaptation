@@ -46,15 +46,15 @@ class ContractManifestTests(unittest.TestCase):
     def test_current_contract_is_accepted(self):
         self.assertEqual(self.contract_manifest.verify_contract_manifest(REPO), [])
 
-    def test_cycle46b_contract_includes_evaluator_mechanics_member(self):
+    def test_cycle46c_contract_includes_evaluator_mechanics_member(self):
         evaluator_member = "docs/phase1/EVALUATOR_MECHANICS.md"
         self.assertEqual(
             self.contract_manifest.EXPECTED_CONTRACT_REVISION,
-            "2026-10-15-cycle-46b",
+            "2026-10-15-cycle-46c",
         )
         self.assertIn(evaluator_member, self.contract_manifest.EXPECTED_MEMBERS)
         manifest = self.load_manifest()
-        self.assertEqual(manifest["contract_revision"], "2026-10-15-cycle-46b")
+        self.assertEqual(manifest["contract_revision"], "2026-10-15-cycle-46c")
         self.assertEqual(set(manifest["files"]), self.contract_manifest.EXPECTED_MEMBERS)
         self.assertEqual(self.contract_manifest.verify_contract_manifest(REPO), [])
 
@@ -74,7 +74,7 @@ class ContractManifestTests(unittest.TestCase):
         self.assertIn("EVALUATOR_MECHANICS.md", errors)
         self.assertIn("SHA-256", errors)
 
-    def test_cycle46b_mechanics_freeze_closed_rational_pairing_and_geometry_rules(self):
+    def test_cycle46c_mechanics_freeze_closed_rational_pairing_and_geometry_rules(self):
         mechanics = (REPO / "docs/phase1/EVALUATOR_MECHANICS.md").read_text(
             encoding="utf-8"
         )
@@ -84,9 +84,10 @@ class ContractManifestTests(unittest.TestCase):
             "mmbu.phase1.paired_condition_contract",
             "allowed_difference_fields",
             "A mismatch in any matched field",
-            "predicted_boxes_digest`, `prediction_count`, `boxes_valid`, `matched_pairs`, and `row_iou` are all null",
+            "sets `predicted_boxes_digest`, `prediction_count`, `boxes_valid`, `matched_pairs`, and `row_iou` all null",
             "reason_code=invalid_prediction_box",
             "reason_code=prediction_count_mismatch",
+            "reason_code=validation_failure",
             "zero-based integer `prediction_index`",
             "ties choose the lexicographically smallest vector",
         )
@@ -94,7 +95,7 @@ class ContractManifestTests(unittest.TestCase):
             with self.subTest(fragment=fragment):
                 self.assertIn(fragment, mechanics)
 
-    def test_cycle46b_pairing_contract_has_exact_closed_condition_and_identity_fields(self):
+    def test_cycle46c_pairing_contract_has_exact_closed_condition_and_identity_fields(self):
         mechanics = (REPO / "docs/phase1/EVALUATOR_MECHANICS.md").read_text(
             encoding="utf-8"
         )
@@ -102,10 +103,36 @@ class ContractManifestTests(unittest.TestCase):
             "Its `matched_conditions` object contains exactly `purpose`, `authorization_registry_digest`, `source_record_digests`",
             mechanics,
         )
+        self.assertIn("`execution_condition_digest` resolves the complete closed `mmbu.phase1.execution_condition`", mechanics)
         self.assertIn(
             "`allowed_difference_fields` is exactly the sorted set `adapted_from_model_digest`, `candidate_ids`, `model_digest`, `model_lineage_root_digests`, and `model_selection_receipt_digests`",
             mechanics,
         )
+
+    def test_cycle46c_execution_condition_closes_every_required_dimension(self):
+        schemas = (REPO / "docs/phase1/SCHEMAS.md").read_text(encoding="utf-8")
+        required_fragments = (
+            "## `mmbu.phase1.execution_condition`",
+            "`request_set`, `components`, `processor`, `randomness`, `decoding`, `call_isolation`, `failure_retry`, `runtime`, `batching`, `precision_backend`",
+            "every environment entry visible to the process",
+            "no allowlist or relevance filter",
+            "blocks condition creation rather than replacing the value digest with null",
+            "`inference_settings_digest` is not an opaque policy handle",
+            "`observed_condition` contains exactly `request_set`, `components`, `processor`, `randomness`, `decoding`, `call_isolation`, `failure_retry`, `runtime`, `batching`, and `precision_backend`",
+            "`execution_condition_digest` equals the experiment and every raw record",
+        )
+        for fragment in required_fragments:
+            with self.subTest(fragment=fragment):
+                self.assertIn(fragment, schemas)
+
+    def test_cycle46c_geometry_validation_failure_is_closed(self):
+        mechanics = (REPO / "docs/phase1/EVALUATOR_MECHANICS.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("missing, null, scalar, object, or wrong-type member", mechanics)
+        self.assertIn("parsed valid-coordinate array with another invalid field", mechanics)
+        self.assertIn("`validation_failure`", mechanics)
+        self.assertIn("No prediction artifact or empty array is fabricated", mechanics)
 
     def test_duplicate_json_key_is_rejected(self):
         raw = self.manifest_path().read_text(encoding="utf-8")

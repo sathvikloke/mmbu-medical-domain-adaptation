@@ -22,7 +22,7 @@ This repository file is the clone-resident source of truth for Phase 1. Machine-
 
 `docs/phase1/SCHEMAS.md` is the manifest-covered field-level record contract. It freezes canonicalization, schema IDs, required/null fields, enums, digest domains, references, chronology, state transitions, and minimal valid/invalid examples while leaving unknown official task-output keys behind the versioned prompt/schema adapter.
 
-`docs/phase1/EVALUATOR_MECHANICS.md` is the manifest-covered synthetic/engineering evaluator authority. It closes the exact-rational wire type, one complete execution-condition record, prospectively paired base/adapted conditions, example population and execution-output manifests, exact task-change arithmetic, failure/tie/missing-row treatment, original-pixel box validity and IoU, one/many-box matching, aggregate summary records, and normative conformance vectors. It is not an official-harness claim.
+`docs/phase1/EVALUATOR_MECHANICS.md` is the manifest-covered synthetic/engineering evaluator authority. It closes the exact-rational wire type, one complete execution-condition record, prospectively paired base/adapted conditions, example population and execution-output manifests, exact task-change arithmetic, failure/tie/missing-row treatment, prompt/condition/evaluator/validator/summary threshold equality, original-pixel box validity and IoU, judge-independent validated geometry, one/many-box matching, aggregate summary records, and normative conformance vectors. It is not an official-harness claim.
 
 ## Fixed repository layout
 

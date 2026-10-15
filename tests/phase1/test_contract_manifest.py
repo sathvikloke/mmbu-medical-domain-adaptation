@@ -46,15 +46,15 @@ class ContractManifestTests(unittest.TestCase):
     def test_current_contract_is_accepted(self):
         self.assertEqual(self.contract_manifest.verify_contract_manifest(REPO), [])
 
-    def test_cycle46c_contract_includes_evaluator_mechanics_member(self):
+    def test_cycle46d_contract_includes_evaluator_mechanics_member(self):
         evaluator_member = "docs/phase1/EVALUATOR_MECHANICS.md"
         self.assertEqual(
             self.contract_manifest.EXPECTED_CONTRACT_REVISION,
-            "2026-10-15-cycle-46c",
+            "2026-10-15-cycle-46d",
         )
         self.assertIn(evaluator_member, self.contract_manifest.EXPECTED_MEMBERS)
         manifest = self.load_manifest()
-        self.assertEqual(manifest["contract_revision"], "2026-10-15-cycle-46c")
+        self.assertEqual(manifest["contract_revision"], "2026-10-15-cycle-46d")
         self.assertEqual(set(manifest["files"]), self.contract_manifest.EXPECTED_MEMBERS)
         self.assertEqual(self.contract_manifest.verify_contract_manifest(REPO), [])
 
@@ -133,6 +133,52 @@ class ContractManifestTests(unittest.TestCase):
         self.assertIn("parsed valid-coordinate array with another invalid field", mechanics)
         self.assertIn("`validation_failure`", mechanics)
         self.assertIn("No prediction artifact or empty array is fabricated", mechanics)
+
+    def test_cycle46d_prompt_contract_binds_geometry_threshold_projection(self):
+        schemas = (REPO / "docs/phase1/SCHEMAS.md").read_text(encoding="utf-8")
+        mechanics = (REPO / "docs/phase1/EVALUATOR_MECHANICS.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("`judge_policy_digest`, `geometry_threshold`, `inference_settings_digest`", schemas)
+        self.assertIn("prompt contract, execution condition, validator, evaluator, and geometry summary", mechanics)
+        self.assertIn("prompt-contract `geometry_threshold`", mechanics)
+
+    def test_cycle46d_environment_rule_is_exhaustive_sanitized_and_equal(self):
+        schemas = (REPO / "docs/phase1/SCHEMAS.md").read_text(encoding="utf-8")
+        reproducibility = (REPO / "docs/phase1/REPRODUCIBILITY.md").read_text(
+            encoding="utf-8"
+        )
+        for text in (schemas, reproducibility):
+            self.assertIn("every environment entry visible to the process", text)
+            self.assertIn("secret=false", text)
+            self.assertIn("blocks", text)
+        self.assertNotIn("environment variables that can affect", reproducibility)
+        self.assertNotIn("secrets redacted by value", reproducibility)
+        self.assertNotIn("a secret requires null digest", schemas)
+
+    def test_cycle46d_judge_failure_cannot_change_validated_geometry(self):
+        mechanics = (REPO / "docs/phase1/EVALUATOR_MECHANICS.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("A later `judge_failure` cannot change geometry", mechanics)
+        self.assertIn("valid geometry, judge failure", mechanics)
+        self.assertIn("Geometry derives from the validated layer", mechanics)
+
+    def test_cycle46d_handoff_exception_requires_external_controller_receipt(self):
+        agents = (REPO / "AGENTS.md").read_text(encoding="utf-8")
+        for fragment in (
+            "header echo is never sufficient",
+            "normalized_handoff_path",
+            "handoff_bytes",
+            "handoff_sha256",
+            "repository_head",
+            "contract_revision",
+            "contract_manifest_sha256",
+            "one_shot_purpose",
+            "cannot self-authorize",
+        ):
+            with self.subTest(fragment=fragment):
+                self.assertIn(fragment, agents)
 
     def test_duplicate_json_key_is_rejected(self):
         raw = self.manifest_path().read_text(encoding="utf-8")

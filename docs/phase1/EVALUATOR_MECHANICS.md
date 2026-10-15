@@ -1,6 +1,6 @@
 # Phase 1 evaluator mechanics
 
-**Revision:** 2026-10-15-cycle-46c
+**Revision:** 2026-10-15-cycle-46d
 **Status:** binding synthetic/engineering evaluator contract; not an official harness  
 **Scope:** closed evaluation populations, execution-output closure, task-change arithmetic, and original-pixel box geometry
 
@@ -89,7 +89,7 @@ Each detection row freezes exactly one `box_policy` in the example manifest:
 
 Prediction and target array order is preserved as evidence. Only the matching search may pair indices; it never reorders stored boxes. Detection rows use manifest-bound original dimensions and target-box artifact digests. Non-detection rows use `not_applicable` and null dimensions/target digest.
 
-`mmbu.phase1.geometry_summary` is a closed record with exactly `schema_id`, `schema_version`, `summary_id`, `example_manifest_digest`, `output_manifest_digest`, `validator_digest`, `threshold`, `rows`, `created_at`, and `record_digest`. `threshold` is a canonical rational and equals the value prospectively bound by the execution condition, validator, and prompt/schema contract; for the synthetic Phase 1 suite it is exactly `{"denominator":2,"numerator":1}`. `rows` contains every detection example exactly once in example-manifest order. Each row has exactly `example_id`, `box_policy`, `image_width`, `image_height`, `target_boxes_digest`, `predicted_boxes_digest`, `target_count`, `prediction_count`, `boxes_valid`, `matched_pairs`, `row_iou`, `passed`, and `reason_code`.
+`mmbu.phase1.geometry_summary` is a closed record with exactly `schema_id`, `schema_version`, `summary_id`, `example_manifest_digest`, `output_manifest_digest`, `validator_digest`, `threshold`, `rows`, `created_at`, and `record_digest`. `threshold` is a canonical rational and is byte-equal across the prompt contract, execution condition, validator, evaluator, and geometry summary; for the synthetic Phase 1 suite it is exactly `{"denominator":2,"numerator":1}`. `rows` contains every detection example exactly once in example-manifest order. Each row has exactly `example_id`, `box_policy`, `image_width`, `image_height`, `target_boxes_digest`, `predicted_boxes_digest`, `target_count`, `prediction_count`, `boxes_valid`, `matched_pairs`, `row_iou`, `passed`, and `reason_code`.
 
 Target boxes always resolve to the manifest's valid immutable ordered array and `target_count` is its positive integer length. Prediction evidence and failure handling are closed:
 
@@ -100,8 +100,9 @@ Target boxes always resolve to the manifest's valid immutable ordered array and 
 - Valid boxes with illegal policy cardinality set `matched_pairs=null`, `row_iou=null`, `passed=false`, and `reason_code=prediction_count_mismatch`.
 - Otherwise `matched_pairs` is an array sorted by `prediction_index`, then `target_index`; each closed member has exactly zero-based integer `prediction_index`, zero-based integer `target_index`, and canonical-rational `iou`. For `single` and `any_one` it contains the one deterministic compared/best pair even below threshold, and `row_iou` equals that pair's IoU. For `all_targets`, a selected perfect matching contains every prediction and target once and `row_iou` is its canonical-rational mean. If no threshold-qualified perfect matching exists, `matched_pairs=[]`, `row_iou=null`, `passed=false`, and `reason_code=below_threshold`.
 - A scored row uses only `passed` or `below_threshold`: `passed=true` iff the policy rule meets the inclusive threshold, with `reason_code=passed`; otherwise `passed=false` and `reason_code=below_threshold`.
+- Geometry derives from the validated layer, never the judged layer. When validation is `valid` and only the later judge fails, the validator computes `matched_pairs`, `row_iou`, `passed`, and `reason_code` exactly as it would for a successfully judged descendant. A later `judge_failure` cannot change geometry, erase validated prediction evidence, or introduce a geometry reason.
 
-The complete `reason_code` enum is `passed`, `below_threshold`, `runtime_failure`, `parse_failure`, `validation_failure`, `invalid_prediction_box`, and `prediction_count_mismatch`. Precedence is raw runtime failure, parse failure, missing/wrong-type array validation failure, invalid coordinate, non-geometry validation failure, policy cardinality, then scoring. These branches agree exactly with the layer statuses and judged terminal outcome in `SCHEMAS.md`; any other code, null placement, fabricated prediction array, one-based index, unsorted match vector, noncanonical rational, or transitive mismatch rejects the summary.
+The complete `reason_code` enum is `passed`, `below_threshold`, `runtime_failure`, `parse_failure`, `validation_failure`, `invalid_prediction_box`, and `prediction_count_mismatch`. Precedence is raw runtime failure, parse failure, missing/wrong-type array validation failure, invalid coordinate, non-geometry validation failure, policy cardinality, then validated-layer scoring; judge status has no precedence effect after valid validation. These branches agree exactly with the layer rules in `SCHEMAS.md`; any other code, null placement, fabricated prediction array, one-based index, unsorted match vector, noncanonical rational, judge-dependent geometry, or transitive mismatch rejects the summary.
 
 ## Conformance vectors
 
@@ -128,7 +129,7 @@ The one-field mutation matrix is normative. For every path below, start with one
 |---|---|
 | top level | `schema_id`, `schema_version`, `condition_id`, `created_at`, `record_digest`, plus unknown/missing top-level member and late creation |
 | `request_set` | `example_manifest_digest`; every row's `example_id`, `input_digest`, `task_request_digest`, `context_request_digest`, `requested_context_fields`; row omission/addition/order |
-| `components` | `prompt_schema_contract_digest`, `evaluator_digest`, `parser_digest`, `validator_digest`, `judge_policy_digest`, `geometry_threshold` and each parent/child disagreement |
+| `components` | `prompt_schema_contract_digest`, `evaluator_digest`, `parser_digest`, `validator_digest`, `judge_policy_digest`, `geometry_threshold`, the prompt-contract `geometry_threshold`, and each prompt/condition/evaluator/validator/summary disagreement |
 | `processor` | `processor_digest`, `preprocessor_config_digest`, `template_digest`, `image_decoder_digest` including each legal-null boundary |
 | `randomness` | `seed_namespace`; every stream's `name`, `seed`, `algorithm`, `version`, `derivation`, `parent_name`; derivation value/parent/formula/acyclicity; missing generation stream, duplicate, addition, order |
 | `decoding` | `decoding_method`, `max_new_tokens`, `temperature`, `top_p`, `top_k`, `do_sample`, `num_beams`, `num_return_sequences`, `repetition_penalty`, each `stop_token_ids` member/order, `cache_enabled`, and every cross-field legality rule |
@@ -155,6 +156,7 @@ For an image `W=100`, `H=80` and threshold `1/2`:
 | parse failure | `[10,10,20,20]` | no parsed value | single | prediction digest/count, validity, matches, and IoU null; `parse_failure` |
 | wrong-type boxes | `[10,10,20,20]` | parsed `{"boxes":"not-an-array"}` | single | prediction digest/count, validity, matches, and IoU null; `validation_failure` |
 | valid array, other invalid field | `[10,10,20,20]` | parsed `{"boxes":[[10,10,20,20]],"required_field":null}` where `required_field` must be non-null | single | exact digest of `[[10,10,20,20]]` and count one retained; validity true; matches and IoU null; `validation_failure` |
+| valid geometry, judge failure | `[10,10,20,20]` | `[10,10,20,20]`; validation valid; judge failed | single | pair `(0,0,1/1)`; row IoU `1/1`; `passed`; judged terminal outcome remains `judge_failure` |
 | overflow | `[90,70,10,10]` | `[90,70,11,10]` | single | exact prediction digest/count retained; matches and IoU null; `invalid_prediction_box` |
 | any-one | `[0,0,10,10]`, `[20,20,10,10]` | `[20,20,10,10]` | any_one | pair `(0,1,1/1)`; row IoU `1/1`; `passed` |
 | any-one-extra | same | two predictions | any_one | matches and IoU null; `prediction_count_mismatch` |

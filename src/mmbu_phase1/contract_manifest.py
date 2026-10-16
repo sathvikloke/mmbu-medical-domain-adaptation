@@ -11,8 +11,8 @@ import stat
 from typing import Any
 
 
-EXPECTED_CONTRACT_REVISION = "2026-10-15-cycle-46e"
-EXPECTED_MANIFEST_SHA256 = "9d7cbd6051fb5deb47eaa5618f2b845ababdee7dc8c4aaa5838213b9aab624b3"
+EXPECTED_CONTRACT_REVISION = "2026-10-15-cycle-46f"
+EXPECTED_MANIFEST_SHA256 = "15daeff7a4f162a0c6adf1aae4d8d772bcbaa23351ab3120cd284a7ca8835cce"
 EXPECTED_MEMBERS = frozenset(
     {
         "docs/phase1/CONTRACT.md",

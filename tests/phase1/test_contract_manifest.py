@@ -46,17 +46,35 @@ class ContractManifestTests(unittest.TestCase):
     def test_current_contract_is_accepted(self):
         self.assertEqual(self.contract_manifest.verify_contract_manifest(REPO), [])
 
-    def test_cycle46e_contract_includes_evaluator_mechanics_member(self):
+    def test_cycle46f_contract_includes_evaluator_mechanics_member(self):
         evaluator_member = "docs/phase1/EVALUATOR_MECHANICS.md"
         self.assertEqual(
             self.contract_manifest.EXPECTED_CONTRACT_REVISION,
-            "2026-10-15-cycle-46e",
+            "2026-10-15-cycle-46f",
         )
         self.assertIn(evaluator_member, self.contract_manifest.EXPECTED_MEMBERS)
         manifest = self.load_manifest()
-        self.assertEqual(manifest["contract_revision"], "2026-10-15-cycle-46e")
+        self.assertEqual(manifest["contract_revision"], "2026-10-15-cycle-46f")
         self.assertEqual(set(manifest["files"]), self.contract_manifest.EXPECTED_MEMBERS)
         self.assertEqual(self.contract_manifest.verify_contract_manifest(REPO), [])
+
+    def test_cycle46f_phase1a_cannot_select_a_scientific_method_or_baseline(self):
+        contract = (REPO / "docs/phase1/CONTRACT.md").read_text(encoding="utf-8")
+        self.assertIn(
+            "It selects or authorizes no scientific method, A-stage ladder, comparator, promotion gate, or competition baseline.",
+            contract,
+        )
+        self.assertIn(
+            "requires a new prospectively reviewed and receipted decision outside Phase 1A",
+            contract,
+        )
+        for stale_authority in (
+            "provisional two-budget method",
+            "strongest non-A4 baseline",
+            "Continuous negative mass",
+        ):
+            with self.subTest(stale_authority=stale_authority):
+                self.assertNotIn(stale_authority, contract)
 
     def test_same_size_member_tampering_is_rejected(self):
         member = self.root / "docs/phase1/SCHEMAS.md"
@@ -143,7 +161,7 @@ class ContractManifestTests(unittest.TestCase):
         self.assertIn("prompt contract, execution condition, validator, evaluator, and geometry summary", mechanics)
         self.assertIn("prompt-contract `geometry_threshold`", mechanics)
 
-    def test_cycle46e_environment_launch_is_closed_and_transitively_bound(self):
+    def test_cycle46f_environment_launch_is_closed_and_transitively_bound(self):
         schemas = (REPO / "docs/phase1/SCHEMAS.md").read_text(encoding="utf-8")
         reproducibility = (REPO / "docs/phase1/REPRODUCIBILITY.md").read_text(
             encoding="utf-8"
@@ -171,7 +189,7 @@ class ContractManifestTests(unittest.TestCase):
         self.assertNotIn("`secret=false`", schemas)
         self.assertNotIn("`secret=false`", reproducibility)
 
-    def test_cycle46e_environment_policy_has_exact_safe_rows_and_no_path(self):
+    def test_cycle46f_environment_policy_has_exact_safe_rows_and_no_path(self):
         schemas = (REPO / "docs/phase1/SCHEMAS.md").read_text(encoding="utf-8")
         start = schemas.index("## `mmbu.phase1.environment_launch_policy`")
         end = schemas.index("## `mmbu.phase1.environment_launch_receipt`", start)
@@ -222,7 +240,7 @@ class ContractManifestTests(unittest.TestCase):
         self.assertIn("valid geometry, judge failure", mechanics)
         self.assertIn("Geometry derives from the validated layer", mechanics)
 
-    def test_cycle46e_handoff_exception_is_a_closed_single_open_protocol(self):
+    def test_cycle46f_handoff_exception_is_a_closed_single_open_protocol(self):
         agents = (REPO / "AGENTS.md").read_text(encoding="utf-8")
         contract = (REPO / "docs/phase1/CONTRACT.md").read_text(encoding="utf-8")
         fragments = (
@@ -256,7 +274,7 @@ class ContractManifestTests(unittest.TestCase):
                 with self.subTest(document=text[:20], fragment=fragment):
                     self.assertIn(fragment, text)
 
-    def test_cycle46e_detached_receipt_field_set_and_literal_pins_are_exact(self):
+    def test_cycle46f_detached_receipt_field_set_and_literal_pins_are_exact(self):
         for relative in ("AGENTS.md", "docs/phase1/CONTRACT.md"):
             text = (REPO / relative).read_text(encoding="utf-8")
             with self.subTest(relative=relative):
@@ -264,7 +282,7 @@ class ContractManifestTests(unittest.TestCase):
                     "exactly seven fields: string `normalized_handoff_path`, non-boolean integer `handoff_bytes`, string `handoff_sha256`, string `repository_head`, string `contract_revision`, string `contract_manifest_sha256`, and string `one_shot_purpose`",
                     text,
                 )
-                self.assertIn("`2026-10-15-cycle-46e`", text)
+                self.assertIn("`2026-10-15-cycle-46f`", text)
                 self.assertIn("`implement_phase1a_external_only`", text)
                 self.assertIn("The same immutable byte buffer", text)
 

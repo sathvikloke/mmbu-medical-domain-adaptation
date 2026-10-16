@@ -46,15 +46,15 @@ class ContractManifestTests(unittest.TestCase):
     def test_current_contract_is_accepted(self):
         self.assertEqual(self.contract_manifest.verify_contract_manifest(REPO), [])
 
-    def test_cycle46d_contract_includes_evaluator_mechanics_member(self):
+    def test_cycle46e_contract_includes_evaluator_mechanics_member(self):
         evaluator_member = "docs/phase1/EVALUATOR_MECHANICS.md"
         self.assertEqual(
             self.contract_manifest.EXPECTED_CONTRACT_REVISION,
-            "2026-10-15-cycle-46d",
+            "2026-10-15-cycle-46e",
         )
         self.assertIn(evaluator_member, self.contract_manifest.EXPECTED_MEMBERS)
         manifest = self.load_manifest()
-        self.assertEqual(manifest["contract_revision"], "2026-10-15-cycle-46d")
+        self.assertEqual(manifest["contract_revision"], "2026-10-15-cycle-46e")
         self.assertEqual(set(manifest["files"]), self.contract_manifest.EXPECTED_MEMBERS)
         self.assertEqual(self.contract_manifest.verify_contract_manifest(REPO), [])
 
@@ -114,9 +114,9 @@ class ContractManifestTests(unittest.TestCase):
         required_fragments = (
             "## `mmbu.phase1.execution_condition`",
             "`request_set`, `components`, `processor`, `randomness`, `decoding`, `call_isolation`, `failure_retry`, `runtime`, `batching`, `precision_backend`",
-            "every environment entry visible to the process",
-            "no allowlist or relevance filter",
-            "blocks condition creation rather than replacing the value digest with null",
+            "complete platform-specific `name`/`value` projection",
+            "environment_launch_policy_digest",
+            "No unknown or inherited entry is representable",
             "`inference_settings_digest` is not an opaque policy handle",
             "`observed_condition` contains exactly `request_set`, `components`, `processor`, `randomness`, `decoding`, `call_isolation`, `failure_retry`, `runtime`, `batching`, and `precision_backend`",
             "`execution_condition_digest` equals the experiment and every raw record",
@@ -143,18 +143,76 @@ class ContractManifestTests(unittest.TestCase):
         self.assertIn("prompt contract, execution condition, validator, evaluator, and geometry summary", mechanics)
         self.assertIn("prompt-contract `geometry_threshold`", mechanics)
 
-    def test_cycle46d_environment_rule_is_exhaustive_sanitized_and_equal(self):
+    def test_cycle46e_environment_launch_is_closed_and_transitively_bound(self):
         schemas = (REPO / "docs/phase1/SCHEMAS.md").read_text(encoding="utf-8")
         reproducibility = (REPO / "docs/phase1/REPRODUCIBILITY.md").read_text(
             encoding="utf-8"
         )
-        for text in (schemas, reproducibility):
-            self.assertIn("every environment entry visible to the process", text)
-            self.assertIn("secret=false", text)
-            self.assertIn("blocks", text)
-        self.assertNotIn("environment variables that can affect", reproducibility)
-        self.assertNotIn("secrets redacted by value", reproducibility)
-        self.assertNotIn("a secret requires null digest", schemas)
+        contract = (REPO / "docs/phase1/CONTRACT.md").read_text(encoding="utf-8")
+        required_schema_fragments = (
+            "## `mmbu.phase1.environment_launch_policy`",
+            "## `mmbu.phase1.environment_launch_receipt`",
+            "starts from an empty environment mapping",
+            "does not copy or inherit the parent environment",
+            "`HOME`, `LANG`, `LC_ALL`, `PYTHONDONTWRITEBYTECODE`, `PYTHONHASHSEED`, `PYTHONPATH`, `PYTHONUTF8`, `TMPDIR`, and `TZ`",
+            "`MMBU_PHASE1_PARENT_SECRET_CANARY`",
+            "byte-for-byte equal to the platform-specific policy projection",
+            "unknown, inherited, missing, duplicated, reordered, or changed entry rejects",
+            "environment_launch_policy_digest",
+            "environment_launch_receipt_digest",
+        )
+        for fragment in required_schema_fragments:
+            with self.subTest(fragment=fragment):
+                self.assertIn(fragment, schemas)
+        for text in (schemas, reproducibility, contract):
+            self.assertIn("empty environment mapping", text)
+            self.assertIn("absolute Python executable", text)
+            self.assertIn("parent canary", text)
+        self.assertNotIn("`secret=false`", schemas)
+        self.assertNotIn("`secret=false`", reproducibility)
+
+    def test_cycle46e_environment_policy_has_exact_safe_rows_and_no_path(self):
+        schemas = (REPO / "docs/phase1/SCHEMAS.md").read_text(encoding="utf-8")
+        start = schemas.index("## `mmbu.phase1.environment_launch_policy`")
+        end = schemas.index("## `mmbu.phase1.environment_launch_receipt`", start)
+        policy = schemas[start:end]
+        rows = []
+        for line in policy.splitlines():
+            if line.startswith("| `") and "value_source" not in line:
+                rows.append(line.split("`")[1])
+        self.assertEqual(
+            rows,
+            [
+                "HOME",
+                "LANG",
+                "LC_ALL",
+                "PYTHONDONTWRITEBYTECODE",
+                "PYTHONHASHSEED",
+                "PYTHONPATH",
+                "PYTHONUTF8",
+                "TMPDIR",
+                "TZ",
+            ],
+        )
+        self.assertNotIn("| `PATH` |", policy)
+        self.assertIn("For `platform=linux`, those are the only nine rows", policy)
+        self.assertIn("For `platform=darwin`, there is exactly one additional sorted row", policy)
+        self.assertIn("`__CF_USER_TEXT_ENCODING`", policy)
+        self.assertIn("uppercase hexadecimal `launch_uid`", policy)
+        for failure in (
+            "parent-environment copying",
+            "a tenth child name",
+            "omitted row",
+            "duplicate name",
+            "noncanonical row order",
+            "one-byte value change",
+            "`PATH` insertion",
+            "canary inheritance",
+            "non-absolute Python",
+            "shell invocation",
+            "policy/receipt digest mismatch",
+        ):
+            self.assertIn(failure, schemas)
 
     def test_cycle46d_judge_failure_cannot_change_validated_geometry(self):
         mechanics = (REPO / "docs/phase1/EVALUATOR_MECHANICS.md").read_text(
@@ -164,9 +222,10 @@ class ContractManifestTests(unittest.TestCase):
         self.assertIn("valid geometry, judge failure", mechanics)
         self.assertIn("Geometry derives from the validated layer", mechanics)
 
-    def test_cycle46d_handoff_exception_requires_external_controller_receipt(self):
+    def test_cycle46e_handoff_exception_is_a_closed_single_open_protocol(self):
         agents = (REPO / "AGENTS.md").read_text(encoding="utf-8")
-        for fragment in (
+        contract = (REPO / "docs/phase1/CONTRACT.md").read_text(encoding="utf-8")
+        fragments = (
             "header echo is never sufficient",
             "normalized_handoff_path",
             "handoff_bytes",
@@ -176,9 +235,38 @@ class ContractManifestTests(unittest.TestCase):
             "contract_manifest_sha256",
             "one_shot_purpose",
             "cannot self-authorize",
-        ):
-            with self.subTest(fragment=fragment):
-                self.assertIn(fragment, agents)
+            "exactly seven fields",
+            "strict UTF-8 JSON",
+            "duplicate keys",
+            "non-finite",
+            "RFC 8785",
+            "non-boolean integer",
+            "absolute normalized POSIX path",
+            "all ancestors and the final path",
+            "link count exactly one",
+            "O_NOFOLLOW",
+            "descriptor-relative `openat` walk",
+            "opened exactly once",
+            "device, inode, size, and nanosecond modification time",
+            "immutable byte buffer",
+            "never reopens",
+        )
+        for text in (agents, contract):
+            for fragment in fragments:
+                with self.subTest(document=text[:20], fragment=fragment):
+                    self.assertIn(fragment, text)
+
+    def test_cycle46e_detached_receipt_field_set_and_literal_pins_are_exact(self):
+        for relative in ("AGENTS.md", "docs/phase1/CONTRACT.md"):
+            text = (REPO / relative).read_text(encoding="utf-8")
+            with self.subTest(relative=relative):
+                self.assertIn(
+                    "exactly seven fields: string `normalized_handoff_path`, non-boolean integer `handoff_bytes`, string `handoff_sha256`, string `repository_head`, string `contract_revision`, string `contract_manifest_sha256`, and string `one_shot_purpose`",
+                    text,
+                )
+                self.assertIn("`2026-10-15-cycle-46e`", text)
+                self.assertIn("`implement_phase1a_external_only`", text)
+                self.assertIn("The same immutable byte buffer", text)
 
     def test_duplicate_json_key_is_rejected(self):
         raw = self.manifest_path().read_text(encoding="utf-8")

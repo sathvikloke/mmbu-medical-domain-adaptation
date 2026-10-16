@@ -8,7 +8,7 @@ Paths in this guide are relative to the repository root. The historical layout i
 | --- | --- |
 | [README.md](../../README.md), [CONTRIBUTING.md](../../CONTRIBUTING.md) | Entry point and contribution/review expectations |
 | [docs/team](.) | Team onboarding, evidence navigation, decisions, workflow, and data/model notes |
-| [outputs/MMBU-domain-adaptation-plan-v2.md](../../outputs/MMBU-domain-adaptation-plan-v2.md) | Current prospective research strategy; supersedes the original plan where revised |
+| [outputs/MMBU-domain-adaptation-plan-v2.md](../../outputs/MMBU-domain-adaptation-plan-v2.md) | Historical scientific rationale; its provisional model order is superseded by the current [experiment workflow](EXPERIMENT_WORKFLOW.md) |
 | [outputs/MMBU-precompute-v0.3-status.md](../../outputs/MMBU-precompute-v0.3-status.md) | Historical CPU completion status and limitations |
 | [outputs/mmbu-precompute](../../outputs/mmbu-precompute) | Version 0.3 package: source, tests, examples, configs, documentation, tools, and evidence |
 | [outputs](../../outputs) | All preserved plan/audit/status documents, v0.1–v0.3 portable ZIPs, and verification receipts |

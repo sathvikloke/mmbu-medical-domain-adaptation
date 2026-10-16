@@ -36,13 +36,15 @@ See the [source registry](../../outputs/mmbu-precompute/configs/source-registry.
 
 Preserve patient/study/field/article/figure/panel lineage and source splits. ROCO and PMC-VQA share 12,078 training PMCIDs in the inspected metadata; they are not independent source families. Article overlap does not establish identical images, and exact/perceptual image checks do not prove independent subjects. Pending review must address shortcuts, text overlays, correct coordinate frames, and visible support for each target.
 
-## Model candidates and pinned snapshots
+## Pinned engineering snapshots
+
+The competition shortlist is empty. The role labels below describe current engineering use, not a model-quality ranking or competition admission. Historical v0.1–v0.3 outputs and the saved model registry retain their original baseline/challenger/fallback labels as evidence of the earlier handoff; those labels are superseded for new selection decisions.
 
 | Role | Model | Recorded processor snapshot |
 | --- | --- | --- |
-| Working baseline | Qwen/Qwen2.5-VL-7B-Instruct | `cc594898137f460bfe9f0759e9844b3ce807cfb5` |
-| First challenger | Qwen/Qwen3.5-9B | `c202236235762e1c871ad0ccb60c8ee5ba337b9a` |
-| Fallback | Qwen/Qwen3-VL-8B-Instruct | `0c351dd01ed87e9c1b53cbc748cba10e6187ff3b` |
+| Phase 1 B1 native-runtime fixture | Qwen/Qwen2.5-VL-7B-Instruct | `cc594898137f460bfe9f0759e9844b3ce807cfb5` |
+| Unranked processor probe subject | Qwen/Qwen3.5-9B | `c202236235762e1c871ad0ccb60c8ee5ba337b9a` |
+| Unranked processor probe subject | Qwen/Qwen3-VL-8B-Instruct | `0c351dd01ed87e9c1b53cbc748cba10e6187ff3b` |
 
 The [model registry](../../outputs/mmbu-precompute/configs/model-registry.json) records public, ungated repositories and Apache-2.0 card metadata as retrieved; these are historical metadata observations. The [preflight](../../outputs/mmbu-precompute/docs/model-preflight.md) distinguishes checkpoint metadata from independently measured runtime facts. These snapshots pin tokenizer, template, and configuration artifacts; no tensor checkpoint, model loading, active-parameter verification, GPU fit, or export has been established.
 

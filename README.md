@@ -6,7 +6,7 @@ Private team workspace for a reproducible Medical Domain Adaptation entry. It co
 
 The handoff covers all 852 original research files: code and reports in Git, plus a 175 MB private release with the complete research inputs. See [publication receipts](research/README.md).
 
-Start with [team onboarding](docs/team/START_HERE.md), then the [verified results ledger](docs/team/RESULTS.md) and [open decisions](docs/team/DECISIONS.md). The working execution order is **Qwen2.5-VL-7B-Instruct** first, **Qwen3.5-9B** as challenger, and **Qwen3-VL-8B-Instruct** as fallback. Final selection needs matched adaptation results and measured cost.
+Start with [team onboarding](docs/team/START_HERE.md), then the [verified results ledger](docs/team/RESULTS.md) and [open decisions](docs/team/DECISIONS.md). The competition shortlist is intentionally empty until a prospectively frozen model-selection decision and its receipt exist. The three pinned Qwen snapshots are processor/runtime engineering subjects, not a performance ranking; B1 is the exact Phase 1 native-runtime fixture, not a selected competition base.
 
 ## Run the preparation package
 
@@ -38,7 +38,7 @@ These checks validate software and saved artifacts. They cannot establish source
 | Root commands, dependencies, and CI | [Development guide](docs/team/DEVELOPMENT.md) |
 | Code, scripts, and artifact locations | [Repository map](docs/team/REPOSITORY_MAP.md) |
 | Results, limitations, and evidence receipts | [Results](docs/team/RESULTS.md), [v0.3 status](outputs/MMBU-precompute-v0.3-status.md) |
-| Research rationale and E00–E05 sequence | [Audited strategy v2](outputs/MMBU-domain-adaptation-plan-v2.md), [experiment workflow](docs/team/EXPERIMENT_WORKFLOW.md) |
+| Historical research rationale and current E00–E05 sequence | [Audited strategy v2](outputs/MMBU-domain-adaptation-plan-v2.md), [experiment workflow](docs/team/EXPERIMENT_WORKFLOW.md) |
 | Organizer, source, review, and compute gates | [Decision register](docs/team/DECISIONS.md), [next actions](outputs/mmbu-precompute/docs/next-actions.md) |
 | Data restoration, model revisions, and rights | [Data and models](docs/team/DATA_AND_MODELS.md), [third-party notices](THIRD_PARTY_NOTICES.md) |
 

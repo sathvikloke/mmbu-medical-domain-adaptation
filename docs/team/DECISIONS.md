@@ -6,7 +6,7 @@ This is the team's human-readable register at handoff. The source records are th
 
 | Decision | Basis and limit |
 | --- | --- |
-| Begin with Qwen2.5-VL-7B-Instruct; compare Qwen3.5-9B; keep Qwen3-VL-8B-Instruct as fallback | Tested CPU processor compatibility and provisional execution order; no performance ranking |
+| Keep the competition shortlist empty; retain the three pinned Qwen snapshots only as engineering subjects | Processor compatibility was tested, but no prospectively frozen model-selection decision and receipt or performance ranking exists. B1/Qwen2.5-VL-7B-Instruct is the exact Phase 1 native-runtime fixture; it is not a selected competition base. |
 | Keep real sources and records pending | Rights, overlap, intended-use/release compatibility, and biomedical conversion review are incomplete |
 | Preserve separate task/context/judge input builders and provisional output profiles | The published brief and public card conflict; neither silently overrides the other |
 | Require explicit uint16 presentation and verified native assistant boundaries | Tested intensity-loss/scaling and Qwen3.5 thinking-prefix counterexamples |
@@ -32,6 +32,8 @@ This is the team's human-readable register at handoff. The source records are th
 | Final confirmation | Eligible untouched cohort, frozen primary/seed/thresholds, retained anchors | Independent final comparison claim | Review/release |
 
 The [organizer question draft](../../outputs/mmbu-precompute/docs/organizer-questions.md) is ready and has not been sent. The [Einstein handoff](../../outputs/mmbu-precompute/docs/einstein-handoff.md) is ready; no remote GPU diagnostic is recorded. A local preflight exit of zero means a report was written, not that remote training is viable.
+
+Historical v0.1–v0.3 reports preserve an earlier Qwen baseline/challenger/fallback order as part of the recorded handoff. That order is superseded for new competition decisions; do not treat those immutable reports or the model registry's historical role labels as current selection authority.
 
 ## Record a resolution
 

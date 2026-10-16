@@ -1,6 +1,6 @@
 # Experiment workflow
 
-The [audited strategy v2](../../outputs/MMBU-domain-adaptation-plan-v2.md) is the prospective research plan. This guide turns it into a team workflow. All actual model experiments remain pending; current software implements preparation and recordkeeping, not a training runner.
+The [audited strategy v2](../../outputs/MMBU-domain-adaptation-plan-v2.md) preserves historical scientific rationale, including an earlier provisional model order. This guide supplies the current prospective workflow and supersedes that order: the competition shortlist remains empty until E01 is prospectively frozen and receipted. All actual model experiments remain pending; current software implements preparation and recordkeeping, not a training runner.
 
 ## State the question and authority first
 
@@ -20,14 +20,14 @@ All results currently in the handoff are engineering or source-review evidence. 
 
 | Stage | Work | Gate to advance |
 | --- | --- | --- |
-| E00 | Resolve task/context fixtures; load, run a small forward pass, export and reload a non-quantized BF16/FP16 model | Pinned contract for score claims; verified native model path and measured resources |
-| E01 | Untouched Qwen2.5 baseline and Qwen3.5 challenger under matched conditions; fallback if needed | Viability within actual hardware/budget and comparable outputs |
+| E00 | Resolve task/context fixtures; use B1 only as the pinned native-runtime fixture to load, run a small forward pass, export, and reload a non-quantized BF16/FP16 model | Pinned contract for score claims; verified native model path and measured resources. Passing this gate does not admit or select B1 as a competition base. |
+| E01 | Prospectively freeze the eligible candidate universe, model-selection decision, comparison design, and receipts; then run untouched base comparisons among the admitted candidates under matched conditions | Valid model-selection receipts, viability within actual hardware/budget, and comparable outputs |
 | E02 | Matched language-adapter pilots plus bounded visual-adaptation probes | Reviewed eligible data, actual trainable-module support, sound masks/loss normalization, measured exposure/cost |
 | E03 | One evidence-motivated data or visual change against the retained baseline | Useful development evidence with source/task regressions investigated |
 | E04 | Repeat promising recipe on another seed and scale modestly | Gain persists enough to justify cost; maintain a recoverable submission baseline |
 | E05 | Select and freeze checkpoint/seed before opening confirmation; evaluate once; reproduce exported artifact | Honest confirmation result, fresh-environment reproduction, provenance, and release checks |
 
-The current candidate order is operational, not a ranking. Do not eliminate a candidate solely because it is slower to configure, has different format behavior under an unresolved contract, or uses a different effective training exposure. After two unsuccessful attempts at an unchanged hypothesis, document what failed and revise the mechanism before another attempt.
+No current competition candidate order exists. B1's fixture role and any processor-probe ordering cannot select or eliminate a competition base. Run model comparison only after the prospective E01 candidate universe, decision rule, matched conditions, and receipts are frozen. Do not eliminate a candidate solely because it is slower to configure, has different format behavior under an unresolved contract, or uses a different effective training exposure. After two unsuccessful attempts at an unchanged hypothesis, document what failed and revise the mechanism before another attempt.
 
 ## Before a run
 

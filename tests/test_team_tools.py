@@ -2,6 +2,7 @@
 
 import importlib.util
 import copy
+import hashlib
 import json
 from pathlib import Path
 import subprocess
@@ -172,6 +173,112 @@ class LinkTests(unittest.TestCase):
         (cache / "hidden.pyc").symlink_to(self.root / "README.md")
         errors = team.verify_manifest(self.root, {})
         self.assertIn("__pycache__/hidden.pyc", "\n".join(errors))
+
+
+class HandoffPacketTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        (self.root / "config").mkdir()
+        (self.root / "docs/team").mkdir(parents=True)
+        self.member = self.root / "docs/team/member.md"
+        self.member.write_bytes(b"abc")
+
+    def write_packet(self, approval_status="pending_human_digest_acknowledgement"):
+        member = {
+            "bytes": 3,
+            "media_type": "text/markdown; charset=utf-8",
+            "path": "docs/team/member.md",
+            "role": "normative_dependency",
+            "sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        }
+        unsigned = {
+            "created_at_utc": "2026-10-18T00:00:00Z",
+            "members": [member],
+            "schema_id": "mmbu.claude_handoff_dependency_manifest",
+            "schema_version": 1,
+        }
+        canonical = json.dumps(unsigned, sort_keys=True, separators=(",", ":")).encode()
+        manifest = dict(unsigned, canonical_digest=hashlib.sha256(canonical).hexdigest())
+        manifest_bytes = (json.dumps(manifest, separators=(",", ":")) + "\n").encode()
+        (self.root / "config/claude-handoff-dependencies.json").write_bytes(manifest_bytes)
+        receipt = {
+            "approval_status": approval_status,
+            "approved_package_scope": [] if approval_status != "approved" else ["A"],
+            "approving_authority_id": None if approval_status != "approved" else "human::fixture-reviewer",
+            "manifest_canonical_digest": manifest["canonical_digest"],
+            "manifest_file_sha256": hashlib.sha256(manifest_bytes).hexdigest(),
+            "manifest_member_count": 1,
+            "manifest_path": "config/claude-handoff-dependencies.json",
+            "note": "fixture",
+            "schema_id": "mmbu.claude_handoff_launch_receipt",
+            "schema_version": 1,
+            "trusted_acknowledgement_digest": None if approval_status != "approved" else "1" * 64,
+        }
+        (self.root / "config/claude-handoff-launch-receipt.json").write_text(
+            json.dumps(receipt) + "\n", encoding="utf-8"
+        )
+
+    def test_valid_packet_with_pending_receipt_is_verified_but_not_authorized(self):
+        self.assertTrue(hasattr(team, "verify_handoff_packet"), "verify_handoff_packet API missing")
+        self.write_packet()
+        result = team.verify_handoff_packet(self.root, requested_package="A")
+        self.assertEqual(result["errors"], [])
+        self.assertTrue(result["packet_valid"])
+        self.assertFalse(result["launch_authorized"])
+        self.assertEqual(result["launch_status"], "pending_human_digest_acknowledgement")
+
+    def test_member_tampering_invalidates_packet_and_launch(self):
+        self.assertTrue(hasattr(team, "verify_handoff_packet"), "verify_handoff_packet API missing")
+        self.write_packet("approved")
+        self.member.write_bytes(b"abd")
+        result = team.verify_handoff_packet(self.root, requested_package="A")
+        self.assertFalse(result["packet_valid"])
+        self.assertFalse(result["launch_authorized"])
+        self.assertIn("SHA-256", "\n".join(result["errors"]))
+
+    def test_exact_approved_receipt_authorizes_only_its_declared_scope(self):
+        self.write_packet("approved")
+        unanchored = team.verify_handoff_packet(self.root, requested_package="A")
+        self.assertTrue(unanchored["packet_valid"])
+        self.assertFalse(unanchored["launch_authorized"])
+
+        result = team.verify_handoff_packet(
+            self.root, requested_package="A", trusted_acknowledgement_digest="1" * 64
+        )
+        self.assertEqual(result["errors"], [])
+        self.assertTrue(result["packet_valid"])
+        self.assertTrue(result["launch_authorized"])
+        self.assertEqual(result["launch_status"], "approved")
+        self.assertEqual(result["authorized_package_scope"], ["A"])
+
+        for package in ("D", "F", "G"):
+            with self.subTest(package=package):
+                denied = team.verify_handoff_packet(
+                    self.root, requested_package=package, trusted_acknowledgement_digest="1" * 64
+                )
+                self.assertTrue(denied["packet_valid"])
+                self.assertFalse(denied["launch_authorized"])
+
+    def test_approved_receipt_rejects_unknown_duplicate_or_untrusted_scope(self):
+        self.write_packet("approved")
+        path = self.root / "config/claude-handoff-launch-receipt.json"
+        receipt = json.loads(path.read_text())
+        for scope in (["Z"], ["A", "A"]):
+            with self.subTest(scope=scope):
+                receipt["approved_package_scope"] = scope
+                path.write_text(json.dumps(receipt) + "\n")
+                result = team.verify_handoff_packet(self.root, requested_package="A")
+                self.assertFalse(result["packet_valid"])
+                self.assertFalse(result["launch_authorized"])
+        receipt["approved_package_scope"] = ["A"]
+        receipt["approving_authority_id"] = None
+        receipt["trusted_acknowledgement_digest"] = None
+        path.write_text(json.dumps(receipt) + "\n")
+        result = team.verify_handoff_packet(self.root, requested_package="A")
+        self.assertFalse(result["packet_valid"])
+        self.assertFalse(result["launch_authorized"])
 
 
 class ProcessTests(unittest.TestCase):

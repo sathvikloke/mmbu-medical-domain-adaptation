@@ -418,7 +418,7 @@ class RootCommandGateTests(unittest.TestCase):
         spec.loader.exec_module(self.team)
 
     def test_every_root_command_rejects_contract_drift_before_other_work(self):
-        for command in ("test", "smoke", "verify-evidence", "verify-links"):
+        for command in ("test", "smoke", "verify-evidence", "verify-links", "verify-handoff"):
             with self.subTest(command=command):
                 stdout = io.StringIO()
                 stderr = io.StringIO()

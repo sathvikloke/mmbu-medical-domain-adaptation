@@ -73,6 +73,10 @@ PUBLICATION = {
     },
 }
 
+HANDOFF_MANIFEST = Path("config/claude-handoff-dependencies.json")
+HANDOFF_LAUNCH_RECEIPT = Path("config/claude-handoff-launch-receipt.json")
+HANDOFF_PACKAGES = tuple("ABCDEFGH")
+
 
 def publication_anchor(name: str, version: str = "published") -> dict:
     item = PUBLICATION[name]
@@ -305,6 +309,161 @@ def verify_links(root: Path) -> list[str]:
     return errors
 
 
+def _canonical_handoff_bytes(value: dict) -> bytes:
+    """Canonical bytes for the handoff manifest's restricted JSON domain."""
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+
+def verify_handoff_packet(root: Path, requested_package: str | None = None,
+                          trusted_acknowledgement_digest: str | None = None) -> dict:
+    """Verify packet bytes and report launch authority without granting it."""
+    root = root.resolve()
+    manifest_path = root / HANDOFF_MANIFEST
+    receipt_path = root / HANDOFF_LAUNCH_RECEIPT
+    errors = []
+    manifest = None
+    manifest_bytes = b""
+    expected_manifest_fields = {
+        "canonical_digest", "created_at_utc", "members", "schema_id", "schema_version",
+    }
+    if manifest_path.is_symlink() or not manifest_path.is_file():
+        errors.append(f"{HANDOFF_MANIFEST}: missing regular manifest")
+    else:
+        manifest_bytes = manifest_path.read_bytes()
+        try:
+            manifest = json.loads(manifest_bytes)
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            errors.append(f"{HANDOFF_MANIFEST}: invalid UTF-8 JSON: {exc}")
+    if isinstance(manifest, dict):
+        if set(manifest) != expected_manifest_fields:
+            errors.append(f"{HANDOFF_MANIFEST}: manifest fields are not closed")
+        if (manifest.get("schema_id") != "mmbu.claude_handoff_dependency_manifest"
+                or manifest.get("schema_version") != 1):
+            errors.append(f"{HANDOFF_MANIFEST}: unsupported schema")
+        unsigned = dict(manifest)
+        declared_digest = unsigned.pop("canonical_digest", None)
+        actual_digest = hashlib.sha256(_canonical_handoff_bytes(unsigned)).hexdigest()
+        if declared_digest != actual_digest:
+            errors.append(f"{HANDOFF_MANIFEST}: canonical digest differs")
+        members = manifest.get("members")
+        if not isinstance(members, list) or not members:
+            errors.append(f"{HANDOFF_MANIFEST}: nonempty members list required")
+            members = []
+        seen = set()
+        member_fields = {"bytes", "media_type", "path", "role", "sha256"}
+        for index, item in enumerate(members):
+            label = f"{HANDOFF_MANIFEST}: member {index}"
+            if not isinstance(item, dict) or set(item) != member_fields:
+                errors.append(f"{label}: fields are not closed")
+                continue
+            name = item.get("path")
+            if not isinstance(name, str):
+                errors.append(f"{label}: path must be a string")
+                continue
+            rel = PurePosixPath(name)
+            if rel.is_absolute() or ".." in rel.parts or "\\" in name or not rel.parts:
+                errors.append(f"{name}: unsafe handoff path")
+                continue
+            if name in seen:
+                errors.append(f"{name}: duplicate handoff member")
+                continue
+            seen.add(name)
+            path = root / Path(*rel.parts)
+            if any((root / Path(*rel.parts[:i])).is_symlink() for i in range(1, len(rel.parts) + 1)):
+                errors.append(f"{name}: symbolic link is not a handoff regular file")
+                continue
+            if not path.is_file():
+                errors.append(f"{name}: missing handoff regular file")
+                continue
+            raw = path.read_bytes()
+            if type(item.get("bytes")) is not int or item["bytes"] != len(raw):
+                errors.append(f"{name}: byte count differs")
+            digest = hashlib.sha256(raw).hexdigest()
+            if item.get("sha256") != digest:
+                errors.append(f"{name}: SHA-256 differs")
+            if item.get("role") != "normative_dependency":
+                errors.append(f"{name}: unsupported handoff role")
+            if item.get("media_type") != "text/markdown; charset=utf-8":
+                errors.append(f"{name}: unsupported handoff media type")
+    elif manifest is not None:
+        errors.append(f"{HANDOFF_MANIFEST}: top level must be an object")
+
+    receipt = None
+    receipt_errors = []
+    if receipt_path.is_symlink() or not receipt_path.is_file():
+        receipt_errors.append(f"{HANDOFF_LAUNCH_RECEIPT}: missing regular receipt")
+    else:
+        try:
+            receipt = json.loads(receipt_path.read_bytes())
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            receipt_errors.append(f"{HANDOFF_LAUNCH_RECEIPT}: invalid UTF-8 JSON: {exc}")
+    receipt_fields = {
+        "approval_status", "approved_package_scope", "manifest_canonical_digest",
+        "manifest_file_sha256", "manifest_member_count", "manifest_path", "note",
+        "schema_id", "schema_version", "approving_authority_id", "trusted_acknowledgement_digest",
+    }
+    if isinstance(receipt, dict):
+        if set(receipt) != receipt_fields:
+            receipt_errors.append(f"{HANDOFF_LAUNCH_RECEIPT}: receipt fields are not closed")
+        if (receipt.get("schema_id") != "mmbu.claude_handoff_launch_receipt"
+                or receipt.get("schema_version") != 1):
+            receipt_errors.append(f"{HANDOFF_LAUNCH_RECEIPT}: unsupported schema")
+        if receipt.get("manifest_path") != HANDOFF_MANIFEST.as_posix():
+            receipt_errors.append(f"{HANDOFF_LAUNCH_RECEIPT}: manifest path differs")
+        if isinstance(manifest, dict):
+            if receipt.get("manifest_canonical_digest") != manifest.get("canonical_digest"):
+                receipt_errors.append(f"{HANDOFF_LAUNCH_RECEIPT}: canonical digest differs")
+            if receipt.get("manifest_member_count") != len(manifest.get("members", [])):
+                receipt_errors.append(f"{HANDOFF_LAUNCH_RECEIPT}: member count differs")
+        file_digest = hashlib.sha256(manifest_bytes).hexdigest() if manifest_bytes else None
+        if receipt.get("manifest_file_sha256") != file_digest:
+            receipt_errors.append(f"{HANDOFF_LAUNCH_RECEIPT}: manifest file SHA-256 differs")
+        if receipt.get("approval_status") not in {"pending_human_digest_acknowledgement", "approved"}:
+            receipt_errors.append(f"{HANDOFF_LAUNCH_RECEIPT}: invalid approval status")
+        scope = receipt.get("approved_package_scope")
+        if not isinstance(scope, list) or any(not isinstance(item, str) or not item for item in scope):
+            receipt_errors.append(f"{HANDOFF_LAUNCH_RECEIPT}: invalid package scope")
+            scope = []
+        elif len(scope) != len(set(scope)) or any(item not in HANDOFF_PACKAGES for item in scope):
+            receipt_errors.append(f"{HANDOFF_LAUNCH_RECEIPT}: package scope must be unique members of A-H")
+        authority = receipt.get("approving_authority_id")
+        acknowledgement = receipt.get("trusted_acknowledgement_digest")
+        if receipt.get("approval_status") == "approved":
+            if not scope:
+                receipt_errors.append(f"{HANDOFF_LAUNCH_RECEIPT}: approved receipt requires package scope")
+            if not isinstance(authority, str) or not authority.strip() or authority == "unknown":
+                receipt_errors.append(f"{HANDOFF_LAUNCH_RECEIPT}: approved receipt requires approving authority")
+            if (not isinstance(acknowledgement, str)
+                    or not re.fullmatch(r"[0-9a-f]{64}", acknowledgement)):
+                receipt_errors.append(f"{HANDOFF_LAUNCH_RECEIPT}: approved receipt requires trusted acknowledgement digest")
+        elif authority is not None or acknowledgement is not None:
+            receipt_errors.append(f"{HANDOFF_LAUNCH_RECEIPT}: pending receipt cannot claim authority or acknowledgement")
+    elif receipt is not None:
+        receipt_errors.append(f"{HANDOFF_LAUNCH_RECEIPT}: top level must be an object")
+    errors.extend(receipt_errors)
+    if requested_package is not None and requested_package not in HANDOFF_PACKAGES:
+        errors.append(f"requested package must be one of A-H, got {requested_package!r}")
+    if (trusted_acknowledgement_digest is not None
+            and not re.fullmatch(r"[0-9a-f]{64}", trusted_acknowledgement_digest)):
+        errors.append("supplied trusted acknowledgement digest must be lowercase SHA-256")
+    packet_valid = not errors
+    launch_status = receipt.get("approval_status") if isinstance(receipt, dict) else "invalid"
+    scope = receipt.get("approved_package_scope", []) if isinstance(receipt, dict) else []
+    acknowledgement_matched = (trusted_acknowledgement_digest is not None
+                               and trusted_acknowledgement_digest == acknowledgement)
+    launch_authorized = (packet_valid and launch_status == "approved" and acknowledgement_matched
+                         and requested_package is not None and requested_package in scope)
+    return {
+        "acknowledgement_matched": acknowledgement_matched,
+        "authorized_package_scope": scope if packet_valid else [],
+        "errors": errors,
+        "packet_valid": packet_valid,
+        "requested_package": requested_package,
+        "launch_authorized": launch_authorized,
+        "launch_status": launch_status,
+    }
+
+
 def run_commands(commands: list[list[str]], cwd: Path, env: dict | None = None) -> int:
     """Stream child output and stop on the first failure, retaining its exit code."""
     for command in commands:
@@ -329,6 +488,47 @@ def phase1_environment(root: Path) -> dict:
     return env
 
 
+def phase1_preflight(root: Path) -> list[str]:
+    """Fail closed unless every Phase 1 authority file and scoped test module exists and validates."""
+    try:
+        from mmbu_phase1.authority import authority_errors
+        from mmbu_phase1.scope import REQUIRED_PHASE1_TEST_MODULES
+    except ImportError as exc:
+        return [f"cannot import the Phase 1 preflight validators: {exc}"]
+    errors = authority_errors(root)
+    suite = root / "tests/phase1"
+    if os.path.lexists(suite / "__init__.py"):
+        errors.append("tests/phase1/__init__.py is forbidden: it would make the general repository pass rerun Phase 1 tests")
+    for name in REQUIRED_PHASE1_TEST_MODULES:
+        module = suite / name
+        if module.is_symlink() or not module.is_file():
+            errors.append(f"missing scoped Phase 1 CPU test module: tests/phase1/{name}")
+    return errors
+
+
+def run_counted(command: list[str], cwd: Path, env: dict) -> int:
+    """Run the Phase 1 pass, stream its output, and reject a zero-test run."""
+    print(f"+ ({cwd}) {shlex.join(command)}", flush=True)
+    process = subprocess.Popen(command, cwd=cwd, env=env, stderr=subprocess.PIPE, text=True,
+                               encoding="utf-8", errors="replace")
+    count = None
+    assert process.stderr is not None
+    for line in process.stderr:
+        sys.stderr.write(line)
+        sys.stderr.flush()
+        match = re.match(r"Ran (\d+) tests? in ", line)
+        if match:
+            count = int(match[1])
+    code = process.wait()
+    if code:
+        return code if code > 0 else 128 - code
+    if not count:
+        print("ERROR: the Phase 1 CPU suite ran zero tests", file=sys.stderr)
+        return 1
+    print(f"Phase 1 CPU test count: {count}", flush=True)
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=ROOT, help="repository root (default: this script's parent repository)")
@@ -339,6 +539,9 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("verify-contract", help="verify the pinned Phase 1 contract manifest and source hashes")
     sub.add_parser("verify-evidence", help="verify historical bytes, hashes and file inventory")
     sub.add_parser("verify-links", help="check maintained root/docs/team Markdown paths and anchors offline")
+    handoff = sub.add_parser("verify-handoff", help="verify the Claude packet and report its separate launch status")
+    handoff.add_argument("--package", choices=HANDOFF_PACKAGES, help="specific A-H work package requesting authorization")
+    handoff.add_argument("--acknowledgement-digest", help="trusted-channel SHA-256 supplied independently of the packet")
     args = parser.parse_args(argv)
     root = args.root.resolve()
     try:
@@ -350,8 +553,23 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "verify-contract":
             print("Verified the exact nine-member Phase 1 contract manifest, byte counts, SHA-256s, paths, and official-source hash agreement.")
             return 0
-        if args.command in {"verify-evidence", "verify-links"}:
-            errors = verify_evidence(root) if args.command == "verify-evidence" else verify_links(root)
+        if args.command == "test":
+            preflight_errors = phase1_preflight(root)
+            if preflight_errors:
+                for error in preflight_errors:
+                    print(f"ERROR: Phase 1 preflight: {error}", file=sys.stderr)
+                return 1
+        if args.command in {"verify-evidence", "verify-links", "verify-handoff"}:
+            if args.command == "verify-evidence":
+                errors = verify_evidence(root)
+            elif args.command == "verify-links":
+                errors = verify_links(root)
+            else:
+                result = verify_handoff_packet(
+                    root, requested_package=args.package,
+                    trusted_acknowledgement_digest=args.acknowledgement_digest,
+                )
+                errors = result["errors"]
             if errors:
                 for error in errors:
                     print(f"ERROR: {error}", file=sys.stderr)
@@ -360,8 +578,14 @@ def main(argv: list[str] | None = None) -> int:
                 print("Verified 275 published v0.3 files and all ZIP members against the anchored original manifest plus four fixed publication transformations.")
                 print("Verified unchanged v0.1/v0.2 ZIPs and all three original receipts; the v0.3 ZIP is the explicitly recorded sanitized publication.")
                 print("Artifact integrity only; no claim of scientific validity, medical truth or training results.")
-            else:
+            elif args.command == "verify-links":
                 print("Maintained root/docs/team Markdown local paths and supported anchors verified; external URLs not fetched.")
+            else:
+                print("Claude handoff packet members, byte counts, SHA-256s, and canonical digest verified.")
+                print(f"Launch status: {result['launch_status']}; approved scope: {result['authorized_package_scope']}; "
+                      f"requested package: {result['requested_package']}; "
+                      f"trusted acknowledgement matched: {str(result['acknowledgement_matched']).lower()}; "
+                      f"authorized: {str(result['launch_authorized']).lower()}.")
             return 0
         package = root / PACKAGE
         if not (package / "src/mmbu_prep/__main__.py").is_file():
@@ -389,8 +613,8 @@ def main(argv: list[str] | None = None) -> int:
             phase1_tests = root / "tests/phase1/test_contract_manifest.py"
             if not phase1_tests.is_file():
                 parser.error("missing Phase 1 contract-integrity tests")
-            return run_commands(
-                [[python, "-m", "unittest", "discover", "-s", "tests/phase1", "-v"]],
+            return run_counted(
+                [python, "-m", "unittest", "discover", "-s", "tests/phase1", "-v"],
                 root,
                 phase1_environment(root),
             )

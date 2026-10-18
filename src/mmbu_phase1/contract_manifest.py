@@ -4,11 +4,12 @@ from __future__ import annotations
 
 import hashlib
 import json
-import math
 from pathlib import Path, PurePosixPath
 import re
 import stat
 from typing import Any
+
+from mmbu_phase1 import canonical
 
 
 EXPECTED_CONTRACT_REVISION = "2026-10-15-cycle-46f"
@@ -32,33 +33,9 @@ EXPECTED_OFFICIAL_SOURCE_NAMES = frozenset(
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 
 
-def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
-    result: dict[str, Any] = {}
-    for key, value in pairs:
-        if key in result:
-            raise ValueError(f"duplicate JSON key: {key}")
-        result[key] = value
-    return result
-
-
-def _reject_nonfinite(value: str) -> None:
-    raise ValueError(f"nonfinite JSON number: {value}")
-
-
-def _strict_float(value: str) -> float:
-    parsed = float(value)
-    if not math.isfinite(parsed):
-        raise ValueError(f"nonfinite JSON number: {value}")
-    return parsed
-
-
 def _strict_json(raw: bytes) -> Any:
-    return json.loads(
-        raw.decode("utf-8"),
-        object_pairs_hook=_reject_duplicate_keys,
-        parse_constant=_reject_nonfinite,
-        parse_float=_strict_float,
-    )
+    """Parse through the shared strict kernel (duplicate/nonfinite/inexact reject)."""
+    return canonical.loads(raw)
 
 
 def _safe_member_path(value: object) -> bool:

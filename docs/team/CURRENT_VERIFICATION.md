@@ -1,6 +1,6 @@
 # Current clone verification
 
-**Observed:** October 18, 2026 01:35 CDT
+**Observed:** October 18, 2026 01:58 CDT
 **Runtime:** Python 3.14.6  
 **Scope:** local software, documentation, and saved-artifact integrity only
 
@@ -10,12 +10,14 @@
 |---|---|---|
 | Historical preparation suite | **277 tests passed; 44 optional-Pillow image tests skipped** | Re-executes the preserved CPU package without Pillow; does not replace the Python 3.12/Pillow historical receipt or test a model |
 | Root repository/tool suite | **42 tests passed** | Covers restore, link, process, publication integrity, A–I package scope, and the manifest-bound authorization-verifier behavior only |
-| Phase 1 suite | **277 tests passed** using the underlying regular Python 3.14.6 executable | Covers the current fail-closed contracts, registries, evidence chains, conditions, geometry, bundles, and orchestration; no model/data/GPU execution. A stable-byte rerun after the four preservation commits passed |
+| Phase 1 suite | **289 tests passed** using the underlying regular Python 3.14.6 executable | Includes the 12-test Package B synthetic lattice/exposure slice plus the current fail-closed contracts, registries, evidence chains, conditions, geometry, bundles, and orchestration; no model/data/GPU execution |
+| Package B focused suite | **12 tests passed** | Covers only deterministic synthetic lattice derivations, rejection gates, exact exposure accounting, schedule boundaries, and resume receipts; it is not biomedical, model, trainer, or score evidence |
+| Offline smoke workflow | **passed** | Replays only the historical synthetic demo and supplied toy-grade arithmetic; `model_executed=false` and `official_evaluation=false` |
 | Maintained local Markdown links/anchors | **passed** | External URLs were not fetched by this check |
 | Published v0.3 artifact verification | **passed** for 275 files, ZIP members, fixed transforms, and historical receipts | Establishes byte integrity only, not scientific validity or medical truth |
 | Phase 1 contract manifest | **passed** for the exact nine members, byte counts, SHA-256s, paths, and official-source hash agreement | Does not authenticate the new competition-design packet or authorize execution |
-| Claude dependency manifest and launch receipt | **passed packet integrity** for 39 members, including `tools/team.py` as the authorization verifier; canonical digest `6c55e7f96ba60fb103750d62aee3e05d11c89a90236df2eb7041dc149247e8c3`; full-file SHA-256 `ce9e3633d7587a96958fcd211c566f51bcc1b6e30f11e5a547d9a5642d2602b3` | The verifier reports `pending_human_digest_acknowledgement`, empty scope, and `authorized: false`; read-only review only, with scientific values and execution authority absent |
-| Working-tree `git diff --check` | **passed for the Package A repair diff** | This is a whitespace/error check, not scientific or authorization evidence |
+| Claude dependency manifest and launch receipt | **passed packet integrity** for 40 members, including `tools/team.py` as the authorization verifier and the Package B trace; canonical digest `aa6e63f49f2a1c1db1bca5be5a35be6b00ff497c2e09a49e04b923cbba32dd12`; full-file SHA-256 `ad32686f9ecc95be6ae6732691cf8721f7ee468d9ab8c33ccd295e63ca0c852b` | The Package B approval was consumed; the resealed verifier reports `pending_human_digest_acknowledgement`, empty scope, and `authorized: false` for later writes |
+| Working-tree `git diff --check` | **passed for the Package B implementation and receipt diff** | This is a whitespace/error check, not scientific or authorization evidence |
 
 The three test suites are distinct. Their counts must not be added and described as independent scientific evidence.
 The optional-image skips mean this fresh run does not establish the image coverage already recorded by the historical
@@ -29,10 +31,10 @@ MOCS, or reproduces the organizer's evaluator.
   ahead and zero commits behind. No upstream change needs reconciliation before review.
 - The former 100-path dirty tree was preserved in four local commits: `371254f` for Phase 1/core orchestration,
   `de07e45` for prospective research/design records, `ee3c69a` for current routing/authority documents, and `fc9472b`
-  for the sealed Claude packet. Subsequent receipt-only commits record the final verification, the branch-range
-  whitespace limitation, and the evidence-backed repository-readiness correction. Historical `outputs/` bytes were
-  unchanged. Immediately before this receipt update is committed, only this file is modified. No push, merge, PR,
-  training, model load, data opening, or upload was performed.
+  for the sealed Claude packet. Subsequent receipt-only commits record verification and scoped Package A/B authority.
+  The current working tree contains the Package B synthetic implementation, tests, trace, navigation/status updates,
+  and resealed pending receipt. Historical `outputs/` bytes were unchanged. No push, merge, PR, training, model load,
+  biomedical/public data opening, evaluation, upload, or submission was performed.
 - The pre-commit inventory and a repeated repository scan found no newly added model weights, datasets, archives,
   environment files, private-key headers, or common GitHub/Hugging Face/AWS/OpenAI token forms. The private local MOCS
   alias/account identifiers were redacted from the public audit. This is a bounded signature/type review, not proof that

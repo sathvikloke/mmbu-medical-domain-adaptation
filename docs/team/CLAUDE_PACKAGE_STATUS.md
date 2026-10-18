@@ -10,7 +10,7 @@ later cell, and `specified_only` never means implemented.
 | Package | Artifact state | Acceptance | Readiness | Execution | Binding reason |
 |---|---|---|---|---|---|
 | A | `verified` | `passed` | `design_review_only` | `not_applicable` | Six-column reconciliation completed under the acknowledged Package A scope |
-| B | `specified_only` | `not_run` | `design_only` | `not_authorized` | Synthetic lattice/exposure fixtures and validators are absent |
+| B | `verified` | `passed` | `synthetic_cpu_only` | `completed_within_approved_scope` | Deterministic lattice and exact exposure fixtures passed 12 focused tests plus the required-suite gate; no model, biomedical/public data, GPU, training, evaluation, upload, or submission occurred |
 | C | `specified_only` | `not_run` | `design_only` | `not_authorized` | Revision-scoped module/tensor compatibility map and synthetic tests are absent; loader facts remain unknown |
 | D | `specified_only` | `blocked` | `not_copyable_not_authorized` | `not_authorized` | Exact MOCS run authorization and parameterized command/result receipt are absent |
 | E | `specified_only` | `blocked` | `design_only` | `not_authorized` | QUILT dependencies and empirical gates are unmet |
@@ -19,6 +19,6 @@ later cell, and `specified_only` never means implemented.
 | H | `specified_only` | `not_run` | `design_only` | `not_authorized` | Metadata-only admission packet has not been executed |
 | I | `specified_only` | `blocked` | `design_only` | `not_authorized` | Requires passed frozen F/G modules and a separately approved Package I scope |
 
-The Package A approval was scoped to repairs against the prior packet. Resealing this packet invalidates that launch
-receipt for future writes. The new launch receipt remains pending until Aditya independently acknowledges the new
-canonical and full-file digests and explicitly approves a package.
+Package B was completed under the separately acknowledged Package B receipt. Resealing this packet invalidates that
+launch receipt for future writes. The new launch receipt remains pending until Aditya independently acknowledges the
+new canonical and full-file digests and explicitly approves another package.

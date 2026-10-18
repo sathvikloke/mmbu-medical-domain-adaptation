@@ -14,6 +14,7 @@ REQUIRED_PHASE1_TEST_MODULES = (
     "test_firewall.py",
     "test_geometry.py",
     "test_locks.py",
+    "test_package_b.py",
     "test_pipeline.py",
     "test_primitives.py",
     "test_root_orchestration.py",

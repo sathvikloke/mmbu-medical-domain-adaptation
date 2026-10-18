@@ -15,7 +15,7 @@
 | Published v0.3 artifact verification | **passed** for 275 files, ZIP members, fixed transforms, and historical receipts | Establishes byte integrity only, not scientific validity or medical truth |
 | Phase 1 contract manifest | **passed** for the exact nine members, byte counts, SHA-256s, paths, and official-source hash agreement | Does not authenticate the new competition-design packet or authorize execution |
 | Claude dependency manifest and launch receipt | **passed packet integrity** for 36 normative members; canonical digest `5361ae4bc4c6da3ba78b25b798d26f76f42b2984f7337b302532cbf0eac3eaf7`; full-file SHA-256 `99200f6e3050d22b38b2449984e83c4fb4ef22640d42aa1e69ff919226a120d7` | The repeatable verifier reports `pending_human_digest_acknowledgement` and `authorized: false`; read-only review only, with scientific values and execution authority still absent |
-| `git diff --check` | **passed** | Whitespace/patch hygiene only |
+| Working-tree `git diff --check` | **passed before preservation and the committed tree is clean** | A separate `origin/main...HEAD` range check reports 77 style warnings across 43 files: deliberate two-space Markdown hard breaks in newly tracked, partly hash-bound documents plus one blank-line-at-EOF warning in the package marker. These are not hidden as a clean range result and were not rewritten post hoc merely to silence a stylistic checker |
 
 The three test suites are distinct. Their counts must not be added and described as independent scientific evidence.
 The optional-image skips mean this fresh run does not establish the image coverage already recorded by the historical

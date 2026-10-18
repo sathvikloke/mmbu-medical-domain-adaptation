@@ -238,6 +238,40 @@ class HandoffPacketTests(unittest.TestCase):
         self.assertFalse(result["launch_authorized"])
         self.assertIn("SHA-256", "\n".join(result["errors"]))
 
+    def test_authorization_verifier_python_can_be_bound_in_packet(self):
+        self.write_packet()
+        verifier = self.root / "tools/team.py"
+        verifier.parent.mkdir()
+        verifier.write_bytes(b"# trusted verifier\n")
+        manifest_path = self.root / "config/claude-handoff-dependencies.json"
+        manifest = json.loads(manifest_path.read_text())
+        raw = verifier.read_bytes()
+        manifest["members"].append({
+            "bytes": len(raw),
+            "media_type": "text/x-python; charset=utf-8",
+            "path": "tools/team.py",
+            "role": "authorization_verifier",
+            "sha256": hashlib.sha256(raw).hexdigest(),
+        })
+        unsigned = dict(manifest)
+        unsigned.pop("canonical_digest")
+        manifest["canonical_digest"] = hashlib.sha256(
+            json.dumps(unsigned, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
+        manifest_bytes = (json.dumps(manifest, separators=(",", ":")) + "\n").encode()
+        manifest_path.write_bytes(manifest_bytes)
+        receipt_path = self.root / "config/claude-handoff-launch-receipt.json"
+        receipt = json.loads(receipt_path.read_text())
+        receipt["manifest_canonical_digest"] = manifest["canonical_digest"]
+        receipt["manifest_file_sha256"] = hashlib.sha256(manifest_bytes).hexdigest()
+        receipt["manifest_member_count"] = 2
+        receipt_path.write_text(json.dumps(receipt) + "\n")
+
+        result = team.verify_handoff_packet(self.root, requested_package="A")
+
+        self.assertEqual(result["errors"], [])
+        self.assertTrue(result["packet_valid"])
+
     def test_exact_approved_receipt_authorizes_only_its_declared_scope(self):
         self.write_packet("approved")
         unanchored = team.verify_handoff_packet(self.root, requested_package="A")
@@ -253,13 +287,29 @@ class HandoffPacketTests(unittest.TestCase):
         self.assertEqual(result["launch_status"], "approved")
         self.assertEqual(result["authorized_package_scope"], ["A"])
 
-        for package in ("D", "F", "G"):
+        for package in ("D", "F", "G", "I"):
             with self.subTest(package=package):
                 denied = team.verify_handoff_packet(
                     self.root, requested_package=package, trusted_acknowledgement_digest="1" * 64
                 )
                 self.assertTrue(denied["packet_valid"])
                 self.assertFalse(denied["launch_authorized"])
+
+    def test_exact_approved_receipt_can_authorize_package_i(self):
+        self.write_packet("approved")
+        path = self.root / "config/claude-handoff-launch-receipt.json"
+        receipt = json.loads(path.read_text())
+        receipt["approved_package_scope"] = ["I"]
+        path.write_text(json.dumps(receipt) + "\n")
+
+        result = team.verify_handoff_packet(
+            self.root, requested_package="I", trusted_acknowledgement_digest="1" * 64
+        )
+
+        self.assertEqual(result["errors"], [])
+        self.assertTrue(result["packet_valid"])
+        self.assertTrue(result["launch_authorized"])
+        self.assertEqual(result["authorized_package_scope"], ["I"])
 
     def test_approved_receipt_rejects_unknown_duplicate_or_untrusted_scope(self):
         self.write_packet("approved")

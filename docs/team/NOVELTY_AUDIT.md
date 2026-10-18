@@ -14,8 +14,8 @@ source-adjusted grid is rank deficient and aliases the claimed factors with sour
 - MRFSS after the direct CVPR 2022 frequency-counting collision: **5.2/10 concept novelty and 4.5/10 paper novelty**;
 - dual-objective B2, the competition flagship: **8.4/10 prospective competition value**; the earlier 9.0 estimate was
   superseded by the October 18 executability audit;
-- active integrated project: **5.8/10 subjective pre-result competition-system innovation, 3.8/10 system novelty,
-  2.3/10 learner-method novelty, and 3.2/10 pre-result paper novelty**; and
+- active integrated project: **4.2/10 subjective pre-result competition-system innovation, 3.5/10 system novelty,
+  2.0/10 learner-method novelty, and 3.0/10 pre-result paper novelty**; and
 - the second orthogonal search found zero surviving new learner mechanisms in its scoped search. It did not test every
   possible system, data-objective, or evaluation contribution.
 
@@ -60,6 +60,9 @@ These numbers are now superseded. They never were model evidence and may not be 
 | [Every Sample Counts, 2026](https://arxiv.org/abs/2607.08968) | Per-sample constrained fine-tuning with learned sample-dependent relaxation and augmented-Lagrangian optimization | Per-example preservation constraints and learned relaxation are not unclaimed novelty space |
 | [Beyond Average Safety, 2026](https://arxiv.org/abs/2609.29960) | Reference-relative chance constraints and tail-aware correction for fine-tuning regressions | Tail-aware reference-model preservation is already an explicit constrained-optimization mechanism |
 | [DynaMiCS, 2026](https://arxiv.org/abs/2605.10770) | Dynamic data-mixture optimization from local cross-domain effect estimates under preservation constraints | Adaptive domain mixing under performance constraints is not a new learner claim |
+| [Why Does Grounding Hurt Medical VQA?, 2026](https://arxiv.org/abs/2604.27720) | Directly separates answer-only degradation, shuffled-box format rehearsal, real grounding recovery, and oracle-crop failure | Broad answer/grounding co-training and formatting preservation are occupied |
+| [Small-medical-VLM QLoRA comparison, 2026](https://arxiv.org/abs/2607.27122) and [joint VQA/explanation/grounding LoRA, 2025](https://arxiv.org/abs/2511.04384) | Matched VQA-only/multitask adaptation and joint grounded medical training | B2 is competition engineering, not a new multitask learner |
+| [Which Model to Transfer?, CVPR 2022](https://openaccess.thecvf.com/content/CVPR2022/html/Renggli_Which_Model_To_Transfer_Finding_the_Needle_in_the_Growing_Haystack_CVPR_2022_paper.html) and [Quick-Tune, ICLR 2024](https://openreview.net/forum?id=tqh1zdXIra) | Transfer-model choice and cheap adaptation-response prediction | H2 cannot claim the general principle of selection by micro-adaptation |
 
 ## Closest complete-system boundary
 
@@ -90,7 +93,7 @@ The October 18 search separately tested system, data-objective, and evaluation c
 
 | Claim class | Disposition | Strongest boundary | Honest pre-result score |
 |---|---|---|---:|
-| Competition system | Two separately isolated conditional hypotheses; no admitted contribution | FLARE task-specific LoRA, Two-Stage Mixture-of-LoRA, MedQwen, Point-Detect-Count, MIMO, VividMed, MedRegA, CADRE, and established transferability/model-selection methods occupy the components | 3.8 system novelty |
+| Competition system | Two separately isolated conditional hypotheses; no admitted contribution | FLARE task-specific LoRA, Two-Stage Mixture-of-LoRA, MedQwen, Point-Detect-Count, MIMO, VividMed, MedRegA, CADRE, direct answer/grounding co-training, and established transferability/model-selection methods occupy the components | 3.5 system novelty |
 | Data objective | Zero standalone survivors | Split-before-expansion, grouped/view-averaged loss, partial-label masking, derived multi-task views, CocoCon, CORAL, and MedGround reduce the conjunction to careful grouped multitask ERM | 4.0 concept ceiling; 3.0 standalone paper/objective novelty |
 | Evaluation contribution | Zero standalone survivors | MultiMedEval, MEGA-Bench, VHELM, SURE-VQA, CORAL, SI-VQA, positive-congruent updates, and structured-output benchmarks occupy the dashboard components | 3.5 concept; 3.0 paper novelty |
 

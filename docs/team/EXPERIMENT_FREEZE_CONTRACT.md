@@ -40,7 +40,7 @@ authority and permitted package scope, and has status `approved`. A receipt stor
 pointer, not a cryptographic trust anchor, unless its expected digest was acknowledged through an independent trusted
 channel. The verifier must receive that trusted-channel acknowledgement digest independently at launch and match it to
 the receipt; a digest found only inside the repository never authorizes itself. Approval is package-scoped to unique
-members of A–H, and authorization is computed for the specifically requested package. Missing, unmatched,
+members of A–I, and authorization is computed for the specifically requested package. Missing, unmatched,
 out-of-scope, or `pending_human_digest_acknowledgement` status yields
 `packet_unanchored`; read-only review may continue, but no schema, code, command plan, or execution is authorized.
 

@@ -471,11 +471,16 @@ experiment.
 
 ## Promotion and falsification
 
-QUILT is promoted over B2 only if all of the following hold under frozen rules:
+QUILT earns only **scientific-claim eligibility** over its diagnostic controls if all of the following hold under frozen
+rules. Under the current handoff it cannot replace, delay, or be promoted into the Lane 1 competition submission. Any
+future competition candidacy requires a new human-authorized work order, official loader closure, and a fresh untouched
+confirmation population.
 
 1. QG-0 through QG-3 pass before biomedical training.
 2. Its simultaneous lower paired source-group-bootstrap bounds exceed the practical margin over Q0, Q1, Q2, Q3,
-   Q3-MV, and every frozen implementable Q3-P/Q3-G condition on the held-out-interface primary estimand.
+   Q3-MV, every frozen implementable Q3-P/Q3-G condition, and B4 whenever B4 is faithfully implementable and enabled,
+   on the held-out-interface primary estimand. If B4 is unavailable, the receipt records that fact and QUILT remains
+   diagnostic-only rather than silently shrinking the family.
 3. Its simultaneous bound also exceeds or noninferiorly matches B2 on the competition-aligned aggregate under the
    registered rule.
 4. The real complete-panel basis simultaneously beats Q4-R, Q4-E, Q4-S, and Q5; otherwise the causal interpretation
@@ -485,8 +490,8 @@ QUILT is promoted over B2 only if all of the following hold under frozen rules:
 7. No material source, class, open-answer, context, malformed-output, or preservation regression occurs.
 8. The artifact fresh-loads offline with no custom inference code and meets runtime limits.
 
-Failure of items 2–4 retires the novelty claim even if an isolated score rises. Failure of item 8 retires QUILT as a
-competition candidate but may leave a scientific negative result.
+Failure of items 2–4 retires the novelty claim even if an isolated score rises. Failure of item 8 blocks any future
+competition work order but may leave a scientific negative result.
 
 ## Feasibility risks
 

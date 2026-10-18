@@ -2,7 +2,8 @@
 
 The clone-resident [acceptance contract](../phase1/ACCEPTANCE.md) and [schema contract](../phase1/SCHEMAS.md) are the binding P1-00 through P1-21 decision authority and field-level interoperability contract. Read both with the Phase 1 contract before implementation. Candidate, experiment, hyperparameter, seed, prompt, checkpoint, promotion, and release choices are eligible only when the pre-opening decision plan and hermetic decision-execution receipt required there validate; prose decisions and manually copied rationales do not authorize execution.
 
-This handoff is ready for CPU development and review. The Phase 1 package, tests, and registries now exist under the
+This repository is ready for read-only review and contains CPU-only development contracts, tests, and registries. New
+package writes require a currently approved, package-scoped launch receipt; the resealed receipt is pending. The Phase 1 package exists under the
 clone-resident [Phase 1 contract](../phase1/CONTRACT.md), [official-source map](../phase1/OFFICIAL_SOURCE_MAP.md), and
 [B1 pin](../phase1/b1-pin.json); extend them only under those acceptance boundaries. The historical package remains
 reproducible but is not the destination for new code. There is no trained model or baseline performance result yet.
@@ -72,7 +73,8 @@ For native processors, use the separate environment and exact pins in [processor
 5. [Repository map](REPOSITORY_MAP.md): locate the historical module, raw result, and script relevant to compatibility work.
 6. [Organizer clarifications](ORGANIZER_CLARIFICATIONS.md) and [task-protocol snapshot](TASK_PROTOCOL_SNAPSHOT.md): use
    the dated reply register and revision-recorded visible task-card snapshot; the older question draft is historical.
-7. [Project scorecard](PROJECT_SCORECARD.md), [independent idea arbitration](INDEPENDENT_IDEA_ARBITRATION.md),
+7. [Package A reconciliation](PACKAGE_A_RECONCILIATION.md), dated [package status](CLAUDE_PACKAGE_STATUS.md),
+   [project scorecard](PROJECT_SCORECARD.md), [independent idea arbitration](INDEPENDENT_IDEA_ARBITRATION.md),
    [research portfolio](RESEARCH_PORTFOLIO.md), binding
    [base-selection frontier](BASE_SELECTION_FRONTIER.md) and [red-team](BASE_SELECTION_REDTEAM.md),
    [competition-first recipe](COMPETITION_FIRST_RECIPE.md), conditional [system-interaction hypothesis](SYSTEM_INTERACTION_HYPOTHESIS.md), [experiment-freeze contract](EXPERIMENT_FREEZE_CONTRACT.md), [closed Claude dependency manifest](../../config/claude-handoff-dependencies.json), [context objective contract](CONTEXT_OBJECTIVE_CONTRACT.md), [unit-exposure audit](UNIT_EXPOSURE_AUDIT_SPEC.md), [weight-interpolation branch](WEIGHT_INTERPOLATION_BRANCH.md), and [immutable manifest specification](COMPETITION_MANIFEST_SPEC.md), [idea-search ledger](IDEA_SEARCH_LEDGER.md), [annotation-to-task lattice](ANNOTATION_TASK_LATTICE.md), [prospective source portfolio](DATA_SOURCE_PORTFOLIO.md), [Claude handoff](CLAUDE_HANDOFF.md), [QUILT adverse review](QUILT_ADVERSE_REVIEW.md), preserved [QUILT design](../superpowers/specs/2026-10-17-quilt-design.md), [MOSAIC research design](../superpowers/specs/2026-10-17-mosaic-design.md), [novelty audit](NOVELTY_AUDIT.md), [data-identifiability gate](MOSAIC_DATA_GATE.md), and [MedQwen reproduction-gap audit](MEDQWEN_REPRODUCTION_GAP.md): review the honest evidence ceilings, dual-objective competition decision, conditional system claim, rejected alternatives, task-view derivations, source priorities, bounded next work, current hypotheses, adverse prior-art update, source-confounding preconditions, strong-baseline gaps, controls, and stop rules. None is a model result.

@@ -28,8 +28,13 @@ that binds `config/claude-handoff-dependencies.json` and its expected canonical 
 and package scope, and is independently acknowledged as `approved`. The repository copy may record
 `pending_human_digest_acknowledgement`, but that state permits read-only review only. A rewritten manifest plus a
 rewritten local receipt is not proof of approval. At launch, the verifier must receive the trusted-channel
-acknowledgement digest independently and authorize only the specifically requested A–H package if it appears in the
+acknowledgement digest independently and authorize only the specifically requested A–I package if it appears in the
 unique approved scope.
+
+The authorization verifier is itself a manifest member at `tools/team.py` with role `authorization_verifier`. Before
+trusting its launch result, an operator must use an independently trusted SHA-256 implementation to compare those exact
+bytes with the verifier member hash inside the independently acknowledged manifest. Self-verification alone is not a
+trust anchor; an altered verifier invalidates the packet even if it prints success.
 
 Claude may implement closed schemas, validators, and synthetic negative fixtures at `schema_ready`. Claude may not
 choose hyperparameters, candidate profiles, loss shares, margins, seed sets, compute caps, data roles, or other
@@ -39,7 +44,8 @@ MOCS run-authorization object exists.
 
 ## Binding reading order
 
-1. [Phase 1 acceptance contract](../phase1/ACCEPTANCE.md) and [schemas](../phase1/SCHEMAS.md)
+1. [Package A reconciliation](PACKAGE_A_RECONCILIATION.md) and the dated
+   [package-status snapshot](CLAUDE_PACKAGE_STATUS.md), then the [Phase 1 acceptance contract](../phase1/ACCEPTANCE.md) and [schemas](../phase1/SCHEMAS.md)
    plus the binding [experiment-freeze contract](EXPERIMENT_FREEZE_CONTRACT.md)
 2. [Project scorecard](PROJECT_SCORECARD.md), [independent idea arbitration](INDEPENDENT_IDEA_ARBITRATION.md),
    [research portfolio](RESEARCH_PORTFOLIO.md), binding
@@ -51,7 +57,7 @@ MOCS run-authorization object exists.
    [multi-encoder branch](MULTI_ENCODER_BRANCH.md) is
    post-B2 and must not expand the initial compatibility scope; the
    [base-conditional preservation ablation](BASE_CONDITIONAL_PRESERVATION.md) is also post-B2 and must not replace the
-   ordinary/no-KL/unconditional-KL controls; [weight interpolation](WEIGHT_INTERPOLATION_BRANCH.md) is post-B2 and
+   ordinary no-KL B2 or its separately identified unconditional-KL control; [weight interpolation](WEIGHT_INTERPOLATION_BRANCH.md) is post-B2 and
    limited to its closed coefficient set
 3. [Annotation-to-task lattice](ANNOTATION_TASK_LATTICE.md), [context objective contract](CONTEXT_OBJECTIVE_CONTRACT.md),
    [unit-exposure audit](UNIT_EXPOSURE_AUDIT_SPEC.md), and the public-metadata
@@ -72,8 +78,10 @@ current decision authority.
 ## Execution order and write boundary
 
 1. Accept the recorded QUILT adverse disposition as binding; do not rerun it to restore the old scores.
-2. Run Work package A as a competition-first reconciliation and return its table before implementing G or F.
-3. B, C, H, and the command/schema design portion of D may proceed independently after A identifies no authority conflict.
+2. Package A is closed as `design_review_only` by [its reconciliation](PACKAGE_A_RECONCILIATION.md); do not rerun or
+   extend it without a new approved scope.
+3. B, C, H, and the command/schema design portion of D are only the next eligible requests. None may proceed until a
+   fresh package-scoped receipt and digest acknowledgement authorize that exact package; sequencing never grants authority.
 4. Package F owns the shared disabled-registry schema module and `[F]` fixtures; package G consumes that frozen schema
    read-only and owns only its H2 module and `[G]` fixtures. Package I runs only after F and G and consumes both modules
    read-only for composite and cross-claim `[I]` fixtures; it owns no schema or scientific values. This schema subtask may precede G, but the executable

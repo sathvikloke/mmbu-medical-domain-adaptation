@@ -1,6 +1,6 @@
 # Current clone verification
 
-**Observed:** October 18, 2026 01:11 CDT
+**Observed:** October 18, 2026 01:35 CDT
 **Runtime:** Python 3.14.6  
 **Scope:** local software, documentation, and saved-artifact integrity only
 
@@ -9,13 +9,13 @@
 | Check | Result | Interpretation limit |
 |---|---|---|
 | Historical preparation suite | **277 tests passed; 44 optional-Pillow image tests skipped** | Re-executes the preserved CPU package without Pillow; does not replace the Python 3.12/Pillow historical receipt or test a model |
-| Root repository/tool suite | **40 tests passed** | Covers restore, link, process, publication integrity, and package-scoped handoff packet/launch-receipt behavior only |
+| Root repository/tool suite | **42 tests passed** | Covers restore, link, process, publication integrity, A–I package scope, and the manifest-bound authorization-verifier behavior only |
 | Phase 1 suite | **277 tests passed** using the underlying regular Python 3.14.6 executable | Covers the current fail-closed contracts, registries, evidence chains, conditions, geometry, bundles, and orchestration; no model/data/GPU execution. A stable-byte rerun after the four preservation commits passed |
 | Maintained local Markdown links/anchors | **passed** | External URLs were not fetched by this check |
 | Published v0.3 artifact verification | **passed** for 275 files, ZIP members, fixed transforms, and historical receipts | Establishes byte integrity only, not scientific validity or medical truth |
 | Phase 1 contract manifest | **passed** for the exact nine members, byte counts, SHA-256s, paths, and official-source hash agreement | Does not authenticate the new competition-design packet or authorize execution |
-| Claude dependency manifest and launch receipt | **passed packet integrity** for 36 normative members; canonical digest `76e5820cd4d37665cf674879bc81e75caf893f4737e888e72d95406064e19268`; full-file SHA-256 `c483c7bb83f77b5357815a84aa4cfc4142166dd2059cde44429b44f3e1356612` | The repeatable verifier reports `pending_human_digest_acknowledgement` and `authorized: false`; read-only review only, with scientific values and execution authority still absent |
-| Working-tree `git diff --check` | **passed before preservation and the committed tree is clean** | A separate `origin/main...HEAD` range check reports 77 style warnings across 43 files: deliberate two-space Markdown hard breaks in newly tracked, partly hash-bound documents plus one blank-line-at-EOF warning in the package marker. These are not hidden as a clean range result and were not rewritten post hoc merely to silence a stylistic checker |
+| Claude dependency manifest and launch receipt | **passed packet integrity** for 39 members, including `tools/team.py` as the authorization verifier; canonical digest `5656c2d723b15dcb121a8f35a7cb0c4ebb2cbb7bafe7e031fcdea214c731d509`; full-file SHA-256 `b9603fa34e3cc4e4f23442f7e07b8ca3da3dbdf1de93e6a0a1164094a8f54a86` | The verifier reports `pending_human_digest_acknowledgement`, empty scope, and `authorized: false`; read-only review only, with scientific values and execution authority absent |
+| Working-tree `git diff --check` | **passed for the Package A repair diff** | This is a whitespace/error check, not scientific or authorization evidence |
 
 The three test suites are distinct. Their counts must not be added and described as independent scientific evidence.
 The optional-image skips mean this fresh run does not establish the image coverage already recorded by the historical

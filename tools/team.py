@@ -75,7 +75,10 @@ PUBLICATION = {
 
 HANDOFF_MANIFEST = Path("config/claude-handoff-dependencies.json")
 HANDOFF_LAUNCH_RECEIPT = Path("config/claude-handoff-launch-receipt.json")
-HANDOFF_PACKAGES = tuple("ABCDEFGH")
+HANDOFF_PACKAGES = tuple("ABCDEFGHI")
+HANDOFF_SPECIAL_MEMBERS = {
+    "tools/team.py": ("authorization_verifier", "text/x-python; charset=utf-8"),
+}
 
 
 def publication_anchor(name: str, version: str = "published") -> dict:
@@ -381,9 +384,12 @@ def verify_handoff_packet(root: Path, requested_package: str | None = None,
             digest = hashlib.sha256(raw).hexdigest()
             if item.get("sha256") != digest:
                 errors.append(f"{name}: SHA-256 differs")
-            if item.get("role") != "normative_dependency":
+            expected_role, expected_media = HANDOFF_SPECIAL_MEMBERS.get(
+                name, ("normative_dependency", "text/markdown; charset=utf-8")
+            )
+            if item.get("role") != expected_role:
                 errors.append(f"{name}: unsupported handoff role")
-            if item.get("media_type") != "text/markdown; charset=utf-8":
+            if item.get("media_type") != expected_media:
                 errors.append(f"{name}: unsupported handoff media type")
     elif manifest is not None:
         errors.append(f"{HANDOFF_MANIFEST}: top level must be an object")
@@ -425,7 +431,7 @@ def verify_handoff_packet(root: Path, requested_package: str | None = None,
             receipt_errors.append(f"{HANDOFF_LAUNCH_RECEIPT}: invalid package scope")
             scope = []
         elif len(scope) != len(set(scope)) or any(item not in HANDOFF_PACKAGES for item in scope):
-            receipt_errors.append(f"{HANDOFF_LAUNCH_RECEIPT}: package scope must be unique members of A-H")
+            receipt_errors.append(f"{HANDOFF_LAUNCH_RECEIPT}: package scope must be unique members of A-I")
         authority = receipt.get("approving_authority_id")
         acknowledgement = receipt.get("trusted_acknowledgement_digest")
         if receipt.get("approval_status") == "approved":
@@ -442,7 +448,7 @@ def verify_handoff_packet(root: Path, requested_package: str | None = None,
         receipt_errors.append(f"{HANDOFF_LAUNCH_RECEIPT}: top level must be an object")
     errors.extend(receipt_errors)
     if requested_package is not None and requested_package not in HANDOFF_PACKAGES:
-        errors.append(f"requested package must be one of A-H, got {requested_package!r}")
+        errors.append(f"requested package must be one of A-I, got {requested_package!r}")
     if (trusted_acknowledgement_digest is not None
             and not re.fullmatch(r"[0-9a-f]{64}", trusted_acknowledgement_digest)):
         errors.append("supplied trusted acknowledgement digest must be lowercase SHA-256")
@@ -540,7 +546,7 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("verify-evidence", help="verify historical bytes, hashes and file inventory")
     sub.add_parser("verify-links", help="check maintained root/docs/team Markdown paths and anchors offline")
     handoff = sub.add_parser("verify-handoff", help="verify the Claude packet and report its separate launch status")
-    handoff.add_argument("--package", choices=HANDOFF_PACKAGES, help="specific A-H work package requesting authorization")
+    handoff.add_argument("--package", choices=HANDOFF_PACKAGES, help="specific A-I work package requesting authorization")
     handoff.add_argument("--acknowledgement-digest", help="trusted-channel SHA-256 supplied independently of the packet")
     args = parser.parse_args(argv)
     root = args.root.resolve()

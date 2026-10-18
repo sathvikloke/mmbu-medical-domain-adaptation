@@ -155,8 +155,8 @@ which were excluded by the mechanism admission rule.
 
 The hostile review's initial 9.0 competition score is superseded by the October 18 executability audit. The best current
 competition idea has **8.4/10 prospective competition value and 0.5/10 local evidence**. Those are not novelty scores.
-For the integrated B2 project, the current pre-result axes are **5.8/10 competition-system innovation, 3.8/10 system
-novelty, 2.3/10 learner-method novelty, and 3.2/10 paper novelty**. The first is a subjective pre-result estimate, not
+For the integrated B2 project, the current pre-result axes are **4.2/10 competition-system innovation, 3.5/10 system
+novelty, 2.0/10 learner-method novelty, and 3.0/10 paper novelty**. The first is a subjective pre-result estimate, not
 admitted novelty evidence. System novelty cannot reach 5.0 until matched component ablations isolate an interaction
 rather than more supervision, filtering, updates, compute, or evaluator tailoring.
 

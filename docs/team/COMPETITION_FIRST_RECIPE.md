@@ -18,7 +18,7 @@ identifiability and loader/compute risk.
 
 The primary path is therefore one ordinary shared LoRA trained with **co-primary answer-task and authoritative
 biomedical-context objectives** on a task-balanced, context-balanced, source-balanced admitted mixture, with exact
-geometry/serialization contracts, held-out-source and held-out-template development, base-preservation regularization,
+geometry/serialization contracts, held-out-source and held-out-template development, base-relative regression reporting,
 and visual-dependence checkpoint rejection. Curriculum order is an ablation, not the flagship idea. This is a
 score-and-reliability design, not a method-novelty claim. The independent decision record is
 [the idea arbitration](INDEPENDENT_IDEA_ARBITRATION.md).
@@ -79,7 +79,7 @@ model-generated rationales and label-to-template explanations are ineligible. Pr
 at development time, but the lack of a final context prompt does not block a task-independent native
 load/forward/export preflight.
 
-## Optimizer and preservation
+## Optimizer and preservation controls
 
 - Use AdamW for the competition-strength shared-LoRA baseline; do not handicap the primary entrant to preserve a
   research-method invariant.
@@ -89,9 +89,11 @@ load/forward/export preflight.
   conceal a material loss in the other.
 - Freeze the vision tower initially. Adapt the projector and late language modules only in a prospectively fixed profile;
   unfreezing or vision-side adaptation requires a native feasibility result and a held-out-source gain.
-- Apply a small, frozen-coefficient KL/base-behavior-retention loss only on a prospectively eligible admitted non-public
-  preservation pool. Do not call unlabeled behavior retention correctness preservation. Include the no-KL ablation,
-  because unconditional KL can preserve base errors and suppress useful adaptation.
+- Ordinary `recipe_arch::B2-P` and `recipe_arch::B2-F` use **no KL or preservation loss**. This no-KL form is the
+  primary B2 baseline. An unconditional frozen-coefficient KL/base-behavior-retention condition is a separate post-B2
+  control on a prospectively eligible admitted non-public preservation pool; do not call unlabeled behavior retention
+  correctness preservation. Base-conditional preservation is a second, separately identified post-B2 candidate under
+  A4. Neither control may replace or retroactively redefine ordinary B2.
 - Record base-relative negative flips, not only aggregate accuracy.
 - Early stopping and checkpoint choice use only the frozen development populations and registered decision rule.
 
@@ -136,11 +138,24 @@ unresolved loader, release, memory, latency, source-family, or state-dict closur
 
 ### A4: base-conditional preservation
 
-After ordinary B2 and its no-KL/unconditional-KL controls are frozen, the exact
+After ordinary no-KL B2 is frozen, compare the separately identified unconditional-KL control and then the exact
 [base-conditional preservation ablation](BASE_CONDITIONAL_PRESERVATION.md) may preserve frozen-base behavior only on
 admitted external records with deterministic correct-and-valid receipts, while learning authoritative targets on base
 errors. A shuffled gate, token-exposure control, visual-dependence gate, and negative/positive-flip report are mandatory.
 This is adjacent to S3FT, distillation, and margin-preserving negative-flip training; it is not method novelty.
+
+### Grounding-preservation boundary
+
+In one Qwen2.5-VL/data-mixture study, answer-only medical VQA adaptation destroyed box emission; shuffled-box format
+rehearsal restored formatting without localization; and limited real grounding restored IoU while retaining the
+authors' SLAKE answer gain, while their VQA-RAD open-recall result and limitations prevent universal generalization
+([Chen et al., 2026](https://arxiv.org/abs/2604.27720)). Backbone/recipe-matched QLoRA VQA-only versus multitask
+medical-VLM comparisons—not demonstrated fixed-record, fixed-token, or fixed-unit-mass matches—and joint
+VQA/explanation/grounding LoRA also directly occupy the broad co-training claim
+([Safwan et al., 2026](https://arxiv.org/abs/2607.27122), [Safwan et al., 2025](https://arxiv.org/abs/2511.04384)).
+Therefore a prospectively matched grounding-preservation arm is motivated only where eligible source-authoritative
+annotations exist; it does not redefine ordinary B2. Any such arm needs a full-image no-crop baseline and separate
+answer/localization reporting. Oracle crops or box-format rehearsal cannot establish grounding.
 
 ### A5: fixed weight interpolation
 
@@ -188,7 +203,7 @@ novelty do not receive challenge credit.
 |---|---:|---|
 | Competition design | **8.4** | Context semantics, literal freeze packet, admitted data, native run, and official loader are absent |
 | Challenge alignment | **9.4** | Hidden distribution and unresolved context/evaluator/runtime |
-| Method novelty | **3.0** | Deliberately combines established best practices |
+| Learner-method novelty | **2.0** | Deliberately combines established best practices |
 | Implementation readiness | **6.5** | Typed competition schema, literal scientific receipt, source admission, native module shapes, trainer integration, and HPC access remain unverified |
 | Empirical evidence | **0.5** | No model forward or biomedical run |
 

@@ -34,6 +34,9 @@ packaging is new. Absence of the exact package from a scoped search does not sup
 | [Point, Detect, Count](https://arxiv.org/abs/2505.16647) | Qwen LoRA jointly instruction-tuned for medical detection, localization, and counting with structured outputs | Joint spatial/count medical adaptation is occupied |
 | [MIMO](https://openaccess.thecvf.com/content/CVPR2025/html/Chen_MIMO_A_Medical_Vision_Language_Model_with_Visual_Referring_Multimodal_CVPR_2025_paper.html), [VividMed](https://aclanthology.org/2025.naacl-long.89/), and [MedRegA](https://proceedings.iclr.cc/paper_files/paper/2025/file/414fd191b3246a19a55741b938380136-Paper-Conference.pdf) | Unified or broad medical VLM systems with referring, grounding, boxes/masks, VQA, reports, or region-grounded instruction | Grounded multi-task medical integration is occupied |
 | [CADRE](https://arxiv.org/abs/2606.23487) | Parameter-efficient medical adaptation with explicit forgetting and prior-drift controls | Preservation and base-relative stability are occupied |
+| [Why Does Grounding Hurt Medical VQA?](https://arxiv.org/abs/2604.27720) | In one Qwen2.5-VL/data mix, answer-only SFT destroyed box emission; shuffled-box rehearsal restored format but not localization; limited grounding recovered IoU and retained SLAKE answer gains, while VQA-RAD and stated limitations preclude a universal preservation claim | The broad answer/grounding co-training motivation and formatting-versus-localization distinction are occupied |
+| [Small-medical-VLM QLoRA study](https://arxiv.org/abs/2607.27122) and [joint VQA/explanation/grounding LoRA](https://arxiv.org/abs/2511.04384) | Backbone/recipe-matched VQA-only versus multitask comparison (not fixed-record/token/unit-mass matching) and joint medical grounding adaptation | Medical multitask co-training is not the residual novelty claim |
+| [Which Model to Transfer?](https://openaccess.thecvf.com/content/CVPR2022/html/Renggli_Which_Model_To_Transfer_Finding_the_Needle_in_the_Growing_Haystack_CVPR_2022_paper.html) and [Quick-Tune](https://openreview.net/forum?id=tqh1zdXIra) | Transfer-model selection and low-budget learning-curve response prediction | Adaptation response as a general selection principle is occupied |
 
 The audited residual system elements are:
 
@@ -60,6 +63,20 @@ selection is established by [LEEP](https://proceedings.mlr.press/v119/nguyen20b.
 [downstream-free-energy checkpoint criterion](https://proceedings.mlr.press/v267/munn25a.html). H1 and H2 therefore
 test competition utility and transportable system behavior, not a novel loss, optimizer, or general model-selection
 principle. Passing both does not create conjunction novelty by addition.
+
+The normalization boundary is also direct: [Yi et al.](https://arxiv.org/abs/2103.08933) group augmented views by
+original sample and reweight within groups; [Wu et al.](https://proceedings.mlr.press/v121/wu20a.html) document unequal
+learning dynamics across medical views; and [Vu et al.](https://proceedings.mlr.press/v149/vu21a.html) use
+patient/study-aware medical multi-view pairing. These works do not test H1's exact MMBU-shaped interaction, but they
+remove a general novelty claim for grouping, medical-view awareness, or per-origin normalization.
+
+For H1, per-example/view normalization and answer/grounding/context multitask training are occupied. The only honest
+pre-result residual is empirical: annotation multiplicity may confound the measured benefit of co-training. It survives
+only if the `SYS-A0`–`SYS-A3` interaction, exposure-equalization collapse, and duplicate-view invariance all pass on two
+independently governed source parents. For H2, the residual is likewise empirical: a frozen adaptation-response rule
+may lower out-of-cohort selection regret relative to untouched ranking. It must also beat selection by highest absolute
+post-micro-adaptation task/context score, delta-only response, early score/loss, and every feasible LEEP, LogME,
+TransRate, SFDA, and free-energy control. Otherwise H2 is ordinary low-budget transfer selection.
 
 ## Training factorial
 
@@ -178,10 +195,10 @@ must name exactly which of H1, H2, or composite-protocol eligibility failed; it 
 | Dimension | Current | Conditional ceiling | Boundary |
 |---|---:|---:|---|
 | Competition value | 8.4 | evidence-dependent | Current prospective B2 value; not a result |
-| Competition-system innovation | 5.8 | 6.0 before results | Subjective, closest-system-audited design estimate |
-| System novelty | 3.8 | 5.0 after matched interaction evidence; about 5.5 only if independent replication also reveals a prospectively predicted transportable interaction not reducible to ordinary view balancing | Replication alone raises confidence, not conceptual novelty; no current contribution is admitted |
-| Learner-method novelty | 2.3 | 2.5 without a different update rule | This design does not raise it |
-| Paper novelty | 3.2 | 4.0 after an isolated system result; external replication strengthens credibility but does not automatically raise novelty | No current primary paper claim is admitted |
+| Competition-system innovation | 4.2 | 4.5 before results | Subjective design estimate after direct co-training and transfer-selection collisions |
+| System novelty | 3.5 | 5.0 after matched interaction evidence; about 5.5 only if independent replication also reveals a prospectively predicted transportable interaction not reducible to ordinary view balancing | Replication alone raises confidence, not conceptual novelty; no current contribution is admitted |
+| Learner-method novelty | 2.0 | 2.5 without a different update rule | This design does not raise it |
+| Paper novelty | 3.0 | 4.0 after an isolated system result; external replication strengthens credibility but does not automatically raise novelty | No current primary paper claim is admitted |
 
 This document authorizes only schema design and synthetic decision fixtures under the existing handoff controls. It
 does not authorize data download, model loading, training, public-set evaluation, confirmation opening, or GPU use. The

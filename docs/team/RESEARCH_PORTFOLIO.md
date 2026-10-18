@@ -7,7 +7,8 @@
 
 The expanded prior-art audit found that routed medical LoRA experts already have a strong CVPR 2026 reference,
 Sparse Spectral LoRA/MedQwen. A competition plan that ignores it is weaker; a novelty claim that quietly reproduces it
-is dishonest. The project therefore uses one admitted dataset/protocol and compares increasingly risky methods rather
+is dishonest. The project therefore specifies one fail-closed admission and protocol framework, while acknowledging
+that no biomedical source is admitted and no executable experiment protocol is frozen, and compares increasingly risky methods rather
 than committing the entire schedule to one acronym.
 
 ## Lane 1: strongest reliable entrant
@@ -24,7 +25,9 @@ score depends on adapted performance and base-relative gain. This screen is comp
 
 1. B0: untouched pinned base under the exact same prompt, image, decoding, runtime, and judge contract.
 2. B1: language-only shared LoRA for formatting and biomedical vocabulary.
-3. B2-P/B2-F: shared projector plus late-language LoRA with parameter- and active-FLOP-matched profiles.
+3. B2-P/B2-F: shared projector plus late-language LoRA profiles intended for a matched comparison. Their module
+   inventories, formulas, and native active-FLOP measurements do not yet exist, so equivalence is unproved and blocks
+   any claim that the profiles are matched.
 4. B4: Sparse Spectral LoRA/MedQwen reproduction on the same admitted records, only if its official method can be
    independently implemented and packaged under the challenge loader.
 
@@ -80,8 +83,8 @@ These are prospective judgments, not measured performance.
 
 | Candidate | Competition fit | Implementation feasibility | Compliance/package risk | Method novelty | Current evidence |
 |---|---:|---:|---:|---:|---:|
-| B2 dual-objective answer/context PEFT | **8.4** | 8.6 | 9.3 | 2.3 | 0.5 |
-| Conditional B2 composite protocol (separate H1 `SYS-A0`–`SYS-A3` and H2 frontier isolation) | 8.4 | 6.8 | 9.0 | 3.8 system / 2.3 learner | 0.5 |
+| B2 dual-objective answer/context PEFT | **8.4** | 8.6 | 9.3 | 2.0 | 0.5 |
+| Conditional B2 composite protocol (separate H1 `SYS-A0`–`SYS-A3` and H2 frontier isolation) | 8.4 | 6.8 | 9.0 | 3.5 system / 2.0 learner | 0.5 |
 | B4 Sparse Spectral LoRA reproduction | 9.2 | 5.8 | 6.5 | 1.0 for us | 2.5 from the paper, 0 locally |
 | MOSAIC v1.1 on current rank-deficient grid | 4.5 | 6.3 | 6.8 | 5.5 | 0.5 |
 | Annotation-view/task-consistency training on B2/B4 | 8.5 | 8.4 | 9.0 | 3.0 | 0.5 |
@@ -105,7 +108,7 @@ raise the current novelty score. It prospectively separates (a) whether authorit
 interacts with independent-unit mass normalization from (b) whether adaptation-response base selection beats
 untouched-base selection on a second untouched cohort. `SYS-A0`–`SYS-A3`, an exposure-equalization null/equivalence
 check, the strongest faithfully matched complete-system comparator, replication across independently governed source
-parents, and the frozen kill rule are mandatory. Until those results exist, this remains a 3.8/10 system hypothesis and
+parents, and the frozen kill rule are mandatory. Until those results exist, this remains a 3.5/10 system hypothesis and
 established shared PEFT remains the learner.
 
 The factorial-update candidate is also not a fourth competition lane. Its

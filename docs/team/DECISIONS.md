@@ -12,26 +12,45 @@ This is the team's human-readable register at handoff. The source records are th
 | Require explicit uint16 presentation and verified native assistant boundaries | Tested intensity-loss/scaling and Qwen3.5 thinking-prefix counterexamples |
 | Use token-weighted shifted assistant loss and test actual trainer integration | Synthetic unequal-microbatch probe; trainer behavior remains unverified |
 | Retain negative results and use one untouched confirmation after selection | Prospective research design and checked local receipt lifecycle |
+| Demote QUILT from flagship to diagnostic branch | Independent adverse review plus LoRA-FA, GPM/InfLoRA, AND-mask/Fish/Fishr, R2F, and direct 2026 medical-VLM paraphrase-consistency antecedents; multiplicative loss scaling can make the estimated basis task-bearing. See [the binding disposition](QUILT_ADVERSE_REVIEW.md). |
+| Select the competition base by a frozen adaptation-response frontier, not untouched performance | Track 2 score multiplies adapted task/context quality by base-relative task gain; base-only ranking is misaligned. The F0/joint-decision/F2 process remains public-firewalled and measures response to one fixed screen, not intrinsic adaptability. See [frontier](BASE_SELECTION_FRONTIER.md) and [red-team](BASE_SELECTION_REDTEAM.md). |
+| Bind schema, freeze, and execution as separate states | The October 18 executability audit found that detailed prose still left context-missing behavior, confirmation closure, compute limits, and scientific values to the implementer. The [experiment-freeze contract](EXPERIMENT_FREEZE_CONTRACT.md) now blocks execution until the packet, literals, roles, decision function, and authorization are hash-bound. |
+| Replace “B2 plus curriculum” with dual-objective answer/context B2 | The score-maximizing, novelty-seeking, and hostile reviews agree that base-architecture-preserving shared PEFT, pending loader/package confirmation, is the likely winning lane; the hostile review found context was underweighted and annotation-rich units could dominate exposure. Context is now co-primary, missing fields are masked, and total optimizer mass is normalized per independent unit. See [independent arbitration](INDEPENDENT_IDEA_ARBITRATION.md). |
+| Freeze MOSAIC on the current source grid | The optimistic source-adjusted scaffold is rank deficient and aliases modality/specimen/task with source; adding records to the same cells cannot repair identifiability. A future crossed grid is a new evidence state and does not inherit the former rating. |
+| Do not automatically implement a novelty probe | Exact searches found that CVPR 2022 already uses characteristic-function frequency supervision for count/position/subregions and that Divide and Count already enforces regional inclusion–exclusion/additivity. MRFSS and WRLVT fall to 5.2 and 4.8 concept novelty; neither justifies implementation before a prospectively frozen repeated B2/B4 residual on admitted, non-public external data, or a precisely cited independently replicated residual matching the task, modality, and constraints with a predeclared reason B2 cannot address it. |
+| Close the scoped pre-evidence learner-mechanism search with zero survivors | An orthogonal second pass rejected scene-language compilers, acquisition-provenance factorization, and redundant semantic codewords against direct primary antecedents and score-breadth constraints. Reopen costly mechanism work only under the qualifying-residual rule above. Low-cost system, data-objective, and evaluation audit remains open but cannot alter frozen Lane 1 or consume GPU time. |
+| Reject direct multiplicative-score training as novelty or a safe loss | Differentiating `(0.8T + 0.2C)(T - T_base)` produces only state-dependent task/context weighting, and the context coefficient is negative while task gain is negative. Use ordinary frozen dual-objective training; apply the score only after the positive-gain floor in prospective uncertainty-aware selection. |
 
 ## External evidence still needed
 
+The October 14 organizer reply resolved part of the historical question draft. The authoritative sanitized governance
+receipt is [Phase 1 organizer clarification](../phase1/ORGANIZER_CLARIFICATION.md), and the readable answer map is
+[Organizer clarifications](ORGANIZER_CLARIFICATIONS.md). The older draft remains evidence of what was asked; it is no
+longer an unsent next action. The direct reply says malformed JSON is incorrect while the current card specifies raw
+fallback, so local behavior remains fail-closed and official precedence is unresolved. Public-set selection is
+organizer-permitted but locally forbidden by the stricter project firewall; independently obtained contributing-source training splits are allowed with
+full disclosure; an explicit “any one” detection request takes one box and passes at IoU at least 0.5; enrollment is
+complete; the deadline timezone is organizer-confirmed as PST, while the exact clock time and displayed timestamp remain
+unknown. The organizer also pointed to earlier Discord evaluation information, but no exact message, author/channel,
+timestamp, pin state, or attachment has been receipted. None of these answers supplies a final harness or model result.
+
 | ID / decision | Missing fact or deliverable | Blocks | Suggested workstream |
 | --- | --- | --- | --- |
-| PROTO-01: task rationale | Organizer-selected rationale-in-JSON versus rationale-before-JSON schema and harness | Frozen production serializer and schema-specific training | Model/evaluation |
-| PROTO-02: malformed output | Zero grade versus raw-response fallback, with fixtures | Official-equivalent scoring and format-dependent elimination | Model/evaluation |
-| PROTO-03: segmentation labels | Multi-label policy reconciled with the shown one-concept judge | Multi-label grading and score-based promotion | Model/evaluation |
-| PROTO-04: context pass | Prompts, requested-field masks, unknown convention, missing/zero-field rules, implementation | Official C and S claims | Model/evaluation |
-| PROTO-05: public development | Explicit allowed local evaluation/selection operations and authorized gated access | Official-dev purpose; challenge records remain outside training | Review/release |
-| PROTO-06: detection/routing | Pixel xywh conventions, resize/inverse transforms, multi/absent-target matching, counting route | Final conversion profiles and official aggregation | Model/evaluation |
+| PROTO-01: task prompt | Current card at visible README revision `b2faa991...` specifies rationale before a terminal answer-only JSON object and exact task suffix routing; raw bytes, chat rendering, generation settings, and drift check are not yet receipted | Protocol-equivalent production serializer and schema-specific training | Model/evaluation |
+| PROTO-02: malformed output | Direct email says malformed JSON is incorrect; current card says missing/invalid JSON falls back to raw-reply scoring. Local policy remains fail-closed and never repairs output. | Organizer precedence between the two official statements and exact fallback parser behavior | Model/evaluation |
+| PROTO-03: segmentation labels | Current suffix allows comma-separated multiple labels while the displayed judge Gate 1 requires one specific label-set concept | Multi-label grading and score-based promotion | Model/evaluation |
+| PROTO-04: context pass | Confirmed only that prompts request applicable fields. Final prompt bytes, field registry/mapping, key schema, unknown convention, extra/missing-key treatment, zero-field behavior, parser, scoring, and exact task/context call topology remain unresolved. | Official C and S claims | Model/evaluation |
+| PROTO-05: public development | Organizer permits public-result-driven selection, but the project deliberately retains a stricter no-public-optimization firewall; gated access and exact custody still require authority | Authorized access and any later proposal to revise the stricter local policy | Review/release |
+| PROTO-06: detection/routing | “Any one” is resolved as exactly one predicted box matched to any ground-truth box at IoU >= 0.5; other multi/absent-target wording, resize/inverse transforms, and counting route remain unresolved | Final conversion profiles and official aggregation outside the confirmed case | Model/evaluation |
 | Runtime and submission | Pinned harness/dependencies; memory/time/token/resolution/thinking limits; final model/component requirements | Eligible inference configuration and final release checks | Model/evaluation |
-| Source policy | Permitted use of contributing-source training data, declared overlap, and weight-release compatibility | Real-source model use and expansion | Data/provenance |
+| Source policy | Contributing-source training splits are permitted; no organizer overlap-check/exclusion procedure exists and dataset-list disclosure is required. Record-level overlap auditing is a local scientific/provenance control. Source-specific rights and trained-weight release compatibility remain unresolved. | Real-source model use and expansion | Data/provenance |
 | Source/record review | Rights basis, grouping, visual support, geometry, display policy, overlays, and named review decisions | Training/dev/confirmation admission | Data/provenance plus suitable biomedical reviewer |
-| Einstein access | Actual allocated GPU/count/VRAM, runtime behavior, quota, scheduler limits, availability | Model viability, measured pilot cost, load/forward/export | Model/evaluation plus IT |
+| UTC MOCS access | The [dated access audit](MOCS_ACCESS_AUDIT.md) found a local alias/account name; official UTC pages require VPN off campus but conflict between `login` and `login01`, and neither resolved on the current network. Public Slurm node/partition limits are planning facts only; actual account/allocation, GPU/count/VRAM, runtime behavior, quota, and availability remain unknown | Model viability, measured pilot cost, load/forward/export/reload | Model/evaluation plus HPC support |
 | Budget and people | Spending ceiling, weekly hours, storage, reviewer availability, and resource owner | Committing long or paid runs | Team coordination |
 | Model experiments | Untouched predictions, matched adaptation, module support, repeated results, actual cost | Final base/recipe/checkpoint choice | Model/evaluation |
 | Final confirmation | Eligible untouched cohort, frozen primary/seed/thresholds, retained anchors | Independent final comparison claim | Review/release |
 
-The [organizer question draft](../../outputs/mmbu-precompute/docs/organizer-questions.md) is ready and has not been sent. The [Einstein handoff](../../outputs/mmbu-precompute/docs/einstein-handoff.md) is ready; no remote GPU diagnostic is recorded. A local preflight exit of zero means a report was written, not that remote training is viable.
+The [organizer question draft](../../outputs/mmbu-precompute/docs/organizer-questions.md) is historical; use the dated reply registers above for current state. The [Einstein handoff](../../outputs/mmbu-precompute/docs/einstein-handoff.md) is ready but refers to obsolete infrastructure; no MOCS GPU diagnostic is recorded. A local preflight exit of zero means a report was written, not that remote training is viable.
 
 Historical v0.1–v0.3 reports preserve an earlier Qwen baseline/challenger/fallback order as part of the recorded handoff. That order is superseded for new competition decisions; do not treat those immutable reports or the model registry's historical role labels as current selection authority.
 
@@ -43,6 +62,8 @@ Use the [data checklist](../../outputs/mmbu-precompute/docs/data-review-checklis
 
 ## Calendar and stop conditions
 
-The historical strategy records a December 31, 2026 end-of-day AoE deadline, ending January 1, 2027 at 06:00 Chicago. It proposes an internal December 28, 17:00 Chicago target and a deliverable ready December 20. These are the saved planning assumptions; confirm organizer changes before final scheduling.
+The historical strategy's AoE deadline assumption is superseded by the October 14 organizer email naming Pacific
+Standard Time. The organizer did not supply an exact clock time, so neither “end of day” nor a Chicago conversion is
+authoritative. Retain the earlier internal freeze, then bind the exact displayed timestamp when the final form arrives.
 
 If access is still unresolved on October 9, the plan calls for local data/contract work and a reduced experiment queue. The seven-day sprint begins when access and compute are ready; it is a work-order target, not a runtime promise. Maintain the planned 15% compute reserve and base later commitments on measured per-run costs. Do not erase data review, untouched baselines, or export testing to recover a missed calendar milestone.

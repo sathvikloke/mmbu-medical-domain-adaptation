@@ -25,6 +25,22 @@ if ACQUIRE_PATH.exists() and acquire_spec and acquire_spec.loader:
 else:
     b1_acquire = None
 
+NATIVE_PATH = Path(__file__).resolve().parents[2] / "tools/b1_native_preflight.py"
+native_spec = importlib.util.spec_from_file_location("b1_native_preflight", NATIVE_PATH)
+if NATIVE_PATH.exists() and native_spec and native_spec.loader:
+    b1_native = importlib.util.module_from_spec(native_spec)
+    native_spec.loader.exec_module(b1_native)
+else:
+    b1_native = None
+
+RELOAD_PATH = Path(__file__).resolve().parents[2] / "tools/b1_offline_reload.py"
+reload_spec = importlib.util.spec_from_file_location("b1_offline_reload", RELOAD_PATH)
+if RELOAD_PATH.exists() and reload_spec and reload_spec.loader:
+    b1_reload = importlib.util.module_from_spec(reload_spec)
+    reload_spec.loader.exec_module(b1_reload)
+else:
+    b1_reload = None
+
 
 def sha(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
@@ -256,6 +272,17 @@ class B1PreflightTests(unittest.TestCase):
         for mutation in mutations:
             with self.subTest(mutation=mutation), self.assertRaises(ContractViolation):
                 b1_acquire.validate_resolver_report(mutation, config)
+        inventory = []
+        for item in installs:
+            name = item["metadata"]["name"]
+            version = item["metadata"]["version"]
+            digest = item["download_info"]["archive_info"]["hash"][7:]
+            inventory.append({"path": f"{name}-{version}-py3-none-any.whl", "bytes": 1, "sha256": digest})
+        inventory.sort(key=lambda row: row["path"].encode("utf-8"))
+        self.assertEqual(b1_acquire.validate_resolver_report(unhashed, config, inventory), unhashed)
+        inventory.pop(0)
+        with self.assertRaises(ContractViolation):
+            b1_acquire.validate_resolver_report(unhashed, config, inventory)
 
     def test_download_inventory_rejects_missing_extra_and_hash_drift(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -267,6 +294,117 @@ class B1PreflightTests(unittest.TestCase):
             (root / "one.whl").write_bytes(b"ONE")
             with self.assertRaises(ContractViolation):
                 b1_acquire.verify_inventory(root, inventory, ".whl")
+
+    def test_synthetic_fixture_inventory_is_closed_and_deterministic(self):
+        self.assertIsNotNone(b1_native, "B1 native runner is missing")
+        specs = b1_native.fixture_specs()
+        self.assertEqual([row["id"] for row in specs], [
+            "small-rgb", "large-rgb", "nonsquare-rgb", "extreme-aspect-rgb",
+            "grayscale-conversion", "rgba-conversion", "exif-orientation",
+            "boundary-27", "boundary-28", "boundary-29",
+        ])
+        self.assertEqual(specs, b1_native.fixture_specs())
+        for row in specs:
+            self.assertEqual(set(row), {"id", "raw_mode", "raw_size", "seed", "transform"})
+            self.assertGreater(row["raw_size"][0], 0)
+            self.assertGreater(row["raw_size"][1], 0)
+
+    def test_target_only_labels_mask_padding_prompt_and_image_tokens(self):
+        input_ids = [[0, 0, 10, 11, 12, 13], [0, 20, 21, 22, 23, 24]]
+        attention = [[0, 0, 1, 1, 1, 1], [0, 1, 1, 1, 1, 1]]
+        labels = b1_native.build_target_only_labels(input_ids, attention, [3, 3])
+        self.assertEqual(labels, [[-100, -100, -100, -100, -100, 13], [-100, -100, -100, -100, 23, 24]])
+        with self.assertRaises(ContractViolation):
+            b1_native.build_target_only_labels(input_ids, attention, [4, 5])
+
+    def test_exact_lora_targets_exclude_vision_and_fail_closed(self):
+        names = [
+            "model.language_model.layers.0.self_attn.q_proj",
+            "model.language_model.layers.0.self_attn.v_proj",
+            "model.language_model.layers.0.self_attn.k_proj",
+            "model.visual.blocks.0.attn.q_proj",
+        ]
+        self.assertEqual(b1_native.exact_lora_targets(names), names[:2])
+        with self.assertRaises(ContractViolation):
+            b1_native.exact_lora_targets(["model.visual.blocks.0.attn.q_proj"])
+
+    def test_trainable_gradient_and_update_inventory_closes(self):
+        declared = ["adapter.a", "adapter.b"]
+        self.assertEqual(
+            b1_native.validate_update_inventory(declared, declared, declared, declared),
+            {"declared": declared, "finite_gradients": declared, "updated": declared},
+        )
+        for trainable, gradients, updated in ((declared + ["base.x"], declared, declared),
+                                               (declared, ["adapter.a"], declared),
+                                               (declared, declared, ["adapter.a"])):
+            with self.assertRaises(ContractViolation):
+                b1_native.validate_update_inventory(declared, trainable, gradients, updated)
+
+    def test_mrope_summary_and_numeric_comparison_fail_closed(self):
+        summary = {
+            "position_shape": [3, 2, 10], "position_dtype": "torch.int64",
+            "rope_deltas_shape": [2, 1], "rope_deltas_dtype": "torch.int64",
+            "image_temporal_unique_counts": [1, 1], "image_grid_temporal_counts": [1, 1],
+            "position_sha256": "a" * 64, "rope_deltas_sha256": "b" * 64,
+        }
+        self.assertEqual(b1_native.validate_mrope_summary(summary, 2, 10), summary)
+        for key, value in (("position_shape", [3, 1, 10]),
+                           ("position_dtype", "torch.float32"),
+                           ("image_temporal_unique_counts", [2, 1])):
+            mutation = deepcopy(summary); mutation[key] = value
+            with self.subTest(key=key), self.assertRaises(ContractViolation):
+                b1_native.validate_mrope_summary(mutation, 2, 10)
+        self.assertAlmostEqual(b1_native.compare_logits([0.0, 1.0], [0.1, 1.1], 0.5, "x"), 0.1)
+        with self.assertRaises(ContractViolation):
+            b1_native.compare_logits([0.0], [1.0], 0.5, "x")
+
+    def test_offline_reload_reference_rejects_identity_and_numeric_drift(self):
+        self.assertIsNotNone(b1_reload, "B1 offline reload tool is missing")
+        reference = {
+            "fixture_id": "small-rgb", "prompt": "prompt", "input_ids": [1, 2],
+            "attention_mask": [1, 1], "logits_first_32": [0.0, 1.0],
+            "logit_atol": 0.5, "pixel_values_sha256": "a" * 64,
+        }
+        observed = {"fixture_id": "small-rgb", "input_ids": [1, 2],
+                    "attention_mask": [1, 1], "logits_first_32": [0.1, 1.1],
+                    "pixel_values_sha256": "a" * 64}
+        self.assertLessEqual(b1_reload.validate_reload(reference, observed), 0.5)
+        for key, value in (("fixture_id", "other"), ("input_ids", [2, 1]),
+                           ("pixel_values_sha256", "b" * 64), ("logits_first_32", [1.0, 2.0])):
+            mutation = deepcopy(observed); mutation[key] = value
+            with self.subTest(key=key), self.assertRaises(ContractViolation):
+                b1_reload.validate_reload(reference, mutation)
+
+    def test_network_guard_denies_socket_and_slurm_is_exactly_one_job(self):
+        import socket
+        original_create = socket.create_connection
+        original_socket = socket.socket
+        try:
+            b1_reload.install_network_guard()
+            with self.assertRaises(PermissionError):
+                socket.create_connection(("127.0.0.1", 9))
+            with socket.socket() as guarded:
+                with self.assertRaises(PermissionError):
+                    guarded.connect(("127.0.0.1", 9))
+        finally:
+            socket.create_connection = original_create
+            socket.socket = original_socket
+        script = (Path(__file__).resolve().parents[2] / "tools/b1_native_preflight.sbatch").read_text()
+        for directive in ("#SBATCH --partition=epyc-gpu", "#SBATCH --account=allusers",
+                          "#SBATCH --qos=u-default", "#SBATCH --gres=gpu:tesla_a100_80gb:1",
+                          "#SBATCH --cpus-per-task=8", "#SBATCH --mem=96G", "#SBATCH --time=02:00:00"):
+            self.assertIn(directive, script)
+        self.assertNotIn("sbatch ", script)
+        self.assertEqual(script.count("b1_native_preflight.py"), 1)
+        self.assertEqual(script.count("b1_offline_reload.py"), 1)
+        self.assertIn("/tmp/npl015-mmbu-b1-${SLURM_JOB_ID}", script)
+        self.assertNotIn("/scratch/", script)
+        native_source = NATIVE_PATH.read_text()
+        reload_source = RELOAD_PATH.read_text()
+        self.assertIn('backend="pil"', native_source)
+        self.assertIn("native.load_pil_processor(model_root)", reload_source)
+        self.assertNotIn("use_fast=True", native_source + reload_source)
+        self.assertNotIn("AutoProcessor", native_source + reload_source)
 
 
 if __name__ == "__main__":

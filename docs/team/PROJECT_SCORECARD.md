@@ -9,7 +9,7 @@
 
 | Category | Score / 10 | Evidence-based reason | What prevents 9.5 |
 |---|---:|---|---|
-| Challenge-problem fit | **9.4** | The portfolio directly targets the benchmark's weak localization, open-answer gap, visual shortcuts, and base-model regressions; the visible task-card revision and manual protocol transcription are recorded | Raw card bytes, final context prompt, evaluator/runtime, card drift, contradictory malformed/multi-label branches, and hidden distribution remain organizer-controlled |
+| Challenge-problem fit | **9.4** | The portfolio directly targets the benchmark's weak localization, open-answer gap, visual shortcuts, and base-model regressions; the visible task-card revision, manual protocol transcription, and bounded label-emission diagnostic are recorded | Raw card bytes, final context prompt, evaluator/runtime, card drift, contradictory malformed/multi-label branches, and hidden distribution remain organizer-controlled |
 | Competition strategy | **9.0** | One active competition lane now has a five-arm task-only/dual-objective comparator graph, score-aligned confirmation, hard public firewall, strong controls, and a measured native B1 feasibility envelope | The exact scientific-decision receipt, admitted data, full-run compute budget, and organizer loader remain uninstantiated |
 | Best current competition idea: B2 dual-objective answer/context adaptation | **8.5** | Base-architecture-preserving shared PEFT targets both documented score components, normalizes unit exposure, demotes curriculum order to an ablation, and now executes separate answer/context targets through the native B2-P optimizer path | Context prompt/scoring, loader/package acceptance, exact scientific profiles, admitted data, and biomedical effect evidence are absent; heterogeneous concatenated-batch equivalence failed |
 | Competition-system innovation | **4.2** | The conditional [system-interaction hypothesis](SYSTEM_INTERACTION_HYPOTHESIS.md) specifies isolation tests for answer/context × unit-normalization and a separate adaptation-response-frontier claim; direct multitask and transfer-selection antecedents narrow both to empirical residuals | Organizer-defined scoring/serialization and ordinary compliance are not innovation; close complete medical systems exist, scientific literals remain unfrozen, and no native result isolates either claim |
@@ -43,6 +43,12 @@ Averaging the table would be misleading because the empirical score is a hard de
 project cannot be made competition-ready by adding more prose. The October 18
 executability audit also showed that detailed prose is not an executable experiment until every scientific choice,
 dependency, role, cap, and decision function is literal and hash-bound.
+
+The October 23 [label-emission-gap audit](LABEL_EMISSION_GAP.md) adds a high-fit post-B2 comparison without changing
+the novelty verdict. A public participant self-reports a large option-readout versus free-generation gap and a later
+target-vocabulary gain under its own scorer; the MMBU paper independently reports large closed-to-open classification
+gaps. That combination warrants a matched external-only canonical-label ablation. It does not prove the hidden test has
+the same failure, validate the participant's local judge, or make vocabulary normalization a new learning method.
 
 The earlier 8.1 MOSAIC novelty estimate was wrong. The current rank-deficient grid earns only 4.5 competition value
 and 5.5 concept novelty; a genuinely crossed future design must be rescored from zero evidence and does not inherit the

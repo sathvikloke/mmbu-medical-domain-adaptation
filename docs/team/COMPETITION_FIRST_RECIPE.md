@@ -164,6 +164,19 @@ After ordinary B2 is frozen, the [weight-interpolation branch](WEIGHT_INTERPOLAT
 export equivalence must be proven, and the final artifact remains one native model or organizer-approved adapter. This
 is WiSE-FT-style competition engineering, not novelty.
 
+### A6: canonical label-emission control
+
+After ordinary B2 is frozen, the [label-emission-gap protocol](LABEL_EMISSION_GAP.md) may compare raw admitted source
+labels with one prospectively reviewed canonical label for the same source concept. The comparison must keep images,
+independent units, task/context mass, updates, active parameters, and compute matched. A source-authorized ontology
+readout may diagnose whether the model recognizes a concept that free generation fails to express, but it is never an
+inference component or a promotion endpoint. A synonym/equivalence-set objective remains disabled until its objective,
+length treatment, canonical-output anchor, and unit-mass accounting are frozen and tested. No MMBU public example,
+option, answer, output, frequency, embedding, or error bucket may define the vocabulary.
+
+This is motivated by the benchmark's closed-to-open gaps and a public participant's non-official local report, not by
+an observed result in this project. Canonical-label SFT is competition engineering, not a learner-method novelty claim.
+
 ### Rejected by default
 
 - attention/attribution penalties, unless a frozen-base pretest shows that the chosen attribution actually predicts

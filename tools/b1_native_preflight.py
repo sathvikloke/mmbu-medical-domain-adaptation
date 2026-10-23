@@ -245,6 +245,33 @@ def parse_nvidia_smi_receipt(raw: str) -> dict:
     return {"driver_version": driver, "name": name, "memory_mib": memory_mib}
 
 
+def validate_generation_decision(
+    expected_token_id: int,
+    cached_argmax_id: int,
+    teacher_argmax_id: int,
+    selected_logit_abs_delta: float,
+    full_logit_max_abs_delta: float,
+) -> dict:
+    expected_token_id = f.integer(expected_token_id, "generation.expected_token_id", minimum=0)
+    cached_argmax_id = f.integer(cached_argmax_id, "generation.cached_argmax_id", minimum=0)
+    teacher_argmax_id = f.integer(teacher_argmax_id, "generation.teacher_argmax_id", minimum=0)
+    selected_logit_abs_delta = f.number(
+        selected_logit_abs_delta, "generation.selected_logit_abs_delta", minimum=0
+    )
+    full_logit_max_abs_delta = f.number(
+        full_logit_max_abs_delta, "generation.full_logit_max_abs_delta", minimum=0
+    )
+    f.literal(cached_argmax_id, "generation.cached_argmax_id", expected_token_id)
+    f.literal(teacher_argmax_id, "generation.teacher_argmax_id", expected_token_id)
+    return {
+        "expected_token_id": expected_token_id,
+        "cached_argmax_id": cached_argmax_id,
+        "teacher_argmax_id": teacher_argmax_id,
+        "selected_logit_abs_delta": selected_logit_abs_delta,
+        "full_logit_max_abs_delta": full_logit_max_abs_delta,
+    }
+
+
 def compare_logits(expected: list[float], observed: list[float], tolerance: float, path: str) -> float:
     f.require(len(expected) == len(observed) and bool(expected), path, "logit vectors must have equal nonzero length")
     f.number(tolerance, path + ".tolerance", minimum=0)
@@ -742,7 +769,7 @@ def run() -> None:
         )
         generated_ids = generated.sequences[0].tolist()
         generated_suffix = generated.sequences[:, reload_batch["input_ids"].shape[1]:]
-        teacher_deltas = []
+        generation_step_records = []
         for step_index, score in enumerate(generated.scores):
             prefix = generated_suffix[:, :step_index]
             teacher_inputs = dict(reload_inputs)
@@ -756,9 +783,15 @@ def run() -> None:
                 )
             model.get_base_model().model.rope_deltas = None
             teacher = model(**teacher_inputs, use_cache=False, return_dict=True)
-            teacher_deltas.append(compare_logits(
-                score[0, :32].float().cpu().tolist(), teacher.logits[0, -1, :32].float().cpu().tolist(),
-                LOGIT_ATOL, f"generation.teacher_forced[{step_index}]",
+            cached_logits = score[0].float().cpu()
+            teacher_logits = teacher.logits[0, -1].float().cpu()
+            expected_token_id = int(generated_suffix[0, step_index].item())
+            generation_step_records.append(validate_generation_decision(
+                expected_token_id,
+                int(cached_logits.argmax().item()),
+                int(teacher_logits.argmax().item()),
+                float((cached_logits[expected_token_id] - teacher_logits[expected_token_id]).abs().item()),
+                float((cached_logits - teacher_logits).abs().max().item()),
             ))
         model.get_base_model().model.rope_deltas = None
         repeated_generated = model.generate(
@@ -809,7 +842,8 @@ def run() -> None:
         "mrope": mrope_summary,
         "cache": cache_summary,
         "generation": {"new_tokens": 3, "generated_ids": generated_ids,
-                       "teacher_forced_max_abs_by_step": teacher_deltas, "tolerance": LOGIT_ATOL},
+                       "teacher_forced_steps": generation_step_records,
+                       "decision_contract": "exact_cached_and_uncached_argmax"},
         "forward": {"single_batch_max_abs": batch_deltas, "reverse_order_max_abs": reverse_delta,
                     "visual_intervention_max_abs": visual_delta, "tolerance": LOGIT_ATOL},
         "training": {"loss": float(output.loss.detach().float().item()), "manual_loss": float(manual_loss.detach().item()),

@@ -13,12 +13,12 @@
 ## Global Constraints
 
 - Exact model and processor: `Qwen/Qwen2.5-VL-7B-Instruct@cc594898137f460bfe9f0759e9844b3ce807cfb5`.
-- The exhausted run-1 through run-7 envelopes and their receipts remain immutable. A fresh run-8 envelope permits one job and zero retries on one `tesla_a100_80gb`, partition `epyc-gpu`, four CPUs, 96 GiB host memory, and a two-hour wall-time ceiling. It reuses the byte-verified run-1 model/runtime read-only but writes to a clean run-8 evidence root. Run 7 passed the absolute and 5% relative-L2 gradient bounds but measured cosine `0.9988091154245559` against an independently specified `0.999`. Run 8 derives the cosine floor from the frozen relative-L2 radius as `1 - 0.05^2/2 = 0.99875`, eliminating an internally inconsistent threshold while retaining all other conditions.
+- The exhausted run-1 through run-8 envelopes and their receipts remain immutable. A fresh run-9 envelope permits one job and zero retries on one `tesla_a100_80gb`, partition `epyc-gpu`, four CPUs, 96 GiB host memory, and a two-hour wall-time ceiling. It reuses the byte-verified run-1 model/runtime read-only but writes to a clean run-9 evidence root. Run 8 passed loss and all three gradient-agreement bounds, then exposed that the new generation check gated on 32 arbitrary vocabulary logits rather than the generated decision. Run 9 requires exact equality among the generated token, cached argmax, and full teacher-forced argmax at every step; full-vocabulary and selected-token logit drift remain recorded diagnostics, and fresh-process three-token equality remains mandatory.
 - Single-GPU BF16, SDPA, dynamic cache, `trust_remote_code=false`, no optional kernels, no compilation, no offload, no distributed execution.
 - Synthetic fixtures only; no biomedical or MMBU image, label, answer, output, embedding, or derivative may be read.
 - One minimal optimizer step only; no epoch, checkpoint search, evaluation, or performance selection.
 - Network is allowed only during explicit artifact acquisition. The GPU execution begins from verified local bytes; fresh reload runs with Hugging Face offline flags and a socket-denial guard.
-- Remote output root: `/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run8`; immutable acquisition inputs remain under the dedicated run-1 root; never inspect or modify sibling projects.
+- Remote output root: `/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run9`; immutable acquisition inputs remain under the dedicated run-1 root; never inspect or modify sibling projects.
 - No upload, submission, public release, or packet reseal.
 
 ## Review Focus

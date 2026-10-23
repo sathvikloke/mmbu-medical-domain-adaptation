@@ -93,9 +93,9 @@ class B1PreflightTests(unittest.TestCase):
             },
             "paths": {
                 "cache_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/cache",
-                "evidence_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run8/evidence",
+                "evidence_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run9/evidence",
                 "model_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/model",
-                "remote_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run8",
+                "remote_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run9",
                 "venv_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/venv",
                 "wheelhouse_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/wheelhouse",
             },
@@ -507,6 +507,14 @@ class B1PreflightTests(unittest.TestCase):
             with self.subTest(raw=raw), self.assertRaises(ContractViolation):
                 b1_native.parse_nvidia_smi_receipt(raw)
 
+    def test_generation_gate_binds_actual_token_decisions_not_arbitrary_logit_slices(self):
+        record = b1_native.validate_generation_decision(42, 42, 42, 0.75, 3.5)
+        self.assertEqual(record["teacher_argmax_id"], 42)
+        self.assertEqual(record["full_logit_max_abs_delta"], 3.5)
+        for cached, teacher in ((41, 42), (42, 41)):
+            with self.subTest(cached=cached, teacher=teacher), self.assertRaises(ContractViolation):
+                b1_native.validate_generation_decision(42, cached, teacher, 0.0, 0.0)
+
     def test_offline_reload_reference_rejects_identity_and_numeric_drift(self):
         self.assertIsNotNone(b1_reload, "B1 offline reload tool is missing")
         reference = {
@@ -547,7 +555,7 @@ class B1PreflightTests(unittest.TestCase):
         self.assertNotIn("sbatch ", script)
         self.assertEqual(script.count("b1_native_preflight.py"), 1)
         self.assertEqual(script.count("b1_offline_reload.py"), 1)
-        self.assertIn("/tmp/npl015-mmbu-b1-run8-${SLURM_JOB_ID}", script)
+        self.assertIn("/tmp/npl015-mmbu-b1-run9-${SLURM_JOB_ID}", script)
         self.assertNotIn("/scratch/", script)
         self.assertNotIn("export CUDA_VISIBLE_DEVICES=", script)
         self.assertIn('test -n "${CUDA_VISIBLE_DEVICES:-}"', script)

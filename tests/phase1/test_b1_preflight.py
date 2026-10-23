@@ -5,6 +5,7 @@ from __future__ import annotations
 from copy import deepcopy
 import hashlib
 import importlib.util
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -376,6 +377,31 @@ class B1PreflightTests(unittest.TestCase):
             (root / "alias.json").symlink_to(root / "adapter_config.json")
             with self.assertRaises(ContractViolation):
                 b1_native.inventory_adapter(root)
+
+    def test_adapter_scope_and_state_keys_remain_exact_after_serialization(self):
+        targets = [
+            "model.language_model.layers.0.self_attn.q_proj",
+            "model.language_model.layers.0.self_attn.v_proj",
+        ]
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "adapter_config.json").write_text(json.dumps({
+                "base_model_name_or_path": "/base", "target_modules": ["q_proj", "v_proj"],
+            }))
+            config = b1_native.write_exact_adapter_scope(root, targets, "/base")
+            self.assertEqual(config["target_modules"], targets)
+            self.assertEqual(
+                json.loads((root / "adapter_config.json").read_text())["target_modules"], targets,
+            )
+            with self.assertRaises(ContractViolation):
+                b1_native.validate_adapter_scope({**config, "target_modules": ["q_proj", "v_proj"]}, targets, "/base")
+        keys = sorted(
+            f"base_model.model.{target}.lora_{side}.weight"
+            for target in targets for side in ("A", "B")
+        )
+        self.assertEqual(b1_native.validate_adapter_state_keys(keys, targets), keys)
+        with self.assertRaises(ContractViolation):
+            b1_native.validate_adapter_state_keys(keys[:-1], targets)
 
     def test_trainable_gradient_and_update_inventory_closes(self):
         declared = ["adapter.a", "adapter.b"]

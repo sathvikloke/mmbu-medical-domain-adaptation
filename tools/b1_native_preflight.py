@@ -169,6 +169,37 @@ def verify_adapter_inventory(root: Path, expected: Any) -> list[dict]:
     return observed
 
 
+def validate_adapter_scope(config: Any, targets: list[str], base_model_path: str) -> dict:
+    f.require(type(config) is dict, "adapter.config", "must be a JSON object")
+    f.require(targets == sorted(set(targets)) and bool(targets), "adapter.targets",
+              "must be a nonempty sorted unique list")
+    f.literal(config.get("target_modules"), "adapter.config.target_modules", targets)
+    f.literal(config.get("base_model_name_or_path"), "adapter.config.base_model_name_or_path", base_model_path)
+    return config
+
+
+def write_exact_adapter_scope(adapter_root: Path, targets: list[str], base_model_path: str) -> dict:
+    path = adapter_root / "adapter_config.json"
+    f.require(path.is_file() and not path.is_symlink(), "adapter.config", "missing regular adapter config")
+    config = json.loads(path.read_text(encoding="utf-8"))
+    f.require(type(config) is dict, "adapter.config", "must be a JSON object")
+    config["target_modules"] = targets
+    config["base_model_name_or_path"] = base_model_path
+    validate_adapter_scope(config, targets, base_model_path)
+    path.write_text(json.dumps(config, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return config
+
+
+def validate_adapter_state_keys(keys: list[str], targets: list[str]) -> list[str]:
+    f.require(keys == sorted(set(keys)), "adapter.state_keys", "must be unique and sorted")
+    expected = sorted(
+        f"base_model.model.{target}.lora_{side}.weight"
+        for target in targets for side in ("A", "B")
+    )
+    f.literal(keys, "adapter.state_keys", expected)
+    return keys
+
+
 def _sha(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
 
@@ -484,6 +515,10 @@ def run() -> None:
     if generated_card.exists():
         f.require(generated_card.is_file() and not generated_card.is_symlink(), "adapter.README.md", "must be a regular file")
         generated_card.unlink()
+    write_exact_adapter_scope(adapter_root, targets_exact, str(model_root))
+    from safetensors import safe_open
+    with safe_open(adapter_root / "adapter_model.safetensors", framework="pt", device="cpu") as stream:
+        adapter_state_keys = validate_adapter_state_keys(list(stream.keys()), targets_exact)
     adapter_files = inventory_adapter(adapter_root)
 
     grid = training_inputs.get("image_grid_thw")
@@ -502,6 +537,7 @@ def run() -> None:
         "training": {"loss": float(output.loss.detach().float().item()), "manual_loss": float(manual_loss.detach().item()),
                      "loss_abs_delta": loss_delta, "loss_tolerance": LOSS_ATOL, "inventory": inventory},
         "adapter_files": adapter_files,
+        "adapter_state_keys": adapter_state_keys,
         "reload_reference": reload_reference,
         "resources": {"elapsed_seconds": time.monotonic() - started,
                       "peak_allocated_bytes": torch.cuda.max_memory_allocated(),

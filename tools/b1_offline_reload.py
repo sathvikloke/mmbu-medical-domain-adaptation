@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import json
 import math
 import os
 from pathlib import Path
@@ -91,7 +92,18 @@ def run() -> None:
         model_root, local_files_only=True, trust_remote_code=False, torch_dtype=torch.bfloat16,
         attn_implementation="sdpa", device_map=None,
     ).to(device)
+    exact_targets = native.exact_lora_targets(name for name, _ in base.named_modules())
+    adapter_config = json.loads((adapter_root / "adapter_config.json").read_text(encoding="utf-8"))
+    native.validate_adapter_scope(adapter_config, exact_targets, str(model_root))
+    from safetensors import safe_open
+    with safe_open(adapter_root / "adapter_model.safetensors", framework="pt", device="cpu") as stream:
+        native.validate_adapter_state_keys(list(stream.keys()), exact_targets)
     model = PeftModel.from_pretrained(base, adapter_root, is_trainable=False, local_files_only=True).to(device)
+    loaded_targets = sorted(
+        name.removeprefix("base_model.model.").removesuffix(".lora_A.default")
+        for name, _ in model.named_modules() if name.endswith(".lora_A.default")
+    )
+    f.literal(loaded_targets, "reload.adapter_targets", exact_targets)
     model.eval()
     specs = native.fixture_specs()
     images, _ = native.make_images([specs[0]])

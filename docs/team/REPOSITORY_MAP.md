@@ -25,6 +25,7 @@ Paths in this guide are relative to the repository root. The historical layout i
 | [docs/team/CONTEXT_OBJECTIVE_CONTRACT.md](CONTEXT_OBJECTIVE_CONTRACT.md) | Versioned requested-field, masking, per-unit exposure, shortcut-control, evaluation, and promotion contract for the unresolved context pass |
 | [docs/team/UNIT_EXPOSURE_AUDIT_SPEC.md](UNIT_EXPOSURE_AUDIT_SPEC.md) | Canonical unit/view/token mass, batching, accumulation, distributed, schedule, resume, synthetic traps, and reporting contract |
 | [docs/team/MULTI_ENCODER_BRANCH.md](MULTI_ENCODER_BRANCH.md) | Post-B2 frozen specialist-encoder ablation with matched controls, admission, resource, loader, and kill gates |
+| [docs/team/LABEL_EMISSION_GAP.md](LABEL_EMISSION_GAP.md) | Post-B2 external-only diagnostic and matched canonical-label ablation for separating concept recognition from answer emission |
 | [docs/team/BASE_SELECTION_FRONTIER.md](BASE_SELECTION_FRONTIER.md) | Public-firewalled F0/joint-decision/F2 base selection using mechanical viability, deferred untouched characterization, and matched micro-adaptation response under the actual score structure |
 | [docs/team/BASE_SELECTION_REDTEAM.md](BASE_SELECTION_REDTEAM.md) | Binding adverse review of context uncertainty, screen-specific claims, exposure equivalence, engineering opportunity bias, and seed selection |
 | [docs/team/COMPETITION_MANIFEST_SPEC.md](COMPETITION_MANIFEST_SPEC.md) | Immutable B0/B1/B2 state machine, required fields, fail-closed validators, promotion/release contract, and current execution blockers |

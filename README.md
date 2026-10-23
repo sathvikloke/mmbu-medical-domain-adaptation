@@ -5,10 +5,11 @@ Private team workspace for a reproducible Medical Domain Adaptation entry. It co
 **Current milestone: Phase 1 contract engineering plus prospective competition design.** The preserved CPU-preparation
 v0.3 package passed its historical 277-test suite, and the clone now also contains the fail-closed Phase 1 package,
 registries, tests, organizer-reply register, competition manifest specification, and MOCS access audit. Native
-processors previously completed 144 real-image/model/policy compatibility cases, each encoded twice. **No model weights
-have been downloaded; no model inference, training, or GPU experiment has been run.** All real biomedical records
-remain pending, and no real source has an allowed model-use purpose. This is preparation evidence, not a model-
-performance result.
+processors previously completed 144 real-image/model/policy compatibility cases, each encoded twice. The pinned B1
+model/runtime has now been acquired on MOCS and bounded synthetic single-GPU preflights have exercised native image
+processing, B1 and B2-P updates, export, offline reload, and the answer/context objective. **No biomedical training or
+MMBU public-set model evaluation has run.** All real biomedical records remain pending, and no real source has an
+allowed model-use purpose. This is preparation evidence, not a model-performance result.
 
 The handoff covers all 852 original research files: code and reports in Git, plus a 175 MB private release with the complete research inputs. See [publication receipts](research/README.md).
 

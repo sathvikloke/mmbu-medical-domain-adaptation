@@ -45,6 +45,8 @@ def _validate_profile(value: Any, path: str) -> dict[str, str]:
     tolerance = rational.from_wire(value["exposure_audit_tolerance"], f"{path}.exposure_audit_tolerance")
     require(task >= 0 and context >= 0 and task + context == 1, path,
             "task/context shares must be nonnegative and sum exactly to one")
+    if context > 0:
+        require(task > 0, path, "dual profiles require positive task and context shares")
     require(unit > 0, f"{path}.unit_total_mass", "must be positive")
     require(0 <= tolerance <= Fraction(1, 100), f"{path}.exposure_audit_tolerance",
             "must be at most 1/100")
@@ -133,7 +135,9 @@ def _candidate_sort_key(candidate: dict[str, Any], profiles: dict[str, dict[str,
 def expected_comparator_map(record: dict[str, Any]) -> dict[str, list[str]]:
     """Derive the exact enabled-candidate comparator closure."""
     profiles = _validate_training(record["training_contract"])
-    candidates = record["candidate_universe"]
+    candidates = array(record["candidate_universe"], "manifest.candidate_universe", nonempty=True)
+    for index, item in enumerate(candidates):
+        v1._validate_candidate(item, f"manifest.candidate_universe[{index}]", set(profiles))
     enabled = [item for item in candidates if item["enabled"]]
     base_rows = [item for item in enabled if item["architecture_id"] == "recipe_arch::B0"]
     require(len(base_rows) == 1, "manifest.candidate_universe", "must contain exactly one enabled B0 candidate")

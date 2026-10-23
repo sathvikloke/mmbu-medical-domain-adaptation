@@ -88,6 +88,16 @@ class ManifestV2UniverseTests(unittest.TestCase):
         with self.assertRaises(ContractViolation):
             competition_manifest_v2.validate_manifest(value)
 
+    def test_dual_profile_requires_positive_task_and_context_shares(self):
+        value = valid_v2_manifest()
+        dual = next(item for item in value["training_contract"]["objective_profiles"]
+                    if item["profile_id"] == "profile::dual")
+        dual["task_unit_share"] = {"denominator": 1, "numerator": 0}
+        dual["context_unit_share"] = {"denominator": 1, "numerator": 1}
+        reseal(value)
+        with self.assertRaises(ContractViolation):
+            competition_manifest_v2.validate_manifest(value)
+
 
 class ManifestV2ComparatorTests(unittest.TestCase):
     def test_five_arm_comparator_closure_is_exact(self):
@@ -100,6 +110,12 @@ class ManifestV2ComparatorTests(unittest.TestCase):
         value = valid_v2_manifest()
         self.assertEqual(competition_manifest_v2.expected_comparator_map(value), expected)
         self.assertEqual(competition_manifest_v2.validate_manifest(value), value)
+
+    def test_expected_comparator_map_rejects_malformed_candidate_as_contract_violation(self):
+        value = valid_v2_manifest()
+        del value["candidate_universe"][1]["enabled"]
+        with self.assertRaises(ContractViolation):
+            competition_manifest_v2.expected_comparator_map(value)
 
     def test_dual_candidate_requires_same_architecture_task_control(self):
         value = valid_v2_manifest()

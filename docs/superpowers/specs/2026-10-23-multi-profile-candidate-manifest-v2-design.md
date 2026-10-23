@@ -12,11 +12,11 @@ Version 2 represents candidates as architecture/objective-profile pairs rather t
 4. `B2-P` task-only;
 5. `B2-P` dual task/context.
 
-`B2-F` remains an optional later architecture and obeys the same closure rules when present. This schema validates a design; it does not authorize execution, select scientific values, or create empirical evidence.
+`B2-F` may be present only as a disabled candidate in version 2 because the inherited pre-output enablement receipt is not represented here. A future schema revision that represents and validates that receipt must apply the same closure rules before enabling B2-F. This schema validates a design; it does not authorize execution, select scientific values, or create empirical evidence.
 
 ## Objective families
 
-Every v2 objective profile adds `matched_objective_family_id`. Within one family there may be at most one task-only profile (`context_unit_share == 0`) and at most one dual profile (`context_unit_share > 0`). A dual profile is usable only when the same family has a task-only profile. Existing exact-rational share, exposure, context, and normalization rules remain unchanged.
+Every v2 objective profile adds `matched_objective_family_id`. Within one family there may be at most one task-only profile (`context_unit_share == 0`) and at most one dual profile (both task and context shares are positive). A dual profile is usable only when the same family has a task-only profile. Existing exact-rational share, exposure, context, and normalization rules remain unchanged.
 
 `B0` has a null objective profile. Every other candidate resolves exactly one declared profile. Candidate IDs remain architecture-qualified and the pair `(architecture_id, objective_profile_id)` is unique.
 

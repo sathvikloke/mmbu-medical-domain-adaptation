@@ -18,7 +18,7 @@ Every v2 objective profile adds:
 matched_objective_family_id: nonempty string
 ```
 
-Within one family, at most one profile may be task-only (`context_unit_share == 0`) and at most one may be dual (`context_unit_share > 0`). A dual profile requires a task-only profile in the same family. This turns “task-only versus task+context” into an explicit matched comparison rather than an informal label.
+Within one family, at most one profile may be task-only (`context_unit_share == 0`) and at most one may be dual (both task and context shares are positive). A dual profile requires a task-only profile in the same family. This turns “task-only versus task+context” into an explicit matched comparison rather than an informal label.
 
 B0 has a null objective profile. Every adapted candidate resolves one declared profile. Candidate IDs remain architecture-qualified, and each `(architecture_id, objective_profile_id)` pair is unique.
 
@@ -42,7 +42,7 @@ The comparator map must equal the mechanically derived graph. A missing edge, an
 
 ## B2-F extension
 
-B2-F is optional and remains disabled in the current synthetic fixture. If a later reviewed contract permits it, the same rules extend one rung:
+B2-F may be present only as disabled in version 2. The inherited validator requires `enablement_rule=pre_output_f0_gate`, but v2 does not represent the receipt needed to prove that gate passed. A future schema revision must add that receipt and then extend the same rules one rung:
 
 - B2-F task-only requires B0 and the identical B2-P task-only profile;
 - B2-F dual requires B0, the identical B2-P dual profile, and the same-family B2-F task-only profile.

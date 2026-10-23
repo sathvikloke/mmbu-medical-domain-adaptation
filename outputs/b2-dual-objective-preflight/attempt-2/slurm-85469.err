@@ -1,0 +1,14 @@
+Loading weights:   0%|          | 0/729 [00:00<?, ?it/s]Loading weights:  71%|███████   | 514/729 [00:00<00:00, 5131.42it/s]Loading weights: 100%|██████████| 729/729 [00:00<00:00, 5082.08it/s]
+Traceback (most recent call last):
+  File "/storage/home/npl015/mmbu-b2-objective/2026-10-23-run2/code/tools/b2_dual_objective_preflight.py", line 256, in <module>
+    run()
+  File "/storage/home/npl015/mmbu-b2-objective/2026-10-23-run2/code/tools/b2_dual_objective_preflight.py", line 213, in run
+    equivalence = b1_native.validate_microbatch_equivalence(
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/storage/home/npl015/mmbu-b2-objective/2026-10-23-run2/code/tools/b1_native_preflight.py", line 212, in validate_microbatch_equivalence
+    f.require(loss_delta <= loss_tolerance, "microbatch.loss",
+  File "/storage/home/npl015/mmbu-b2-objective/2026-10-23-run2/code/src/mmbu_phase1/fields.py", line 33, in require
+    fail(path, message)
+  File "/storage/home/npl015/mmbu-b2-objective/2026-10-23-run2/code/src/mmbu_phase1/fields.py", line 28, in fail
+    raise ContractViolation(path, message)
+mmbu_phase1.fields.ContractViolation: microbatch.loss: loss drift 0.094985485076904297 exceeds tolerance 0.03125

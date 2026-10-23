@@ -1,0 +1,37 @@
+{
+  "schema": "mmbu.b2.dual_objective_evidence_manifest.v1",
+  "successful_job_id": "85472",
+  "successful_condition": "fixed_singleton_forward_reverse_accumulation",
+  "remote_evidence_root": "/storage/home/npl015/mmbu-b2-objective/2026-10-23-run3/evidence",
+  "claim_boundary": "synthetic engineering evidence only; no biomedical or competition-performance claim",
+  "failed_predecessors": [
+    {
+      "attempt": 1,
+      "job_id": "85468",
+      "reason": "concatenated-versus-partitioned loss drift exceeded the frozen tolerance",
+      "terminal_sha256": "5833b5b614c9994a59a331f7bd23efa75781109d3a3492c0354b0a97502f267f"
+    },
+    {
+      "attempt": 2,
+      "job_id": "85469",
+      "reason": "untouched confirmation failed loss and gradient batch-shape equivalence thresholds",
+      "measurement_sha256": "6a5e96e15276c82105d4d9b46c47d3e54a751be56a11a7617657ad7df03ac849",
+      "terminal_sha256": "bb74c95337fec9eb7c684fa4b1e9f8c1954bb28ce586dd3131f096fba21ba184"
+    }
+  ],
+  "successful_evidence": [
+    {
+      "path": "attempt-3/native-dual-objective.json",
+      "sha256": "369799a3b8135a22942612bb559d77098636bd71ea6f5bd4eeb1390d409b4b45"
+    },
+    {
+      "path": "attempt-3/prevalidation-measurement.json",
+      "sha256": "0b24bd53a78d8d4defe6c40f5a0bde88f07f5327f0f41f078f786f7d36ae07a2"
+    },
+    {
+      "path": "attempt-3/terminal-run.json",
+      "sha256": "fbbd7b9cac51ec844460957ae7ab35ae2ede31ded86ceaaafa2b912e032d6e3c"
+    }
+  ],
+  "known_limitation": "heterogeneous concatenated-batch equivalence remains failed; the passing reference freezes microbatch size one"
+}

@@ -111,6 +111,10 @@ class SamplePlanTests(unittest.TestCase):
 
 @unittest.skipUnless(HAS_PIL, "Pillow is an optional image-test dependency")
 class QuarantineInspectionTests(unittest.TestCase):
+    def test_bbox_iou_uses_y_coordinate_for_bottom_edge(self):
+        from tools.busbra_quarantine import _box_iou
+        self.assertEqual(_box_iou([4, 10, 2, 3], [3, 9, 3, 4]), 0.5)
+
     def png(self, mode, values, size=(4, 4)):
         from PIL import Image
         image = Image.new(mode, size)
@@ -141,6 +145,9 @@ class QuarantineInspectionTests(unittest.TestCase):
             mask_2 = self.png("L", mask_2_values)
         archive = root / "BUSBRA.zip"
         with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED) as z:
+            z.writestr("BUSBRA/", b"")
+            z.writestr("BUSBRA/Images/", b"")
+            z.writestr("BUSBRA/Masks/", b"")
             z.writestr("BUSBRA/bus_data.csv", archived)
             z.writestr("BUSBRA/Images/bus_0001-l.png", duplicate_image)
             z.writestr("BUSBRA/Masks/mask_0001-l.png", self.png("L", mask_1_values))

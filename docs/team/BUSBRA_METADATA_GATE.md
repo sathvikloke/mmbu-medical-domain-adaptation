@@ -61,3 +61,11 @@ The repository now includes a two-phase local-only inspector in `tools/busbra_qu
 The receipt always records `training_ready=false` and `model_use_authorized=false`. A clean deterministic sample is not
 a corpus-wide duplicate audit, clinical annotation review, source-proximity decision, rights decision, or purpose
 authorization. The CLI has no network or model path and refuses to overwrite plans or receipt directories.
+
+The first quarantined run verified the complete `133917740`-byte archive at MD5
+`1f8b2be6476d58fc97bfb5e5a1ea9bab`, then decoded eight patient-unique records spanning every observed pathology ×
+BI-RADS stratum. Every image was grayscale `L`; every mask was binary mode `1` with nonempty foreground. Mask-derived
+boxes agreed closely with stored boxes (IoU `0.9633458646616542`–`0.9911610401459854`), and no exact decoded-image
+duplicate occurred within the eight-record sample. Receipt digest:
+`669e4181bd677bf423ae9c40d12f8d98b634b90e91bb6adc027ca18e8c10cd8e`. The full receipt remains quarantined locally;
+these sample results do not close corpus-wide duplicates or grant model use.

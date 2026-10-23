@@ -180,7 +180,8 @@ def _safe_archive(archive):
         name = info.filename
         path = PurePosixPath(name)
         canonical = unicodedata.normalize("NFC", name).casefold()
-        if (not name or path.is_absolute() or path.as_posix() != name or ".." in path.parts or
+        normalized_path = path.as_posix() + ("/" if info.is_dir() else "")
+        if (not name or path.is_absolute() or normalized_path != name or ".." in path.parts or
                 "\\" in name or "\0" in name or ":" in name or name in names or canonical in normalized):
             raise ValueError("archive contains an unsafe or duplicate member")
         names.add(name)
@@ -281,7 +282,7 @@ def _box_iou(a, b):
     ax, ay, aw, ah = a
     bx, by, bw, bh = b
     left, top = max(ax, bx), max(ay, by)
-    right, bottom = min(ax + aw, bx + bw), min(ay + ah, bx + bh)
+    right, bottom = min(ax + aw, bx + bw), min(ay + ah, by + bh)
     intersection = max(0, right - left) * max(0, bottom - top)
     union = aw * ah + bw * bh - intersection
     return intersection / union

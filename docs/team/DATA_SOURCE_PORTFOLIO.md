@@ -23,8 +23,9 @@ same source facts. BUS-UCLM provides a genuinely separate 38-patient ultrasound 
 filenames, benign/malignant labels, and expert masks. Together they are much stronger than treating a credentialed
 chest-X-ray source as the only route to crossed spatial supervision.
 
-This screen does **not** make MOSAIC identifiable. Exact records, grouping joins, source-family assignments, and the
-resulting design-matrix rank are still unknown. Data readiness therefore remains 5.0/10.
+This screen does **not** make MOSAIC identifiable. Exact admitted records, source-family assignments, and the resulting
+design-matrix rank remain unknown. Later BUS-BRA and BUS-UCLM gates raise current data readiness to 5.8/10, but no real
+source is admitted.
 
 ## Screening rules
 
@@ -155,8 +156,8 @@ under a prospectively assigned role. A failure produces rejection or a narrower 
 
 This screen improves the path to G-1 by replacing a single credentialed radiology dependency with two open,
 patient-described ultrasound candidates and a third conditional family. It does not raise the admitted-source count:
-there are still **zero admitted real sources**. BUS-BRA has now completed metadata closure and quarantined full-corpus
-structural/perceptual inspection but remains blocked by recorded geometry exceptions and medical/provenance/rights/
-purpose/release gates. BUS-UCLM now has exact v3 metadata/image/mask inventory closure, but its schema anomaly, license
-conflict, and unopened pixel/mask/duplicate/medical gates remain blocking. Neither status requires inspecting MMBU
-examples or running a model.
+there are still **zero admitted real sources**. BUS-BRA has now completed metadata closure, quarantined full-corpus
+structural/perceptual inspection, and a binding deterministic transform contract; it remains blocked by medical,
+provenance, rights, purpose, and release gates. BUS-UCLM now has exact v3 metadata/image/mask inventory closure, but its
+schema anomaly, license conflict, and unopened pixel/mask/duplicate/medical gates remain blocking. Neither status
+requires inspecting MMBU examples or running a model.

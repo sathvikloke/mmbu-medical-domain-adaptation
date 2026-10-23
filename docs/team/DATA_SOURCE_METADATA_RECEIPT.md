@@ -52,8 +52,10 @@ not establish medical correctness, source proximity, patient identity, or near-d
 
 **Disposition:** passes metadata closure, exact decoded-duplicate checks, and bounded within-source perceptual triage
 with `Case` as the independent unit, outer `kFold` as the only source-provided split field, and every `valid_*` field
-prohibited. Overall structural clearance remains false because of the source dimension/geometry findings. Independent
-medical, provenance, rights, purpose, release, and source-proximity review still block model use.
+prohibited. The later [structural transform contract](BUSBRA_TRANSFORM_CONTRACT.md) clears the deterministic transform
+by using decoded dimensions and mask-derived geometry while preserving source fields as QA evidence and co-assigning
+the unresolved candidate cases. Independent medical, provenance, rights, purpose, release, and source-proximity review
+still block source admission and model use.
 
 ## BUS-UCLM v3
 
@@ -104,14 +106,14 @@ workbook, image names, authoritative masks, and one-patient-one-split feasibilit
 
 The metadata screen **passes source-priority review** and **does not pass source admission**:
 
-1. BUS-BRA passes metadata closure and quarantined full-corpus decoder/exact-duplicate checks with a binding split
-   restriction, but structural clearance remains false; medical semantics, cross-source proximity, rights/purpose,
-   release review, and near-duplicate certification remain open.
+1. BUS-BRA passes metadata closure, quarantined full-corpus decoder/exact-duplicate checks, and a binding structural
+   transform contract; medical semantics, cross-source proximity, rights/purpose, release review, and near-duplicate
+   certification remain open.
 2. BUS-UCLM now passes exact metadata/image/mask name closure and patient grouping, but fails schema and license
    clearance; pixels, mask semantics, duplicates, medical review, and model-use purposes remain unopened.
 3. BUSI-WHU remains conditional rather than being promoted from third-party evidence.
 4. MOSAIC G-1 remains `not evaluated`; projected coverage is not an incidence matrix.
-5. Data readiness remains 5.0/10 because no real record has passed rights, grouping, lineage, QA, purpose, and release
+5. Data readiness remains 5.8/10 because no real record has passed rights, grouping, lineage, QA, purpose, and release
    admission together.
 
 **Later authority:** the subsequent [source–factor incidence audit](SOURCE_FACTOR_INCIDENCE_AUDIT.md) does not change

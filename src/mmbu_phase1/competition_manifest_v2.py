@@ -132,7 +132,42 @@ def _candidate_sort_key(candidate: dict[str, Any], profiles: dict[str, dict[str,
 
 def expected_comparator_map(record: dict[str, Any]) -> dict[str, list[str]]:
     """Derive the exact enabled-candidate comparator closure."""
-    fail("manifest.evaluation_contract.candidate_comparator_map", "v2 comparator closure is not implemented")
+    profiles = _validate_training(record["training_contract"])
+    candidates = record["candidate_universe"]
+    enabled = [item for item in candidates if item["enabled"]]
+    base_rows = [item for item in enabled if item["architecture_id"] == "recipe_arch::B0"]
+    require(len(base_rows) == 1, "manifest.candidate_universe", "must contain exactly one enabled B0 candidate")
+    base_id = base_rows[0]["candidate_id"]
+    by_pair = {(item["architecture_id"], item["objective_profile_id"]): item for item in enabled}
+    task_profile_by_family = {
+        item["family_id"]: profile_id
+        for profile_id, item in profiles.items()
+        if item["mode"] == "task"
+    }
+    result: dict[str, list[str]] = {}
+    for item in enabled:
+        architecture = item["architecture_id"]
+        if architecture == "recipe_arch::B0":
+            continue
+        profile_id = item["objective_profile_id"]
+        metadata = profiles[profile_id]
+        comparators = {base_id}
+        if metadata["mode"] == "dual":
+            task_profile_id = task_profile_by_family[metadata["family_id"]]
+            task_control = by_pair.get((architecture, task_profile_id))
+            require(task_control is not None, "manifest.candidate_universe",
+                    f"dual candidate {item['candidate_id']!r} requires an enabled same-family task control")
+            comparators.add(task_control["candidate_id"])
+        architecture_index = ARCHITECTURE_RANK[architecture]
+        if architecture_index > ARCHITECTURE_RANK["recipe_arch::B1-L"]:
+            simpler_architecture = v1.ARCHITECTURES[architecture_index - 1]
+            simpler = by_pair.get((simpler_architecture, profile_id))
+            require(simpler is not None, "manifest.candidate_universe",
+                    f"candidate {item['candidate_id']!r} requires an enabled immediate architecture control")
+            comparators.add(simpler["candidate_id"])
+        result[item["candidate_id"]] = sorted(comparators, key=lambda candidate_id: candidate_id.encode("utf-8"))
+    return {candidate_id: result[candidate_id]
+            for candidate_id in sorted(result, key=lambda item: item.encode("utf-8"))}
 
 
 def validate_manifest(value: Any) -> dict:
@@ -174,6 +209,10 @@ def validate_manifest(value: Any) -> dict:
             "candidate rows must use canonical architecture/profile order")
 
     v1._validate_evaluation(value["evaluation_contract"], set(candidate_ids))
+    expected_comparators = expected_comparator_map(value)
+    require(value["evaluation_contract"]["candidate_comparator_map"] == expected_comparators,
+            "manifest.evaluation_contract.candidate_comparator_map",
+            "must equal the mechanically derived enabled-candidate comparator closure")
     v1._validate_promotion(value["promotion_contract"])
     research_registry.validate_registry(
         value["research_comparison_registry"],

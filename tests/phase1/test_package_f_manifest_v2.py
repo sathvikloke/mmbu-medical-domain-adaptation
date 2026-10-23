@@ -89,5 +89,99 @@ class ManifestV2UniverseTests(unittest.TestCase):
             competition_manifest_v2.validate_manifest(value)
 
 
+class ManifestV2ComparatorTests(unittest.TestCase):
+    def test_five_arm_comparator_closure_is_exact(self):
+        expected = {
+            B1_DUAL: [B0, B1_TASK],
+            B1_TASK: [B0],
+            B2_DUAL: [B0, B1_DUAL, B2_TASK],
+            B2_TASK: [B0, B1_TASK],
+        }
+        value = valid_v2_manifest()
+        self.assertEqual(competition_manifest_v2.expected_comparator_map(value), expected)
+        self.assertEqual(competition_manifest_v2.validate_manifest(value), value)
+
+    def test_dual_candidate_requires_same_architecture_task_control(self):
+        value = valid_v2_manifest()
+        value["candidate_universe"] = value["candidate_universe"][:1] + [value["candidate_universe"][2]]
+        value["evaluation_contract"]["candidate_comparator_map"] = {B1_DUAL: [B0]}
+        reseal(value)
+        with self.assertRaises(ContractViolation):
+            competition_manifest_v2.validate_manifest(value)
+
+    def test_dual_candidate_rejects_cross_family_task_control(self):
+        value = valid_v2_manifest()
+        task_profile = next(item for item in value["training_contract"]["objective_profiles"]
+                            if item["profile_id"] == "profile::task_only")
+        task_profile["matched_objective_family_id"] = "objective_family::different"
+        reseal(value)
+        with self.assertRaises(ContractViolation):
+            competition_manifest_v2.validate_manifest(value)
+
+    def test_higher_task_candidate_requires_simpler_task_control(self):
+        value = valid_v2_manifest()
+        value["candidate_universe"] = [value["candidate_universe"][0], value["candidate_universe"][3]]
+        value["evaluation_contract"]["candidate_comparator_map"] = {B2_TASK: [B0]}
+        reseal(value)
+        with self.assertRaises(ContractViolation):
+            competition_manifest_v2.validate_manifest(value)
+
+    def test_higher_dual_candidate_requires_simpler_dual_control(self):
+        value = valid_v2_manifest()
+        value["candidate_universe"] = [
+            value["candidate_universe"][0], value["candidate_universe"][1],
+            value["candidate_universe"][3], value["candidate_universe"][4],
+        ]
+        value["evaluation_contract"]["candidate_comparator_map"].pop(B1_DUAL)
+        value["evaluation_contract"]["candidate_comparator_map"][B2_DUAL] = [B0, B2_TASK]
+        reseal(value)
+        with self.assertRaises(ContractViolation):
+            competition_manifest_v2.validate_manifest(value)
+
+    def test_comparator_map_rejects_missing_edges(self):
+        value = valid_v2_manifest()
+        value["evaluation_contract"]["candidate_comparator_map"][B2_DUAL] = [B0, B1_DUAL]
+        reseal(value)
+        with self.assertRaises(ContractViolation):
+            competition_manifest_v2.validate_manifest(value)
+
+    def test_comparator_map_rejects_extra_edges(self):
+        value = valid_v2_manifest()
+        value["evaluation_contract"]["candidate_comparator_map"][B2_DUAL] = [
+            B0, B1_DUAL, B1_TASK, B2_TASK,
+        ]
+        reseal(value)
+        with self.assertRaises(ContractViolation):
+            competition_manifest_v2.validate_manifest(value)
+
+    def test_disabled_candidates_cannot_enter_comparator_map(self):
+        disabled = candidate("recipe_arch::B2-F", "profile::task_only", False)
+        disabled_id = disabled["candidate_id"]
+        for placement in ("key", "value"):
+            value = valid_v2_manifest()
+            value["candidate_universe"].append(deepcopy(disabled))
+            if placement == "key":
+                value["evaluation_contract"]["candidate_comparator_map"][disabled_id] = [B0]
+            else:
+                value["evaluation_contract"]["candidate_comparator_map"][B2_DUAL] = sorted(
+                    [B0, B1_DUAL, B2_TASK, disabled_id], key=lambda item: item.encode("utf-8")
+                )
+            reseal(value)
+            with self.subTest(placement=placement), self.assertRaises(ContractViolation):
+                competition_manifest_v2.validate_manifest(value)
+
+    def test_hierarchy_rejects_missing_immediate_control(self):
+        value = valid_v2_manifest()
+        value["candidate_universe"] = [
+            value["candidate_universe"][0], value["candidate_universe"][3], value["candidate_universe"][4],
+        ]
+        value["evaluation_contract"]["candidate_comparator_map"] = {
+            B2_DUAL: [B0, B2_TASK], B2_TASK: [B0],
+        }
+        reseal(value)
+        with self.assertRaises(ContractViolation):
+            competition_manifest_v2.validate_manifest(value)
+
+
 if __name__ == "__main__":
     unittest.main()

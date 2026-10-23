@@ -40,8 +40,10 @@ MOCS, or reproduces the organizer's evaluator.
   environment files, private-key headers, or common GitHub/Hugging Face/AWS/OpenAI token forms. The private local MOCS
   alias/account identifiers were redacted from the public audit. This is a bounded signature/type review, not proof that
   every file is legally releasable.
-- The authenticated Hugging Face page still reports 3,103 public rows and access granted. The Files and versions page
-  showed README revision `b2faa991...` and metadata revision `3c09f48d...`; the public rows were not used for development.
+- The October 23 Hugging Face API reports repository head `d1132643...`; the Files and versions page still attributes
+  README to `b2faa991...` but attributes both metadata files to `d1132643...`. Its commit title says 904 rows gained
+  reviewed closed-VQA options in the judge label set. No affected public row, option, answer, image, output, or
+  frequency was opened or used for development.
 - UTC's official MocsHPC guidance requires VPN off campus and currently exposes conflicting `login` versus `login01`
   examples. A `2026-10-18T05:34:02Z` resolver recheck found neither hostname resolvable even though the installed
   GlobalProtect processes were running; process presence does not prove an authenticated UTC tunnel. Account,

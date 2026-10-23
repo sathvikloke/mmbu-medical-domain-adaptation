@@ -26,7 +26,14 @@ held-out context result that changed sign when the answer key vocabulary changed
 Sources:
 
 - [MMBU benchmark paper](https://arxiv.org/abs/2606.06696)
+- [Official public dataset card and file history](https://huggingface.co/datasets/mmbu/mmbu-public/tree/main)
 - [Public MMBU participant case study](https://harperz9.github.io/night-school-mmbu.html)
+
+The official file history adds direct evaluation-contract evidence. On October 21, commit `d1132643...` expanded the
+judge `options` in 904 public rows with reviewed closed-VQA labels that were previously absent. This is not model
+evidence, and the affected labels remain forbidden inputs to training or selection under the project firewall. It does
+show that candidate-set coverage materially affects the official judge and that scores from different metadata
+revisions cannot be compared as if the evaluator were fixed.
 
 The case study is useful adverse intelligence, not ground truth. Its option readout is easier than open generation, its
 judge is local, and its vocabulary re-score was post hoc. It therefore motivates a prospective diagnostic; it does not
@@ -53,6 +60,9 @@ The canonical vocabulary must come from source-authoritative annotations and a r
 may not be learned from MMBU public questions, options, answers, outputs, label frequencies, embeddings, or error
 buckets. The benchmark paper can define coarse public terminology only where the rules and repository firewall permit;
 it cannot supply example-dependent target selection.
+
+The October 21 label-set repair strengthens this boundary: it motivates external ontology coverage, but copying the
+new public option inventory would turn an evaluator correction into benchmark-target leakage.
 
 ## Matched comparison
 

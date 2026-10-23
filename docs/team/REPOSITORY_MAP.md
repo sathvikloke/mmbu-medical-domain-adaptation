@@ -8,6 +8,7 @@ Paths in this guide are relative to the repository root. The historical layout i
 | --- | --- |
 | [README.md](../../README.md), [CONTRIBUTING.md](../../CONTRIBUTING.md) | Entry point and contribution/review expectations |
 | [docs/team](.) | Team onboarding, evidence navigation, decisions, workflow, and data/model notes |
+| [docs/team/EXECUTIVE_PROJECT_DOSSIER.md](EXECUTIVE_PROJECT_DOSSIER.md) | Five-minute human-impact story, flagship idea, honest novelty boundary, demonstrated evidence, and shortest path forward |
 | [docs/superpowers/specs/2026-10-17-mosaic-design.md](../superpowers/specs/2026-10-17-mosaic-design.md) | Current unimplemented research hypothesis, prior-art boundary, factor-identifiability gate, comparisons, and stop rules |
 | [docs/superpowers/specs/2026-10-17-quilt-design.md](../superpowers/specs/2026-10-17-quilt-design.md) | Loader-safe interface-gradient quotient hypothesis, prior-art boundary, identifiability gates, controls, and stop rules |
 | [docs/team/QUILT_SYNTHETIC_PROOF.md](QUILT_SYNTHETIC_PROOF.md) | Exact CPU-only planted-subspace, non-identifiability, confound, negative-control, and artifact proof obligations |

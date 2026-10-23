@@ -36,12 +36,12 @@ def install_network_guard() -> None:
 def validate_reload(reference: Any, observed: Any) -> float:
     reference = f.closed(reference, "reload.reference", (
         "fixture_id", "prompt", "input_ids", "attention_mask", "logits_first_32",
-        "logit_atol", "pixel_values_sha256",
+        "logit_atol", "pixel_values_sha256", "generated_ids",
     ))
     observed = f.closed(observed, "reload.observed", (
-        "fixture_id", "input_ids", "attention_mask", "logits_first_32", "pixel_values_sha256",
+        "fixture_id", "input_ids", "attention_mask", "logits_first_32", "pixel_values_sha256", "generated_ids",
     ))
-    for key in ("fixture_id", "input_ids", "attention_mask", "pixel_values_sha256"):
+    for key in ("fixture_id", "input_ids", "attention_mask", "pixel_values_sha256", "generated_ids"):
         f.literal(observed[key], f"reload.observed.{key}", reference[key])
     expected_logits = f.array(reference["logits_first_32"], "reload.reference.logits_first_32", nonempty=True)
     observed_logits = f.array(observed["logits_first_32"], "reload.observed.logits_first_32", nonempty=True)
@@ -111,12 +111,15 @@ def run() -> None:
     inputs = native._device_batch(batch, device)
     with torch.no_grad():
         output = model(**inputs, use_cache=False, return_dict=True)
+        model.get_base_model().model.rope_deltas = None
+        generated = model.generate(**inputs, max_new_tokens=3, do_sample=False, use_cache=True)
     observed = {
         "fixture_id": specs[0]["id"],
         "input_ids": batch["input_ids"][0].tolist(),
         "attention_mask": batch["attention_mask"][0].tolist(),
         "logits_first_32": output.logits[0, -1, :32].float().cpu().tolist(),
         "pixel_values_sha256": native._tensor_sha(batch["pixel_values"]),
+        "generated_ids": generated[0].tolist(),
     }
     maximum = validate_reload(reference, observed)
     receipt = {

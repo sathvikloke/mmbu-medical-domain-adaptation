@@ -448,19 +448,54 @@ class B1PreflightTests(unittest.TestCase):
         with self.assertRaises(ContractViolation):
             b1_native.compare_logits([0.0], [1.0], 0.5, "x")
 
+    def test_processed_geometry_records_bind_grid_tokens_and_round_trip(self):
+        fixtures = [
+            {"id": "a", "effective_size": [28, 56]},
+            {"id": "b", "effective_size": [84, 28]},
+        ]
+        records = b1_native.build_geometry_records(
+            fixtures, [[1, 4, 2], [1, 2, 6]], [2, 3], patch_size=14, merge_size=2
+        )
+        self.assertEqual(records[0]["processed_size"], [28, 56])
+        self.assertEqual(records[1]["visual_token_count"], 3)
+        self.assertEqual(records[0]["round_trip_max_abs"], 0.0)
+        with self.assertRaises(ContractViolation):
+            b1_native.build_geometry_records(fixtures, [[1, 4, 2], [1, 2, 6]], [2, 4], 14, 2)
+
+    def test_microbatch_equivalence_is_prospectively_bounded(self):
+        result = b1_native.validate_microbatch_equivalence(
+            2.0, 2.00001, {"adapter.a": 0.001, "adapter.b": 0.002}, 1e-4, 0.01
+        )
+        self.assertAlmostEqual(result["loss_abs_delta"], 1e-5)
+        self.assertEqual(result["gradient_max_abs"], 0.002)
+        with self.assertRaises(ContractViolation):
+            b1_native.validate_microbatch_equivalence(2.0, 2.1, {"adapter.a": 0.001}, 1e-4, 0.01)
+        with self.assertRaises(ContractViolation):
+            b1_native.validate_microbatch_equivalence(2.0, 2.0, {"adapter.a": 0.02}, 1e-4, 0.01)
+
+    def test_nvidia_smi_receipt_is_closed_and_typed(self):
+        self.assertEqual(
+            b1_native.parse_nvidia_smi_receipt("570.00, NVIDIA A100 80GB PCIe, 81920"),
+            {"driver_version": "570.00", "name": "NVIDIA A100 80GB PCIe", "memory_mib": 81920},
+        )
+        for raw in ("570.00,A100", "570.00,A100,not-an-int", "570.00,,81920"):
+            with self.subTest(raw=raw), self.assertRaises(ContractViolation):
+                b1_native.parse_nvidia_smi_receipt(raw)
+
     def test_offline_reload_reference_rejects_identity_and_numeric_drift(self):
         self.assertIsNotNone(b1_reload, "B1 offline reload tool is missing")
         reference = {
             "fixture_id": "small-rgb", "prompt": "prompt", "input_ids": [1, 2],
             "attention_mask": [1, 1], "logits_first_32": [0.0, 1.0],
-            "logit_atol": 0.5, "pixel_values_sha256": "a" * 64,
+            "logit_atol": 0.5, "pixel_values_sha256": "a" * 64, "generated_ids": [1, 2, 3],
         }
         observed = {"fixture_id": "small-rgb", "input_ids": [1, 2],
                     "attention_mask": [1, 1], "logits_first_32": [0.1, 1.1],
-                    "pixel_values_sha256": "a" * 64}
+                    "pixel_values_sha256": "a" * 64, "generated_ids": [1, 2, 3]}
         self.assertLessEqual(b1_reload.validate_reload(reference, observed), 0.5)
         for key, value in (("fixture_id", "other"), ("input_ids", [2, 1]),
-                           ("pixel_values_sha256", "b" * 64), ("logits_first_32", [1.0, 2.0])):
+                           ("pixel_values_sha256", "b" * 64), ("generated_ids", [1, 3, 2]),
+                           ("logits_first_32", [1.0, 2.0])):
             mutation = deepcopy(observed); mutation[key] = value
             with self.subTest(key=key), self.assertRaises(ContractViolation):
                 b1_reload.validate_reload(reference, mutation)

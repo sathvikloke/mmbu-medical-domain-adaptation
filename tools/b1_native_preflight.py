@@ -13,6 +13,7 @@ import platform
 import random
 import re
 import stat
+import subprocess
 import sys
 import time
 from typing import Any, Iterable
@@ -27,6 +28,8 @@ CONFIG_PATH = REPO / "config/phase1/b1-mocs-preflight.json"
 PIN_PATH = REPO / "docs/phase1/b1-pin.json"
 LOGIT_ATOL = 0.5
 LOSS_ATOL = 1e-5
+MICROBATCH_LOSS_ATOL = 1e-4
+MICROBATCH_GRAD_ATOL = 1e-2
 SEED = 20261023
 _LANGUAGE_LORA = re.compile(r"^model\.language_model\.layers\.\d+\.self_attn\.(?:q_proj|v_proj)$")
 _RUNTIME_PACKAGES = {
@@ -118,6 +121,106 @@ def validate_mrope_summary(summary: Any, batch_size: int, sequence_length: int) 
     f.digest(summary["position_sha256"], "mrope.position_sha256")
     f.digest(summary["rope_deltas_sha256"], "mrope.rope_deltas_sha256")
     return summary
+
+
+def build_geometry_records(
+    fixtures: list[dict],
+    image_grid_thw: list[list[int]],
+    image_token_counts: list[int],
+    patch_size: int,
+    merge_size: int,
+) -> list[dict]:
+    f.require(len(fixtures) == len(image_grid_thw) == len(image_token_counts), "geometry",
+              "fixture, grid, and token populations must agree")
+    f.integer(patch_size, "geometry.patch_size", minimum=1)
+    f.integer(merge_size, "geometry.merge_size", minimum=1)
+    records = []
+    for index, (fixture, grid, token_count) in enumerate(zip(fixtures, image_grid_thw, image_token_counts)):
+        f.require(type(fixture) is dict, f"geometry[{index}].fixture", "must be an object")
+        identity = f.text(fixture.get("id"), f"geometry[{index}].id")
+        size = fixture.get("effective_size")
+        f.require(type(size) is list and len(size) == 2, f"geometry[{index}].effective_size", "must be [width,height]")
+        width = f.integer(size[0], f"geometry[{index}].effective_size[0]", minimum=1)
+        height = f.integer(size[1], f"geometry[{index}].effective_size[1]", minimum=1)
+        f.require(type(grid) is list and len(grid) == 3, f"geometry[{index}].grid", "must be [t,h,w]")
+        temporal, grid_height, grid_width = (
+            f.integer(value, f"geometry[{index}].grid[{axis}]", minimum=1)
+            for axis, value in enumerate(grid)
+        )
+        token_count = f.integer(token_count, f"geometry[{index}].visual_token_count", minimum=1)
+        merged_area = merge_size * merge_size
+        f.require((temporal * grid_height * grid_width) % merged_area == 0,
+                  f"geometry[{index}].grid", "must divide exactly by spatial merge area")
+        f.literal(token_count, f"geometry[{index}].visual_token_count",
+                  temporal * grid_height * grid_width // merged_area)
+        processed_width = grid_width * patch_size
+        processed_height = grid_height * patch_size
+        scale_x = processed_width / width
+        scale_y = processed_height / height
+        box = [width * 0.25, height * 0.25, width * 0.5, height * 0.5]
+        transformed = [box[0] * scale_x, box[1] * scale_y, box[2] * scale_x, box[3] * scale_y]
+        restored = [transformed[0] / scale_x, transformed[1] / scale_y,
+                    transformed[2] / scale_x, transformed[3] / scale_y]
+        round_trip = max(abs(left - right) for left, right in zip(box, restored))
+        f.require(round_trip <= 1e-9, f"geometry[{index}].round_trip", "coordinate transform does not invert")
+        records.append({
+            "id": identity,
+            "effective_size": [width, height],
+            "processed_size": [processed_width, processed_height],
+            "image_grid_thw": grid,
+            "visual_token_count": token_count,
+            "scale_xy": [scale_x, scale_y],
+            "round_trip_max_abs": round_trip,
+        })
+    return records
+
+
+def validate_microbatch_equivalence(
+    full_loss: float,
+    accumulated_loss: float,
+    gradient_max_abs_by_parameter: dict[str, float],
+    loss_tolerance: float,
+    gradient_tolerance: float,
+) -> dict:
+    f.number(full_loss, "microbatch.full_loss")
+    f.number(accumulated_loss, "microbatch.accumulated_loss")
+    f.number(loss_tolerance, "microbatch.loss_tolerance", minimum=0)
+    f.number(gradient_tolerance, "microbatch.gradient_tolerance", minimum=0)
+    f.require(type(gradient_max_abs_by_parameter) is dict and bool(gradient_max_abs_by_parameter),
+              "microbatch.gradient_deltas", "must be a nonempty object")
+    names = sorted(gradient_max_abs_by_parameter, key=lambda value: value.encode("utf-8"))
+    f.literal(list(gradient_max_abs_by_parameter), "microbatch.gradient_deltas.order", names)
+    deltas = []
+    for name in names:
+        f.text(name, "microbatch.gradient_deltas.name")
+        delta = f.number(gradient_max_abs_by_parameter[name], f"microbatch.gradient_deltas.{name}", minimum=0)
+        deltas.append(delta)
+    loss_delta = abs(full_loss - accumulated_loss)
+    gradient_delta = max(deltas)
+    f.require(loss_delta <= loss_tolerance, "microbatch.loss", "loss drift exceeds tolerance")
+    f.require(gradient_delta <= gradient_tolerance, "microbatch.gradients", "gradient drift exceeds tolerance")
+    return {
+        "full_loss": full_loss,
+        "accumulated_loss": accumulated_loss,
+        "loss_abs_delta": loss_delta,
+        "loss_tolerance": loss_tolerance,
+        "gradient_max_abs": gradient_delta,
+        "gradient_tolerance": gradient_tolerance,
+        "gradient_max_abs_by_parameter": gradient_max_abs_by_parameter,
+    }
+
+
+def parse_nvidia_smi_receipt(raw: str) -> dict:
+    parts = [part.strip() for part in f.text(raw, "nvidia_smi").split(",")]
+    f.require(len(parts) == 3, "nvidia_smi", "must contain driver, name, and memory")
+    driver = f.text(parts[0], "nvidia_smi.driver_version")
+    name = f.text(parts[1], "nvidia_smi.name")
+    try:
+        memory_mib = int(parts[2])
+    except ValueError:
+        f.fail("nvidia_smi.memory_mib", "must be an integer")
+    f.integer(memory_mib, "nvidia_smi.memory_mib", minimum=1)
+    return {"driver_version": driver, "name": name, "memory_mib": memory_mib}
 
 
 def compare_logits(expected: list[float], observed: list[float], tolerance: float, path: str) -> float:
@@ -338,6 +441,11 @@ def run() -> None:
     torch.backends.cuda.matmul.allow_tf32 = False
     torch.backends.cudnn.allow_tf32 = False
     torch.cuda.reset_peak_memory_stats()
+    gpu_receipt = parse_nvidia_smi_receipt(subprocess.run(
+        ["nvidia-smi", "--query-gpu=driver_version,name,memory.total", "--format=csv,noheader,nounits", "-i", "0"],
+        check=True, capture_output=True, text=True,
+    ).stdout.strip())
+    f.literal(gpu_receipt["name"], "runtime.nvidia_smi.name", torch.cuda.get_device_name())
 
     expected_versions = {"python": config["runtime"]["python"]}
     expected_versions.update({key: config["runtime"][key] for key in _RUNTIME_PACKAGES})
@@ -390,6 +498,17 @@ def run() -> None:
             "image_temporal_unique_counts": temporal_counts, "image_grid_temporal_counts": grid_temporal,
             "position_sha256": _tensor_sha(position_ids), "rope_deltas_sha256": _tensor_sha(rope_deltas),
         }, len(images), inputs["input_ids"].shape[1])
+        image_token_counts = [
+            int(((inputs["mm_token_type_ids"][index] == 1) & inputs["attention_mask"][index].bool()).sum().item())
+            for index in range(len(images))
+        ]
+        geometry_records = build_geometry_records(
+            fixture_evidence,
+            inputs["image_grid_thw"].detach().cpu().tolist(),
+            image_token_counts,
+            int(processor.image_processor.patch_size),
+            int(processor.image_processor.merge_size),
+        )
         batch_deltas = {}
         for index, spec in enumerate(specs):
             delta = float((batched.logits[index, -1, :32].float().cpu() - singles[spec["id"]]).abs().max().item())
@@ -420,6 +539,18 @@ def run() -> None:
             uncached_prefill.logits[0, -1, :32].float().cpu().tolist(),
             repeated_prefill.logits[0, -1, :32].float().cpu().tolist(), LOGIT_ATOL, "cache.repeated_prefill",
         )
+        text_messages = [{"role": "user", "content": [{"type": "text", "text": "Return one plain token."}]}]
+        text_prompt = processor.apply_chat_template(text_messages, tokenize=False, add_generation_prompt=True)
+        text_batch = processor(text=[text_prompt], padding=True, return_tensors="pt")
+        model.model.rope_deltas = None
+        text_output = model(**_device_batch(text_batch, device), use_cache=False, return_dict=True)
+        _finite(torch, text_output.logits, "cache.text_interleave.logits")
+        model.model.rope_deltas = None
+        post_text_prefill = model(**cache_inputs, use_cache=False, return_dict=True)
+        text_interleave_delta = compare_logits(
+            uncached_prefill.logits[0, -1, :32].float().cpu().tolist(),
+            post_text_prefill.logits[0, -1, :32].float().cpu().tolist(), LOGIT_ATOL, "cache.text_interleave",
+        )
         next_token = uncached_prefill.logits[:, -1, :].argmax(dim=-1, keepdim=True)
         full_ids = torch.cat([cache_inputs["input_ids"], next_token], dim=1)
         full_attention = torch.cat([cache_inputs["attention_mask"], torch.ones_like(next_token)], dim=1)
@@ -444,7 +575,8 @@ def run() -> None:
         )
         cache_summary = {
             "class": type(cached_prefill.past_key_values).__name__, "prefill_max_abs": prefill_delta,
-            "repeat_max_abs": repeat_delta, "first_step_max_abs": step_delta, "tolerance": LOGIT_ATOL,
+            "repeat_max_abs": repeat_delta, "text_interleave_max_abs": text_interleave_delta,
+            "first_step_max_abs": step_delta, "tolerance": LOGIT_ATOL,
         }
 
     train_images = [images[0], images[2]]
@@ -473,6 +605,42 @@ def run() -> None:
     loss_delta = float((manual_loss - output.loss.float()).abs().item())
     f.require(loss_delta <= LOSS_ATOL, "training.loss", "manual shifted CE disagrees with framework loss")
     output.loss.backward()
+    full_gradients = {
+        name: parameter.grad.detach().float().cpu().clone()
+        for name, parameter in model.named_parameters() if parameter.requires_grad and parameter.grad is not None
+    }
+    full_loss_value = float(output.loss.detach().float().item())
+    total_target_tokens = int((shifted_labels != -100).sum().item())
+    f.require(total_target_tokens > 0, "microbatch.target_tokens", "full batch has no target tokens")
+    optimizer.zero_grad(set_to_none=True)
+    accumulated_loss_value = 0.0
+    for micro_index, (image, prompt, target) in enumerate(zip(train_images, train_prompts, targets)):
+        micro_batch, micro_prompt_counts = _encode(processor, [image], [prompt], [target])
+        micro_labels = build_target_only_labels(
+            micro_batch["input_ids"].tolist(), micro_batch["attention_mask"].tolist(), micro_prompt_counts
+        )
+        micro_batch["labels"] = torch.tensor(micro_labels, dtype=torch.long)
+        micro_inputs = _device_batch(micro_batch, device)
+        micro_target_tokens = int((micro_inputs["labels"][..., 1:] != -100).sum().item())
+        f.require(micro_target_tokens > 0, f"microbatch[{micro_index}].target_tokens", "contains no target tokens")
+        weight = micro_target_tokens / total_target_tokens
+        micro_output = model(**micro_inputs, use_cache=False, return_dict=True)
+        _finite(torch, micro_output.loss, f"microbatch[{micro_index}].loss")
+        accumulated_loss_value += float(micro_output.loss.detach().float().item()) * weight
+        (micro_output.loss * weight).backward()
+    gradient_deltas = {}
+    for name, parameter in model.named_parameters():
+        if parameter.requires_grad:
+            f.require(parameter.grad is not None and name in full_gradients,
+                      f"microbatch.{name}.gradient", "gradient is missing")
+            gradient_deltas[name] = float(
+                (parameter.grad.detach().float().cpu() - full_gradients[name]).abs().max().item()
+            )
+    microbatch_summary = validate_microbatch_equivalence(
+        full_loss_value, accumulated_loss_value,
+        dict(sorted(gradient_deltas.items(), key=lambda item: item[0].encode("utf-8"))),
+        MICROBATCH_LOSS_ATOL, MICROBATCH_GRAD_ATOL,
+    )
     gradient_names = []
     for name, parameter in model.named_parameters():
         if parameter.requires_grad:
@@ -490,16 +658,67 @@ def run() -> None:
     inventory = validate_update_inventory(
         declared, declared, sorted(gradient_names), sorted(updated), expected_updated
     )
-    for state in optimizer.state.values():
-        for key, value in state.items():
+    parameter_records = []
+    for name, parameter in model.named_parameters():
+        if parameter.requires_grad:
+            parameter_records.append({
+                "name": name,
+                "shape": list(parameter.shape),
+                "parameter_dtype": str(parameter.dtype),
+                "gradient_dtype": str(parameter.grad.dtype),
+                "gradient_max_abs": float(parameter.grad.detach().float().abs().max().item()),
+                "updated": name in updated,
+            })
+    optimizer_state_records = []
+    for parameter_name, parameter in model.named_parameters():
+        if not parameter.requires_grad:
+            continue
+        state = optimizer.state[parameter]
+        for key in sorted(state, key=lambda value: str(value).encode("utf-8")):
+            value = state[key]
             if torch.is_tensor(value):
-                _finite(torch, value, f"optimizer.{key}")
+                _finite(torch, value, f"optimizer.{parameter_name}.{key}")
+                optimizer_state_records.append({
+                    "parameter": parameter_name, "state": key,
+                    "shape": list(value.shape), "dtype": str(value.dtype),
+                })
 
     model.eval()
     reload_batch, _ = _encode(processor, [images[0]], [prompts[0]])
     reload_inputs = _device_batch(reload_batch, device)
     with torch.no_grad():
         reload_output = model(**reload_inputs, use_cache=False, return_dict=True)
+        model.get_base_model().model.rope_deltas = None
+        generated = model.generate(
+            **reload_inputs, max_new_tokens=3, do_sample=False, use_cache=True,
+            return_dict_in_generate=True, output_scores=True,
+        )
+        generated_ids = generated.sequences[0].tolist()
+        generated_suffix = generated.sequences[:, reload_batch["input_ids"].shape[1]:]
+        teacher_deltas = []
+        for step_index, score in enumerate(generated.scores):
+            prefix = generated_suffix[:, :step_index]
+            teacher_inputs = dict(reload_inputs)
+            if prefix.shape[1]:
+                teacher_inputs["input_ids"] = torch.cat([reload_inputs["input_ids"], prefix], dim=1)
+                teacher_inputs["attention_mask"] = torch.cat(
+                    [reload_inputs["attention_mask"], torch.ones_like(prefix)], dim=1
+                )
+                teacher_inputs["mm_token_type_ids"] = torch.cat(
+                    [reload_inputs["mm_token_type_ids"], torch.zeros_like(prefix)], dim=1
+                )
+            model.get_base_model().model.rope_deltas = None
+            teacher = model(**teacher_inputs, use_cache=False, return_dict=True)
+            teacher_deltas.append(compare_logits(
+                score[0, :32].float().cpu().tolist(), teacher.logits[0, -1, :32].float().cpu().tolist(),
+                LOGIT_ATOL, f"generation.teacher_forced[{step_index}]",
+            ))
+        model.get_base_model().model.rope_deltas = None
+        repeated_generated = model.generate(
+            **reload_inputs, max_new_tokens=3, do_sample=False, use_cache=True,
+            return_dict_in_generate=True, output_scores=False,
+        )
+        f.literal(repeated_generated.sequences[0].tolist(), "generation.repeated_ids", generated_ids)
     reload_logits = reload_output.logits[0, -1, :32].float().cpu()
     reload_reference = {
         "fixture_id": specs[0]["id"], "prompt": prompts[0],
@@ -507,6 +726,7 @@ def run() -> None:
         "attention_mask": reload_batch["attention_mask"][0].tolist(),
         "logits_first_32": reload_logits.tolist(), "logit_atol": LOGIT_ATOL,
         "pixel_values_sha256": _tensor_sha(reload_batch["pixel_values"]),
+        "generated_ids": generated_ids,
     }
 
     adapter_root.mkdir(mode=0o700)
@@ -522,6 +742,14 @@ def run() -> None:
     adapter_files = inventory_adapter(adapter_root)
 
     grid = training_inputs.get("image_grid_thw")
+    elapsed_seconds = time.monotonic() - started
+    properties = torch.cuda.get_device_properties(0)
+    model_dtype_counts: dict[str, dict[str, int]] = {}
+    for _, parameter in model.named_parameters():
+        dtype = str(parameter.dtype)
+        entry = model_dtype_counts.setdefault(dtype, {"tensors": 0, "elements": 0})
+        entry["tensors"] += 1
+        entry["elements"] += parameter.numel()
     result = {
         "schema": "mmbu.b1.native_preflight.result.v1", "status": "native_step_complete_offline_reload_pending",
         "seed": SEED, "synthetic_only": True, "optimizer_steps": 1,
@@ -529,22 +757,38 @@ def run() -> None:
         "processor": {"class": type(processor).__name__, "image_processor_class": type(processor.image_processor).__name__, "padding_side": processor.tokenizer.padding_side},
         "fixtures": fixture_evidence,
         "processed": {"image_grid_thw": grid.detach().cpu().tolist() if grid is not None else None,
-                      "pixel_values_sha256": _tensor_sha(training_inputs["pixel_values"])},
+                      "pixel_values_sha256": _tensor_sha(training_inputs["pixel_values"]),
+                      "geometry": geometry_records},
         "mrope": mrope_summary,
         "cache": cache_summary,
+        "generation": {"new_tokens": 3, "generated_ids": generated_ids,
+                       "teacher_forced_max_abs_by_step": teacher_deltas, "tolerance": LOGIT_ATOL},
         "forward": {"single_batch_max_abs": batch_deltas, "reverse_order_max_abs": reverse_delta,
                     "visual_intervention_max_abs": visual_delta, "tolerance": LOGIT_ATOL},
         "training": {"loss": float(output.loss.detach().float().item()), "manual_loss": float(manual_loss.detach().item()),
-                     "loss_abs_delta": loss_delta, "loss_tolerance": LOSS_ATOL, "inventory": inventory},
+                     "loss_abs_delta": loss_delta, "loss_tolerance": LOSS_ATOL, "inventory": inventory,
+                     "microbatch_equivalence": microbatch_summary,
+                     "parameter_records": parameter_records,
+                     "optimizer_state_records": optimizer_state_records,
+                     "logits_dtype": str(output.logits.dtype), "loss_dtype": str(output.loss.dtype)},
         "adapter_files": adapter_files,
         "adapter_state_keys": adapter_state_keys,
         "reload_reference": reload_reference,
-        "resources": {"elapsed_seconds": time.monotonic() - started,
+        "resources": {"elapsed_seconds": elapsed_seconds,
                       "peak_allocated_bytes": torch.cuda.max_memory_allocated(),
                       "peak_reserved_bytes": torch.cuda.max_memory_reserved(),
                       "gpu_name": torch.cuda.get_device_name(),
-                      "cuda_visible_devices": visible_devices},
+                      "cuda_visible_devices": visible_devices,
+                      "cuda_runtime": torch.version.cuda,
+                      "compute_capability": list(torch.cuda.get_device_capability()),
+                      "gpu_total_memory_bytes": properties.total_memory,
+                      "gpu_multiprocessor_count": properties.multi_processor_count,
+                      "nvidia_smi": gpu_receipt,
+                      "fixtures_per_second": len(specs) / elapsed_seconds,
+                      "slurm_job_id": f.text(os.environ.get("SLURM_JOB_ID"), "runtime.SLURM_JOB_ID"),
+                      "argv": sys.argv},
         "versions": observed_versions,
+        "model_parameter_dtype_counts": model_dtype_counts,
     }
     _write_json(evidence_root / "native-preflight.json", result)
 

@@ -4,12 +4,15 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.metadata
 import json
 import math
 import os
 from pathlib import Path
+import platform
 import random
 import re
+import stat
 import sys
 import time
 from typing import Any, Iterable
@@ -26,6 +29,12 @@ LOGIT_ATOL = 0.5
 LOSS_ATOL = 1e-5
 SEED = 20261023
 _LANGUAGE_LORA = re.compile(r"^model\.language_model\.layers\.\d+\.self_attn\.(?:q_proj|v_proj)$")
+_RUNTIME_PACKAGES = {
+    "accelerate": "accelerate", "numpy": "numpy", "peft": "peft", "pillow": "pillow",
+    "safetensors": "safetensors", "torch": "torch", "torchvision": "torchvision",
+    "transformers": "transformers",
+}
+_ADAPTER_FILES = ("adapter_config.json", "adapter_model.safetensors")
 
 
 def fixture_specs() -> list[dict]:
@@ -37,7 +46,7 @@ def fixture_specs() -> list[dict]:
         ("extreme-aspect-rgb", "RGB", [28, 280], 4, "rgb"),
         ("grayscale-conversion", "L", [84, 84], 5, "convert_rgb"),
         ("rgba-conversion", "RGBA", [84, 84], 6, "composite_white_rgb"),
-        ("exif-orientation", "RGB", [84, 140], 7, "transpose_90_cw_rgb"),
+        ("exif-orientation", "RGB", [84, 140], 7, "exif_transpose_rgb"),
         ("boundary-27", "RGB", [27, 27], 8, "rgb"),
         ("boundary-28", "RGB", [28, 28], 9, "rgb"),
         ("boundary-29", "RGB", [29, 29], 10, "rgb"),
@@ -115,6 +124,37 @@ def compare_logits(expected: list[float], observed: list[float], tolerance: floa
     return maximum
 
 
+def validate_runtime_identity(expected: Any, observed: Any) -> dict:
+    expected = f.closed(expected, "runtime.expected", ("python", *_RUNTIME_PACKAGES))
+    observed = f.closed(observed, "runtime.observed", expected)
+    for key in expected:
+        f.text(expected[key], f"runtime.expected.{key}")
+        f.literal(observed[key], f"runtime.observed.{key}", expected[key])
+    return observed
+
+
+def inventory_adapter(root: Path) -> list[dict]:
+    f.require(root.is_dir() and not root.is_symlink(), "adapter", "must be a real directory")
+    names = sorted((path.name for path in root.iterdir()), key=lambda name: name.encode("utf-8"))
+    f.literal(names, "adapter.files", list(_ADAPTER_FILES))
+    rows = []
+    for name in names:
+        path = root / name
+        info = path.lstat()
+        f.require(stat.S_ISREG(info.st_mode), f"adapter.{name}", "must be a regular unaliased file")
+        raw = path.read_bytes()
+        f.require(path.lstat() == info, f"adapter.{name}", "changed while being inventoried")
+        rows.append({"path": name, "bytes": len(raw), "sha256": _sha(raw)})
+    return rows
+
+
+def verify_adapter_inventory(root: Path, expected: Any) -> list[dict]:
+    expected = f.array(expected, "adapter.inventory", nonempty=True)
+    observed = inventory_adapter(root)
+    f.literal(observed, "adapter.inventory", expected)
+    return observed
+
+
 def _sha(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
 
@@ -128,7 +168,8 @@ def _write_json(path: Path, value: Any) -> None:
 
 
 def make_images(specs: list[dict]) -> tuple[list[Any], list[dict]]:
-    from PIL import Image
+    from io import BytesIO
+    from PIL import Image, ImageOps
 
     images, evidence = [], []
     for spec in specs:
@@ -143,8 +184,13 @@ def make_images(specs: list[dict]) -> tuple[list[Any], list[dict]]:
             base = Image.new("RGB", image.size, (255, 255, 255))
             base.paste(image, mask=image.getchannel("A"))
             image = base
-        elif spec["transform"] == "transpose_90_cw_rgb":
-            image = image.transpose(Image.Transpose.ROTATE_270)
+        elif spec["transform"] == "exif_transpose_rgb":
+            encoded = BytesIO()
+            exif = Image.Exif()
+            exif[274] = 6
+            image.save(encoded, format="JPEG", exif=exif)
+            raw = encoded.getvalue()
+            image = ImageOps.exif_transpose(Image.open(BytesIO(raw))).convert("RGB")
         f.literal(image.mode, f"fixture.{spec['id']}.mode", "RGB")
         rgb = image.tobytes()
         images.append(image)
@@ -245,12 +291,11 @@ def run() -> None:
     torch.backends.cudnn.allow_tf32 = False
     torch.cuda.reset_peak_memory_stats(device)
 
-    expected_versions = config["runtime"]
-    observed_versions = {
-        "torch": torch.__version__, "transformers": transformers.__version__, "peft": peft.__version__,
-    }
-    for key, observed in observed_versions.items():
-        f.literal(observed, f"runtime.{key}", expected_versions[key])
+    expected_versions = {"python": config["runtime"]["python"]}
+    expected_versions.update({key: config["runtime"][key] for key in _RUNTIME_PACKAGES})
+    observed_versions = {"python": platform.python_version()}
+    observed_versions.update({key: importlib.metadata.version(distribution) for key, distribution in _RUNTIME_PACKAGES.items()})
+    validate_runtime_identity(expected_versions, observed_versions)
 
     started = time.monotonic()
     processor = load_pil_processor(model_root)
@@ -391,7 +436,7 @@ def run() -> None:
     for name, parameter in model.named_parameters():
         if parameter.requires_grad and not torch.equal(before[name], parameter.detach().cpu()):
             updated.append(name)
-    inventory = validate_update_inventory(declared, sorted(gradient_names), sorted(gradient_names), sorted(updated))
+    inventory = validate_update_inventory(declared, declared, sorted(gradient_names), sorted(updated))
     for state in optimizer.state.values():
         for key, value in state.items():
             if torch.is_tensor(value):
@@ -413,10 +458,11 @@ def run() -> None:
 
     adapter_root.mkdir(mode=0o700)
     model.save_pretrained(adapter_root, safe_serialization=True)
-    adapter_files = []
-    for path in sorted(adapter_root.iterdir(), key=lambda item: item.name.encode("utf-8")):
-        f.require(path.is_file() and not path.is_symlink(), f"adapter.{path.name}", "must be a regular file")
-        adapter_files.append({"path": path.name, "bytes": path.stat().st_size, "sha256": _sha(path.read_bytes())})
+    generated_card = adapter_root / "README.md"
+    if generated_card.exists():
+        f.require(generated_card.is_file() and not generated_card.is_symlink(), "adapter.README.md", "must be a regular file")
+        generated_card.unlink()
+    adapter_files = inventory_adapter(adapter_root)
 
     grid = training_inputs.get("image_grid_thw")
     result = {

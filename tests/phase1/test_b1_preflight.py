@@ -334,6 +334,41 @@ class B1PreflightTests(unittest.TestCase):
             with self.subTest(record=record), self.assertRaises(ContractViolation):
                 b1_native.chat_template_from_record(record)
 
+    def test_runtime_identity_requires_every_frozen_package(self):
+        expected = {
+            "python": "3.12.12", "torch": "2.11.0+cu128", "torchvision": "0.26.0+cu128",
+            "transformers": "5.19.0", "accelerate": "1.15.0", "peft": "0.21.2",
+            "safetensors": "0.8.0", "pillow": "13.0.0", "numpy": "2.5.4",
+        }
+        self.assertEqual(b1_native.validate_runtime_identity(expected, deepcopy(expected)), expected)
+        for mutation in (
+            {**expected, "torch": "2.11.1+cu128"},
+            {key: value for key, value in expected.items() if key != "numpy"},
+            {**expected, "extra": "1"},
+        ):
+            with self.assertRaises(ContractViolation):
+                b1_native.validate_runtime_identity(expected, mutation)
+
+    def test_adapter_inventory_rejects_missing_extra_alias_and_byte_drift(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "adapter_config.json").write_bytes(b"{}")
+            (root / "adapter_model.safetensors").write_bytes(b"weights")
+            rows = b1_native.inventory_adapter(root)
+            self.assertEqual([row["path"] for row in rows], ["adapter_config.json", "adapter_model.safetensors"])
+            self.assertEqual(b1_native.verify_adapter_inventory(root, rows), rows)
+            (root / "adapter_model.safetensors").write_bytes(b"changed")
+            with self.assertRaises(ContractViolation):
+                b1_native.verify_adapter_inventory(root, rows)
+            (root / "adapter_model.safetensors").write_bytes(b"weights")
+            (root / "README.md").write_text("extra")
+            with self.assertRaises(ContractViolation):
+                b1_native.verify_adapter_inventory(root, rows)
+            (root / "README.md").unlink()
+            (root / "alias.json").symlink_to(root / "adapter_config.json")
+            with self.assertRaises(ContractViolation):
+                b1_native.inventory_adapter(root)
+
     def test_trainable_gradient_and_update_inventory_closes(self):
         declared = ["adapter.a", "adapter.b"]
         self.assertEqual(

@@ -78,6 +78,7 @@ def run() -> None:
 
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import b1_native_preflight as native
+    native.verify_adapter_inventory(adapter_root, prior["adapter_files"])
     import torch
     from peft import PeftModel
     from transformers import Qwen2_5_VLForConditionalGeneration

@@ -74,7 +74,7 @@ def validate_preflight_config(record: Any) -> dict:
     _exact_object(record["scheduler"], "b1_preflight.scheduler", {
         "account": "allusers", "cluster": "mocshpc", "cpus_per_task": 4,
         "gpu_count": 1, "gpu_type": "tesla_a100_80gb", "max_jobs": 1,
-        "max_retries": 0, "memory_gib": 96, "partition": "epyc-gpu",
+        "max_retries": 1, "memory_gib": 96, "partition": "epyc-gpu",
         "qos": "u-default", "wall_seconds": 7200,
     })
 

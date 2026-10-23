@@ -143,7 +143,10 @@ def inventory_adapter(root: Path) -> list[dict]:
         info = path.lstat()
         f.require(stat.S_ISREG(info.st_mode), f"adapter.{name}", "must be a regular unaliased file")
         raw = path.read_bytes()
-        f.require(path.lstat() == info, f"adapter.{name}", "changed while being inventoried")
+        after = path.lstat()
+        before_identity = (info.st_dev, info.st_ino, info.st_mode, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
+        after_identity = (after.st_dev, after.st_ino, after.st_mode, after.st_size, after.st_mtime_ns, after.st_ctime_ns)
+        f.require(after_identity == before_identity, f"adapter.{name}", "changed while being inventoried")
         rows.append({"path": name, "bytes": len(raw), "sha256": _sha(raw)})
     return rows
 
@@ -284,12 +287,15 @@ def run() -> None:
 
     f.require(torch.cuda.is_available(), "runtime.cuda", "CUDA is unavailable")
     f.literal(torch.cuda.device_count(), "runtime.cuda.device_count", 1)
+    visible_devices = f.text(os.environ.get("CUDA_VISIBLE_DEVICES"), "runtime.CUDA_VISIBLE_DEVICES")
+    torch.cuda.set_device(0)
+    f.literal(torch.cuda.current_device(), "runtime.cuda.current_device", 0)
     device = torch.device("cuda:0")
     torch.manual_seed(SEED)
     torch.cuda.manual_seed_all(SEED)
     torch.backends.cuda.matmul.allow_tf32 = False
     torch.backends.cudnn.allow_tf32 = False
-    torch.cuda.reset_peak_memory_stats(device)
+    torch.cuda.reset_peak_memory_stats()
 
     expected_versions = {"python": config["runtime"]["python"]}
     expected_versions.update({key: config["runtime"][key] for key in _RUNTIME_PACKAGES})
@@ -482,9 +488,10 @@ def run() -> None:
         "adapter_files": adapter_files,
         "reload_reference": reload_reference,
         "resources": {"elapsed_seconds": time.monotonic() - started,
-                      "peak_allocated_bytes": torch.cuda.max_memory_allocated(device),
-                      "peak_reserved_bytes": torch.cuda.max_memory_reserved(device),
-                      "gpu_name": torch.cuda.get_device_name(device)},
+                      "peak_allocated_bytes": torch.cuda.max_memory_allocated(),
+                      "peak_reserved_bytes": torch.cuda.max_memory_reserved(),
+                      "gpu_name": torch.cuda.get_device_name(),
+                      "cuda_visible_devices": visible_devices},
         "versions": observed_versions,
     }
     _write_json(evidence_root / "native-preflight.json", result)

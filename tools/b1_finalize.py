@@ -37,7 +37,10 @@ def _inventory(root: Path, relative_paths: list[str], label: str) -> list[dict]:
         info = path.lstat()
         f.require(stat.S_ISREG(info.st_mode), f"{label}.{relative}", "must be a regular unaliased file")
         raw = path.read_bytes()
-        f.require(path.lstat() == info, f"{label}.{relative}", "changed while being inventoried")
+        after = path.lstat()
+        before_identity = (info.st_dev, info.st_ino, info.st_mode, info.st_size, info.st_mtime_ns, info.st_ctime_ns)
+        after_identity = (after.st_dev, after.st_ino, after.st_mode, after.st_size, after.st_mtime_ns, after.st_ctime_ns)
+        f.require(after_identity == before_identity, f"{label}.{relative}", "changed while being inventoried")
         rows.append({"path": relative, "bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest()})
     return rows
 
@@ -50,6 +53,7 @@ def build_terminal_record(
     finished_at: Any,
     source_files: Any,
     evidence_files: Any,
+    attempt: Any = 1,
 ) -> dict:
     exit_code = f.integer(exit_code, "terminal.exit_code", minimum=0, maximum=255)
     job_id = f.text(job_id, "terminal.slurm_job_id")
@@ -59,6 +63,7 @@ def build_terminal_record(
     f.timestamp(finished_at, "terminal.finished_at")
     source_files = f.array(source_files, "terminal.source_files", nonempty=True)
     evidence_files = f.array(evidence_files, "terminal.evidence_files")
+    attempt = f.integer(attempt, "terminal.attempt", minimum=1, maximum=2)
     names = [row.get("path") for row in evidence_files if type(row) is dict]
     if exit_code == 0:
         for required in ("native-preflight.json", "offline-reload.json"):
@@ -71,6 +76,7 @@ def build_terminal_record(
         "hostname": hostname,
         "started_at": started_at,
         "finished_at": finished_at,
+        "attempt": attempt,
         "source_files": source_files,
         "evidence_files": evidence_files,
     }
@@ -82,7 +88,9 @@ def run(exit_code: int) -> None:
     evidence_root.mkdir(mode=0o700, parents=True, exist_ok=True)
     evidence_names = [
         path.name for path in evidence_root.iterdir()
-        if path.name != "terminal-run.json" and path.is_file() and not path.is_symlink()
+        if path.name != "terminal-run.json"
+        and not (path.name.startswith("slurm-") and path.suffix in (".out", ".err"))
+        and path.is_file() and not path.is_symlink()
     ]
     record = build_terminal_record(
         exit_code,
@@ -92,6 +100,7 @@ def run(exit_code: int) -> None:
         datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         _inventory(REPO, list(SOURCE_PATHS), "terminal.source_files"),
         _inventory(evidence_root, evidence_names, "terminal.evidence_files"),
+        int(os.environ.get("B1_ATTEMPT", "1")),
     )
     (evidence_root / "terminal-run.json").write_bytes(canonical.dumps(record) + b"\n")
 

@@ -45,7 +45,8 @@ export HF_HOME=${OFFLINE_CACHE}
 export HUGGINGFACE_HUB_CACHE=${OFFLINE_CACHE}/hub
 export TRANSFORMERS_CACHE=${OFFLINE_CACHE}/transformers
 export CUBLAS_WORKSPACE_CONFIG=:4096:8
-export CUDA_VISIBLE_DEVICES=0
+test -n "${CUDA_VISIBLE_DEVICES:-}"
+export B1_ATTEMPT=2
 
 cd "${CODE_ROOT}"
 "${VENV_ROOT}/bin/python" -B tools/b1_acquire.py verify

@@ -84,7 +84,7 @@ class B1PreflightTests(unittest.TestCase):
                 "gpu_count": 1,
                 "gpu_type": "tesla_a100_80gb",
                 "max_jobs": 1,
-                "max_retries": 0,
+                "max_retries": 1,
                 "memory_gib": 96,
                 "partition": "epyc-gpu",
                 "qos": "u-default",
@@ -205,7 +205,7 @@ class B1PreflightTests(unittest.TestCase):
         mutations = []
         extra = deepcopy(base); extra["surprise"] = True; mutations.append(extra)
         jobs = deepcopy(base); jobs["scheduler"]["max_jobs"] = 2; mutations.append(jobs)
-        retries = deepcopy(base); retries["scheduler"]["max_retries"] = 1; mutations.append(retries)
+        retries = deepcopy(base); retries["scheduler"]["max_retries"] = 2; mutations.append(retries)
         gpu = deepcopy(base); gpu["scheduler"]["gpu_count"] = 2; mutations.append(gpu)
         steps = deepcopy(base); steps["execution"]["optimizer_steps"] = 2; mutations.append(steps)
         biomedical = deepcopy(base); biomedical["execution"]["biomedical_inputs_allowed"] = True; mutations.append(biomedical)
@@ -448,6 +448,8 @@ class B1PreflightTests(unittest.TestCase):
         self.assertEqual(script.count("b1_offline_reload.py"), 1)
         self.assertIn("/tmp/npl015-mmbu-b1-${SLURM_JOB_ID}", script)
         self.assertNotIn("/scratch/", script)
+        self.assertNotIn("export CUDA_VISIBLE_DEVICES=", script)
+        self.assertIn('test -n "${CUDA_VISIBLE_DEVICES:-}"', script)
         native_source = NATIVE_PATH.read_text()
         reload_source = RELOAD_PATH.read_text()
         self.assertIn('backend="pil"', native_source)
@@ -474,6 +476,15 @@ class B1PreflightTests(unittest.TestCase):
         )
         self.assertEqual(failed["status"], "failed")
         self.assertEqual(failed["exit_code"], 2)
+        self.assertEqual(failed["attempt"], 1)
+        second = b1_finalize.build_terminal_record(
+            0, "124", "node", "2026-10-23T00:00:00Z", "2026-10-23T00:01:00Z", source, complete, 2
+        )
+        self.assertEqual(second["attempt"], 2)
+        with self.assertRaises(ContractViolation):
+            b1_finalize.build_terminal_record(
+                0, "124", "node", "2026-10-23T00:00:00Z", "2026-10-23T00:01:00Z", source, complete, 3
+            )
 
 
 if __name__ == "__main__":

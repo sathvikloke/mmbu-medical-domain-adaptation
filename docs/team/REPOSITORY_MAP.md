@@ -41,6 +41,7 @@ Paths in this guide are relative to the repository root. The historical layout i
 | [docs/team/BUSBRA_METADATA_GATE.md](BUSBRA_METADATA_GATE.md) | Reproducible BUS-BRA archive, grouping, split, geometry, and within-source duplicate-risk gate |
 | [docs/team/BUSBRA_TRANSFORM_CONTRACT.md](BUSBRA_TRANSFORM_CONTRACT.md) | Receipt-bound decoded-geometry, mask-box, split, and unresolved-case linkage policy without source-admission authority |
 | [docs/team/BUSBRA_HUMAN_REVIEW_PACKET.md](BUSBRA_HUMAN_REVIEW_PACKET.md) | Frozen 244-record medical/provenance review population, qualified roles, questions, and separate rights/purpose/release decision surface |
+| `src/mmbu_phase1/busbra_review.py` | Atomic offline builder for the frozen BUS-BRA human-review assets, worksheets, and tamper-evident pending receipt; grants no source or model-use authority |
 | [docs/team/BUSUCLM_METADATA_GATE.md](BUSUCLM_METADATA_GATE.md) | Reproducible BUS-UCLM v3 inventory, patient-grouping, schema-anomaly, and license-conflict gate |
 | [docs/team/FACTORIAL_UPDATE_ADVERSE_REVIEW.md](FACTORIAL_UPDATE_ADVERSE_REVIEW.md) | Hostile prior-art review, synthetic kill test, gauge/identifiability risks, and diagnostic-only disposition for factorial update decomposition |
 | [docs/team/NOVELTY_AUDIT.md](NOVELTY_AUDIT.md) | Adverse prior-art matrix, revised novelty scores, surviving distinction, and required strong baseline |

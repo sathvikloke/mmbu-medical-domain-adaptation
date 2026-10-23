@@ -45,6 +45,7 @@ These checks validate software and saved artifacts. They cannot establish source
 
 | Need | Entry point |
 | --- | --- |
+| Five-minute project idea, impact, novelty, and next gates | [Executive project dossier](docs/team/EXECUTIVE_PROJECT_DOSSIER.md) |
 | First contribution and access | [Start here](docs/team/START_HERE.md), [contributing](CONTRIBUTING.md) |
 | Root commands, dependencies, and CI | [Development guide](docs/team/DEVELOPMENT.md) |
 | Code, scripts, and artifact locations | [Repository map](docs/team/REPOSITORY_MAP.md) |

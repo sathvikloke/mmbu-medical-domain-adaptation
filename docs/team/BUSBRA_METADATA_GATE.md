@@ -69,3 +69,32 @@ boxes agreed closely with stored boxes (IoU `0.9633458646616542`–`0.9911610401
 duplicate occurred within the eight-record sample. Receipt digest:
 `669e4181bd677bf423ae9c40d12f8d98b634b90e91bb6adc027ca18e8c10cd8e`. The full receipt remains quarantined locally;
 these sample results do not close corpus-wide duplicates or grant model use.
+
+## Full-corpus structural audit
+
+The quarantine tool now also provides `audit-corpus`. It authenticates the entire pinned archive, requires an exact
+metadata-to-image/mask inventory, decodes all metadata-bound pairs without extraction, and emits an aggregate receipt.
+It does not accept source-declared dimensions on faith: image and mask dimensions must agree, and any disagreement with
+the metadata is retained as an erratum. Exact decoded duplicate groups are reported by record, patient, and pathology;
+the command never converts exact-duplicate clearance into near-duplicate clearance or model-use approval.
+
+The first full run decoded all 1,875 image/mask pairs across 1,064 cases. All images were grayscale `L`; all masks were
+binary mode `1`, nonempty, and dimensionally paired with their image. No two images and no two masks were exactly equal
+after decoding. That result closes exact equality only—not perceptual, acquisition-series, patient-identity, or source
+proximity duplication.
+
+The run also found source inconsistencies that the eight-record sample could not reveal:
+
+- four rows declare an incorrect height even though each image and mask agree with one another:
+  `bus_0856-l` (405 declared, 353 decoded), `bus_0857-r` (409/393), `bus_0912-l` (354/352), and
+  `bus_0990-l` (354/352);
+- 44 stored boxes have IoU below 0.95 against the corresponding mask-derived box; 43 follow a consistent one-pixel
+  boundary convention, while `bus_0845-s` is a material exception (IoU `0.37134146341463414`, stored
+  `[214,77,164,100]`, mask-derived `[291,107,87,70]`). The stored box appears to cover a wider caliper/ROI region, but
+  that visual observation is not a medical adjudication and no label was rewritten.
+
+The local aggregate receipt digest is
+`60e97562267ae7e8b82021ce5c1dfcd2eabaf54907efa721e1b624e7e14d516f`. The receipt remains deliberately
+`structural_clearance=false`, `training_ready=false`, `near_duplicate_clearance=false`, and
+`model_use_authorized=false`. These findings require an explicit derived-task policy and, for the material box
+exception, independent annotation review before box targets may be admitted.

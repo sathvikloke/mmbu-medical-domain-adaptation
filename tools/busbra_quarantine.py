@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Plan and inspect a local BUS-BRA quarantine sample; never grant model use."""
+"""Plan and inspect local BUS-BRA quarantine data; never grant model use."""
 
 from __future__ import annotations
 
@@ -213,69 +213,81 @@ def _decoded_digest(mode, width, height, payload):
     return hashlib.sha256(prefix + payload).hexdigest()
 
 
-def _decode_image(payload, expected_size):
+def _decode_image(payload, expected_size=None):
     try:
         from PIL import Image
     except ImportError as exc:
         raise ValueError("Pillow is required for BUS-BRA structural inspection") from exc
-    with Image.open(io.BytesIO(payload), formats=("PNG",)) as image:
-        if image.format != "PNG" or getattr(image, "n_frames", 1) != 1:
-            raise ValueError("selected image must be a single-frame PNG")
-        if image.size != expected_size or image.width * image.height > 40_000_000:
-            raise ValueError("selected image dimensions disagree with frozen metadata")
-        if image.mode not in ("L", "RGB") or "transparency" in image.info:
-            raise ValueError("selected image has an unsupported or ambiguous representation")
-        image.verify()
-    with Image.open(io.BytesIO(payload), formats=("PNG",)) as image:
-        orientation = image.getexif().get(274)
-        if orientation not in (None, 1):
-            raise ValueError("selected image requires an undeclared orientation transform")
-        image.load()
-        pixels = image.tobytes()
-        return {
-            "format": image.format,
-            "mode": image.mode,
-            "width": image.width,
-            "height": image.height,
-            "raw_sha256": hashlib.sha256(payload).hexdigest(),
-            "pixel_sha256": _decoded_digest(image.mode, image.width, image.height, pixels),
-        }
+    try:
+        with Image.open(io.BytesIO(payload), formats=("PNG",)) as image:
+            if image.format != "PNG" or getattr(image, "n_frames", 1) != 1:
+                raise ValueError("selected image must be a single-frame PNG")
+            if image.width * image.height > 40_000_000:
+                raise ValueError("selected image exceeds the decoded-pixel ceiling")
+            if expected_size is not None and image.size != expected_size:
+                raise ValueError("selected image dimensions disagree with frozen metadata")
+            if image.mode not in ("L", "RGB") or "transparency" in image.info:
+                raise ValueError("selected image has an unsupported or ambiguous representation")
+            image.verify()
+        with Image.open(io.BytesIO(payload), formats=("PNG",)) as image:
+            orientation = image.getexif().get(274)
+            if orientation not in (None, 1):
+                raise ValueError("selected image requires an undeclared orientation transform")
+            image.load()
+            pixels = image.tobytes()
+            return {
+                "format": image.format,
+                "mode": image.mode,
+                "width": image.width,
+                "height": image.height,
+                "raw_sha256": hashlib.sha256(payload).hexdigest(),
+                "pixel_sha256": _decoded_digest(image.mode, image.width, image.height, pixels),
+            }
+    except OSError as exc:
+        raise ValueError("selected image is not a valid PNG") from exc
 
 
-def _decode_mask(payload, expected_size):
+def _decode_mask(payload, expected_size=None):
     try:
         from PIL import Image
     except ImportError as exc:
         raise ValueError("Pillow is required for BUS-BRA structural inspection") from exc
-    with Image.open(io.BytesIO(payload), formats=("PNG",)) as mask:
-        if mask.format != "PNG" or getattr(mask, "n_frames", 1) != 1 or mask.size != expected_size:
-            raise ValueError("selected mask must be a same-size single-frame PNG")
-        if mask.mode not in ("1", "L") or "transparency" in mask.info:
-            raise ValueError("selected mask must be an unambiguous single-channel image")
-        mask.verify()
-    with Image.open(io.BytesIO(payload), formats=("PNG",)) as mask:
-        mask.load()
-        gray = mask.convert("L") if mask.mode == "1" else mask
-        flattened = list(gray.get_flattened_data())
-        values = sorted(set(flattened))
-        if not values or any(type(value) is not int or value not in (0, 255) for value in values):
-            raise ValueError("selected mask values must be exactly binary 0/255")
-        foreground = [(index % mask.width, index // mask.width)
-                      for index, value in enumerate(flattened) if value == 255]
-        if not foreground:
-            raise ValueError("selected mask has no annotated foreground")
-        xs = [item[0] for item in foreground]
-        ys = [item[1] for item in foreground]
-        box = [min(xs), min(ys), max(xs) - min(xs) + 1, max(ys) - min(ys) + 1]
-        pixels = gray.tobytes()
-        return {
-            "mode": mask.mode,
-            "raw_sha256": hashlib.sha256(payload).hexdigest(),
-            "pixel_sha256": _decoded_digest("L", mask.width, mask.height, pixels),
-            "values": values,
-            "bbox_xywh": box,
-            "foreground_pixels": len(foreground),
-        }
+    try:
+        with Image.open(io.BytesIO(payload), formats=("PNG",)) as mask:
+            if mask.format != "PNG" or getattr(mask, "n_frames", 1) != 1:
+                raise ValueError("selected mask must be a same-size single-frame PNG")
+            if mask.width * mask.height > 40_000_000:
+                raise ValueError("selected mask exceeds the decoded-pixel ceiling")
+            if expected_size is not None and mask.size != expected_size:
+                raise ValueError("selected mask must be a same-size single-frame PNG")
+            if mask.mode not in ("1", "L") or "transparency" in mask.info:
+                raise ValueError("selected mask must be an unambiguous single-channel image")
+            mask.verify()
+        with Image.open(io.BytesIO(payload), formats=("PNG",)) as mask:
+            mask.load()
+            gray = mask.convert("L") if mask.mode == "1" else mask
+            histogram = gray.histogram()
+            values = [value for value, count in enumerate(histogram) if count]
+            if not values or any(value not in (0, 255) for value in values):
+                raise ValueError("selected mask values must be exactly binary 0/255")
+            bounds = gray.getbbox()
+            if bounds is None:
+                raise ValueError("selected mask has no annotated foreground")
+            left, top, right, bottom = bounds
+            box = [left, top, right - left, bottom - top]
+            pixels = gray.tobytes()
+            return {
+                "mode": mask.mode,
+                "width": mask.width,
+                "height": mask.height,
+                "raw_sha256": hashlib.sha256(payload).hexdigest(),
+                "pixel_sha256": _decoded_digest("L", mask.width, mask.height, pixels),
+                "values": values,
+                "bbox_xywh": box,
+                "foreground_pixels": histogram[255],
+            }
+    except OSError as exc:
+        raise ValueError("selected mask is not a valid PNG") from exc
 
 
 def _box_iou(a, b):
@@ -288,36 +300,189 @@ def _box_iou(a, b):
     return intersection / union
 
 
-def inspect_quarantine(archive_path: Path, plan: dict, output: Path, *,
-                       expected_archive_bytes: int = ARCHIVE_BYTES,
-                       expected_archive_md5: str = ARCHIVE_MD5) -> dict:
-    """Inspect only a frozen local sample and atomically publish a closed receipt."""
-    _validate_plan(plan)
+def _archive_identity(archive_path, expected_archive_bytes, expected_archive_md5):
     if type(expected_archive_bytes) is not int or expected_archive_bytes < 1:
         raise ValueError("expected archive byte count must be positive")
     if (not isinstance(expected_archive_md5, str) or
             re.fullmatch(r"[0-9a-f]{32}", expected_archive_md5) is None):
         raise ValueError("expected archive MD5 must be lowercase hexadecimal")
     archive_path = Path(archive_path).resolve(strict=True)
+    stream = archive_path.open("rb")
+    try:
+        digest = hashlib.md5()
+        archive_bytes = 0
+        while chunk := stream.read(1_048_576):
+            digest.update(chunk)
+            archive_bytes += len(chunk)
+        if archive_bytes != expected_archive_bytes or digest.hexdigest() != expected_archive_md5:
+            raise ValueError("archive identity differs from the pinned source")
+        stream.seek(0)
+        return stream, archive_bytes
+    except Exception:
+        stream.close()
+        raise
+
+
+def _collision_groups(records, digest_key):
+    by_digest = {}
+    for record in records:
+        by_digest.setdefault(record[digest_key], []).append(record)
+    groups = []
+    for members in by_digest.values():
+        if len(members) < 2:
+            continue
+        record_ids = sorted(item["record_id"] for item in members)
+        case_ids = sorted({item["case_id"] for item in members}, key=lambda item: int(item))
+        groups.append({
+            "record_ids": record_ids,
+            "case_ids": case_ids,
+            "cross_case": len(case_ids) > 1,
+            "pathologies": sorted({item["pathology"] for item in members}),
+        })
+    return sorted(groups, key=lambda item: item["record_ids"])
+
+
+def audit_corpus(archive_path: Path, output: Path, *,
+                 expected_archive_bytes: int = ARCHIVE_BYTES,
+                 expected_archive_md5: str = ARCHIVE_MD5) -> dict:
+    """Decode every metadata-bound pair and publish an aggregate quarantine receipt."""
+    output = Path(output)
+    if output.exists():
+        raise FileExistsError(str(output))
+    output.parent.mkdir(parents=True, exist_ok=True)
+    staging = Path(tempfile.mkdtemp(prefix=".busbra-corpus-", dir=output.parent))
+    try:
+        archive_stream, archive_bytes = _archive_identity(
+            archive_path, expected_archive_bytes, expected_archive_md5)
+        with archive_stream:
+            with zipfile.ZipFile(archive_stream) as archive:
+                infos = _safe_archive(archive)
+                metadata = _read_member(archive, infos, "BUSBRA/bus_data.csv", maximum=1_000_000)
+                source_records = _read_metadata(metadata)
+                expected_images = {item["image_member"] for item in source_records}
+                expected_masks = {item["mask_member"] for item in source_records}
+                actual_images = {name for name in infos if name.startswith("BUSBRA/Images/")}
+                actual_masks = {name for name in infos if name.startswith("BUSBRA/Masks/")}
+                if actual_images != expected_images or actual_masks != expected_masks:
+                    raise ValueError("archive pixel inventory differs from metadata")
+
+                decoded = []
+                image_modes = {}
+                mask_modes = {}
+                dimension_mismatches = []
+                for source in source_records:
+                    declared_size = (source["width"], source["height"])
+                    image = _decode_image(
+                        _read_member(archive, infos, source["image_member"], maximum=20_000_000))
+                    mask = _decode_mask(
+                        _read_member(archive, infos, source["mask_member"], maximum=20_000_000),
+                        (image["width"], image["height"]))
+                    actual_size = (image["width"], image["height"])
+                    if actual_size != declared_size:
+                        dimension_mismatches.append({
+                            "record_id": source["record_id"],
+                            "declared_width": declared_size[0],
+                            "declared_height": declared_size[1],
+                            "actual_width": actual_size[0],
+                            "actual_height": actual_size[1],
+                        })
+                    x, y, width, height = source["bbox_xywh"]
+                    if x + width > actual_size[0] or y + height > actual_size[1]:
+                        raise ValueError("metadata BBOX exceeds decoded image dimensions")
+                    image_modes[image["mode"]] = image_modes.get(image["mode"], 0) + 1
+                    mask_modes[mask["mode"]] = mask_modes.get(mask["mode"], 0) + 1
+                    decoded.append({
+                        "record_id": source["record_id"],
+                        "case_id": source["case_id"],
+                        "pathology": source["pathology"],
+                        "birads": source["birads"],
+                        "image_raw_sha256": image["raw_sha256"],
+                        "image_pixel_sha256": image["pixel_sha256"],
+                        "mask_raw_sha256": mask["raw_sha256"],
+                        "mask_pixel_sha256": mask["pixel_sha256"],
+                        "metadata_bbox_xywh": source["bbox_xywh"],
+                        "mask_bbox_xywh": mask["bbox_xywh"],
+                        "bbox_iou": _box_iou(source["bbox_xywh"], mask["bbox_xywh"]),
+                    })
+
+        image_groups = _collision_groups(decoded, "image_pixel_sha256")
+        mask_groups = _collision_groups(decoded, "mask_pixel_sha256")
+        ious = [item["bbox_iou"] for item in decoded]
+        pathology_counts = {}
+        birads_counts = {}
+        for item in decoded:
+            pathology_counts[item["pathology"]] = pathology_counts.get(item["pathology"], 0) + 1
+            birads_counts[item["birads"]] = birads_counts.get(item["birads"], 0) + 1
+        receipt = {
+            "schema": "mmbu.busbra.quarantine_corpus_audit_receipt.v1",
+            "ok": True,
+            "source_id": "busbra",
+            "source_version": "1.0",
+            "archive_bytes": archive_bytes,
+            "archive_md5": expected_archive_md5,
+            "metadata_sha256": hashlib.sha256(metadata).hexdigest(),
+            "record_count": len(decoded),
+            "case_count": len({item["case_id"] for item in decoded}),
+            "pathology_counts": dict(sorted(pathology_counts.items())),
+            "birads_counts": dict(sorted(birads_counts.items())),
+            "image_mode_counts": dict(sorted(image_modes.items())),
+            "mask_mode_counts": dict(sorted(mask_modes.items())),
+            "metadata_dimension_mismatches": dimension_mismatches,
+            "metadata_dimension_clearance": not dimension_mismatches,
+            "bbox_iou_min": min(ious),
+            "bbox_iou_max": max(ious),
+            "bbox_iou_below_0_95": sum(value < 0.95 for value in ious),
+            "bbox_iou_below_0_95_records": [{
+                "record_id": item["record_id"],
+                "metadata_bbox_xywh": item["metadata_bbox_xywh"],
+                "mask_bbox_xywh": item["mask_bbox_xywh"],
+                "bbox_iou": item["bbox_iou"],
+            } for item in decoded if item["bbox_iou"] < 0.95],
+            "exact_image_duplicate_groups": image_groups,
+            "exact_mask_duplicate_groups": mask_groups,
+            "exact_image_duplicate_clearance": not image_groups,
+            "exact_mask_duplicate_clearance": not mask_groups,
+            "structural_clearance": (not dimension_mismatches and min(ious) >= 0.95 and
+                                     not image_groups and not mask_groups),
+            "near_duplicate_clearance": False,
+            "medical_correctness_reviewed": False,
+            "source_proximity_reviewed": False,
+            "model_executed": False,
+            "training_ready": False,
+            "model_use_authorized": False,
+            "limitations": [
+                "Exact decoded equality does not establish near-duplicate or patient-identity clearance.",
+                "Geometry agreement does not establish clinical correctness or annotation completeness.",
+                "This receipt grants no training, evaluation, selection, release, or submission purpose.",
+            ],
+        }
+        receipt["receipt_digest"] = _canonical_digest(receipt)
+        (staging / "receipt.json").write_text(
+            json.dumps(receipt, indent=2, sort_keys=True, allow_nan=False) + "\n", encoding="utf-8")
+        if output.exists():
+            raise FileExistsError(str(output))
+        staging.rename(output)
+        return receipt
+    finally:
+        if staging.exists():
+            shutil.rmtree(staging)
+
+
+def inspect_quarantine(archive_path: Path, plan: dict, output: Path, *,
+                       expected_archive_bytes: int = ARCHIVE_BYTES,
+                       expected_archive_md5: str = ARCHIVE_MD5) -> dict:
+    """Inspect only a frozen local sample and atomically publish a closed receipt."""
+    _validate_plan(plan)
     output = Path(output)
     if output.exists():
         raise FileExistsError(str(output))
     output.parent.mkdir(parents=True, exist_ok=True)
     staging = Path(tempfile.mkdtemp(prefix=".busbra-intake-", dir=output.parent))
     try:
-        with archive_path.open("rb") as stream:
-            digest = hashlib.md5()
-            archive_bytes = 0
-            while True:
-                chunk = stream.read(1_048_576)
-                if not chunk:
-                    break
-                digest.update(chunk)
-                archive_bytes += len(chunk)
-            if archive_bytes != expected_archive_bytes or digest.hexdigest() != expected_archive_md5:
-                raise ValueError("archive identity differs from the pinned source")
-            stream.seek(0)
-            with zipfile.ZipFile(stream) as archive:
+        archive_stream, archive_bytes = _archive_identity(
+            archive_path, expected_archive_bytes, expected_archive_md5)
+        with archive_stream:
+            with zipfile.ZipFile(archive_stream) as archive:
                 infos = _safe_archive(archive)
                 metadata = _read_member(archive, infos, plan["metadata_member"], maximum=1_000_000)
                 if hashlib.sha256(metadata).hexdigest() != plan["metadata_sha256"]:
@@ -415,6 +580,13 @@ def _parser():
                          help="Pinned source size; override only for synthetic conformance tests")
     inspect.add_argument("--expected-archive-md5", default=ARCHIVE_MD5,
                          help="Pinned source MD5; override only for synthetic conformance tests")
+    audit = commands.add_parser("audit-corpus", help="Structurally audit every pair in a local archive")
+    audit.add_argument("archive", type=Path)
+    audit.add_argument("--output", type=Path, required=True)
+    audit.add_argument("--expected-archive-bytes", type=int, default=ARCHIVE_BYTES,
+                       help="Pinned source size; override only for synthetic conformance tests")
+    audit.add_argument("--expected-archive-md5", default=ARCHIVE_MD5,
+                       help="Pinned source MD5; override only for synthetic conformance tests")
     return parser
 
 
@@ -426,10 +598,14 @@ def main(argv=None):
             with args.output.open("x", encoding="utf-8") as stream:
                 json.dump(result, stream, indent=2, sort_keys=True, allow_nan=False)
                 stream.write("\n")
-        else:
+        elif args.command == "inspect":
             result = inspect_quarantine(args.archive, _load_json(args.plan), args.output,
                                         expected_archive_bytes=args.expected_archive_bytes,
                                         expected_archive_md5=args.expected_archive_md5)
+        else:
+            result = audit_corpus(args.archive, args.output,
+                                  expected_archive_bytes=args.expected_archive_bytes,
+                                  expected_archive_md5=args.expected_archive_md5)
         print(json.dumps(result, indent=2, sort_keys=True, allow_nan=False))
         return 0
     except (OSError, ValueError, TypeError, KeyError, zipfile.BadZipFile) as exc:

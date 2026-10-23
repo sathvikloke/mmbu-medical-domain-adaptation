@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 import zipfile
 
 
@@ -124,12 +125,14 @@ class QuarantineInspectionTests(unittest.TestCase):
         return stream.getvalue()
 
     def fixture(self, root, *, changed_metadata=False, dimension_mismatch=False,
-                empty_mask=False, rgb_mask=False):
+                empty_mask=False, rgb_mask=False, valid_unselected=False,
+                extra_pixel_member=False, source_dimension_mismatch=False):
         from tools.busbra_quarantine import build_sample_plan
         rows = [
             row("bus_0001-l", 1, "benign", 4, bbox="[1,1,2,2]", width="4", height="4"),
             row("bus_0002-l", 2, "malignant", 5, bbox="[0,0,1,1]", width="4", height="4"),
-            row("bus_0003-l", 3, "benign", 4, bbox="[0,0,1,1]", width="4", height="4"),
+            row("bus_0003-l", 3, "benign", 4, bbox="[0,0,1,1]", width="4",
+                height="5" if source_dimension_mismatch else "4"),
         ]
         frozen = metadata(rows)
         plan = build_sample_plan(frozen)
@@ -153,8 +156,14 @@ class QuarantineInspectionTests(unittest.TestCase):
             z.writestr("BUSBRA/Masks/mask_0001-l.png", self.png("L", mask_1_values))
             z.writestr("BUSBRA/Images/bus_0002-l.png", image_2)
             z.writestr("BUSBRA/Masks/mask_0002-l.png", mask_2)
-            z.writestr("BUSBRA/Images/bus_0003-l.png", b"poison-unselected-image")
-            z.writestr("BUSBRA/Masks/mask_0003-l.png", b"poison-unselected-mask")
+            if valid_unselected:
+                z.writestr("BUSBRA/Images/bus_0003-l.png", self.png("L", list(reversed(range(16)))))
+                z.writestr("BUSBRA/Masks/mask_0003-l.png", self.png("L", [0, 255] + [0] * 14))
+            else:
+                z.writestr("BUSBRA/Images/bus_0003-l.png", b"poison-unselected-image")
+                z.writestr("BUSBRA/Masks/mask_0003-l.png", b"poison-unselected-mask")
+            if extra_pixel_member:
+                z.writestr("BUSBRA/Images/bus_9999-l.png", duplicate_image)
         payload = archive.read_bytes()
         return archive, plan, len(payload), hashlib.md5(payload).hexdigest()
 
@@ -218,6 +227,102 @@ class QuarantineInspectionTests(unittest.TestCase):
                 inspect_quarantine(archive, tampered, root / "fresh", expected_archive_bytes=size,
                                    expected_archive_md5=md5)
             self.assertFalse((root / "fresh").exists())
+
+    def test_corpus_audit_closes_inventory_decodes_every_record_and_reports_collisions(self):
+        from tools.busbra_quarantine import audit_corpus
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            archive, _plan, size, md5 = self.fixture(root, valid_unselected=True)
+
+            receipt = audit_corpus(archive, root / "census", expected_archive_bytes=size,
+                                   expected_archive_md5=md5)
+
+            self.assertTrue(receipt["ok"])
+            self.assertEqual(receipt["record_count"], 3)
+            self.assertEqual(receipt["case_count"], 3)
+            self.assertEqual(receipt["image_mode_counts"], {"L": 3})
+            self.assertEqual(receipt["mask_mode_counts"], {"L": 3})
+            self.assertEqual(receipt["exact_image_duplicate_groups"], [{
+                "case_ids": ["1", "2"],
+                "cross_case": True,
+                "pathologies": ["benign", "malignant"],
+                "record_ids": ["bus_0001-l", "bus_0002-l"],
+            }])
+            self.assertFalse(receipt["exact_image_duplicate_clearance"])
+            self.assertFalse(receipt["near_duplicate_clearance"])
+            self.assertFalse(receipt["structural_clearance"])
+            self.assertEqual(receipt["bbox_iou_below_0_95_records"], [{
+                "bbox_iou": 0.0,
+                "mask_bbox_xywh": [1, 0, 1, 1],
+                "metadata_bbox_xywh": [0, 0, 1, 1],
+                "record_id": "bus_0003-l",
+            }])
+            self.assertFalse(receipt["training_ready"])
+            self.assertFalse(receipt["model_use_authorized"])
+            self.assertEqual(json.loads((root / "census/receipt.json").read_text()), receipt)
+
+    def test_corpus_audit_rejects_unlisted_pixels_and_bad_unselected_records(self):
+        from tools.busbra_quarantine import audit_corpus
+        for options in ({"extra_pixel_member": True, "valid_unselected": True}, {}):
+            with self.subTest(options=options), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                archive, _plan, size, md5 = self.fixture(root, **options)
+                with self.assertRaises(ValueError):
+                    audit_corpus(archive, root / "census", expected_archive_bytes=size,
+                                 expected_archive_md5=md5)
+                self.assertFalse((root / "census").exists())
+
+    def test_corpus_audit_is_deterministic_and_never_turns_exact_into_near_clearance(self):
+        from tools.busbra_quarantine import audit_corpus
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            archive, _plan, size, md5 = self.fixture(root, valid_unselected=True)
+            first = audit_corpus(archive, root / "first", expected_archive_bytes=size,
+                                 expected_archive_md5=md5)
+            second = audit_corpus(archive, root / "second", expected_archive_bytes=size,
+                                  expected_archive_md5=md5)
+            self.assertEqual(first, second)
+            self.assertFalse(first["near_duplicate_clearance"])
+
+    def test_corpus_audit_verifies_and_decodes_the_same_single_open(self):
+        from tools.busbra_quarantine import audit_corpus
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            archive, _plan, size, md5 = self.fixture(root, valid_unselected=True)
+            original = io.open
+            archive_open_count = 0
+
+            def tracked_open(file, *args, **kwargs):
+                nonlocal archive_open_count
+                if Path(file) == archive.resolve():
+                    archive_open_count += 1
+                return original(file, *args, **kwargs)
+
+            with mock.patch("io.open", side_effect=tracked_open):
+                audit_corpus(archive, root / "census", expected_archive_bytes=size,
+                             expected_archive_md5=md5)
+
+            self.assertEqual(archive_open_count, 1)
+
+    def test_corpus_audit_records_metadata_size_errata_when_image_and_mask_agree(self):
+        from tools.busbra_quarantine import audit_corpus
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            archive, _plan, size, md5 = self.fixture(
+                root, valid_unselected=True, source_dimension_mismatch=True)
+
+            receipt = audit_corpus(archive, root / "census", expected_archive_bytes=size,
+                                   expected_archive_md5=md5)
+
+            self.assertEqual(receipt["metadata_dimension_mismatches"], [{
+                "actual_height": 4,
+                "actual_width": 4,
+                "declared_height": 5,
+                "declared_width": 4,
+                "record_id": "bus_0003-l",
+            }])
+            self.assertFalse(receipt["metadata_dimension_clearance"])
+            self.assertFalse(receipt["training_ready"])
 
 
 class StandaloneCliTests(unittest.TestCase):

@@ -73,7 +73,8 @@ For native processors, use the separate environment and exact pins in [processor
 5. [Repository map](REPOSITORY_MAP.md): locate the historical module, raw result, and script relevant to compatibility work.
 6. [Organizer clarifications](ORGANIZER_CLARIFICATIONS.md) and [task-protocol snapshot](TASK_PROTOCOL_SNAPSHOT.md): use
    the dated reply register and revision-recorded visible task-card snapshot; the older question draft is historical.
-7. [Package A reconciliation](PACKAGE_A_RECONCILIATION.md), [Package B synthetic trace](PACKAGE_B_TRACE.md), dated [package status](CLAUDE_PACKAGE_STATUS.md),
+7. [Package A reconciliation](PACKAGE_A_RECONCILIATION.md), [Package B synthetic trace](PACKAGE_B_TRACE.md),
+   [Package F synthetic trace](PACKAGE_F_TRACE.md), dated [package status](CLAUDE_PACKAGE_STATUS.md),
    [project scorecard](PROJECT_SCORECARD.md), [independent idea arbitration](INDEPENDENT_IDEA_ARBITRATION.md),
    [research portfolio](RESEARCH_PORTFOLIO.md), binding
    [base-selection frontier](BASE_SELECTION_FRONTIER.md) and [red-team](BASE_SELECTION_REDTEAM.md),

@@ -1,6 +1,6 @@
 # Current clone verification
 
-**Observed:** October 18, 2026 01:58 CDT
+**Observed:** October 22, 2026 23:14 CDT
 **Runtime:** Python 3.14.6  
 **Scope:** local software, documentation, and saved-artifact integrity only
 
@@ -10,14 +10,15 @@
 |---|---|---|
 | Historical preparation suite | **277 tests passed; 44 optional-Pillow image tests skipped** | Re-executes the preserved CPU package without Pillow; does not replace the Python 3.12/Pillow historical receipt or test a model |
 | Root repository/tool suite | **42 tests passed** | Covers restore, link, process, publication integrity, A–I package scope, and the manifest-bound authorization-verifier behavior only |
-| Phase 1 suite | **289 tests passed** using the underlying regular Python 3.14.6 executable | Includes the 12-test Package B synthetic lattice/exposure slice plus the current fail-closed contracts, registries, evidence chains, conditions, geometry, bundles, and orchestration; no model/data/GPU execution |
+| Phase 1 suite | **302 tests passed** using the underlying regular Python 3.14.6 executable | Includes the Package B and Package F synthetic slices plus the current fail-closed contracts, registries, evidence chains, conditions, geometry, bundles, and orchestration; no model/data/GPU execution |
 | Package B focused suite | **12 tests passed** | Covers only deterministic synthetic lattice derivations, rejection gates, exact exposure accounting, schedule boundaries, and resume receipts; it is not biomedical, model, trainer, or score evidence |
+| Package F focused suite | **13 tests passed** | Covers a closed synthetic manifest, state machine, exact proxy/decision mechanics, and disabled H1 registry with extensive negative subfixtures; it is not scientific, biomedical, model, trainer, or competition-result evidence |
 | Offline smoke workflow | **passed** | Replays only the historical synthetic demo and supplied toy-grade arithmetic; `model_executed=false` and `official_evaluation=false` |
 | Maintained local Markdown links/anchors | **passed** | External URLs were not fetched by this check |
 | Published v0.3 artifact verification | **passed** for 275 files, ZIP members, fixed transforms, and historical receipts | Establishes byte integrity only, not scientific validity or medical truth |
 | Phase 1 contract manifest | **passed** for the exact nine members, byte counts, SHA-256s, paths, and official-source hash agreement | Does not authenticate the new competition-design packet or authorize execution |
-| Claude dependency manifest and launch receipt | **passed packet integrity** for 40 members, including `tools/team.py` as the authorization verifier and the Package B trace; canonical digest `aa6e63f49f2a1c1db1bca5be5a35be6b00ff497c2e09a49e04b923cbba32dd12`; full-file SHA-256 `ad32686f9ecc95be6ae6732691cf8721f7ee468d9ab8c33ccd295e63ca0c852b` | The Package B approval was consumed; the resealed verifier reports `pending_human_digest_acknowledgement`, empty scope, and `authorized: false` for later writes |
-| Working-tree `git diff --check` | **passed for the Package B implementation and receipt diff** | This is a whitespace/error check, not scientific or authorization evidence |
+| Claude dependency manifest and launch receipt | **passed packet integrity** for 42 members, including `tools/team.py`, the Package B trace, and the Package F matrix/trace; canonical digest `9f52238e72522042bda4bf9c56957b3a6211ffb330fdad56f6d20c00858c164a`; full-file SHA-256 `d10236ae607eb0f5fa07f0ea618610892907d6ae878d6b6c15ec0bdc1ae8cdba` | The Package F approval was consumed; the resealed verifier reports `pending_human_digest_acknowledgement`, empty scope, and `authorized: false` for later writes |
+| Working-tree `git diff --check` | **passed for the Package F implementation and receipt diff** | This is a whitespace/error check, not scientific or authorization evidence |
 
 The three test suites are distinct. Their counts must not be added and described as independent scientific evidence.
 The optional-image skips mean this fresh run does not establish the image coverage already recorded by the historical
@@ -32,7 +33,7 @@ MOCS, or reproduces the organizer's evaluator.
 - The former 100-path dirty tree was preserved in four local commits: `371254f` for Phase 1/core orchestration,
   `de07e45` for prospective research/design records, `ee3c69a` for current routing/authority documents, and `fc9472b`
   for the sealed Claude packet. Subsequent receipt-only commits record verification and scoped Package A/B authority.
-  The current working tree contains the Package B synthetic implementation, tests, trace, navigation/status updates,
+  The current working tree contains the Package F synthetic implementation, tests, trace, navigation/status updates,
   and resealed pending receipt. Historical `outputs/` bytes were unchanged. No push, merge, PR, training, model load,
   biomedical/public data opening, evaluation, upload, or submission was performed.
 - The pre-commit inventory and a repeated repository scan found no newly added model weights, datasets, archives,

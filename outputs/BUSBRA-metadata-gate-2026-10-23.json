@@ -1,0 +1,113 @@
+{
+  "archive": {
+    "bytes": 133917740,
+    "declared_md5": "1f8b2be6476d58fc97bfb5e5a1ea9bab",
+    "image_members": 1875,
+    "image_mask_id_sets_equal": true,
+    "mask_members": 1875,
+    "member_count": 3757,
+    "selected_metadata_http_bytes": 486444,
+    "selected_metadata_range_count": 8,
+    "whole_archive_checksum_verified": false
+  },
+  "claim_boundary": {
+    "biomedical_pixels_opened": false,
+    "dataset_admitted_for_model_use": false,
+    "image_or_mask_member_extracted": false,
+    "mmbu_examples_opened": false,
+    "model_executed": false,
+    "selected_members_only": [
+      "BUSBRA/10-fold-cv.csv",
+      "BUSBRA/5-fold-cv.csv",
+      "BUSBRA/bus_data.csv"
+    ],
+    "zero_compressed_image_bytes_transferred": "not_established_because_range_blocks_may_overlap_adjacent_members"
+  },
+  "disposition": {
+    "allowed_next_stage": "quarantined_structural_intake_after_independent_rights_and_purpose_review",
+    "metadata_gate": "pass_with_split_restriction",
+    "prohibited_split_fields": [
+      "valid_1",
+      "valid_2",
+      "valid_3",
+      "valid_4",
+      "valid_5",
+      "valid_6",
+      "valid_7",
+      "valid_8",
+      "valid_9",
+      "valid_10"
+    ],
+    "required_independent_unit": "Case",
+    "safe_source_split_field": "kFold"
+  },
+  "files": {
+    "BUSBRA/10-fold-cv.csv": {
+      "bytes": 82728,
+      "crc32": "af4e25ef",
+      "patient_groups": 1064,
+      "patient_groups_crossing_outer_fold": 0,
+      "rows": 1875,
+      "sha256": "e4b788a1073b51179e2d1e501a1e87ebbff8c743248787b8f1641aea51e9e242"
+    },
+    "BUSBRA/5-fold-cv.csv": {
+      "bytes": 63756,
+      "crc32": "049ae5f6",
+      "patient_groups": 1064,
+      "patient_groups_crossing_outer_fold": 0,
+      "rows": 1875,
+      "sha256": "8bed2d2efdf6ea370ab82a3cbda4c213f498274a68b434828ceeb636ce43a68d"
+    },
+    "BUSBRA/bus_data.csv": {
+      "bbox_error_count": 0,
+      "bytes": 180163,
+      "crc32": "8b0d4590",
+      "image_id_set_exact": true,
+      "mask_id_set_exact_after_documented_name_transform": true,
+      "patient_groups": 1064,
+      "rows": 1875,
+      "sha256": "f218d0f10b0aeeb14ff4b2cfed8631b2f4a7cf608e564548b35bddd55f3aafb3",
+      "unique_ids": 1875
+    }
+  },
+  "join_audit": {
+    "fold_id_sets_equal_metadata_id_set": true,
+    "fold_pathology_mismatch_rows": 0,
+    "id_case_mismatch_rows": 0,
+    "image_mask_metadata_closure": true
+  },
+  "observed_at_utc": "2026-10-23T18:21:56Z",
+  "schema": "mmbu.busbra.metadata_gate.v1",
+  "source": {
+    "access_right": "open",
+    "license_id": "cc-by-4.0",
+    "record_id": 8231412,
+    "title": "BUS-BRA: A Breast Ultrasound Dataset for Assessing Computer-aided Diagnosis Systems",
+    "url": "https://zenodo.org/api/records/8231412/files/BUSBRA.zip/content",
+    "version": "1.0"
+  },
+  "split_audit": {
+    "outer_10_fold_patient_safe": true,
+    "outer_5_fold_patient_safe": true,
+    "provided_validation_flags_patient_safe": false,
+    "ten_fold_patient_groups_with_inconsistent_validation_flag": {
+      "valid_1": 244,
+      "valid_10": 236,
+      "valid_2": 234,
+      "valid_3": 239,
+      "valid_4": 245,
+      "valid_5": 236,
+      "valid_6": 227,
+      "valid_7": 228,
+      "valid_8": 221,
+      "valid_9": 240
+    },
+    "five_fold_patient_groups_with_inconsistent_validation_flag": {
+      "valid_1": 210,
+      "valid_2": 201,
+      "valid_3": 212,
+      "valid_4": 216,
+      "valid_5": 211
+    }
+  }
+}

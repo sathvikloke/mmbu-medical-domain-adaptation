@@ -328,6 +328,12 @@ class B1PreflightTests(unittest.TestCase):
         with self.assertRaises(ContractViolation):
             b1_native.exact_lora_targets(["model.visual.blocks.0.attn.q_proj"])
 
+    def test_chat_template_record_requires_a_nonempty_string(self):
+        self.assertEqual(b1_native.chat_template_from_record({"chat_template": "template"}), "template")
+        for record in ({}, {"chat_template": ""}, {"chat_template": 1}, []):
+            with self.subTest(record=record), self.assertRaises(ContractViolation):
+                b1_native.chat_template_from_record(record)
+
     def test_trainable_gradient_and_update_inventory_closes(self):
         declared = ["adapter.a", "adapter.b"]
         self.assertEqual(

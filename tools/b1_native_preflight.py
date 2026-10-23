@@ -161,6 +161,11 @@ def _messages(prompt: str) -> list[dict]:
     return [{"role": "user", "content": [{"type": "image"}, {"type": "text", "text": prompt}]}]
 
 
+def chat_template_from_record(record: Any) -> str:
+    f.require(type(record) is dict, "processor.chat_template_record", "must be a JSON object")
+    return f.text(record.get("chat_template"), "processor.chat_template")
+
+
 def load_pil_processor(model_root: Path) -> Any:
     """Load the exact local processor while forcing PIL for image decoding only.
 
@@ -182,7 +187,7 @@ def load_pil_processor(model_root: Path) -> Any:
         model_root, local_files_only=True, trust_remote_code=False
     )
     template_record = json.loads((model_root / "chat_template.json").read_text(encoding="utf-8"))
-    chat_template = f.string(template_record.get("chat_template"), "processor.chat_template", nonempty=True)
+    chat_template = chat_template_from_record(template_record)
     processor = Qwen2_5_VLProcessor(
         image_processor=image_processor,
         tokenizer=tokenizer,

@@ -1,6 +1,6 @@
 # Experiment workflow
 
-The [audited strategy v2](../../outputs/MMBU-domain-adaptation-plan-v2.md) is the prospective research plan. This guide turns it into a team workflow. All actual model experiments remain pending; current software implements preparation and recordkeeping, not a training runner.
+The [audited strategy v2](../../outputs/MMBU-domain-adaptation-plan-v2.md) preserves historical scientific rationale, including an earlier provisional model order. This guide supplies the current prospective workflow and supersedes that order: the competition shortlist remains empty until E01 is prospectively frozen and receipted. All actual model experiments remain pending; current software implements preparation and recordkeeping, not a training runner.
 
 ## State the question and authority first
 
@@ -20,14 +20,20 @@ All results currently in the handoff are engineering or source-review evidence. 
 
 | Stage | Work | Gate to advance |
 | --- | --- | --- |
-| E00 | Resolve task/context fixtures; load, run a small forward pass, export and reload a non-quantized BF16/FP16 model | Pinned contract for score claims; verified native model path and measured resources |
-| E01 | Untouched Qwen2.5 baseline and Qwen3.5 challenger under matched conditions; fallback if needed | Viability within actual hardware/budget and comparable outputs |
+| E00 | Resolve task/context fixtures; use B1 only as the pinned native-runtime fixture to load, run a small forward pass, export, and reload a non-quantized BF16/FP16 model | Pinned contract for score claims; verified native model path and measured resources. Passing this gate does not admit or select B1 as a competition base. |
+| E01 | Prospectively freeze the eligible candidate universe and the [base-selection adaptation frontier](BASE_SELECTION_FRONTIER.md); run mechanical F0, freeze every F2 artifact/failure, then open the joint decision base and adapted arms together | Valid receipts, viability within actual hardware/budget, comparable base/adapted outputs, and a deterministic adaptation-response decision rather than a base-only ranking |
 | E02 | Matched language-adapter pilots plus bounded visual-adaptation probes | Reviewed eligible data, actual trainable-module support, sound masks/loss normalization, measured exposure/cost |
 | E03 | One evidence-motivated data or visual change against the retained baseline | Useful development evidence with source/task regressions investigated |
 | E04 | Repeat promising recipe on another seed and scale modestly | Gain persists enough to justify cost; maintain a recoverable submission baseline |
 | E05 | Select and freeze checkpoint/seed before opening confirmation; evaluate once; reproduce exported artifact | Honest confirmation result, fresh-environment reproduction, provenance, and release checks |
 
-The current candidate order is operational, not a ranking. Do not eliminate a candidate solely because it is slower to configure, has different format behavior under an unresolved contract, or uses a different effective training exposure. After two unsuccessful attempts at an unchanged hypothesis, document what failed and revise the mechanism before another attempt.
+No current competition candidate order exists. B1's fixture role and any processor-probe ordering cannot select or
+eliminate a competition base. Untouched base performance alone also cannot select a base because the challenge rewards
+adapted performance and base-relative improvement. Run model comparison only after the prospective E01 candidate
+universe, F0/joint-decision/F2 rule, matched conditions, and receipts are frozen. Do not eliminate a candidate solely
+because it is slower to configure, has different format behavior under an unresolved contract, or uses a different
+effective training exposure. After two unsuccessful attempts at an unchanged hypothesis, document what failed and
+revise the mechanism before another attempt.
 
 ## Before a run
 
@@ -47,11 +53,29 @@ Review labels and coordinate frames before use, including empty masks, borders, 
 
 ## Compare and report
 
-The brief's prospective score is `S = (0.8T + 0.2C) × (T − T_base)`. Context fields are averaged within each applicable example, then across the evaluation population; zero-field behavior remains unresolved. Each candidate retains its own untouched base. Preserve failures under the confirmed grading rule and raw outputs before parsing; do not silently repair responses.
+The brief's prospective score is `S = (0.8T + 0.2C) × (T − T_base)`. Context fields are averaged within each applicable
+example, then across the evaluation population; zero-field behavior remains unresolved. The dated
+[task-protocol snapshot](TASK_PROTOCOL_SNAPSHOT.md) pins the currently visible task suffixes and judge but also records
+malformed-output and multi-label contradictions. Each candidate retains its own untouched base. Preserve raw outputs;
+the local production policy fails malformed committed JSON and never repairs it. Do not label raw-reply fallback or
+multi-label scoring official-equivalent until organizer precedence or an executable harness resolves those branches.
 
 Report T, C, task gain, S, output validity, examples/groups/sources, source/task breakdowns, paired uncertainty, seeds, and actual GPU-hours/API charges/wall time/human review time separately. Use paired group resamples that retain base/adapted outputs together and the declared source mixture. A bootstrap interval over the development population is not a guarantee about the hidden leaderboard.
 
 If a surrogate judge is needed, pin it and calibrate on a separate blinded sample that includes all contenders' base/adapted answers. Report randomly sampled disagreement separately from targeted model-disagreement cases. If grading uncertainty can change the decision, obtain adjudication or defer elimination rather than manufacturing certainty.
+
+## Validation access and multiplicity
+
+Before producing any untouched `recipe_confirmation` output, freeze the complete candidate universe, primary contrast
+vector, endpoint hierarchy, practical margins, familywise confidence level, resampling method/seeds, failure treatment,
+and deterministic decision function. Use the same paired independent-group/source resample indices across candidates
+and endpoints. When more than one confirmatory contrast or safety endpoint can block/prompt promotion, use the frozen
+simultaneous max-statistic bounds rather than pointwise intervals or a control selected after viewing results.
+
+Open the `recipe_confirmation` population once. Mask candidate identities from the analysis step and emit the frozen decision
+before unmasking descriptive results. Exploratory candidates/slices cannot rescue a failed confirmatory family. Any
+post-opening change to candidate, checkpoint, prompt, margin, endpoint, exclusion, resampling, or decision logic retires
+that population into development and requires a new independent population for another confirmation claim.
 
 ## Confirmation and release
 
@@ -59,4 +83,7 @@ Choose the primary checkpoint and seed using development only. Freeze the untouc
 
 Record a disappointing result unchanged. A subsequent model change informed by confirmation retires that set into development; a new independent set is needed for a new confirmation claim. Local receipts can detect drift against retained anchors but cannot stop a person from opening data elsewhere or rewriting every copy of an unanchored ledger.
 
-Before submission, verify the confirmed single-model rules, non-quantized BF16/FP16 export, vision/projector/adapters, processor/template/generation files, dependencies, raw outputs, source disclosure, and fresh loading in the allowed environment. Obtain the team's public-release/submission decision and retain the actual upload receipt. No such release or model validation is established by this CPU handoff.
+Before submission, follow the fail-closed [release rehearsal](RELEASE_REHEARSAL.md): verify the confirmed single-model
+rules, non-quantized BF16/FP16 export, vision/projector/adapters, processor/template/generation files, dependencies, raw
+outputs, source disclosure, clean network-denied loading, form dry run, human approval, upload receipt, post-upload
+revision, and rollback evidence. No such release or model validation is established by this CPU handoff.

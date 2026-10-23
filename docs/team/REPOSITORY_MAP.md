@@ -8,7 +8,48 @@ Paths in this guide are relative to the repository root. The historical layout i
 | --- | --- |
 | [README.md](../../README.md), [CONTRIBUTING.md](../../CONTRIBUTING.md) | Entry point and contribution/review expectations |
 | [docs/team](.) | Team onboarding, evidence navigation, decisions, workflow, and data/model notes |
-| [outputs/MMBU-domain-adaptation-plan-v2.md](../../outputs/MMBU-domain-adaptation-plan-v2.md) | Current prospective research strategy; supersedes the original plan where revised |
+| [docs/superpowers/specs/2026-10-17-mosaic-design.md](../superpowers/specs/2026-10-17-mosaic-design.md) | Current unimplemented research hypothesis, prior-art boundary, factor-identifiability gate, comparisons, and stop rules |
+| [docs/superpowers/specs/2026-10-17-quilt-design.md](../superpowers/specs/2026-10-17-quilt-design.md) | Loader-safe interface-gradient quotient hypothesis, prior-art boundary, identifiability gates, controls, and stop rules |
+| [docs/team/QUILT_SYNTHETIC_PROOF.md](QUILT_SYNTHETIC_PROOF.md) | Exact CPU-only planted-subspace, non-identifiability, confound, negative-control, and artifact proof obligations |
+| [docs/team/QUILT_ADVERSE_REVIEW.md](QUILT_ADVERSE_REVIEW.md) | Binding independent red-team disposition, verified prior-art conflicts, accepted/rejected criticisms, revised scores, and QUILT demotion |
+| [docs/team/COMPETITION_FIRST_RECIPE.md](COMPETITION_FIRST_RECIPE.md) | Binding lowest-complexity B0/B1/B2 strategy, pending loader evidence, with geometry/output invariants, preservation and visual-dependence gates, optional ablations, and promotion rule |
+| [docs/team/EXPERIMENT_FREEZE_CONTRACT.md](EXPERIMENT_FREEZE_CONTRACT.md) | Binding separation of schema, scientific freeze, and execution authority; packet closure, literal decision receipt, role/confirmation semantics, exposure, compute, output, and release gates |
+| [docs/team/PACKAGE_A_RECONCILIATION.md](PACKAGE_A_RECONCILIATION.md) | Package A six-column adverse reconciliation, repairs, remaining unknowns, and scope-limited verdict |
+| [docs/team/PACKAGE_B_TRACE.md](PACKAGE_B_TRACE.md) | Package B synthetic implementation hashes, file-to-contract trace, exact focused result, and claim limits |
+| [docs/team/PACKAGE_F_MATRIX.md](PACKAGE_F_MATRIX.md), [docs/team/PACKAGE_F_TRACE.md](PACKAGE_F_TRACE.md) | Package F prospective fixture matrix plus closed synthetic manifest/H1 implementation hashes, test evidence, and limits |
+| [docs/team/CLAUDE_PACKAGE_STATUS.md](CLAUDE_PACKAGE_STATUS.md) | Dated separation of artifact, acceptance, readiness, and execution state for Packages A–I |
+| [config/claude-handoff-dependencies.json](../../config/claude-handoff-dependencies.json) | Canonical 42-member Claude packet inventory, including the authorization verifier and Package B/F traces, with byte counts, SHA-256s, and a self-verifiable manifest digest |
+| [config/claude-handoff-launch-receipt.json](../../config/claude-handoff-launch-receipt.json) | Separate packet-root pointer; currently pending independent human digest acknowledgement and therefore read-only |
+| [docs/team/INDEPENDENT_IDEA_ARBITRATION.md](INDEPENDENT_IDEA_ARBITRATION.md) | Reconciliation of score-maximizing, novelty-seeking, and hostile reviews; binding flagship, demoted mechanisms, collision evidence, and falsification gates |
+| [docs/team/WEIGHT_INTERPOLATION_BRANCH.md](WEIGHT_INTERPOLATION_BRANCH.md) | Post-B2 fixed-coefficient effective-delta interpolation with export, loader, retention, and kill gates |
+| [docs/team/CONTEXT_OBJECTIVE_CONTRACT.md](CONTEXT_OBJECTIVE_CONTRACT.md) | Versioned requested-field, masking, per-unit exposure, shortcut-control, evaluation, and promotion contract for the unresolved context pass |
+| [docs/team/UNIT_EXPOSURE_AUDIT_SPEC.md](UNIT_EXPOSURE_AUDIT_SPEC.md) | Canonical unit/view/token mass, batching, accumulation, distributed, schedule, resume, synthetic traps, and reporting contract |
+| [docs/team/MULTI_ENCODER_BRANCH.md](MULTI_ENCODER_BRANCH.md) | Post-B2 frozen specialist-encoder ablation with matched controls, admission, resource, loader, and kill gates |
+| [docs/team/BASE_SELECTION_FRONTIER.md](BASE_SELECTION_FRONTIER.md) | Public-firewalled F0/joint-decision/F2 base selection using mechanical viability, deferred untouched characterization, and matched micro-adaptation response under the actual score structure |
+| [docs/team/BASE_SELECTION_REDTEAM.md](BASE_SELECTION_REDTEAM.md) | Binding adverse review of context uncertainty, screen-specific claims, exposure equivalence, engineering opportunity bias, and seed selection |
+| [docs/team/COMPETITION_MANIFEST_SPEC.md](COMPETITION_MANIFEST_SPEC.md) | Immutable B0/B1/B2 state machine, required fields, fail-closed validators, promotion/release contract, and current execution blockers |
+| [docs/team/COMPETITION_RECIPE_REDTEAM.md](COMPETITION_RECIPE_REDTEAM.md) | Independent red-team of visual-reliance, preservation, compute matching, rationale, and one-time-validation logic with binding repairs |
+| [docs/team/SYSTEM_INTERACTION_HYPOTHESIS.md](SYSTEM_INTERACTION_HYPOTHESIS.md) | Conditional SYS-A0–SYS-A3 answer/context-by-unit-normalization interaction and adaptation-response frontier claim, closest-system boundary, comparators, replication, and kill rules |
+| [docs/team/MOSAIC_DATA_GATE.md](MOSAIC_DATA_GATE.md) | Pre-training factor-identifiability requirements, current candidate map, and source-confounding stop decision |
+| [docs/team/SOURCE_FACTOR_INCIDENCE_AUDIT.md](SOURCE_FACTOR_INCIDENCE_AUDIT.md) | Metadata-only rank/alias stress test, source-family collapsing rules, and minimum crossover acquisition frontier |
+| [docs/team/CROSSOVER_SOURCE_SEARCH.md](CROSSOVER_SOURCE_SEARCH.md) | Primary-metadata search for paired/multi-anatomy sources, rank impact, blockers, and MOSAIC-2 fallback |
+| [docs/team/BASE_CONDITIONAL_PRESERVATION.md](BASE_CONDITIONAL_PRESERVATION.md) | Post-B2 negative-flip ablation, prior-art boundary, controls, and promotion/kill rule |
+| [docs/team/DATA_SOURCE_PORTFOLIO.md](DATA_SOURCE_PORTFOLIO.md) | Rights-, grouping-, annotation-, and independence-first prioritization of external data candidates with exact admission gates |
+| [docs/team/DATA_SOURCE_METADATA_RECEIPT.md](DATA_SOURCE_METADATA_RECEIPT.md) | Dated no-pixel primary-metadata receipt for BUS-BRA, BUS-UCLM, and conditional BUSI-WHU with unresolved fields |
+| [docs/team/FACTORIAL_UPDATE_ADVERSE_REVIEW.md](FACTORIAL_UPDATE_ADVERSE_REVIEW.md) | Hostile prior-art review, synthetic kill test, gauge/identifiability risks, and diagnostic-only disposition for factorial update decomposition |
+| [docs/team/NOVELTY_AUDIT.md](NOVELTY_AUDIT.md) | Adverse prior-art matrix, revised novelty scores, surviving distinction, and required strong baseline |
+| [docs/team/RESEARCH_PORTFOLIO.md](RESEARCH_PORTFOLIO.md) | Two-lane competition/research decision, candidate ratings, promotion logic, and next no-training work order |
+| [docs/team/PROJECT_SCORECARD.md](PROJECT_SCORECARD.md) | Evidence-separated project ratings, honest ceilings, and fastest gates to raise them |
+| [docs/team/CURRENT_VERIFICATION.md](CURRENT_VERIFICATION.md) | Fresh local test, link, artifact-integrity, public-card drift, and MOCS-route observations with scope limits |
+| [docs/team/IDEA_SEARCH_LEDGER.md](IDEA_SEARCH_LEDGER.md) | Active, rejected, superseded, and baseline-only ideas with adverse evidence and anti-loop rules |
+| [docs/team/MEDQWEN_REPRODUCTION_GAP.md](MEDQWEN_REPRODUCTION_GAP.md) | Paper/repository facts, missing reproduction details, cautions, and exact read-only Claude work order for the strongest routed baseline |
+| [docs/team/ANNOTATION_TASK_LATTICE.md](ANNOTATION_TASK_LATTICE.md) | Deterministic, leakage-resistant source-annotation to MMBU-task curriculum contract |
+| [docs/team/CLAUDE_HANDOFF.md](CLAUDE_HANDOFF.md) | Bounded read-only, synthetic-engineering, compatibility, and MOCS work order with automatic rejection conditions |
+| [docs/team/RELEASE_REHEARSAL.md](RELEASE_REHEARSAL.md) | Fail-closed candidate freeze, package inspection, clean-load, disclosure, dry-run, human approval, upload, verification, and rollback runbook |
+| [docs/team/MOCS_ACCESS_AUDIT.md](MOCS_ACCESS_AUDIT.md) | Dated local SSH-route observation, failed DNS reachability evidence, non-claims, and smallest safe access gate |
+| [docs/team/ORGANIZER_CLARIFICATIONS.md](ORGANIZER_CLARIFICATIONS.md) | Dated organizer-reply register and stricter local policy |
+| [docs/team/TASK_PROTOCOL_SNAPSHOT.md](TASK_PROTOCOL_SNAPSHOT.md) | Dated visible task prompt/routing/judge snapshot, revision drift, and malformed-output conflict |
+| [outputs/MMBU-domain-adaptation-plan-v2.md](../../outputs/MMBU-domain-adaptation-plan-v2.md) | Historical scientific rationale; its provisional model order is superseded by the current [experiment workflow](EXPERIMENT_WORKFLOW.md) |
 | [outputs/MMBU-precompute-v0.3-status.md](../../outputs/MMBU-precompute-v0.3-status.md) | Historical CPU completion status and limitations |
 | [outputs/mmbu-precompute](../../outputs/mmbu-precompute) | Version 0.3 package: source, tests, examples, configs, documentation, tools, and evidence |
 | [outputs](../../outputs) | All preserved plan/audit/status documents, v0.1–v0.3 portable ZIPs, and verification receipts |

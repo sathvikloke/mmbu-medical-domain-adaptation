@@ -1,0 +1,88 @@
+{
+  "schema_version": 4,
+  "slot": "B1",
+  "model_id": "Qwen/Qwen2.5-VL-7B-Instruct",
+  "model_revision": "cc594898137f460bfe9f0759e9844b3ce807cfb5",
+  "processor_id": "Qwen/Qwen2.5-VL-7B-Instruct",
+  "processor_revision": "cc594898137f460bfe9f0759e9844b3ce807cfb5",
+  "upstream_metadata": {
+    "config_sha256": "77d9ec7321cc572e3579e2c84799c9cadaded63c49ce93b101733349fc330c43",
+    "preprocessor_config_sha256": "f2058c716eef96ccaed1cc1e2d0c08306b62586d535b28d9d08e691b2fab7ca0",
+    "generation_config_sha256": "0a3aea82869fe29f20dc95ccf3e2bcff380eca1f5ad6447a4a4b37110b08e43e",
+    "tokenizer_config_sha256": "4abd3520120e266da84c0864fee064d1fb10806f02225911a47253dd38dc5f56",
+    "chat_template_sha256": "ad60d90252ed0b0705ba14e2d0ad0fec0beac1ea955642b54059b36052d8bc96"
+  },
+  "weight_manifest": {
+    "index_path": "model.safetensors.index.json",
+    "index_bytes": 57619,
+    "index_sha256": "73b333b0b16e5286ddba615d2caebcd495cf7e616f52eb217a81781393d79de9",
+    "serialized_tensor_count": 729,
+    "serialized_tensor_elements": 8292166656,
+    "dtype_elements": {
+      "BF16": 8292166656
+    },
+    "payload_bytes": 16584333312,
+    "shards": [
+      {
+        "path": "model-00001-of-00005.safetensors",
+        "bytes": 3900233256,
+        "sha256": "e97b877e47fde53a6c6e77aafb36e58e91ee9d95c4a3eeac6f1b5c0e6a1c986e"
+      },
+      {
+        "path": "model-00002-of-00005.safetensors",
+        "bytes": 3864726320,
+        "sha256": "a9a300a43b4724eee2abe7c18ceb26768d0ab011eb0cad19d9bfd2476a24d024"
+      },
+      {
+        "path": "model-00003-of-00005.safetensors",
+        "bytes": 3864726424,
+        "sha256": "111223d173e00bbee81cba1216fad28668df3476706b7fd26f4d5b50f8b3a507"
+      },
+      {
+        "path": "model-00004-of-00005.safetensors",
+        "bytes": 3864733680,
+        "sha256": "ef47f634fa57d46ee134edcc09f34085a47da1e16c12a2abe0d67118be6d72ed"
+      },
+      {
+        "path": "model-00005-of-00005.safetensors",
+        "bytes": 1089994880,
+        "sha256": "0c859795ad3a627a9b95bcb762e059d5b768a4a36fdd4affeff269d93fdecc67"
+      }
+    ],
+    "admission_rule": "verify index bytes, exact shard inventory, every local shard size and sha256, and header-derived dtype/element totals before model load"
+  },
+  "engineering_decoding": {
+    "inherit_repository_generation_config": false,
+    "do_sample": false,
+    "num_beams": 1,
+    "num_return_sequences": 1,
+    "temperature": 1.0,
+    "top_p": 1.0,
+    "top_k": 0,
+    "repetition_penalty": 1.0
+  },
+  "decoding_scope": "engineering_and_external_tournament_only_until_organizer_confirmed",
+  "runtime_candidate": {
+    "status": "paper_candidate_uninstalled_unexecuted",
+    "package": "transformers",
+    "version": "5.19.0",
+    "tag": "v5.19.0",
+    "annotated_tag_object": "b39d97c836e8d9f0ee6035a87c7a3ce5eaea43a8",
+    "peeled_commit": "c4c4605f961877852b89b97478536bb3a26b6fd1",
+    "wheel_filename": "transformers-5.19.0-py3-none-any.whl",
+    "wheel_bytes": 12599123,
+    "wheel_sha256": "afcd2dd5f603ed28c1e1fcb00a338ccbb4ef5f878ed289635df8b58187afb518",
+    "sdist_sha256": "87f38dd25e4521151b97e94520ac457f44a0ae8a8358a5b112daff6c64a822d6",
+    "modeling_source_sha256": "c64c794741011b27c773a1e2299d5fc2abd1e49e79f8d11ce87b2b308e9bf205",
+    "native_test_source_sha256": "df768c85bd6943af303fe188e11beacbad4931f07e638206b6af8cccb5f2b7ce",
+    "reference_contract": "docs/phase1/B1_RUNTIME_GATE.md",
+    "image_backend": "pil",
+    "padding_side": "left",
+    "attention_implementation": "sdpa",
+    "reference_condition": "single_gpu_bf16_dynamic_cache_local_images_no_optional_or_remote_kernels",
+    "full_environment_lock_required": true
+  },
+  "trust_remote_code": false,
+  "status": "paper_pin_only_unloaded",
+  "floating_revision_allowed": false
+}

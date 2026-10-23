@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "contract_revision": "2026-10-15-cycle-46f",
+  "files": {
+    "docs/phase1/CONTRACT.md": {
+      "bytes": 27292,
+      "sha256": "dc0fb5014c981b7c9d93239e119cd813ad97c16e01f6a32d67acbbdb55682cbb"
+    },
+    "docs/phase1/ACCEPTANCE.md": {
+      "bytes": 22282,
+      "sha256": "deb6acd5e2631f21a98e21869cc17843f60f248a336a103348b173252e116bf4"
+    },
+    "docs/phase1/SCHEMAS.md": {
+      "bytes": 111290,
+      "sha256": "7625d9fadee51b15a53ae552cc0a20c4cf36621617bd4d741a32f5c0bfab4931"
+    },
+    "docs/phase1/REPRODUCIBILITY.md": {
+      "bytes": 13757,
+      "sha256": "2bf4ffb67ed745e963c41cd5bbf5379fe44ead0a8b874da6a88103580994f6a3"
+    },
+    "docs/phase1/B1_RUNTIME_GATE.md": {
+      "bytes": 8283,
+      "sha256": "59979b397f308b7b8f177aa1354256b834b2dcdcbb4829d078ca28575e55da03"
+    },
+    "docs/phase1/EVALUATOR_MECHANICS.md": {
+      "bytes": 26898,
+      "sha256": "9c0c55497a9303a12f5887e1ab12e468aac70fa3b437e027ae7b56e04bbe49cf"
+    },
+    "docs/phase1/OFFICIAL_SOURCE_MAP.md": {
+      "bytes": 9294,
+      "sha256": "b7169b7eb1cf46fe3eeb3b0ab68985aff3847fe5ec8aebe7ea0c7a739e3683fc"
+    },
+    "docs/phase1/ORGANIZER_CLARIFICATION.md": {
+      "bytes": 5167,
+      "sha256": "c32124a47af4fb210f9bf7fd4936600c51818550d9a754b08a64696f4853d672"
+    },
+    "docs/phase1/b1-pin.json": {
+      "bytes": 3757,
+      "sha256": "e42797bd1f25941508f99ad2120a51829063869bf784833baf746b81250f97ec"
+    }
+  },
+  "official_source_hashes": {
+    "MMBU_challenge_update.pdf": "68fb4c2685d3d3b501da6f92f0906f970d851b596e98fddede26fb6e2b6e4ba0",
+    "mmbu-challenge-official-rules.pdf": "30fb3241bd331eeaf0602b4ec24faf66b50f97c5d430cf814fdda80d62b80c8e"
+  },
+  "inventory_policy": "exact: no missing or extra binding contract members",
+  "note": "This manifest pins the clone-resident sanitized Phase 1 contract, normative acceptance registry, field-level schema contract, reproducibility, B1 runtime and exact rational/paired-condition/evaluator-mechanics gates, source receipt, and B1 identity. Official source hash changes require a fresh review and contract revision."
+}

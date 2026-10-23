@@ -29,20 +29,26 @@ This table summarizes the saved registry, not a newly issued license opinion or 
 | PMC-VQA pinned metadata | Training CSV, license/documentation metadata; no images acquired | Paper reports upstream CC0/CC BY and aggregate CC BY-SA; exact obligations, usable labels, and intended use require review |
 | BBBC041 v1 | Public documentation only; archive not fetched | Recorded CC BY-NC-SA 3.0; noncommercial/share-alike and release compatibility unresolved |
 | Chest ImaGenome 1.0.0 | Public documentation only; no credentialed data | Credentialed license/DUA requirements not completed; no access or release approval inferred |
-| MMBU public set | Visible public card/API/source snapshots only; no gated examples | Access terms not accepted, files not downloaded, protocol/public-dev permissions unresolved; a technical `train` split is not training permission |
+| MMBU public set | Authenticated card/API/source snapshots only; no gated examples or files inspected | Authenticated page reported access granted on October 17, 2026, but no files were downloaded and no raw acceptance receipt was retained; the stricter public-set firewall remains binding, and a technical `train` split is not training permission |
 | Synthetic fixtures | Locally authored geometry and hand-derived toy answers in the package | Engineering-only fixtures; no biomedical efficacy claim |
 
 See the [source registry](../../outputs/mmbu-precompute/configs/source-registry.json), [BBBC039 intake](../../outputs/mmbu-precompute/docs/bbbc039-intake.md), [ROCO rights review](../../outputs/mmbu-precompute/docs/roco-upstream-rights.md), and [source screening](../../outputs/mmbu-precompute/docs/source-screening.md) for exact evidence and upstream locators.
 
+The [prospective source portfolio](DATA_SOURCE_PORTFOLIO.md) is a newer public-metadata prioritization screen for
+BUS-BRA, BUS-UCLM, MedMNIST+, BBBC038, and alternatives. It does not modify this saved registry, approve a source, or
+authorize acquisition. A candidate becomes usable only through a new versioned admission record.
+
 Preserve patient/study/field/article/figure/panel lineage and source splits. ROCO and PMC-VQA share 12,078 training PMCIDs in the inspected metadata; they are not independent source families. Article overlap does not establish identical images, and exact/perceptual image checks do not prove independent subjects. Pending review must address shortcuts, text overlays, correct coordinate frames, and visible support for each target.
 
-## Model candidates and pinned snapshots
+## Pinned engineering snapshots
+
+The competition shortlist is empty. The role labels below describe current engineering use, not a model-quality ranking or competition admission. Historical v0.1–v0.3 outputs and the saved model registry retain their original baseline/challenger/fallback labels as evidence of the earlier handoff; those labels are superseded for new selection decisions.
 
 | Role | Model | Recorded processor snapshot |
 | --- | --- | --- |
-| Working baseline | Qwen/Qwen2.5-VL-7B-Instruct | `cc594898137f460bfe9f0759e9844b3ce807cfb5` |
-| First challenger | Qwen/Qwen3.5-9B | `c202236235762e1c871ad0ccb60c8ee5ba337b9a` |
-| Fallback | Qwen/Qwen3-VL-8B-Instruct | `0c351dd01ed87e9c1b53cbc748cba10e6187ff3b` |
+| Phase 1 B1 native-runtime fixture | Qwen/Qwen2.5-VL-7B-Instruct | `cc594898137f460bfe9f0759e9844b3ce807cfb5` |
+| Unranked processor probe subject | Qwen/Qwen3.5-9B | `c202236235762e1c871ad0ccb60c8ee5ba337b9a` |
+| Unranked processor probe subject | Qwen/Qwen3-VL-8B-Instruct | `0c351dd01ed87e9c1b53cbc748cba10e6187ff3b` |
 
 The [model registry](../../outputs/mmbu-precompute/configs/model-registry.json) records public, ungated repositories and Apache-2.0 card metadata as retrieved; these are historical metadata observations. The [preflight](../../outputs/mmbu-precompute/docs/model-preflight.md) distinguishes checkpoint metadata from independently measured runtime facts. These snapshots pin tokenizer, template, and configuration artifacts; no tensor checkpoint, model loading, active-parameter verification, GPU fit, or export has been established.
 

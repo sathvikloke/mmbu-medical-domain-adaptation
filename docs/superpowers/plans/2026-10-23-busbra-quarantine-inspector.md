@@ -112,4 +112,3 @@ Add the two commands and document that the inspector establishes sample-level st
 
 Run: `python tools/team.py test && python tools/team.py test --images && python tools/team.py phase1-test && python tools/team.py verify-evidence && python tools/team.py verify-links`
 Expected: every command PASS; image tests execute rather than skip in an image-enabled environment.
-

@@ -1,7 +1,7 @@
 # BUS-UCLM v3 metadata gate
 
-**Observed:** October 23, 2026  
-**Evidence:** [`outputs/BUSUCLM-metadata-gate-2026-10-23.json`](../../outputs/BUSUCLM-metadata-gate-2026-10-23.json)  
+**Observed:** October 23, 2026
+**Evidence:** [`outputs/BUSUCLM-metadata-gate-2026-10-23.json`](../../outputs/BUSUCLM-metadata-gate-2026-10-23.json)
 **Decision:** inventory and patient grouping close; schema and license clearance fail; model use remains unapproved
 
 ## Authority and bounded access
@@ -58,4 +58,3 @@ cross-source/MMBU proximity, medical correctness, allowed derived tasks, or trai
 
 Receipt digest: `2b3bf668bb89c379633cf2e6db54e5f9a61325300c45da7318091bd9f85a5538`.
 The receipt remains `schema_clearance=false`, `training_ready=false`, and `model_use_authorized=false`.
-

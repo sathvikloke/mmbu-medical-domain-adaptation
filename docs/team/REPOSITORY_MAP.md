@@ -28,6 +28,7 @@ Paths in this guide are relative to the repository root. The historical layout i
 | [docs/team/BASE_SELECTION_FRONTIER.md](BASE_SELECTION_FRONTIER.md) | Public-firewalled F0/joint-decision/F2 base selection using mechanical viability, deferred untouched characterization, and matched micro-adaptation response under the actual score structure |
 | [docs/team/BASE_SELECTION_REDTEAM.md](BASE_SELECTION_REDTEAM.md) | Binding adverse review of context uncertainty, screen-specific claims, exposure equivalence, engineering opportunity bias, and seed selection |
 | [docs/team/COMPETITION_MANIFEST_SPEC.md](COMPETITION_MANIFEST_SPEC.md) | Immutable B0/B1/B2 state machine, required fields, fail-closed validators, promotion/release contract, and current execution blockers |
+| [docs/team/COMPETITION_MANIFEST_V2.md](COMPETITION_MANIFEST_V2.md) | Additive five-arm task-only/dual-objective candidate schema with mechanically derived comparator closure |
 | [docs/team/COMPETITION_RECIPE_REDTEAM.md](COMPETITION_RECIPE_REDTEAM.md) | Independent red-team of visual-reliance, preservation, compute matching, rationale, and one-time-validation logic with binding repairs |
 | [docs/team/SYSTEM_INTERACTION_HYPOTHESIS.md](SYSTEM_INTERACTION_HYPOTHESIS.md) | Conditional SYS-A0–SYS-A3 answer/context-by-unit-normalization interaction and adaptation-response frontier claim, closest-system boundary, comparators, replication, and kill rules |
 | [docs/team/MOSAIC_DATA_GATE.md](MOSAIC_DATA_GATE.md) | Pre-training factor-identifiability requirements, current candidate map, and source-confounding stop decision |
@@ -36,6 +37,7 @@ Paths in this guide are relative to the repository root. The historical layout i
 | [docs/team/BASE_CONDITIONAL_PRESERVATION.md](BASE_CONDITIONAL_PRESERVATION.md) | Post-B2 negative-flip ablation, prior-art boundary, controls, and promotion/kill rule |
 | [docs/team/DATA_SOURCE_PORTFOLIO.md](DATA_SOURCE_PORTFOLIO.md) | Rights-, grouping-, annotation-, and independence-first prioritization of external data candidates with exact admission gates |
 | [docs/team/DATA_SOURCE_METADATA_RECEIPT.md](DATA_SOURCE_METADATA_RECEIPT.md) | Dated no-pixel primary-metadata receipt for BUS-BRA, BUS-UCLM, and conditional BUSI-WHU with unresolved fields |
+| [docs/team/BUSBRA_METADATA_GATE.md](BUSBRA_METADATA_GATE.md) | Reproducible BUS-BRA archive, grouping, split, geometry, and within-source duplicate-risk gate |
 | [docs/team/BUSUCLM_METADATA_GATE.md](BUSUCLM_METADATA_GATE.md) | Reproducible BUS-UCLM v3 inventory, patient-grouping, schema-anomaly, and license-conflict gate |
 | [docs/team/FACTORIAL_UPDATE_ADVERSE_REVIEW.md](FACTORIAL_UPDATE_ADVERSE_REVIEW.md) | Hostile prior-art review, synthetic kill test, gauge/identifiability risks, and diagnostic-only disposition for factorial update decomposition |
 | [docs/team/NOVELTY_AUDIT.md](NOVELTY_AUDIT.md) | Adverse prior-art matrix, revised novelty scores, surviving distinction, and required strong baseline |

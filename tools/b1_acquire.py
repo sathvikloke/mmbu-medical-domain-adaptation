@@ -57,7 +57,14 @@ def build_plan(config: Any) -> dict:
     }
 
 
-def validate_resolver_report(report: Any, config: Any) -> dict:
+def _inventory_wheel(name: str, version: str, inventory: list[dict]) -> dict:
+    prefix = _normalized_name(name + "-" + version)
+    matches = [row for row in inventory if _normalized_name(row["path"]).startswith(prefix)]
+    f.require(len(matches) == 1, f"resolver_report.{name}", "must bind exactly one downloaded wheel")
+    return matches[0]
+
+
+def validate_resolver_report(report: Any, config: Any, wheel_inventory: list[dict] | None = None) -> dict:
     config = b1_preflight.validate_preflight_config(config)
     report = f.closed(report, "resolver_report", ("version", "install"))
     f.text(report["version"], "resolver_report.version")
@@ -79,9 +86,16 @@ def validate_resolver_report(report: Any, config: Any) -> dict:
         archive = download.get("archive_info")
         f.require(type(archive) is dict, path + ".download_info.archive_info", "must be an object")
         digest = archive.get("hash")
-        f.require(type(digest) is str and digest.startswith("sha256=") and len(digest) == 71,
-                  path + ".download_info.archive_info.hash", "must be one SHA-256 hash")
-        f.digest(digest[7:], path + ".download_info.archive_info.hash")
+        if digest is None and wheel_inventory is not None:
+            wheel = _inventory_wheel(name, version, wheel_inventory)
+            f.digest(wheel["sha256"], path + ".downloaded_wheel.sha256")
+        else:
+            f.require(type(digest) is str and digest.startswith("sha256=") and len(digest) == 71,
+                      path + ".download_info.archive_info.hash", "must be one SHA-256 hash")
+            f.digest(digest[7:], path + ".download_info.archive_info.hash")
+            if wheel_inventory is not None:
+                wheel = _inventory_wheel(name, version, wheel_inventory)
+                f.literal(wheel["sha256"], path + ".downloaded_wheel.sha256", digest[7:])
         if item.get("requested") is True:
             key = _normalized_name(name)
             f.require(key not in requested, "resolver_report.install", "duplicate requested package")
@@ -164,21 +178,27 @@ def acquire(config: dict) -> None:
     model_manifest = b1_preflight.verify_pinned_artifacts(config, _load_pin_projection(), model_root)
     _write_json(evidence / "model-inventory.json", model_manifest)
 
+    report_path = evidence / "resolver-report.json"
+    subprocess.run([
+        sys.executable, "-m", "pip", "install", "--dry-run", "--ignore-installed",
+        "--only-binary=:all:", "--report", str(report_path),
+        "--index-url", plan["index_url"], "--extra-index-url", plan["extra_index_url"],
+        *plan["requirements"],
+    ], check=True)
+    report = json.loads(report_path.read_text(encoding="utf-8"))
     subprocess.run([
         sys.executable, "-m", "pip", "download", "--only-binary=:all:",
         "--dest", str(wheelhouse), "--index-url", plan["index_url"],
         "--extra-index-url", plan["extra_index_url"], *plan["requirements"],
     ], check=True)
     wheels = inventory_directory(wheelhouse, ".whl")
+    validate_resolver_report({"version": report["version"], "install": report["install"]}, config, wheels)
     _write_json(evidence / "wheel-inventory.json", wheels)
     subprocess.run([sys.executable, "-m", "venv", str(venv)], check=True)
-    report_path = evidence / "resolver-report.json"
     subprocess.run([
         str(venv / "bin/python"), "-m", "pip", "install", "--no-index",
-        "--find-links", str(wheelhouse), "--report", str(report_path), *plan["requirements"],
+        "--find-links", str(wheelhouse), *plan["requirements"],
     ], check=True)
-    report = json.loads(report_path.read_text(encoding="utf-8"))
-    validate_resolver_report({"version": report["version"], "install": report["install"]}, config)
 
 
 def verify(config: dict) -> None:
@@ -190,7 +210,7 @@ def verify(config: dict) -> None:
     expected_wheels = canonical.loads((evidence / "wheel-inventory.json").read_bytes())
     verify_inventory(paths["wheelhouse_root"], expected_wheels, ".whl")
     raw_report = json.loads((evidence / "resolver-report.json").read_text(encoding="utf-8"))
-    validate_resolver_report({"version": raw_report["version"], "install": raw_report["install"]}, config)
+    validate_resolver_report({"version": raw_report["version"], "install": raw_report["install"]}, config, expected_wheels)
 
 
 def main(argv: list[str] | None = None) -> int:

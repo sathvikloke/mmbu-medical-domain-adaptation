@@ -1,7 +1,7 @@
 # Competition manifest version 2
 
-**Status:** additive synthetic design contract; no execution authority  
-**Implementation:** `src/mmbu_phase1/competition_manifest_v2.py`  
+**Status:** additive synthetic design contract; no execution authority
+**Implementation:** `src/mmbu_phase1/competition_manifest_v2.py`
 **Schema:** `mmbu.competition.manifest`, version `2`
 
 ## Why version 2 exists

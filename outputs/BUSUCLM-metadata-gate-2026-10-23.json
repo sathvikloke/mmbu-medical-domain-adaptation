@@ -1,0 +1,64 @@
+{
+  "archive_bytes": 336713241,
+  "archive_etag": "\"66fea5503ae433b324be1cbf54ca8866\"",
+  "archive_last_modified": "Mon, 27 Jan 2025 12:36:20 GMT",
+  "archive_version_id": "OtNyHu6R84RS3_v.5.KA6bykStLQaxxw",
+  "biomedical_pixels_opened": false,
+  "feature_counts": {
+    "combined_yes": 6,
+    "doppler_yes_or_y": 37,
+    "marks_yes": 154
+  },
+  "inventory_clearance": true,
+  "inventory_digest": "c59951e119ce3bcecd4f201cd94ec6b3f5ab4b54cf1c42bd7e2f60d9952348b2",
+  "inventory_member_count": 1367,
+  "label_counts": {
+    "Benign": 174,
+    "Malignant": 90,
+    "Normal": 419
+  },
+  "license_authorities": {
+    "authors_repository_license_file": "CC BY-NC 4.0",
+    "authors_repository_readme": "CC BY 4.0",
+    "mendeley_v3": "CC BY 4.0"
+  },
+  "license_disposition": "conflict_blocks_model_use",
+  "limitations": [
+    "Metadata and member-name closure do not establish pixel, mask, or medical correctness.",
+    "Patient prefixes bind grouping but do not make image-level labels patient-level diagnoses.",
+    "Conflicting first-party license statements require authoritative clarification."
+  ],
+  "metadata_bytes": 26469,
+  "metadata_member": "BUS-UCLM Breast ultrasound lesion segmentation dataset/BUS-UCLM/INFO.csv",
+  "metadata_sha256": "a9d5356f0639caa1bafa5d46de58c70e81894c39ddb4feff10a7858d87d9e91c",
+  "model_executed": false,
+  "model_use_authorized": false,
+  "noncanonical_values": [
+    {
+      "column": "Doppler",
+      "count": 1,
+      "value": "Y"
+    }
+  ],
+  "patient_count": 38,
+  "patient_grouping_required": true,
+  "patient_label_set_counts": {
+    "Benign": 1,
+    "Benign|Malignant|Normal": 5,
+    "Benign|Normal": 18,
+    "Malignant": 2,
+    "Malignant|Normal": 10,
+    "Normal": 2
+  },
+  "receipt_digest": "2b3bf668bb89c379633cf2e6db54e5f9a61325300c45da7318091bd9f85a5538",
+  "record_count": 683,
+  "resolution_counts": {
+    "856x606": 683
+  },
+  "schema": "mmbu.busuclm.metadata_gate_receipt.v1",
+  "schema_clearance": false,
+  "source_doi": "10.17632/7fvgj4jsp7.3",
+  "source_id": "bus-uclm",
+  "source_version": "3",
+  "training_ready": false
+}

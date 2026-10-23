@@ -1,0 +1,38 @@
+{
+  "decision_status": "pending_human_review",
+  "exception_population_source": "outputs/BUSBRA-structural-transform-contract-2026-10-23.json",
+  "exception_population_source_digest": "f981d577e0532567a37f25e16c42a0c685e3b4542e8407ed1473eb19808c4392",
+  "mandatory_record_rules": [
+    "all bbox_exception_records",
+    "all dimension_exception_records",
+    "bus_0110-l",
+    "bus_0536-r"
+  ],
+  "medical_review_population": {
+    "expected_mandatory_record_count": 50,
+    "expected_overlap_record_count": 5,
+    "expected_stratified_record_count": 199,
+    "expected_union_record_count": 244,
+    "metadata_sha256": "f218d0f10b0aeeb14ff4b2cfed8631b2f4a7cf608e564548b35bddd55f3aafb3",
+    "selection": "union of the frozen stratified plan and mandatory_record_rules",
+    "stratified_plan_digest": "71281236f41d658b1985906c872896647f773f6598947b526221509d34a5b912",
+    "stratified_plan_per_pathology_birads_stratum": 35,
+    "stratified_plan_selection_algorithm": "rarest-pathology-birads-stratum-then-record-id-case-exclusive-v1"
+  },
+  "proposed_task_decisions": [
+    "pathology classification",
+    "BI-RADS classification",
+    "mask-grounded classification",
+    "mask-derived object detection"
+  ],
+  "review_roles": {
+    "medical_primary": "human breast-imaging reviewer",
+    "medical_secondary": "independent human breast-imaging reviewer for disagreements and every material exception",
+    "provenance": "human data steward or source-author clarification",
+    "rights_release": "human team authority accepting source obligations and challenge disclosure/release consequences"
+  },
+  "schema": "mmbu.busbra.human_review_plan.v1",
+  "source_id": "busbra",
+  "source_version": "1.0",
+  "training_ready": false
+}

@@ -26,17 +26,25 @@
   classification and five-fold cross-validation. The repository's GPL-3.0 license applies to code and is not used as
   evidence for the dataset license.
 
+### October 23 structural update
+
+The later [metadata gate](BUSBRA_METADATA_GATE.md) used bounded HTTP ranges to extract only `bus_data.csv`,
+`5-fold-cv.csv`, and `10-fold-cv.csv`. No image or mask was extracted or decoded; fixed-size range blocks may still
+overlap adjacent compressed members. The gate established exact 1,875-row image/mask/metadata closure, complete
+`Case` grouping for 1,064 patients, valid stored boxes, and patient-disjoint outer `kFold` assignments. It also found
+that the provided `valid_*` flags split hundreds of patients across training and validation; those fields are now
+prohibited.
+
 ### Still unknown
 
-- archive-internal paths and metadata column names;
-- whether patient ID is present and complete for all 1,875 images;
-- whether every official fold is patient-disjoint and whether separate tuning/test roles exist;
-- exact image–mask–label joins, mask coordinate convention, multi-lesion behavior, and missingness;
+- mask pixel semantics, multi-lesion behavior, decoder behavior, and annotation missingness;
 - exact source family, acquisition-site/device fields, duplicates, and relationship to any MMBU source;
 - source-specific purpose/terms, derived-view approval, disclosure readiness, and public trained-weight compatibility
   after joint review; the organizer's general contributor-source permission is already recorded separately.
 
-**Disposition:** remains Tier 1 priority 1 for a no-pixel archive/schema inspection. It is not admitted.
+**Disposition:** passes the metadata-structure gate with `Case` as the independent unit, outer `kFold` as the only
+source-provided split field, and every `valid_*` field prohibited. It may proceed to quarantined structural sampling
+after independent rights/purpose review; it is not admitted for model use.
 
 ## BUS-UCLM v3
 
@@ -48,17 +56,22 @@
   stored as RGB masks, with green benign tissue, red malignant tissue, and black background/normal tissue.
 - The [dataset paper](https://doi.org/10.1038/s41597-025-04562-3) states that the four-letter filename prefix is an
   anonymized patient identifier and describes separate image/mask folders plus image information.
+- The authors' [source repository](https://github.com/noeliavallez/BUS-UCLM-Dataset) resolved on October 23 to commit
+  `d9aa230cd1ab5f546746bef1380196e91f6b33a8`. Its README calls the dataset CC BY 4.0, but its `LICENSE.md` body says
+  CC BY-NC 4.0. This conflicts with the earlier Mendeley-page observation and must be resolved against authoritative
+  dataset terms before any model-use purpose is granted.
 
 ### Still unknown
 
 - exact archive name, byte size, checksum, internal paths, and metadata columns from the current v3 distribution;
+- authoritative dataset-license resolution for the CC BY versus CC BY-NC repository conflict;
 - totality and uniqueness of image–patient–mask joins;
 - source-provided split status; treatment of repeated views, combined images, Doppler images, and normal/no-lesion cases;
 - duplicates, source proximity, source-specific purpose/terms, disclosure readiness, and trained-weight release
   compatibility; contributor-source status alone is not an organizer prohibition.
 
-**Disposition:** remains Tier 1 priority 2. Patient grouping has a primary published basis, but admission still requires
-structural validation against the exact v3 archive.
+**Disposition:** remains Tier 1 priority 2 and blocked for model use. Patient grouping has a primary published basis,
+but admission still requires structural validation against the exact v3 archive and authoritative license resolution.
 
 ## BUSI-WHU v3
 
@@ -73,8 +86,8 @@ workbook, image names, authoritative masks, and one-patient-one-split feasibilit
 
 The metadata screen **passes source-priority review** and **does not pass source admission**:
 
-1. BUS-BRA remains the first structural intake because its primary API confirms an open CC BY 4.0 versioned record and
-   fixed archive identity.
+1. BUS-BRA passes its metadata-structure gate with a binding split restriction; pixel semantics, duplicates,
+   source-proximity, rights/purpose, and release review remain open.
 2. BUS-UCLM remains second because patient grouping and mask semantics have primary support.
 3. BUSI-WHU remains conditional rather than being promoted from third-party evidence.
 4. MOSAIC G-1 remains `not evaluated`; projected coverage is not an incidence matrix.

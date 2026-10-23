@@ -1,13 +1,20 @@
 import csv
 import hashlib
+import importlib.util
 import io
 import json
+from pathlib import Path
+import tempfile
 import unittest
+import zipfile
 
 
 def api():
     from mmbu_prep.busbra import build_sample_plan
     return build_sample_plan
+
+
+HAS_PIL = importlib.util.find_spec("PIL") is not None
 
 
 FIELDS = ["ID", "Case", "Histology", "Pathology", "BIRADS", "Device", "Width", "Height", "Side", "BBOX"]
@@ -98,6 +105,110 @@ class SamplePlanTests(unittest.TestCase):
         for limit in (0, -1, True, 101):
             with self.subTest(limit=limit), self.assertRaises(ValueError):
                 build(metadata([row("bus_0001-l", 1, "benign", 4)]), per_stratum=limit)
+
+
+@unittest.skipUnless(HAS_PIL, "Pillow is an optional image-test dependency")
+class QuarantineInspectionTests(unittest.TestCase):
+    def png(self, mode, values, size=(4, 4)):
+        from PIL import Image
+        image = Image.new(mode, size)
+        image.putdata(values)
+        stream = io.BytesIO()
+        image.save(stream, format="PNG")
+        return stream.getvalue()
+
+    def fixture(self, root, *, changed_metadata=False, dimension_mismatch=False,
+                empty_mask=False, rgb_mask=False):
+        from mmbu_prep.busbra import build_sample_plan
+        rows = [
+            row("bus_0001-l", 1, "benign", 4, bbox="[1,1,2,2]", width="4", height="4"),
+            row("bus_0002-l", 2, "malignant", 5, bbox="[0,0,1,1]", width="4", height="4"),
+            row("bus_0003-l", 3, "benign", 4, bbox="[0,0,1,1]", width="4", height="4"),
+        ]
+        frozen = metadata(rows)
+        plan = build_sample_plan(frozen)
+        archived = metadata(rows[:-1] + ([row("bus_0003-l", 3, "benign", 3, bbox="[0,0,1,1]", width="4", height="4")]
+                                             if changed_metadata else [rows[-1]]))
+        duplicate_image = self.png("L", list(range(16)))
+        image_2 = self.png("L", list(range(16)), size=(5, 4)) if dimension_mismatch else duplicate_image
+        mask_1_values = [0, 0, 0, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 0, 0, 0]
+        mask_2_values = [0] * 16 if empty_mask else [255] + [0] * 15
+        if rgb_mask:
+            mask_2 = self.png("RGB", [(255, 0, 0)] + [(0, 0, 0)] * 15)
+        else:
+            mask_2 = self.png("L", mask_2_values)
+        archive = root / "BUSBRA.zip"
+        with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED) as z:
+            z.writestr("BUSBRA/bus_data.csv", archived)
+            z.writestr("BUSBRA/Images/bus_0001-l.png", duplicate_image)
+            z.writestr("BUSBRA/Masks/mask_0001-l.png", self.png("L", mask_1_values))
+            z.writestr("BUSBRA/Images/bus_0002-l.png", image_2)
+            z.writestr("BUSBRA/Masks/mask_0002-l.png", mask_2)
+            z.writestr("BUSBRA/Images/bus_0003-l.png", b"poison-unselected-image")
+            z.writestr("BUSBRA/Masks/mask_0003-l.png", b"poison-unselected-mask")
+        payload = archive.read_bytes()
+        return archive, plan, len(payload), hashlib.md5(payload).hexdigest()
+
+    def test_inspection_binds_archive_decodes_geometry_and_reports_sample_duplicates(self):
+        from mmbu_prep.busbra import inspect_quarantine
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            archive, plan, size, md5 = self.fixture(root)
+
+            receipt = inspect_quarantine(archive, plan, root / "out", expected_archive_bytes=size,
+                                         expected_archive_md5=md5)
+
+            self.assertTrue(receipt["ok"])
+            self.assertFalse(receipt["training_ready"])
+            self.assertFalse(receipt["model_use_authorized"])
+            self.assertEqual(receipt["selected_records"], 2)
+            self.assertEqual(receipt["records"][0]["mask_bbox_xywh"], [1, 1, 2, 2])
+            self.assertEqual(receipt["records"][0]["bbox_iou"], 1.0)
+            self.assertEqual(receipt["records"][0]["mask_values"], [0, 255])
+            self.assertEqual(receipt["exact_decoded_duplicate_groups"], [["bus_0001-l", "bus_0002-l"]])
+            self.assertFalse(receipt["corpus_duplicate_clearance"])
+            self.assertEqual(json.loads((root / "out" / "receipt.json").read_text()), receipt)
+
+    def test_archive_or_metadata_drift_fails_without_publishing(self):
+        from mmbu_prep.busbra import inspect_quarantine
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            archive, plan, size, md5 = self.fixture(root, changed_metadata=True)
+            cases = [(size + 1, md5, "archive"), (size, "0" * 32, "archive"), (size, md5, "metadata")]
+            for index, (wanted_size, wanted_md5, message) in enumerate(cases):
+                output = root / f"out-{index}"
+                with self.subTest(index=index), self.assertRaisesRegex(ValueError, message):
+                    inspect_quarantine(archive, plan, output, expected_archive_bytes=wanted_size,
+                                       expected_archive_md5=wanted_md5)
+                self.assertFalse(output.exists())
+
+    def test_bad_decoded_structure_fails_without_publishing(self):
+        from mmbu_prep.busbra import inspect_quarantine
+        options = ("dimension_mismatch", "empty_mask", "rgb_mask")
+        for option in options:
+            with self.subTest(option=option), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                archive, plan, size, md5 = self.fixture(root, **{option: True})
+                with self.assertRaises(ValueError):
+                    inspect_quarantine(archive, plan, root / "out", expected_archive_bytes=size,
+                                       expected_archive_md5=md5)
+                self.assertFalse((root / "out").exists())
+
+    def test_existing_output_and_tampered_plan_fail_closed(self):
+        from mmbu_prep.busbra import inspect_quarantine
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            archive, plan, size, md5 = self.fixture(root)
+            (root / "out").mkdir()
+            with self.assertRaises(FileExistsError):
+                inspect_quarantine(archive, plan, root / "out", expected_archive_bytes=size,
+                                   expected_archive_md5=md5)
+            tampered = dict(plan)
+            tampered["per_stratum"] = 2
+            with self.assertRaisesRegex(ValueError, "plan"):
+                inspect_quarantine(archive, tampered, root / "fresh", expected_archive_bytes=size,
+                                   expected_archive_md5=md5)
+            self.assertFalse((root / "fresh").exists())
 
 
 if __name__ == "__main__":

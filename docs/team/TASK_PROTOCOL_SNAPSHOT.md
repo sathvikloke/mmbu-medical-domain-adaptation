@@ -1,20 +1,29 @@
 # MMBU task-protocol snapshot
 
-**Observed:** October 17, 2026, America/Chicago  
+**Observed:** October 17, 2026; metadata-drift recheck October 23, 2026, America/Chicago
 **Source:** rendered public card at `https://huggingface.co/datasets/mmbu/mmbu-public`  
 **Visible README revision:** `b2faa99129cc5635d0de18cea5abd2ad1189c325`  
-**Metadata drift observed:** `metadata.jsonl` and `metadata.tsv` displayed later commit
-`3c09f48d7972bc570d97e9527e24001621b2de5e`  
+**Current repository head:** `d11326436d37a9a560549156bf205ef1b120aa36` (API observation October 23)
+**Metadata drift observed:** `metadata.jsonl` and `metadata.tsv` first displayed later commit
+`3c09f48d7972bc570d97e9527e24001621b2de5e`; both now display `d11326436d37a9a560549156bf205ef1b120aa36`
 **Read-only drift recheck:** October 17, 2026 23:01 CDT; the authenticated Files and versions page still showed
 91 commits, README at `b2faa991...`, both metadata files at `3c09f48d...`, 3,103 rows, and no later visible file
 revision. No examples or answers from the viewer were used for model, data, prompt, or recipe decisions.  
 **Scope:** task pass and judge only; gated examples were not opened or downloaded
 
+**October 21 metadata-only drift:** the Files and versions listing attributes the current metadata files to commit
+`d1132643...`. Its commit message says 904 open-row judge label sets gained reviewed closed-VQA options that had been
+missing, while rows already covering those options were unchanged. The listing still attributes `README.md` to
+`b2faa991...`; the rendered prompt and judge transcription below therefore remains the current visible card contract.
+This observation records organizer-published file metadata only. No affected row, option, answer, image, output, or
+frequency was opened or used.
+
 This is a manual transcription of the rendered card, not a downloaded raw-file byte snapshot or executable official
-harness. The visible README revision identifies the displayed card file; the later metadata commit proves that the
-dataset rows changed after the project's older `d09ff622...` pin. Do not transfer observations from the changed public
-rows into model, recipe, prompt, or hyperparameter selection. Context-prompt bytes, evaluator runtime, dependencies,
-and submission loader remain unresolved.
+harness. The visible README revision identifies the displayed card file; the later metadata commits prove that the
+dataset rows changed after the project's older `d09ff622...` pin. The October 21 change alters judge candidate sets for
+904 rows, so scores from earlier metadata revisions are not directly comparable even when model outputs are unchanged.
+Do not transfer observations from the changed public rows into model, recipe, prompt, or hyperparameter selection.
+Context-prompt bytes, evaluator runtime, dependencies, and submission loader remain unresolved.
 
 ## Input boundary and routing
 
@@ -111,7 +120,9 @@ precedence or an executable harness before official-equivalent multi-label scori
    task card does not supply it.
 4. Metadata fixes after the old pin invalidate row-level duplicate counts or label audits as statements about the
    current public release. Historical findings stay historical; do not reopen the public rows for development.
-5. Before any official local report, re-check the card revision and fail closed on drift.
+5. The October 21 judge-label-set expansion invalidates score comparisons across the old and current metadata unless
+   the exact metadata revision is reported. It does not authorize using public `options` as a training vocabulary.
+6. Before any official local report, re-check the card and metadata revisions and fail closed on drift.
 
 ## Executable-authority status
 

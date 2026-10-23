@@ -26,6 +26,14 @@ not silently add precision absent from that receipt or the retained private thre
 | Track 3 size rule | MoE models may have up to 12B total parameters with no more than 4B active at inference. The organizer identified the Qwen 3.5 4B class, approximately 4.6B actual parameters, as the maximum for “this category.” This appears responsive to the dense-limit question, but the quoted category wording is not a general parameter-count formula. | This answer concerns Track 3, not the Medical Domain Adaptation model choice. Preserve the class-based wording until formal rules incorporate it. |
 | Earlier Discord information | The organizer said evaluation information had previously been provided in Discord. | No Discord message, author/channel, timestamp, pin state, revision, or attachment is receipted in this repository, so it supplies no executable authority yet. |
 
+## Later public metadata drift
+
+On October 23, the public repository API reported head `d11326436d37a9a560549156bf205ef1b120aa36`, and the
+Files and versions listing attributed both metadata files to an October 21 commit stating that 904 rows gained reviewed
+closed-VQA options in the open judge label set. `README.md` remained attributed to `b2faa991...`. This is a public
+revision observation, not a direct organizer clarification. It changes score comparability and must be pinned in any
+report, but it does not resolve malformed-output, multi-label, context, runtime, or loader questions.
+
 ## Still unresolved
 
 - Final context-prompt bytes and version.

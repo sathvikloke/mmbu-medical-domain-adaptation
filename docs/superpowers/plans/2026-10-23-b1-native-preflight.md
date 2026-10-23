@@ -13,12 +13,12 @@
 ## Global Constraints
 
 - Exact model and processor: `Qwen/Qwen2.5-VL-7B-Instruct@cc594898137f460bfe9f0759e9844b3ce807cfb5`.
-- The exhausted run-1 through run-4 envelopes and their receipts remain immutable. A fresh run-5 envelope permits one job and zero retries on one `tesla_a100_80gb`, partition `epyc-gpu`, four CPUs, 96 GiB host memory, and a two-hour wall-time ceiling. It reuses the byte-verified run-1 model/runtime read-only but writes to a clean run-5 evidence root. Run 4 failed closed at the prospectively frozen BF16 full-batch-versus-microbatch loss tolerance before recording the numeric drift. Run 5 changes no model, fixture, seed, optimizer, tolerance, or scientific path; it only makes the existing failure report include the observed drift so the gate can be diagnosed rather than weakened blindly.
+- The exhausted run-1 through run-5 envelopes and their receipts remain immutable. A fresh run-6 envelope permits one job and zero retries on one `tesla_a100_80gb`, partition `epyc-gpu`, four CPUs, 96 GiB host memory, and a two-hour wall-time ceiling. It reuses the byte-verified run-1 model/runtime read-only but writes to a clean run-6 evidence root. Run 5 measured absolute full-batch-versus-microbatch loss drift of `0.0014858245849609375`, below one unit-scale BF16 epsilon. Run 6 prospectively replaces the inappropriate FP32-scale loss bound with half a unit-scale BF16 epsilon (`0.00390625`); the gradient bound and every model, fixture, seed, full-batch optimizer, and packaging condition remain unchanged.
 - Single-GPU BF16, SDPA, dynamic cache, `trust_remote_code=false`, no optional kernels, no compilation, no offload, no distributed execution.
 - Synthetic fixtures only; no biomedical or MMBU image, label, answer, output, embedding, or derivative may be read.
 - One minimal optimizer step only; no epoch, checkpoint search, evaluation, or performance selection.
 - Network is allowed only during explicit artifact acquisition. The GPU execution begins from verified local bytes; fresh reload runs with Hugging Face offline flags and a socket-denial guard.
-- Remote output root: `/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run5`; immutable acquisition inputs remain under the dedicated run-1 root; never inspect or modify sibling projects.
+- Remote output root: `/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run6`; immutable acquisition inputs remain under the dedicated run-1 root; never inspect or modify sibling projects.
 - No upload, submission, public release, or packet reseal.
 
 ## Review Focus

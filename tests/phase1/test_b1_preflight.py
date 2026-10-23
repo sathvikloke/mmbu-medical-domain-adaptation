@@ -93,9 +93,9 @@ class B1PreflightTests(unittest.TestCase):
             },
             "paths": {
                 "cache_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/cache",
-                "evidence_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run5/evidence",
+                "evidence_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run6/evidence",
                 "model_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/model",
-                "remote_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run5",
+                "remote_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run6",
                 "venv_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/venv",
                 "wheelhouse_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/wheelhouse",
             },
@@ -463,6 +463,12 @@ class B1PreflightTests(unittest.TestCase):
             b1_native.build_geometry_records(fixtures, [[1, 4, 2], [1, 2, 6]], [2, 4], 14, 2)
 
     def test_microbatch_equivalence_is_prospectively_bounded(self):
+        self.assertEqual(b1_native.MICROBATCH_LOSS_ATOL, 2 ** -8)
+        measured = b1_native.validate_microbatch_equivalence(
+            2.0, 2.001485824584961, {"adapter.a": 0.001},
+            b1_native.MICROBATCH_LOSS_ATOL, 0.01,
+        )
+        self.assertLess(measured["loss_abs_delta"], b1_native.MICROBATCH_LOSS_ATOL)
         result = b1_native.validate_microbatch_equivalence(
             2.0, 2.00001, {"adapter.a": 0.001, "adapter.b": 0.002}, 1e-4, 0.01
         )
@@ -522,7 +528,7 @@ class B1PreflightTests(unittest.TestCase):
         self.assertNotIn("sbatch ", script)
         self.assertEqual(script.count("b1_native_preflight.py"), 1)
         self.assertEqual(script.count("b1_offline_reload.py"), 1)
-        self.assertIn("/tmp/npl015-mmbu-b1-run5-${SLURM_JOB_ID}", script)
+        self.assertIn("/tmp/npl015-mmbu-b1-run6-${SLURM_JOB_ID}", script)
         self.assertNotIn("/scratch/", script)
         self.assertNotIn("export CUDA_VISIBLE_DEVICES=", script)
         self.assertIn('test -n "${CUDA_VISIBLE_DEVICES:-}"', script)

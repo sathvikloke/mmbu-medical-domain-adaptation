@@ -9,16 +9,16 @@
 #SBATCH --time=02:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --output=/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run5/evidence/slurm-%j.out
-#SBATCH --error=/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run5/evidence/slurm-%j.err
+#SBATCH --output=/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run6/evidence/slurm-%j.out
+#SBATCH --error=/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run6/evidence/slurm-%j.err
 
 set -euo pipefail
 umask 077
 
-readonly RUN_ROOT=/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run5
+readonly RUN_ROOT=/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run6
 readonly CODE_ROOT=${RUN_ROOT}/code
 readonly VENV_ROOT=/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/venv
-readonly OFFLINE_CACHE=/tmp/npl015-mmbu-b1-run5-${SLURM_JOB_ID}
+readonly OFFLINE_CACHE=/tmp/npl015-mmbu-b1-run6-${SLURM_JOB_ID}
 export B1_STARTED_UTC
 B1_STARTED_UTC=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 

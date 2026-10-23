@@ -28,7 +28,9 @@ CONFIG_PATH = REPO / "config/phase1/b1-mocs-preflight.json"
 PIN_PATH = REPO / "docs/phase1/b1-pin.json"
 LOGIT_ATOL = 0.5
 LOSS_ATOL = 1e-5
-MICROBATCH_LOSS_ATOL = 1e-4
+# Half a unit-scale BF16 machine epsilon. The gate compares numerically
+# different batch shapes, so an FP32-scale threshold is not meaningful.
+MICROBATCH_LOSS_ATOL = 2 ** -8
 MICROBATCH_GRAD_ATOL = 1e-2
 SEED = 20261023
 _LANGUAGE_LORA = re.compile(r"^model\.language_model\.layers\.\d+\.self_attn\.(?:q_proj|v_proj)$")

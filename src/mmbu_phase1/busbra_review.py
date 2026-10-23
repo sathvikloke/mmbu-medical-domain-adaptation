@@ -76,6 +76,67 @@ def _canonical_digest(value) -> str:
     return hashlib.sha256(_canonical_bytes(value)).hexdigest()
 
 
+def _decode_image_size(payload: bytes) -> tuple[int, int]:
+    """Return canonical decoded image dimensions after strict PNG validation."""
+    try:
+        from PIL import Image
+    except ImportError as exc:
+        raise ValueError("Pillow is required to derive BUS-BRA review geometry") from exc
+    try:
+        with Image.open(io.BytesIO(payload), formats=("PNG",)) as image:
+            if image.format != "PNG" or getattr(image, "n_frames", 1) != 1:
+                raise ValueError("review image must be a single-frame PNG")
+            if image.width * image.height > 40_000_000:
+                raise ValueError("review image exceeds the decoded-pixel ceiling")
+            if image.mode not in ("L", "RGB") or "transparency" in image.info:
+                raise ValueError("review image has an unsupported or ambiguous representation")
+            size = image.size
+            image.verify()
+        with Image.open(io.BytesIO(payload), formats=("PNG",)) as image:
+            orientation = image.getexif().get(274)
+            if orientation not in (None, 1):
+                raise ValueError("review image requires an undeclared orientation transform")
+            image.load()
+        return size
+    except OSError as exc:
+        raise ValueError("review image is not a valid PNG") from exc
+
+
+def _decode_mask_bbox(payload: bytes, expected_size: tuple[int, int]) -> list[int]:
+    """Return the exact tight half-open box of a frozen binary BUS-BRA mask."""
+    try:
+        from PIL import Image
+    except ImportError as exc:
+        raise ValueError("Pillow is required to derive BUS-BRA review mask geometry") from exc
+    try:
+        with Image.open(io.BytesIO(payload), formats=("PNG",)) as mask:
+            if (mask.format != "PNG" or getattr(mask, "n_frames", 1) != 1 or
+                    mask.size != expected_size):
+                raise ValueError("review mask must be a same-size single-frame PNG")
+            if mask.width * mask.height > 40_000_000:
+                raise ValueError("review mask exceeds the decoded-pixel ceiling")
+            if mask.mode not in ("1", "L") or "transparency" in mask.info:
+                raise ValueError("review mask must be an unambiguous single-channel image")
+            mask.verify()
+        with Image.open(io.BytesIO(payload), formats=("PNG",)) as mask:
+            orientation = mask.getexif().get(274)
+            if orientation not in (None, 1):
+                raise ValueError("review mask requires an undeclared orientation transform")
+            mask.load()
+            gray = mask.convert("L") if mask.mode == "1" else mask
+            histogram = gray.histogram()
+            values = [value for value, count in enumerate(histogram) if count]
+            if not values or any(value not in (0, 255) for value in values):
+                raise ValueError("review mask values must be exactly binary 0/255")
+            bounds = gray.getbbox()
+            if bounds is None:
+                raise ValueError("review mask has no annotated foreground")
+            left, top, right, bottom = bounds
+            return [left, top, right - left, bottom - top]
+    except OSError as exc:
+        raise ValueError("review mask is not a valid PNG") from exc
+
+
 def _validate_digest_record(value: dict, field: str, label: str) -> None:
     if not isinstance(value, dict) or not isinstance(value.get(field), str):
         raise ValueError(f"{label} digest is missing")
@@ -391,6 +452,8 @@ def build_review_packet(
                 record_dir = assets / record_id
                 record_dir.mkdir()
                 paths = {}
+                decoded_size = None
+                mask_bbox = None
                 for role, member_name, filename in (
                     ("image", source["image_member"], "image.png"),
                     ("mask", source["mask_member"], "mask.png"),
@@ -404,8 +467,23 @@ def build_review_packet(
                     target = record_dir / filename
                     target.write_bytes(payload)
                     paths[role] = target.relative_to(staging).as_posix()
+                    if role == "image":
+                        decoded_size = _decode_image_size(payload)
+                    else:
+                        mask_bbox = _decode_mask_bbox(
+                            payload, decoded_size
+                        )
+                declared_size = (source["width"], source["height"])
+                dimension_exception = record_id in structural_contract["dimension_exception_records"]
+                if (decoded_size != declared_size) != dimension_exception:
+                    raise ValueError(
+                        f"decoded/source dimension exception status differs for {record_id}"
+                    )
                 manifest_rows.append({
                     **source,
+                    "decoded_width": decoded_size[0],
+                    "decoded_height": decoded_size[1],
+                    "mask_derived_bbox_xywh": mask_bbox,
                     "mandatory_reasons": reasons.get(record_id, []),
                     "image_path": paths["image"],
                     "mask_path": paths["mask"],
@@ -433,7 +511,10 @@ def build_review_packet(
         _write_json(staging / "review-manifest.json", manifest)
 
         review_fields = [
-            "record_id", "case_id", "pathology", "birads", "mandatory_reasons",
+            "record_id", "case_id", "pathology", "birads", "width", "height",
+            "decoded_width", "decoded_height",
+            "source_bbox_xywh", "mask_derived_bbox_xywh", "image_member", "mask_member",
+            "image_path", "mask_path", "mandatory_reasons",
             "primary_reviewer_id", "primary_reviewed_at", "image_interpretable",
             "mask_usable", "additional_or_incomplete_lesion", "source_fields_joined",
             "shortcut_artifact", "permitted_tasks", "primary_disposition", "primary_notes",
@@ -449,18 +530,47 @@ def build_review_packet(
                     "case_id": row["case_id"],
                     "pathology": row["pathology"],
                     "birads": row["birads"],
+                    "width": row["width"],
+                    "height": row["height"],
+                    "decoded_width": row["decoded_width"],
+                    "decoded_height": row["decoded_height"],
+                    "source_bbox_xywh": json.dumps(row["bbox_xywh"], separators=(",", ":")),
+                    "mask_derived_bbox_xywh": json.dumps(
+                        row["mask_derived_bbox_xywh"], separators=(",", ":")
+                    ),
+                    "image_member": row["image_member"],
+                    "mask_member": row["mask_member"],
+                    "image_path": row["image_path"],
+                    "mask_path": row["mask_path"],
                     "mandatory_reasons": "|".join(row["mandatory_reasons"]),
                 })
 
+        blank_profile = {
+            "role": None,
+            "reviewer_id": None,
+            "qualification": None,
+            "qualification_evidence_locator": None,
+            "reviewed_at": None,
+            "evidence_locator": None,
+            "human_attested": None,
+        }
         source_review = {
             "schema": "mmbu.busbra.source_review_template.v1",
             "source_id": "busbra",
             "source_version": "1.0",
             "decision_status": "pending_human_review",
-            "medical_review": {"primary_reviewer": None, "secondary_reviewer": None, "adjudicator": None},
-            "provenance_review": {"reviewer": None, "case_110_536_disposition": None, "evidence_locator": None},
+            "medical_review": {
+                "primary_reviewer": dict(blank_profile),
+                "secondary_reviewer": dict(blank_profile),
+                "adjudicator": None,
+            },
+            "provenance_review": {
+                "reviewer": dict(blank_profile),
+                "case_110_536_disposition": None,
+                "evidence_locator": None,
+            },
             "rights_and_release_review": {
-                "reviewer": None,
+                "reviewer": dict(blank_profile),
                 "training": None,
                 "development": None,
                 "untouched_confirmation": None,
@@ -477,9 +587,10 @@ def build_review_packet(
         (staging / "README.txt").write_text(
             "BUS-BRA HUMAN REVIEW PACKET\n\n"
             "This packet prepares frozen records for accountable human review. It grants no medical, rights, "
-            "training, release, or model-use approval. Complete the record worksheet with qualified reviewers; "
-            "complete the separate source/provenance/rights form; preserve evidence locators and dates; and then "
-            "run a separately reviewed admission process. Do not edit review-manifest.json or packet-receipt.json.\n",
+            "training, release, or model-use approval. Copy both templates outside this immutable packet before "
+            "qualified reviewers complete them; preserve qualifications, evidence locators, and dates; validate the "
+            "completed copies against the pre-review packet-receipt digest; and then run a separately reviewed "
+            "admission process. Do not edit any file inside this packet.\n",
             encoding="utf-8",
         )
 

@@ -27,6 +27,39 @@ The union contains exactly 244 records. The mandatory cases cannot be replaced b
 add records to investigate a failure cluster, but may not silently remove a frozen record or reuse a case across
 decision roles.
 
+## Offline packet builder
+
+The dependency-light builder verifies the non-overridable pinned archive identity and exact frozen human-plan and
+structural-contract values. It independently recomputes the frozen stratified selection from archive metadata before
+checking the plan digest and exact 244-record union. It writes to a new ignored local directory with an atomic
+no-replace operation; it never overwrites an existing packet. The output contains the selected image/mask pairs, a closed
+review manifest, a record worksheet, a separate source/provenance/rights template, and a file-hash receipt. Every
+machine-produced status remains pending, with `training_ready=false` and `model_use_authorized=false`.
+
+First reproduce the metadata-only 199-record plan:
+
+```sh
+python3 tools/busbra_quarantine.py plan <bus_data.csv> \
+  --per-stratum 35 \
+  --output .local/busbra/review-plan-35.json
+```
+
+Confirm its `plan_digest` is
+`71281236f41d658b1985906c872896647f773f6598947b526221509d34a5b912`, then—only inside the separately authorized
+human-review opening—build the local packet:
+
+```sh
+PYTHONPATH=src python3 -m mmbu_phase1.busbra_review <BUSBRA.zip> \
+  --stratified-plan .local/busbra/review-plan-35.json \
+  --human-plan config/busbra-human-review-plan.json \
+  --structural-contract outputs/BUSBRA-structural-transform-contract-2026-10-23.json \
+  --output .local/busbra/human-review-packet
+```
+
+Packet generation is not review and does not authorize source admission. Qualified humans must complete the forms,
+retain identity/qualification/date/evidence locators, resolve disagreements, and pass the separate Phase 1 admission
+and purpose-authorization process.
+
 ## Separate decisions and qualified roles
 
 | Decision | Minimum accountable role | Allowed result |

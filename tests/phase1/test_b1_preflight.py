@@ -93,9 +93,9 @@ class B1PreflightTests(unittest.TestCase):
             },
             "paths": {
                 "cache_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/cache",
-                "evidence_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run7/evidence",
+                "evidence_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run8/evidence",
                 "model_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/model",
-                "remote_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run7",
+                "remote_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run8",
                 "venv_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/venv",
                 "wheelhouse_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/wheelhouse",
             },
@@ -464,6 +464,10 @@ class B1PreflightTests(unittest.TestCase):
 
     def test_microbatch_equivalence_is_prospectively_bounded(self):
         self.assertEqual(b1_native.MICROBATCH_LOSS_ATOL, 2 ** -8)
+        self.assertEqual(
+            b1_native.MICROBATCH_GRAD_COSINE_MIN,
+            1 - b1_native.MICROBATCH_GRAD_RTOL ** 2 / 2,
+        )
         measured = b1_native.validate_microbatch_equivalence(
             2.0, 2.001485824584961, {"adapter.a": 0.001},
             0.01, 0.9999, b1_native.MICROBATCH_LOSS_ATOL,
@@ -543,7 +547,7 @@ class B1PreflightTests(unittest.TestCase):
         self.assertNotIn("sbatch ", script)
         self.assertEqual(script.count("b1_native_preflight.py"), 1)
         self.assertEqual(script.count("b1_offline_reload.py"), 1)
-        self.assertIn("/tmp/npl015-mmbu-b1-run7-${SLURM_JOB_ID}", script)
+        self.assertIn("/tmp/npl015-mmbu-b1-run8-${SLURM_JOB_ID}", script)
         self.assertNotIn("/scratch/", script)
         self.assertNotIn("export CUDA_VISIBLE_DEVICES=", script)
         self.assertIn('test -n "${CUDA_VISIBLE_DEVICES:-}"', script)

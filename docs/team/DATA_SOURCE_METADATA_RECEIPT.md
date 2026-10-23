@@ -26,25 +26,34 @@
   classification and five-fold cross-validation. The repository's GPL-3.0 license applies to code and is not used as
   evidence for the dataset license.
 
-### October 23 structural update
+### October 23 structural updates
 
-The later [metadata gate](BUSBRA_METADATA_GATE.md) used bounded HTTP ranges to extract only `bus_data.csv`,
+The initial [metadata gate](BUSBRA_METADATA_GATE.md) used bounded HTTP ranges to extract only `bus_data.csv`,
 `5-fold-cv.csv`, and `10-fold-cv.csv`. No image or mask was extracted or decoded; fixed-size range blocks may still
 overlap adjacent compressed members. The gate established exact 1,875-row image/mask/metadata closure, complete
 `Case` grouping for 1,064 patients, valid stored boxes, and patient-disjoint outer `kFold` assignments. It also found
 that the provided `valid_*` flags split hundreds of patients across training and validation; those fields are now
 prohibited.
 
+A later local quarantine audit authenticated the complete pinned archive and decoded all 1,875 image/mask pairs. Every
+image and mask joined, all images were grayscale `L`, all masks were binary mode `1` with nonempty foreground, and no
+exact decoded image or mask duplicate was found. Four rows declare the wrong height, 43 boxes differ from the
+mask-derived extent by the source's apparent one-pixel boundary convention, and `bus_0845-s` has a material stored-box
+versus mask-extent discrepancy. A full 64-bit difference-hash screen produced one cross-case candidate,
+`bus_0110-l` / `bus_0536-r`; the pair is visibly different but remains open for provenance review. These findings do
+not establish medical correctness, source proximity, patient identity, or near-duplicate absence.
+
 ### Still unknown
 
-- mask pixel semantics, multi-lesion behavior, decoder behavior, and annotation missingness;
-- exact source family, acquisition-site/device fields, duplicates, and relationship to any MMBU source;
+- medical interpretation, annotation completeness, multi-lesion policy, and adjudication of the `bus_0845-s` box;
+- exact source family, acquisition-site/device interpretation, cross-source duplicates, and relationship to any MMBU source;
 - source-specific purpose/terms, derived-view approval, disclosure readiness, and public trained-weight compatibility
   after joint review; the organizer's general contributor-source permission is already recorded separately.
 
-**Disposition:** passes the metadata-structure gate with `Case` as the independent unit, outer `kFold` as the only
-source-provided split field, and every `valid_*` field prohibited. It may proceed to quarantined structural sampling
-after independent rights/purpose review; it is not admitted for model use.
+**Disposition:** passes metadata closure, exact decoded-duplicate checks, and bounded within-source perceptual triage
+with `Case` as the independent unit, outer `kFold` as the only source-provided split field, and every `valid_*` field
+prohibited. Overall structural clearance remains false because of the source dimension/geometry findings. Independent
+medical, provenance, rights, purpose, release, and source-proximity review still block model use.
 
 ## BUS-UCLM v3
 
@@ -86,8 +95,9 @@ workbook, image names, authoritative masks, and one-patient-one-split feasibilit
 
 The metadata screen **passes source-priority review** and **does not pass source admission**:
 
-1. BUS-BRA passes its metadata-structure gate with a binding split restriction; pixel semantics, duplicates,
-   source-proximity, rights/purpose, and release review remain open.
+1. BUS-BRA passes metadata closure and quarantined full-corpus decoder/exact-duplicate checks with a binding split
+   restriction, but structural clearance remains false; medical semantics, cross-source proximity, rights/purpose,
+   release review, and near-duplicate certification remain open.
 2. BUS-UCLM remains second because patient grouping and mask semantics have primary support.
 3. BUSI-WHU remains conditional rather than being promoted from third-party evidence.
 4. MOSAIC G-1 remains `not evaluated`; projected coverage is not an incidence matrix.

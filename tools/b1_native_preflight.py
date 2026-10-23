@@ -80,13 +80,24 @@ def exact_lora_targets(module_names: Iterable[str]) -> list[str]:
     return matches
 
 
-def validate_update_inventory(declared: list[str], trainable: list[str], gradients: list[str], updated: list[str]) -> dict:
-    for label, values in (("declared", declared), ("trainable", trainable), ("gradients", gradients), ("updated", updated)):
+def validate_update_inventory(
+    declared: list[str],
+    trainable: list[str],
+    gradients: list[str],
+    updated: list[str],
+    expected_updated: list[str] | None = None,
+) -> dict:
+    expected_updated = declared if expected_updated is None else expected_updated
+    for label, values in (("declared", declared), ("trainable", trainable), ("gradients", gradients),
+                          ("updated", updated), ("expected_updated", expected_updated)):
         f.require(values == sorted(set(values)), f"parameters.{label}", "must be unique and sorted")
     f.literal(trainable, "parameters.trainable", declared)
     f.literal(gradients, "parameters.gradients", declared)
-    f.literal(updated, "parameters.updated", declared)
-    return {"declared": declared, "finite_gradients": gradients, "updated": updated}
+    f.require(bool(expected_updated) and set(expected_updated) <= set(declared), "parameters.expected_updated",
+              "must be a nonempty subset of declared parameters")
+    f.literal(updated, "parameters.updated", expected_updated)
+    return {"declared": declared, "finite_gradients": gradients,
+            "expected_updated": expected_updated, "updated": updated}
 
 
 def validate_mrope_summary(summary: Any, batch_size: int, sequence_length: int) -> dict:
@@ -442,7 +453,12 @@ def run() -> None:
     for name, parameter in model.named_parameters():
         if parameter.requires_grad and not torch.equal(before[name], parameter.detach().cpu()):
             updated.append(name)
-    inventory = validate_update_inventory(declared, declared, sorted(gradient_names), sorted(updated))
+    expected_updated = sorted(name for name in declared if ".lora_B." in name)
+    f.require(len(expected_updated) * 2 == len(declared), "parameters.expected_updated",
+              "standard zero-B LoRA must expose one A and one B matrix per target")
+    inventory = validate_update_inventory(
+        declared, declared, sorted(gradient_names), sorted(updated), expected_updated
+    )
     for state in optimizer.state.values():
         for key, value in state.items():
             if torch.is_tensor(value):

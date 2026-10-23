@@ -381,13 +381,28 @@ class B1PreflightTests(unittest.TestCase):
         declared = ["adapter.a", "adapter.b"]
         self.assertEqual(
             b1_native.validate_update_inventory(declared, declared, declared, declared),
-            {"declared": declared, "finite_gradients": declared, "updated": declared},
+            {"declared": declared, "finite_gradients": declared,
+             "expected_updated": declared, "updated": declared},
         )
         for trainable, gradients, updated in ((declared + ["base.x"], declared, declared),
                                                (declared, ["adapter.a"], declared),
                                                (declared, declared, ["adapter.a"])):
             with self.assertRaises(ContractViolation):
                 b1_native.validate_update_inventory(declared, trainable, gradients, updated)
+
+    def test_zero_b_lora_first_step_requires_finite_a_gradients_but_only_b_updates(self):
+        declared = [
+            "layer.lora_A.default.weight",
+            "layer.lora_B.default.weight",
+        ]
+        expected = ["layer.lora_B.default.weight"]
+        self.assertEqual(
+            b1_native.validate_update_inventory(declared, declared, declared, expected, expected)["updated"],
+            expected,
+        )
+        for observed in (declared, ["layer.lora_A.default.weight"], []):
+            with self.subTest(observed=observed), self.assertRaises(ContractViolation):
+                b1_native.validate_update_inventory(declared, declared, declared, observed, expected)
 
     def test_mrope_summary_and_numeric_comparison_fail_closed(self):
         summary = {

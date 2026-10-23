@@ -44,7 +44,7 @@ _FILES = [
 _MODEL_ID = "Qwen/Qwen2.5-VL-7B-Instruct"
 _REVISION = "cc594898137f460bfe9f0759e9844b3ce807cfb5"
 _ACQUISITION_ROOT = "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1"
-_REMOTE_ROOT = "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run3"
+_REMOTE_ROOT = "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run4"
 
 
 def _exact_object(value: Any, path: str, expected: dict[str, Any]) -> dict:

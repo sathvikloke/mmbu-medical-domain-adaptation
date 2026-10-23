@@ -4,7 +4,7 @@ This ledger summarizes the recorded CPU preparation milestone through October 4,
 
 The publication step removes captured transport session cookies from staged evidence and affected archived members. [Publication redactions](../../research/publication-redactions.json) record original and exported hashes. Historical test/release receipts retain the original measurements; use the publication verifier for exported copies rather than expecting a transformed archive to equal its original hash. The original local workspace remains unchanged.
 
-**Established:** software behavior, source-review material, native preprocessing compatibility for tested inputs, synthetic loss arithmetic, and bounded B1/B2-P one-step native GPU feasibility. **Not established:** baseline accuracy, adaptation gain, a winning model, full-training fit, official-harness equivalence, or biomedical/legal approval. The October 23 supplements used generated engineering images only; no biomedical or MMBU input entered them.
+**Established:** software behavior, source-review material, native preprocessing compatibility for tested inputs, synthetic loss arithmetic, bounded B1/B2-P one-step GPU feasibility, and native singleton answer/context objective accumulation. **Not established:** baseline accuracy, adaptation gain, a winning model, full-training fit, heterogeneous-batch equivalence, official-harness equivalence, or biomedical/legal approval. The October 23 supplements used generated engineering images only; no biomedical or MMBU input entered them.
 
 ## Verified ledger
 
@@ -22,6 +22,7 @@ The publication step removes captured transport session cookies from staged evid
 | Experiment records | Declarations, scoped file receipts, and confirmation lifecycle catch tested mutations and retain negative outcomes | [Experiment guide](../../outputs/mmbu-precompute/docs/experiment-records.md), [AI-agent review](../../outputs/mmbu-precompute/evidence/experiments-cli-independent-review.md) | Hash checks require retained trusted anchors; local software cannot enforce global immutability or prevent outside access |
 | Einstein diagnostic | Read-only diagnostic and IT handoff executed locally, including CPU/missing-dependency conditions | [Execution receipt](../../outputs/mmbu-precompute/evidence/einstein-preflight-execution.json), [AI-agent review](../../outputs/mmbu-precompute/evidence/einstein-preflight-independent-review.md) | No remote diagnostic or GPU allocation was verified |
 | B2-P native projector preflight | One MOCS A100 completed exact language-LoRA plus five-tensor visual-merger backward/update/export and fresh offline reload; 117 serialized tensors and zero reload logit drift | [B2-P trace](B2_PROJECTOR_PREFLIGHT_TRACE.md), [native receipt](../../outputs/b2-projector-preflight/attempt-2/native-preflight.json), [terminal receipt](../../outputs/b2-projector-preflight/attempt-2/terminal-run.json) | Synthetic one-step mechanics only; no answer/context effect, biomedical validity, official-loader acceptance, or competition score |
+| B2 native answer/context objective | Exact per-unit/per-view target weights reached the B2-P optimizer; fixed singleton forward/reverse accumulation had zero loss drift, 0.238% gradient relative drift, and one exact-scope update on job `85472` | [Objective trace](B2_DUAL_OBJECTIVE_PREFLIGHT_TRACE.md), [native receipt](../../outputs/b2-dual-objective-preflight/attempt-3/native-dual-objective.json), [terminal receipt](../../outputs/b2-dual-objective-preflight/attempt-3/terminal-run.json) | Synthetic one-step mechanics only; two preserved predecessor attempts failed heterogeneous concatenated-batch equivalence, and there is no biomedical effect or competition score |
 
 ## Findings that change the next experiment
 
@@ -30,6 +31,11 @@ Qwen3.5's default thinking prompt did not exactly prefix-match a plain-JSON assi
 All three tested native processing paths lost or mis-scaled direct uint16 intensity information. Use a reviewed, explicit display mapping with recorded provenance for source-native16 imagery. Processor acceptance alone is not a valid presentation policy. [Presentation details](../../outputs/mmbu-precompute/docs/supervision-and-presentation.md).
 
 Equal averaging of unequal microbatch mean losses changed the intended objective in the synthetic probe. Normalize by the total shifted assistant-target token count over the accumulation window and test the actual trainer integration once available. [Loss details](../../outputs/mmbu-precompute/docs/causal-loss.md).
+
+The native B2 objective test confirmed the exact global weighted numerator/denominator under fixed singleton
+microbatches, but two prospective concatenated-versus-partitioned tests failed when batch shape changed. The safe
+reference condition is therefore singleton accumulation with complete-cycle stopping until a separately frozen
+shape-bucketed successor passes. [Native objective trace](B2_DUAL_OBJECTIVE_PREFLIGHT_TRACE.md).
 
 ROCO/PMC-VQA article overlap, caption-derived targets, visible overlays, and ambiguous figure lineage require deliberate review. More images do not resolve those issues. Exact/perceptual duplicate tools provide review evidence, not a proof of independence or no leakage. [Source expansion](../../outputs/mmbu-precompute/docs/source-expansion.md), [ROCO sample](../../outputs/mmbu-precompute/docs/roco-sample.md).
 

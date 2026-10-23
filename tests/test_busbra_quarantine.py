@@ -324,6 +324,42 @@ class QuarantineInspectionTests(unittest.TestCase):
             self.assertFalse(receipt["metadata_dimension_clearance"])
             self.assertFalse(receipt["training_ready"])
 
+    def test_near_duplicate_triage_binds_fingerprints_and_never_changes_records(self):
+        from tools.busbra_quarantine import triage_near_duplicates
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            archive, _plan, size, md5 = self.fixture(root, valid_unselected=True)
+
+            receipt = triage_near_duplicates(
+                archive, root / "triage", expected_archive_bytes=size, expected_archive_md5=md5)
+
+            self.assertEqual(receipt["fingerprint_count"], 3)
+            self.assertTrue(any(candidate["record_ids"] == ["bus_0001-l", "bus_0002-l"]
+                                and candidate["hamming_distance"] == 0
+                                and candidate["cross_case"]
+                                and candidate["reason"] == "exact_decoded_match"
+                                for candidate in receipt["candidates"]))
+            fingerprints = (root / "triage/fingerprints.json").read_bytes()
+            self.assertEqual(receipt["fingerprints_sha256"], hashlib.sha256(fingerprints).hexdigest())
+            self.assertFalse(receipt["automatic_merge_or_exclusion"])
+            self.assertFalse(receipt["absence_of_near_duplicates_certified"])
+            self.assertFalse(receipt["training_ready"])
+            self.assertFalse(receipt["model_use_authorized"])
+
+    def test_near_duplicate_triage_rejects_invalid_thresholds_without_publishing(self):
+        from tools.busbra_quarantine import triage_near_duplicates
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            archive, _plan, size, md5 = self.fixture(root, valid_unselected=True)
+            for index, kwargs in enumerate(({"max_distance": True}, {"max_distance": 65},
+                                            {"max_aspect_ratio_difference": float("nan")})):
+                output = root / f"triage-{index}"
+                with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
+                    triage_near_duplicates(
+                        archive, output, expected_archive_bytes=size,
+                        expected_archive_md5=md5, **kwargs)
+                self.assertFalse(output.exists())
+
 
 class StandaloneCliTests(unittest.TestCase):
     def run_cli(self, *args):

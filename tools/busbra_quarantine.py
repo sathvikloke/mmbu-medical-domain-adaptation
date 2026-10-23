@@ -8,6 +8,7 @@ import argparse
 import hashlib
 import io
 import json
+import math
 from pathlib import Path, PurePosixPath
 import re
 import shutil
@@ -342,6 +343,138 @@ def _collision_groups(records, digest_key):
     return sorted(groups, key=lambda item: item["record_ids"])
 
 
+def _dhash64(payload):
+    from PIL import Image
+    with Image.open(io.BytesIO(payload), formats=("PNG",)) as image:
+        gray = image.convert("L").resize((9, 8), Image.Resampling.BILINEAR)
+        pixels = list(gray.get_flattened_data())
+    bits = [pixels[y * 9 + x] > pixels[y * 9 + x + 1]
+            for y in range(8) for x in range(8)]
+    value = sum(int(bit) << (63 - index) for index, bit in enumerate(bits))
+    return {
+        "dhash64": f"{value:016x}",
+        "low_information_hash": sum(bits) <= 2 or sum(bits) >= 62,
+        "thumbnail_range": max(pixels) - min(pixels),
+    }
+
+
+def triage_near_duplicates(archive_path: Path, output: Path, *, max_distance: int = 4,
+                           max_aspect_ratio_difference: float = 0.05,
+                           expected_archive_bytes: int = ARCHIVE_BYTES,
+                           expected_archive_md5: str = ARCHIVE_MD5) -> dict:
+    """Publish conservative full-corpus perceptual review candidates without mutation."""
+    if type(max_distance) is not int or not 0 <= max_distance <= 64:
+        raise ValueError("max_distance must be an integer in [0,64]")
+    if (type(max_aspect_ratio_difference) not in (int, float) or
+            not math.isfinite(max_aspect_ratio_difference) or
+            not 0 <= max_aspect_ratio_difference <= 1):
+        raise ValueError("max_aspect_ratio_difference must be finite in [0,1]")
+    output = Path(output)
+    if output.exists():
+        raise FileExistsError(str(output))
+    output.parent.mkdir(parents=True, exist_ok=True)
+    staging = Path(tempfile.mkdtemp(prefix=".busbra-near-duplicates-", dir=output.parent))
+    try:
+        archive_stream, archive_bytes = _archive_identity(
+            archive_path, expected_archive_bytes, expected_archive_md5)
+        with archive_stream:
+            with zipfile.ZipFile(archive_stream) as archive:
+                infos = _safe_archive(archive)
+                metadata = _read_member(archive, infos, "BUSBRA/bus_data.csv", maximum=1_000_000)
+                records = _read_metadata(metadata)
+                expected_images = {item["image_member"] for item in records}
+                actual_images = {name for name in infos if name.startswith("BUSBRA/Images/")}
+                if actual_images != expected_images:
+                    raise ValueError("archive image inventory differs from metadata")
+                fingerprints = []
+                for record in records:
+                    payload = _read_member(
+                        archive, infos, record["image_member"], maximum=20_000_000)
+                    image = _decode_image(payload)
+                    fingerprint = _dhash64(payload)
+                    fingerprints.append({
+                        "record_id": record["record_id"],
+                        "case_id": record["case_id"],
+                        "pathology": record["pathology"],
+                        "birads": record["birads"],
+                        "width": image["width"],
+                        "height": image["height"],
+                        "raw_sha256": image["raw_sha256"],
+                        "pixel_sha256": image["pixel_sha256"],
+                        **fingerprint,
+                    })
+
+        candidates = []
+        for index, left in enumerate(fingerprints):
+            for right in fingerprints[index + 1:]:
+                cross_left = left["width"] * right["height"]
+                cross_right = right["width"] * left["height"]
+                aspect_difference = abs(cross_left - cross_right) / max(cross_left, cross_right)
+                distance = (int(left["dhash64"], 16) ^ int(right["dhash64"], 16)).bit_count()
+                if distance > max_distance or aspect_difference > max_aspect_ratio_difference:
+                    continue
+                exact = left["pixel_sha256"] == right["pixel_sha256"]
+                weak = left["low_information_hash"] or right["low_information_hash"]
+                candidates.append({
+                    "record_ids": [left["record_id"], right["record_id"]],
+                    "case_ids": [left["case_id"], right["case_id"]],
+                    "pathologies": [left["pathology"], right["pathology"]],
+                    "hamming_distance": distance,
+                    "relative_aspect_difference": aspect_difference,
+                    "cross_case": left["case_id"] != right["case_id"],
+                    "cross_pathology": left["pathology"] != right["pathology"],
+                    "exact_raw_match": left["raw_sha256"] == right["raw_sha256"],
+                    "exact_decoded_match": exact,
+                    "reason": ("exact_decoded_match" if exact else
+                               "weak_hash_requires_review" if weak else
+                               "perceptual_candidate_requires_review"),
+                })
+                if len(candidates) > 100_000:
+                    raise ValueError("perceptual candidate count exceeds the quarantine ceiling")
+
+        fingerprint_bytes = (json.dumps(fingerprints, indent=2, sort_keys=True, allow_nan=False) + "\n").encode()
+        (staging / "fingerprints.json").write_bytes(fingerprint_bytes)
+        receipt = {
+            "schema": "mmbu.busbra.near_duplicate_triage_receipt.v1",
+            "source_id": "busbra",
+            "source_version": "1.0",
+            "archive_bytes": archive_bytes,
+            "archive_md5": expected_archive_md5,
+            "metadata_sha256": hashlib.sha256(metadata).hexdigest(),
+            "algorithm": "pillow-gray8-bilinear-9x8-horizontal-strict-greater-msb-first-v1",
+            "max_distance": max_distance,
+            "max_aspect_ratio_difference": max_aspect_ratio_difference,
+            "fingerprint_count": len(fingerprints),
+            "fingerprints_sha256": hashlib.sha256(fingerprint_bytes).hexdigest(),
+            "low_information_fingerprint_count": sum(
+                item["low_information_hash"] for item in fingerprints),
+            "candidate_count": len(candidates),
+            "cross_case_candidate_count": sum(item["cross_case"] for item in candidates),
+            "cross_pathology_candidate_count": sum(item["cross_pathology"] for item in candidates),
+            "candidates": candidates,
+            "automatic_merge_or_exclusion": False,
+            "absence_of_near_duplicates_certified": False,
+            "model_executed": False,
+            "training_ready": False,
+            "model_use_authorized": False,
+            "limitations": [
+                "Color is discarded; crops, flips, overlays, and changed panels may escape this hash.",
+                "Thresholds are engineering settings, not medically calibrated decision rules.",
+                "Candidates require provenance and side-by-side review before any split decision.",
+            ],
+        }
+        receipt["receipt_digest"] = _canonical_digest(receipt)
+        (staging / "receipt.json").write_text(
+            json.dumps(receipt, indent=2, sort_keys=True, allow_nan=False) + "\n", encoding="utf-8")
+        if output.exists():
+            raise FileExistsError(str(output))
+        staging.rename(output)
+        return receipt
+    finally:
+        if staging.exists():
+            shutil.rmtree(staging)
+
+
 def audit_corpus(archive_path: Path, output: Path, *,
                  expected_archive_bytes: int = ARCHIVE_BYTES,
                  expected_archive_md5: str = ARCHIVE_MD5) -> dict:
@@ -587,6 +720,15 @@ def _parser():
                        help="Pinned source size; override only for synthetic conformance tests")
     audit.add_argument("--expected-archive-md5", default=ARCHIVE_MD5,
                        help="Pinned source MD5; override only for synthetic conformance tests")
+    triage = commands.add_parser("triage-near-duplicates", help="Publish perceptual review candidates")
+    triage.add_argument("archive", type=Path)
+    triage.add_argument("--output", type=Path, required=True)
+    triage.add_argument("--max-distance", type=int, default=4)
+    triage.add_argument("--max-aspect-ratio-difference", type=float, default=0.05)
+    triage.add_argument("--expected-archive-bytes", type=int, default=ARCHIVE_BYTES,
+                        help="Pinned source size; override only for synthetic conformance tests")
+    triage.add_argument("--expected-archive-md5", default=ARCHIVE_MD5,
+                        help="Pinned source MD5; override only for synthetic conformance tests")
     return parser
 
 
@@ -602,10 +744,16 @@ def main(argv=None):
             result = inspect_quarantine(args.archive, _load_json(args.plan), args.output,
                                         expected_archive_bytes=args.expected_archive_bytes,
                                         expected_archive_md5=args.expected_archive_md5)
-        else:
+        elif args.command == "audit-corpus":
             result = audit_corpus(args.archive, args.output,
                                   expected_archive_bytes=args.expected_archive_bytes,
                                   expected_archive_md5=args.expected_archive_md5)
+        else:
+            result = triage_near_duplicates(
+                args.archive, args.output, max_distance=args.max_distance,
+                max_aspect_ratio_difference=args.max_aspect_ratio_difference,
+                expected_archive_bytes=args.expected_archive_bytes,
+                expected_archive_md5=args.expected_archive_md5)
         print(json.dumps(result, indent=2, sort_keys=True, allow_nan=False))
         return 0
     except (OSError, ValueError, TypeError, KeyError, zipfile.BadZipFile) as exc:

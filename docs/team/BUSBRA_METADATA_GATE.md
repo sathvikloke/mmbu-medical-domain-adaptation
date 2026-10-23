@@ -98,3 +98,24 @@ The local aggregate receipt digest is
 `structural_clearance=false`, `training_ready=false`, `near_duplicate_clearance=false`, and
 `model_use_authorized=false`. These findings require an explicit derived-task policy and, for the material box
 exception, independent annotation review before box targets may be admitted.
+
+## Perceptual duplicate triage
+
+The new `triage-near-duplicates` command extends the repository's existing versioned 64-bit difference-hash method to
+the full BUS-BRA archive without changing the immutable historical implementation. It authenticates and opens the
+archive once, decodes every image, binds all 1,875 fingerprints in a separate hashed file, and compares every pair at
+the pre-existing engineering thresholds: Hamming distance at most 4 and relative aspect-ratio difference at most 0.05.
+It cannot merge, exclude, regroup, or resplit a record.
+
+The first full run produced zero low-information fingerprints and one candidate pair:
+`bus_0110-l` / `bus_0536-r`, belonging to different cases 110 and 536, both source-labeled benign, with Hamming
+distance 4 and relative aspect difference `0.016128903918838273`. The images are not raw- or decoded-exact matches.
+A structural side-by-side review found visibly different anatomy, lesion appearance, text overlays, and acquisition
+layout, so the weak-hash collision is not evidence that they are the same frame. It remains a provenance-review
+candidate because visual inspection alone cannot prove distinct patient identity or acquisition lineage.
+
+The local triage receipt digest is
+`4964005ffe63015cbb8a2e152ed84f3af42d56ee76abe743e3cfc05b29bae104`. It deliberately records
+`automatic_merge_or_exclusion=false`, `absence_of_near_duplicates_certified=false`, `training_ready=false`, and
+`model_use_authorized=false`. Crops, mirrors, overlays, and altered panels may escape this weak hash; source proximity
+and cross-source duplicate review remain open.

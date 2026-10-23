@@ -16,6 +16,7 @@ REQUIRED_PHASE1_TEST_MODULES = (
     "test_locks.py",
     "test_package_b.py",
     "test_package_f.py",
+    "test_package_f_manifest_v2.py",
     "test_pipeline.py",
     "test_primitives.py",
     "test_root_orchestration.py",

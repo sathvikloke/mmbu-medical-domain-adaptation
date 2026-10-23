@@ -79,8 +79,17 @@ medical, provenance, rights, purpose, release, and source-proximity review still
 - duplicates, source proximity, source-specific purpose/terms, disclosure readiness, and trained-weight release
   compatibility; contributor-source status alone is not an organizer prohibition.
 
-**Disposition:** remains Tier 1 priority 2 and blocked for model use. Patient grouping has a primary published basis,
-but admission still requires structural validation against the exact v3 archive and authoritative license resolution.
+**Disposition:** remains Tier 1 priority 2 and blocked for model use. The exact v3 metadata gate below now establishes
+patient/image/mask name closure, but schema clearance, pixels, medical review, duplicates, purpose/release review, and
+authoritative license resolution remain incomplete.
+
+### October 23 metadata-gate update
+
+The later [BUS-UCLM metadata gate](BUSUCLM_METADATA_GATE.md) bounded-read the v3 central directory and `INFO.csv`. It
+established exact closure across 683 metadata rows, 683 image names, 683 mask names, and 38 four-letter patient groups;
+all rows declare `856x606`, and label totals match the publication. It also found one noncanonical `Doppler=Y` value
+alongside 36 `Yes` values, plus 154 marked and 6 combined images. Schema clearance therefore remains false. The
+license contradiction also remains unresolved, and no pixel body or model was opened.
 
 ## BUSI-WHU v3
 
@@ -98,7 +107,8 @@ The metadata screen **passes source-priority review** and **does not pass source
 1. BUS-BRA passes metadata closure and quarantined full-corpus decoder/exact-duplicate checks with a binding split
    restriction, but structural clearance remains false; medical semantics, cross-source proximity, rights/purpose,
    release review, and near-duplicate certification remain open.
-2. BUS-UCLM remains second because patient grouping and mask semantics have primary support.
+2. BUS-UCLM now passes exact metadata/image/mask name closure and patient grouping, but fails schema and license
+   clearance; pixels, mask semantics, duplicates, medical review, and model-use purposes remain unopened.
 3. BUSI-WHU remains conditional rather than being promoted from third-party evidence.
 4. MOSAIC G-1 remains `not evaluated`; projected coverage is not an incidence matrix.
 5. Data readiness remains 5.0/10 because no real record has passed rights, grouping, lineage, QA, purpose, and release

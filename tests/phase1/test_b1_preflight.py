@@ -93,9 +93,9 @@ class B1PreflightTests(unittest.TestCase):
             },
             "paths": {
                 "cache_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/cache",
-                "evidence_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run6/evidence",
+                "evidence_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run7/evidence",
                 "model_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/model",
-                "remote_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run6",
+                "remote_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run7",
                 "venv_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/venv",
                 "wheelhouse_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/wheelhouse",
             },
@@ -466,18 +466,33 @@ class B1PreflightTests(unittest.TestCase):
         self.assertEqual(b1_native.MICROBATCH_LOSS_ATOL, 2 ** -8)
         measured = b1_native.validate_microbatch_equivalence(
             2.0, 2.001485824584961, {"adapter.a": 0.001},
-            b1_native.MICROBATCH_LOSS_ATOL, 0.01,
+            0.01, 0.9999, b1_native.MICROBATCH_LOSS_ATOL,
+            b1_native.MICROBATCH_GRAD_ATOL, b1_native.MICROBATCH_GRAD_RTOL,
+            b1_native.MICROBATCH_GRAD_COSINE_MIN,
         )
         self.assertLess(measured["loss_abs_delta"], b1_native.MICROBATCH_LOSS_ATOL)
         result = b1_native.validate_microbatch_equivalence(
-            2.0, 2.00001, {"adapter.a": 0.001, "adapter.b": 0.002}, 1e-4, 0.01
+            2.0, 2.00001, {"adapter.a": 0.001, "adapter.b": 0.002},
+            0.01, 0.9999, 1e-4, 0.01, 0.05, 0.999,
         )
         self.assertAlmostEqual(result["loss_abs_delta"], 1e-5)
         self.assertEqual(result["gradient_max_abs"], 0.002)
         with self.assertRaisesRegex(ContractViolation, r"loss drift 0\.1.*tolerance 0\.0001"):
-            b1_native.validate_microbatch_equivalence(2.0, 2.1, {"adapter.a": 0.001}, 1e-4, 0.01)
+            b1_native.validate_microbatch_equivalence(
+                2.0, 2.1, {"adapter.a": 0.001}, 0.01, 0.9999, 1e-4, 0.01, 0.05, 0.999
+            )
         with self.assertRaises(ContractViolation):
-            b1_native.validate_microbatch_equivalence(2.0, 2.0, {"adapter.a": 0.02}, 1e-4, 0.01)
+            b1_native.validate_microbatch_equivalence(
+                2.0, 2.0, {"adapter.a": 0.02}, 0.01, 0.9999, 1e-4, 0.01, 0.05, 0.999
+            )
+        with self.assertRaises(ContractViolation):
+            b1_native.validate_microbatch_equivalence(
+                2.0, 2.0, {"adapter.a": 0.001}, 0.06, 0.9999, 1e-4, 0.01, 0.05, 0.999
+            )
+        with self.assertRaises(ContractViolation):
+            b1_native.validate_microbatch_equivalence(
+                2.0, 2.0, {"adapter.a": 0.001}, 0.01, 0.998, 1e-4, 0.01, 0.05, 0.999
+            )
 
     def test_nvidia_smi_receipt_is_closed_and_typed(self):
         self.assertEqual(
@@ -528,7 +543,7 @@ class B1PreflightTests(unittest.TestCase):
         self.assertNotIn("sbatch ", script)
         self.assertEqual(script.count("b1_native_preflight.py"), 1)
         self.assertEqual(script.count("b1_offline_reload.py"), 1)
-        self.assertIn("/tmp/npl015-mmbu-b1-run6-${SLURM_JOB_ID}", script)
+        self.assertIn("/tmp/npl015-mmbu-b1-run7-${SLURM_JOB_ID}", script)
         self.assertNotIn("/scratch/", script)
         self.assertNotIn("export CUDA_VISIBLE_DEVICES=", script)
         self.assertIn('test -n "${CUDA_VISIBLE_DEVICES:-}"', script)

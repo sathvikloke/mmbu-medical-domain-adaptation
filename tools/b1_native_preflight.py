@@ -31,7 +31,9 @@ LOSS_ATOL = 1e-5
 # Half a unit-scale BF16 machine epsilon. The gate compares numerically
 # different batch shapes, so an FP32-scale threshold is not meaningful.
 MICROBATCH_LOSS_ATOL = 2 ** -8
-MICROBATCH_GRAD_ATOL = 1e-2
+MICROBATCH_GRAD_ATOL = 2 ** -5
+MICROBATCH_GRAD_RTOL = 0.05
+MICROBATCH_GRAD_COSINE_MIN = 0.999
 SEED = 20261023
 _LANGUAGE_LORA = re.compile(r"^model\.language_model\.layers\.\d+\.self_attn\.(?:q_proj|v_proj)$")
 _RUNTIME_PACKAGES = {
@@ -181,13 +183,21 @@ def validate_microbatch_equivalence(
     full_loss: float,
     accumulated_loss: float,
     gradient_max_abs_by_parameter: dict[str, float],
+    gradient_relative_l2: float,
+    gradient_cosine: float,
     loss_tolerance: float,
     gradient_tolerance: float,
+    gradient_relative_l2_tolerance: float,
+    gradient_cosine_minimum: float,
 ) -> dict:
     f.number(full_loss, "microbatch.full_loss")
     f.number(accumulated_loss, "microbatch.accumulated_loss")
     f.number(loss_tolerance, "microbatch.loss_tolerance", minimum=0)
     f.number(gradient_tolerance, "microbatch.gradient_tolerance", minimum=0)
+    gradient_relative_l2 = f.number(gradient_relative_l2, "microbatch.gradient_relative_l2", minimum=0)
+    gradient_cosine = f.number(gradient_cosine, "microbatch.gradient_cosine", minimum=-1, maximum=1)
+    f.number(gradient_relative_l2_tolerance, "microbatch.gradient_relative_l2_tolerance", minimum=0)
+    f.number(gradient_cosine_minimum, "microbatch.gradient_cosine_minimum", minimum=-1, maximum=1)
     f.require(type(gradient_max_abs_by_parameter) is dict and bool(gradient_max_abs_by_parameter),
               "microbatch.gradient_deltas", "must be a nonempty object")
     names = sorted(gradient_max_abs_by_parameter, key=lambda value: value.encode("utf-8"))
@@ -203,6 +213,10 @@ def validate_microbatch_equivalence(
               f"loss drift {loss_delta:.17g} exceeds tolerance {loss_tolerance:.17g}")
     f.require(gradient_delta <= gradient_tolerance, "microbatch.gradients",
               f"gradient drift {gradient_delta:.17g} exceeds tolerance {gradient_tolerance:.17g}")
+    f.require(gradient_relative_l2 <= gradient_relative_l2_tolerance, "microbatch.gradient_relative_l2",
+              f"relative L2 drift {gradient_relative_l2:.17g} exceeds tolerance {gradient_relative_l2_tolerance:.17g}")
+    f.require(gradient_cosine >= gradient_cosine_minimum, "microbatch.gradient_cosine",
+              f"cosine {gradient_cosine:.17g} is below minimum {gradient_cosine_minimum:.17g}")
     return {
         "full_loss": full_loss,
         "accumulated_loss": accumulated_loss,
@@ -210,6 +224,10 @@ def validate_microbatch_equivalence(
         "loss_tolerance": loss_tolerance,
         "gradient_max_abs": gradient_delta,
         "gradient_tolerance": gradient_tolerance,
+        "gradient_relative_l2": gradient_relative_l2,
+        "gradient_relative_l2_tolerance": gradient_relative_l2_tolerance,
+        "gradient_cosine": gradient_cosine,
+        "gradient_cosine_minimum": gradient_cosine_minimum,
         "gradient_max_abs_by_parameter": gradient_max_abs_by_parameter,
     }
 
@@ -633,17 +651,33 @@ def run() -> None:
         accumulated_loss_value += float(micro_output.loss.detach().float().item()) * weight
         (micro_output.loss * weight).backward()
     gradient_deltas = {}
+    full_gradient_l2_sq = 0.0
+    micro_gradient_l2_sq = 0.0
+    gradient_diff_l2_sq = 0.0
+    gradient_dot = 0.0
     for name, parameter in model.named_parameters():
         if parameter.requires_grad:
             f.require(parameter.grad is not None and name in full_gradients,
                       f"microbatch.{name}.gradient", "gradient is missing")
-            gradient_deltas[name] = float(
-                (parameter.grad.detach().float().cpu() - full_gradients[name]).abs().max().item()
-            )
+            full_gradient = full_gradients[name].double()
+            micro_gradient = parameter.grad.detach().double().cpu()
+            difference = micro_gradient - full_gradient
+            gradient_deltas[name] = float(difference.abs().max().item())
+            full_gradient_l2_sq += float((full_gradient * full_gradient).sum().item())
+            micro_gradient_l2_sq += float((micro_gradient * micro_gradient).sum().item())
+            gradient_diff_l2_sq += float((difference * difference).sum().item())
+            gradient_dot += float((full_gradient * micro_gradient).sum().item())
+    full_gradient_l2 = math.sqrt(full_gradient_l2_sq)
+    micro_gradient_l2 = math.sqrt(micro_gradient_l2_sq)
+    f.require(full_gradient_l2 > 0 and micro_gradient_l2 > 0, "microbatch.gradient_norm", "must be positive")
+    gradient_relative_l2 = math.sqrt(gradient_diff_l2_sq) / max(full_gradient_l2, micro_gradient_l2)
+    gradient_cosine = gradient_dot / (full_gradient_l2 * micro_gradient_l2)
     microbatch_summary = validate_microbatch_equivalence(
         full_loss_value, accumulated_loss_value,
         dict(sorted(gradient_deltas.items(), key=lambda item: item[0].encode("utf-8"))),
+        gradient_relative_l2, gradient_cosine,
         MICROBATCH_LOSS_ATOL, MICROBATCH_GRAD_ATOL,
+        MICROBATCH_GRAD_RTOL, MICROBATCH_GRAD_COSINE_MIN,
     )
     # The microbatch pass is diagnostic only. Restore the declared one-step,
     # full-batch training path before the optimizer consumes any gradients.

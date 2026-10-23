@@ -7,14 +7,21 @@ from contextlib import redirect_stdout
 import hashlib
 import io
 import json
+import copy
 from pathlib import Path
 import tempfile
 import unittest
 from unittest import mock
 import zipfile
 
+try:
+    from PIL import Image
+except ImportError:
+    Image = None
+
 import mmbu_phase1.busbra_review as busbra_review
 from mmbu_phase1.busbra_review import build_review_packet, main
+from mmbu_phase1.busbra_review_validation import validate_completed_review
 
 
 PNG = b"\x89PNG\r\n\x1a\nsynthetic-fixture"
@@ -150,7 +157,11 @@ class BusbraReviewPacketTests(unittest.TestCase):
         self.temp.cleanup()
 
     def build(self):
-        with mock.patch.multiple(busbra_review, **self.pins):
+        with mock.patch.multiple(busbra_review, **self.pins), mock.patch.object(
+            busbra_review, "_decode_image_size", return_value=(8, 8)
+        ), mock.patch.object(
+            busbra_review, "_decode_mask_bbox", return_value=[1, 1, 3, 3]
+        ):
             return build_review_packet(
                 self.archive,
                 self.stratified_plan,
@@ -158,6 +169,383 @@ class BusbraReviewPacketTests(unittest.TestCase):
                 self.contract,
                 self.output,
             )
+
+    def completed_review_files(self):
+        self.build()
+        manifest = json.loads((self.output / "review-manifest.json").read_text())
+        template = self.output / "record-review-template.csv"
+        with template.open(newline="", encoding="utf-8") as stream:
+            fieldnames = csv.DictReader(stream).fieldnames
+        rows = []
+        tasks = "|".join(self.human_plan["proposed_task_decisions"])
+        for record in manifest["records"]:
+            mandatory = bool(record["mandatory_reasons"])
+            rows.append({
+                "record_id": record["record_id"],
+                "case_id": record["case_id"],
+                "pathology": record["pathology"],
+                "birads": record["birads"],
+                "width": str(record["width"]),
+                "height": str(record["height"]),
+                "decoded_width": str(record["decoded_width"]),
+                "decoded_height": str(record["decoded_height"]),
+                "source_bbox_xywh": json.dumps(record["bbox_xywh"], separators=(",", ":")),
+                "mask_derived_bbox_xywh": json.dumps(
+                    record["mask_derived_bbox_xywh"], separators=(",", ":")
+                ),
+                "image_member": record["image_member"],
+                "mask_member": record["mask_member"],
+                "image_path": record["image_path"],
+                "mask_path": record["mask_path"],
+                "mandatory_reasons": "|".join(record["mandatory_reasons"]),
+                "primary_reviewer_id": "medical-primary",
+                "primary_reviewed_at": "2026-10-23T20:00:00Z",
+                "image_interpretable": "yes",
+                "mask_usable": "yes",
+                "additional_or_incomplete_lesion": "no",
+                "source_fields_joined": "yes",
+                "shortcut_artifact": "none",
+                "permitted_tasks": tasks,
+                "primary_disposition": "eligible",
+                "primary_notes": "reviewed against the frozen image, mask, and source fields",
+                "secondary_reviewer_id": "medical-secondary" if mandatory else "",
+                "secondary_reviewed_at": "2026-10-23T21:00:00Z" if mandatory else "",
+                "secondary_disposition": "eligible" if mandatory else "",
+                "secondary_notes": "independent mandatory-case review" if mandatory else "",
+                "adjudicator_id": "",
+                "adjudicated_at": "",
+                "final_disposition": "eligible",
+            })
+        completed_records = self.root / "record-review-completed.csv"
+        with completed_records.open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.DictWriter(stream, fieldnames=fieldnames, lineterminator="\n")
+            writer.writeheader()
+            writer.writerows(rows)
+
+        profile = lambda role, reviewer_id, qualification, reviewed_at: {
+            "role": role,
+            "reviewer_id": reviewer_id,
+            "qualification": qualification,
+            "qualification_evidence_locator": "qualification-record:" + reviewer_id,
+            "reviewed_at": reviewed_at,
+            "evidence_locator": "local-review-log:" + reviewer_id,
+            "human_attested": True,
+        }
+        completed_source = {
+            "schema": "mmbu.busbra.source_review_completed.v1",
+            "source_id": "busbra",
+            "source_version": "1.0",
+            "decision_status": "completed_human_review",
+            "medical_review": {
+                "primary_reviewer": profile(
+                    "medical_primary", "medical-primary", "breast_ultrasound_clinician", "2026-10-23T20:00:00Z"
+                ),
+                "secondary_reviewer": profile(
+                    "medical_secondary", "medical-secondary", "breast_imaging_clinician", "2026-10-23T21:00:00Z"
+                ),
+                "adjudicator": None,
+            },
+            "provenance_review": {
+                "reviewer": profile(
+                    "provenance", "data-steward", "source_data_steward", "2026-10-23T22:00:00Z"
+                ),
+                "case_110_536_disposition": "distinct_lineage",
+                "evidence_locator": "source-author-record:110-536",
+            },
+            "rights_and_release_review": {
+                "reviewer": profile(
+                    "rights_release", "team-authority", "team_rights_authority", "2026-10-23T22:30:00Z"
+                ),
+                "training": "approve",
+                "development": "approve",
+                "untouched_confirmation": "approve",
+                "public_weight_release": "approve",
+                "challenge_submission": "approve",
+                "attribution_text": "BUS-BRA v1.0, Zenodo 8231412, CC BY 4.0",
+                "redistribution_conditions": "Preserve attribution and source notices.",
+            },
+            "review_complete": True,
+            "training_ready": False,
+            "model_use_authorized": False,
+        }
+        completed_source_path = self.root / "source-review-completed.json"
+        completed_source_path.write_text(json.dumps(completed_source))
+        return completed_records, completed_source_path, rows, completed_source
+
+    def validate_completed(self, records_path, source_path):
+        receipt = json.loads((self.output / "packet-receipt.json").read_text())
+        return validate_completed_review(
+            self.output,
+            records_path,
+            source_path,
+            expected_packet_receipt_digest=receipt["receipt_digest"],
+        )
+
+    def test_completed_human_review_is_machine_checkable_but_grants_no_authority(self):
+        records_path, source_path, _, _ = self.completed_review_files()
+        report = self.validate_completed(records_path, source_path)
+        self.assertIs(report["review_evidence_complete"], True)
+        self.assertIs(report["mechanically_ready_for_phase1_admission_review"], True)
+        self.assertIs(report["admission_review_ready"], False)
+        self.assertEqual(report["record_count"], 5)
+        self.assertIs(report["source_admission_authorized"], False)
+        self.assertIs(report["training_ready"], False)
+        self.assertIs(report["model_use_authorized"], False)
+
+    def test_mandatory_record_requires_distinct_secondary_review(self):
+        records_path, source_path, rows, _ = self.completed_review_files()
+        mandatory = next(row for row in rows if row["mandatory_reasons"])
+        mandatory["secondary_reviewer_id"] = mandatory["primary_reviewer_id"]
+        with records_path.open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.DictWriter(stream, fieldnames=rows[0], lineterminator="\n")
+            writer.writeheader()
+            writer.writerows(rows)
+        with self.assertRaisesRegex(ValueError, "distinct secondary reviewer"):
+            self.validate_completed(records_path, source_path)
+
+    def test_disagreement_requires_a_distinct_named_adjudicator(self):
+        records_path, source_path, rows, _ = self.completed_review_files()
+        mandatory = next(row for row in rows if row["mandatory_reasons"])
+        mandatory["secondary_disposition"] = "excluded"
+        mandatory["final_disposition"] = "excluded"
+        with records_path.open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.DictWriter(stream, fieldnames=rows[0], lineterminator="\n")
+            writer.writeheader()
+            writer.writerows(rows)
+        with self.assertRaisesRegex(ValueError, "adjudicator"):
+            self.validate_completed(records_path, source_path)
+
+    def test_unresolved_decision_blocks_readiness_without_becoming_authority(self):
+        records_path, source_path, rows, _ = self.completed_review_files()
+        row = next(value for value in rows if value["mandatory_reasons"])
+        row["primary_disposition"] = "unresolved"
+        row["secondary_disposition"] = "unresolved"
+        row["final_disposition"] = "unresolved"
+        row["permitted_tasks"] = ""
+        with records_path.open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.DictWriter(stream, fieldnames=rows[0], lineterminator="\n")
+            writer.writeheader()
+            writer.writerows(rows)
+        report = self.validate_completed(records_path, source_path)
+        self.assertIs(report["review_evidence_complete"], True)
+        self.assertIs(report["admission_review_ready"], False)
+        self.assertIn(row["record_id"], report["blocked_record_ids"])
+        self.assertIs(report["source_admission_authorized"], False)
+
+    def test_tampered_packet_or_missing_completed_record_fails_closed(self):
+        records_path, source_path, rows, _ = self.completed_review_files()
+        image = next((self.output / "assets").rglob("image.png"))
+        image.write_bytes(image.read_bytes() + b"tampered")
+        with self.assertRaisesRegex(ValueError, "packet member digest"):
+            self.validate_completed(records_path, source_path)
+        image.write_bytes(image.read_bytes()[:-8])
+        with records_path.open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.DictWriter(stream, fieldnames=rows[0], lineterminator="\n")
+            writer.writeheader()
+            writer.writerows(rows[:-1])
+        with self.assertRaisesRegex(ValueError, "exactly the frozen record population"):
+            self.validate_completed(records_path, source_path)
+
+    def test_resealed_packet_does_not_match_the_pre_review_receipt(self):
+        records_path, source_path, _, _ = self.completed_review_files()
+        receipt_path = self.output / "packet-receipt.json"
+        receipt = json.loads(receipt_path.read_text())
+        frozen_digest = receipt["receipt_digest"]
+        image = next((self.output / "assets").rglob("image.png"))
+        image.write_bytes(image.read_bytes() + b"resealed")
+        member = next(value for value in receipt["members"] if value["path"] == image.relative_to(self.output).as_posix())
+        member["bytes"] = image.stat().st_size
+        member["sha256"] = hashlib.sha256(image.read_bytes()).hexdigest()
+        unsigned = dict(receipt)
+        unsigned.pop("receipt_digest")
+        receipt["receipt_digest"] = canonical_digest(unsigned)
+        receipt_path.write_text(json.dumps(receipt))
+        with self.assertRaisesRegex(ValueError, "frozen packet receipt"):
+            validate_completed_review(
+                self.output,
+                records_path,
+                source_path,
+                expected_packet_receipt_digest=frozen_digest,
+            )
+
+    def test_source_roles_require_qualifications_and_evidence(self):
+        records_path, source_path, _, source = self.completed_review_files()
+        source["medical_review"]["primary_reviewer"]["qualification"] = ""
+        source_path.write_text(json.dumps(source))
+        with self.assertRaisesRegex(ValueError, "qualification"):
+            self.validate_completed(records_path, source_path)
+
+    def test_self_asserted_nonhuman_or_wrong_role_profile_is_rejected(self):
+        records_path, source_path, _, source = self.completed_review_files()
+        profile = source["medical_review"]["primary_reviewer"]
+        profile["qualification"] = "AI model"
+        source_path.write_text(json.dumps(source))
+        with self.assertRaisesRegex(ValueError, "qualification is not allowed"):
+            self.validate_completed(records_path, source_path)
+        profile["qualification"] = "breast_ultrasound_clinician"
+        profile["human_attested"] = False
+        source_path.write_text(json.dumps(source))
+        with self.assertRaisesRegex(ValueError, "human attestation"):
+            self.validate_completed(records_path, source_path)
+
+    def test_report_binds_exact_packet_and_completed_evidence_bytes(self):
+        records_path, source_path, rows, source = self.completed_review_files()
+        first = self.validate_completed(records_path, source_path)
+        self.assertEqual(
+            first["packet_receipt_digest"],
+            json.loads((self.output / "packet-receipt.json").read_text())["receipt_digest"],
+        )
+        rows[0]["primary_notes"] += "; exact-note-change"
+        with records_path.open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.DictWriter(stream, fieldnames=rows[0], lineterminator="\n")
+            writer.writeheader()
+            writer.writerows(rows)
+        source["rights_and_release_review"]["reviewer"]["evidence_locator"] += ":changed"
+        source_path.write_text(json.dumps(source))
+        second = self.validate_completed(records_path, source_path)
+        self.assertNotEqual(first["completed_records_sha256"], second["completed_records_sha256"])
+        self.assertNotEqual(first["completed_source_sha256"], second["completed_source_sha256"])
+        self.assertNotEqual(first["report_digest"], second["report_digest"])
+
+    def test_narrow_rights_or_ambiguous_provenance_stays_blocked(self):
+        records_path, source_path, _, source = self.completed_review_files()
+        source["rights_and_release_review"]["training"] = "narrow"
+        source["provenance_review"]["case_110_536_disposition"] = "exclude_or_coassign"
+        source_path.write_text(json.dumps(source))
+        report = self.validate_completed(records_path, source_path)
+        self.assertIs(report["mechanically_ready_for_phase1_admission_review"], False)
+        self.assertNotIn("training", report["proposed_allowed_purposes"])
+        self.assertIn("training_narrow_requires_scope_binding", report["source_blockers"])
+        self.assertIn("case_110_536_exclusion_or_coassignment_unresolved", report["source_blockers"])
+
+    def test_linked_lineage_emits_the_required_coassignment(self):
+        records_path, source_path, _, source = self.completed_review_files()
+        source["provenance_review"]["case_110_536_disposition"] = "linked_lineage"
+        source_path.write_text(json.dumps(source))
+        report = self.validate_completed(records_path, source_path)
+        self.assertEqual(report["required_linked_case_groups"], [["110", "536"]])
+        self.assertIs(report["mechanically_ready_for_phase1_admission_review"], True)
+
+    def test_impossible_or_reversed_review_chronology_is_rejected(self):
+        records_path, source_path, rows, _ = self.completed_review_files()
+        rows[0]["primary_reviewed_at"] = "9999-99-99T99:99:99Z"
+        with records_path.open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.DictWriter(stream, fieldnames=rows[0], lineterminator="\n")
+            writer.writeheader()
+            writer.writerows(rows)
+        with self.assertRaisesRegex(ValueError, "real UTC second timestamp"):
+            self.validate_completed(records_path, source_path)
+        row = next(value for value in rows if value["mandatory_reasons"])
+        rows[0]["primary_reviewed_at"] = "2026-10-23T20:00:00Z"
+        row["secondary_reviewed_at"] = "2026-10-23T19:00:00Z"
+        with records_path.open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.DictWriter(stream, fieldnames=rows[0], lineterminator="\n")
+            writer.writeheader()
+            writer.writerows(rows)
+        with self.assertRaisesRegex(ValueError, "after the primary review"):
+            self.validate_completed(records_path, source_path)
+
+    def test_frozen_geometry_and_asset_fields_are_carried_and_checked(self):
+        records_path, source_path, rows, _ = self.completed_review_files()
+        rows[0]["width"] = "999"
+        with records_path.open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.DictWriter(stream, fieldnames=rows[0], lineterminator="\n")
+            writer.writeheader()
+            writer.writerows(rows)
+        with self.assertRaisesRegex(ValueError, "width differs from the frozen manifest"):
+            self.validate_completed(records_path, source_path)
+        rows[0]["width"] = "8"
+        rows[0]["mask_derived_bbox_xywh"] = ""
+        with records_path.open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.DictWriter(stream, fieldnames=rows[0], lineterminator="\n")
+            writer.writeheader()
+            writer.writerows(rows)
+        with self.assertRaisesRegex(ValueError, "mask_derived_bbox_xywh"):
+            self.validate_completed(records_path, source_path)
+
+    def test_plausible_but_wrong_mask_box_is_rejected(self):
+        records_path, source_path, rows, _ = self.completed_review_files()
+        rows[0]["mask_derived_bbox_xywh"] = "[0,0,1,1]"
+        with records_path.open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.DictWriter(stream, fieldnames=rows[0], lineterminator="\n")
+            writer.writeheader()
+            writer.writerows(rows)
+        with self.assertRaisesRegex(
+            ValueError, "mask_derived_bbox_xywh differs from the frozen manifest"
+        ):
+            self.validate_completed(records_path, source_path)
+
+    @unittest.skipUnless(Image is not None, "Pillow is an optional image-test dependency")
+    def test_decoded_image_size_and_mask_box_come_from_pixels(self):
+        image = Image.new("L", (8, 7), 20)
+        image_payload = io.BytesIO()
+        image.save(image_payload, format="PNG")
+        self.assertEqual(busbra_review._decode_image_size(image_payload.getvalue()), (8, 7))
+
+        mask = Image.new("L", (8, 8), 0)
+        for y in range(2, 6):
+            for x in range(1, 4):
+                mask.putpixel((x, y), 255)
+        payload = io.BytesIO()
+        mask.save(payload, format="PNG")
+        self.assertEqual(busbra_review._decode_mask_bbox(payload.getvalue(), (8, 8)), [1, 2, 3, 4])
+        with self.assertRaisesRegex(ValueError, "same-size"):
+            busbra_review._decode_mask_bbox(payload.getvalue(), (9, 8))
+
+        mask.putpixel((0, 0), 127)
+        payload = io.BytesIO()
+        mask.save(payload, format="PNG")
+        with self.assertRaisesRegex(ValueError, "exactly binary"):
+            busbra_review._decode_mask_bbox(payload.getvalue(), (8, 8))
+
+    def test_known_declared_dimension_exception_uses_decoded_image_size(self):
+        contract = copy.deepcopy(self.contract)
+        contract.pop("contract_digest")
+        contract["dimension_exception_records"] = ["bus_0002-l"]
+        contract["contract_digest"] = canonical_digest(contract)
+        human_plan = copy.deepcopy(self.human_plan)
+        human_plan["exception_population_source_digest"] = contract["contract_digest"]
+        pins = {
+            **self.pins,
+            "HUMAN_PLAN_DIGEST": canonical_digest(human_plan),
+            "STRUCTURAL_CONTRACT_DIGEST": canonical_digest(contract),
+        }
+
+        def image_size(payload):
+            return (8, 7) if b"bus_0002-l" in payload else (8, 8)
+
+        def mask_bbox(payload, expected_size):
+            expected = (8, 7) if b"bus_0002-l" in payload else (8, 8)
+            self.assertEqual(expected_size, expected)
+            return [1, 1, 3, 3]
+
+        with mock.patch.multiple(busbra_review, **pins), mock.patch.object(
+            busbra_review, "_decode_image_size", side_effect=image_size
+        ), mock.patch.object(
+            busbra_review, "_decode_mask_bbox", side_effect=mask_bbox
+        ):
+            build_review_packet(
+                self.archive, self.stratified_plan, human_plan, contract, self.output
+            )
+        manifest = json.loads((self.output / "review-manifest.json").read_text())
+        row = next(item for item in manifest["records"] if item["record_id"] == "bus_0002-l")
+        self.assertEqual((row["width"], row["height"]), (8, 8))
+        self.assertEqual((row["decoded_width"], row["decoded_height"]), (8, 7))
+
+    def test_unlisted_declared_dimension_mismatch_fails_atomically(self):
+        def image_size(payload):
+            return (8, 7) if b"bus_0002-l" in payload else (8, 8)
+
+        with mock.patch.multiple(busbra_review, **self.pins), mock.patch.object(
+            busbra_review, "_decode_image_size", side_effect=image_size
+        ), mock.patch.object(
+            busbra_review, "_decode_mask_bbox", return_value=[1, 1, 3, 3]
+        ):
+            with self.assertRaisesRegex(ValueError, "dimension exception status differs"):
+                build_review_packet(
+                    self.archive, self.stratified_plan, self.human_plan, self.contract, self.output
+                )
+        self.assertFalse(self.output.exists())
 
     def test_packet_exports_exact_union_without_granting_authority(self):
         receipt = self.build()
@@ -268,7 +656,11 @@ class BusbraReviewPacketTests(unittest.TestCase):
         plan_path.write_text(json.dumps(self.stratified_plan))
         human_path.write_text(json.dumps(self.human_plan))
         contract_path.write_text(json.dumps(self.contract))
-        with mock.patch.multiple(busbra_review, **self.pins), redirect_stdout(io.StringIO()):
+        with mock.patch.multiple(busbra_review, **self.pins), mock.patch.object(
+            busbra_review, "_decode_image_size", return_value=(8, 8)
+        ), mock.patch.object(
+            busbra_review, "_decode_mask_bbox", return_value=[1, 1, 3, 3]
+        ), redirect_stdout(io.StringIO()):
             exit_code = main([
                 str(self.archive),
                 "--stratified-plan", str(plan_path),

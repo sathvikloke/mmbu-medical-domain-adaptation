@@ -33,7 +33,11 @@ The dependency-light builder verifies the non-overridable pinned archive identit
 structural-contract values. It independently recomputes the frozen stratified selection from archive metadata before
 checking the plan digest and exact 244-record union. It writes to a new ignored local directory with an atomic
 no-replace operation; it never overwrites an existing packet. The output contains the selected image/mask pairs, a closed
-review manifest, a record worksheet, a separate source/provenance/rights template, and a file-hash receipt. Every
+review manifest, a record worksheet, a separate source/provenance/rights template, and a file-hash receipt. With the
+supported Pillow runtime, it strictly decodes every selected image and binary mask, requires their dimensions to
+match, and freezes the canonical decoded dimensions plus the mask's exact tight half-open box in both the manifest
+and worksheet. Source-declared dimensions remain separate QA evidence, including the four frozen exceptions;
+reviewers cannot substitute a merely plausible in-bounds box. Every
 machine-produced status remains pending, with `training_ready=false` and `model_use_authorized=false`.
 
 First reproduce the metadata-only 199-record plan:
@@ -59,6 +63,32 @@ PYTHONPATH=src python3 -m mmbu_phase1.busbra_review <BUSBRA.zip> \
 Packet generation is not review and does not authorize source admission. Qualified humans must complete the forms,
 retain identity/qualification/date/evidence locators, resolve disagreements, and pass the separate Phase 1 admission
 and purpose-authorization process.
+
+Treat the generated packet as immutable. Before opening any review asset, freeze the `receipt_digest` from
+`packet-receipt.json` in the authorized review-opening record, then copy `record-review-template.csv` and
+`source-review-template.json` outside the packet. Reviewers complete only those copies. The source form uses
+`mmbu.busbra.source_review_completed.v1`; every reviewer profile contains its exact controlled `role` and
+`qualification`, a nonblank `reviewer_id`, qualification-evidence and review-evidence locators, UTC `reviewed_at`,
+and `human_attested=true`. Those claims still require separate authenticated Phase 1 reviewer attestations. Rights
+decisions use `approve`, `narrow`, `decline`, or `unresolved`; `narrow` remains blocked until an exact scope is bound.
+
+Validate the completed copies against the pre-review digest:
+
+```sh
+PYTHONPATH=src python3 -m mmbu_phase1.busbra_review_validation \
+  .local/busbra/human-review-packet \
+  --completed-records <record-review-completed.csv> \
+  --completed-source <source-review-completed.json> \
+  --expected-packet-receipt-digest <pre-review-receipt-digest>
+```
+
+The validator checks every original packet member, the exact frozen record population, geometry and asset locators,
+closed answer vocabularies, controlled source-level role claims, real chronological timestamps, mandatory independent
+second review, and distinct adjudication for disagreements. It binds the exact packet receipt and raw/canonical
+digests of both completed evidence files. Its report can mark the forms mechanically ready for a Phase 1 admission
+review or identify blocked/excluded records, but reviewer identity remains unauthenticated and
+`admission_review_ready`, `source_admission_authorized`, `training_ready`, and `model_use_authorized` always remain
+false. A separate Phase 1 admission chain must authenticate roles and bind the reviewed evidence.
 
 ## Separate decisions and qualified roles
 

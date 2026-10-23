@@ -468,7 +468,7 @@ class B1PreflightTests(unittest.TestCase):
         )
         self.assertAlmostEqual(result["loss_abs_delta"], 1e-5)
         self.assertEqual(result["gradient_max_abs"], 0.002)
-        with self.assertRaises(ContractViolation):
+        with self.assertRaisesRegex(ContractViolation, r"loss drift 0\.1.*tolerance 0\.0001"):
             b1_native.validate_microbatch_equivalence(2.0, 2.1, {"adapter.a": 0.001}, 1e-4, 0.01)
         with self.assertRaises(ContractViolation):
             b1_native.validate_microbatch_equivalence(2.0, 2.0, {"adapter.a": 0.02}, 1e-4, 0.01)

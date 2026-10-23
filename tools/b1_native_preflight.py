@@ -197,8 +197,10 @@ def validate_microbatch_equivalence(
         deltas.append(delta)
     loss_delta = abs(full_loss - accumulated_loss)
     gradient_delta = max(deltas)
-    f.require(loss_delta <= loss_tolerance, "microbatch.loss", "loss drift exceeds tolerance")
-    f.require(gradient_delta <= gradient_tolerance, "microbatch.gradients", "gradient drift exceeds tolerance")
+    f.require(loss_delta <= loss_tolerance, "microbatch.loss",
+              f"loss drift {loss_delta:.17g} exceeds tolerance {loss_tolerance:.17g}")
+    f.require(gradient_delta <= gradient_tolerance, "microbatch.gradients",
+              f"gradient drift {gradient_delta:.17g} exceeds tolerance {gradient_tolerance:.17g}")
     return {
         "full_loss": full_loss,
         "accumulated_loss": accumulated_loss,

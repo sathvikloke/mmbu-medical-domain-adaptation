@@ -19,6 +19,16 @@ readonly RUN_ROOT=/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1
 readonly CODE_ROOT=${RUN_ROOT}/code
 readonly VENV_ROOT=${RUN_ROOT}/venv
 readonly OFFLINE_CACHE=/tmp/npl015-mmbu-b1-${SLURM_JOB_ID}
+export B1_STARTED_UTC
+B1_STARTED_UTC=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+finalize_b1() {
+    readonly rc=$?
+    trap - EXIT
+    "${VENV_ROOT}/bin/python" -B "${CODE_ROOT}/tools/b1_finalize.py" "${rc}" || true
+    exit "${rc}"
+}
+trap finalize_b1 EXIT
 
 module purge
 module load python/3.12.12

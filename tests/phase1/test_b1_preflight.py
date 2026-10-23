@@ -41,6 +41,14 @@ if RELOAD_PATH.exists() and reload_spec and reload_spec.loader:
 else:
     b1_reload = None
 
+FINALIZE_PATH = Path(__file__).resolve().parents[2] / "tools/b1_finalize.py"
+finalize_spec = importlib.util.spec_from_file_location("b1_finalize", FINALIZE_PATH)
+if FINALIZE_PATH.exists() and finalize_spec and finalize_spec.loader:
+    b1_finalize = importlib.util.module_from_spec(finalize_spec)
+    finalize_spec.loader.exec_module(b1_finalize)
+else:
+    b1_finalize = None
+
 
 def sha(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
@@ -446,6 +454,26 @@ class B1PreflightTests(unittest.TestCase):
         self.assertIn("native.load_pil_processor(model_root)", reload_source)
         self.assertNotIn("use_fast=True", native_source + reload_source)
         self.assertNotIn("AutoProcessor", native_source + reload_source)
+
+    def test_terminal_record_requires_success_evidence_but_preserves_failure(self):
+        source = [{"path": "tools/a.py", "bytes": 1, "sha256": "a" * 64}]
+        complete = [
+            {"path": "native-preflight.json", "bytes": 1, "sha256": "b" * 64},
+            {"path": "offline-reload.json", "bytes": 1, "sha256": "c" * 64},
+        ]
+        passed = b1_finalize.build_terminal_record(
+            0, "123", "node", "2026-10-23T00:00:00Z", "2026-10-23T00:01:00Z", source, complete
+        )
+        self.assertEqual(passed["status"], "passed")
+        with self.assertRaises(ContractViolation):
+            b1_finalize.build_terminal_record(
+                0, "123", "node", "2026-10-23T00:00:00Z", "2026-10-23T00:01:00Z", source, complete[:1]
+            )
+        failed = b1_finalize.build_terminal_record(
+            2, "123", "node", "2026-10-23T00:00:00Z", "2026-10-23T00:01:00Z", source, []
+        )
+        self.assertEqual(failed["status"], "failed")
+        self.assertEqual(failed["exit_code"], 2)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,45 @@
+{
+  "schema": "mmbu.b2.projector_preflight.evidence_manifest.v1",
+  "successful_job_id": "85459",
+  "attempt": 2,
+  "remote_root": "/storage/home/npl015/mmbu-b2-preflight/2026-10-23-run2/evidence",
+  "artifacts": [
+    {
+      "path": "adapter/adapter_model.safetensors",
+      "bytes": 91689000,
+      "sha256": "5c37dd5b3fab53195ee20dcbcf61fed36f8f6f050f4295331be4e6822bb5bdc0",
+      "retained_in_repository": false
+    },
+    {
+      "path": "attempt-2/adapter/adapter_config.json",
+      "bytes": 4188,
+      "sha256": "f7df1b5c980b8ed5e5f6301a7a45ec2edabb43737dfc7320eda72c67791f772d",
+      "retained_in_repository": true
+    },
+    {
+      "path": "attempt-2/native-preflight.json",
+      "bytes": 93699,
+      "sha256": "fba43cb6c0956c2688a9d3ea01c4a67baff3fa73d40e559da036582dcfef30d8",
+      "retained_in_repository": true
+    },
+    {
+      "path": "attempt-2/offline-reload.json",
+      "bytes": 863,
+      "sha256": "38c8bb26b662c3d3ba24eee656b65bb69745e69e183f376029e8a54d5c65109f",
+      "retained_in_repository": true
+    },
+    {
+      "path": "attempt-2/terminal-run.json",
+      "bytes": 1656,
+      "sha256": "8b0b4a759936b199da769977c5cfaee81ccb877eabe04563c4e4d35f99c6dbb1",
+      "retained_in_repository": true
+    }
+  ],
+  "failed_attempt": {
+    "job_id": "85458",
+    "terminal_receipt": "attempt-1/terminal-run.json",
+    "failure_stage": "pre_model_load_pin_projection_validation",
+    "optimizer_step_executed": false
+  },
+  "claim_boundary": "Synthetic engineering feasibility only; no biomedical or MMBU input, performance, novelty, clinical, official-loader, or competition-result claim."
+}

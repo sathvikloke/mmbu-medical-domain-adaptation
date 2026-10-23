@@ -1,10 +1,10 @@
 # Results and evidence
 
-This ledger summarizes the recorded CPU preparation milestone through October 4, 2026. It does not add new scientific results. Read the [v0.3 status](../../outputs/MMBU-precompute-v0.3-status.md) for the narrative and [release verification](../../outputs/MMBU-precompute-v0.3-verification.json) for the original portable archive receipt.
+This ledger summarizes the recorded CPU preparation milestone through October 4, 2026 and links the bounded October 23 native synthetic supplements. It does not add biomedical or competition-performance results. Read the [v0.3 status](../../outputs/MMBU-precompute-v0.3-status.md) for the historical narrative and [release verification](../../outputs/MMBU-precompute-v0.3-verification.json) for the original portable archive receipt.
 
 The publication step removes captured transport session cookies from staged evidence and affected archived members. [Publication redactions](../../research/publication-redactions.json) record original and exported hashes. Historical test/release receipts retain the original measurements; use the publication verifier for exported copies rather than expecting a transformed archive to equal its original hash. The original local workspace remains unchanged.
 
-**Established:** software behavior, source-review material, native preprocessing compatibility for tested inputs, and synthetic loss arithmetic. **Not established:** baseline accuracy, adaptation gain, a winning model, GPU fit, actual trainer gradients, BF16/FP16 export, official-harness equivalence, or biomedical/legal approval. No weights, model inference, training, or GPU jobs were used.
+**Established:** software behavior, source-review material, native preprocessing compatibility for tested inputs, synthetic loss arithmetic, and bounded B1/B2-P one-step native GPU feasibility. **Not established:** baseline accuracy, adaptation gain, a winning model, full-training fit, official-harness equivalence, or biomedical/legal approval. The October 23 supplements used generated engineering images only; no biomedical or MMBU input entered them.
 
 ## Verified ledger
 
@@ -21,6 +21,7 @@ The publication step removes captured transport session cookies from staged evid
 | Comparison/diagnostics | Candidate-specific bases, shared group resamples, fixed source mass, mixture sensitivity, and separate calibration strata tested | [Comparison guide](../../outputs/mmbu-precompute/docs/candidate-comparison.md), [diagnostics guide](../../outputs/mmbu-precompute/docs/diagnostics.md), [AI-agent review](../../outputs/mmbu-precompute/evidence/diagnostics-acquisition-review.md) | Uses supplied toy grades; no predictions or human judgments were fabricated |
 | Experiment records | Declarations, scoped file receipts, and confirmation lifecycle catch tested mutations and retain negative outcomes | [Experiment guide](../../outputs/mmbu-precompute/docs/experiment-records.md), [AI-agent review](../../outputs/mmbu-precompute/evidence/experiments-cli-independent-review.md) | Hash checks require retained trusted anchors; local software cannot enforce global immutability or prevent outside access |
 | Einstein diagnostic | Read-only diagnostic and IT handoff executed locally, including CPU/missing-dependency conditions | [Execution receipt](../../outputs/mmbu-precompute/evidence/einstein-preflight-execution.json), [AI-agent review](../../outputs/mmbu-precompute/evidence/einstein-preflight-independent-review.md) | No remote diagnostic or GPU allocation was verified |
+| B2-P native projector preflight | One MOCS A100 completed exact language-LoRA plus five-tensor visual-merger backward/update/export and fresh offline reload; 117 serialized tensors and zero reload logit drift | [B2-P trace](B2_PROJECTOR_PREFLIGHT_TRACE.md), [native receipt](../../outputs/b2-projector-preflight/attempt-2/native-preflight.json), [terminal receipt](../../outputs/b2-projector-preflight/attempt-2/terminal-run.json) | Synthetic one-step mechanics only; no answer/context effect, biomedical validity, official-loader acceptance, or competition score |
 
 ## Findings that change the next experiment
 

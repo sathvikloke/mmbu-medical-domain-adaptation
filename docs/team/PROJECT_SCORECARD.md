@@ -1,6 +1,6 @@
 # Project scorecard
 
-**Scored:** October 22, 2026
+**Scored:** October 23, 2026
 **Scale:** 0 = absent, 5 = plausible but materially incomplete, 8 = strong and reviewable, 9.5 = unusually complete,
 10 = independently demonstrated with no material known gap  
 **Rule:** design quality and empirical proof are scored separately; a clean plan cannot borrow points from unrun results
@@ -10,8 +10,8 @@
 | Category | Score / 10 | Evidence-based reason | What prevents 9.5 |
 |---|---:|---|---|
 | Challenge-problem fit | **9.4** | The portfolio directly targets the benchmark's weak localization, open-answer gap, visual shortcuts, and base-model regressions; the visible task-card revision and manual protocol transcription are recorded | Raw card bytes, final context prompt, evaluator/runtime, card drift, contradictory malformed/multi-label branches, and hidden distribution remain organizer-controlled |
-| Competition strategy | **8.8** | One active competition lane plus frozen diagnostic/research branches now uses an adaptation-response frontier, score-aligned confirmation, hard public firewall, and strong controls | The frontier universe, exact scientific-decision receipt, compute limits, native receipts, and organizer loader remain uninstantiated |
-| Best current competition idea: B2 dual-objective answer/context adaptation | **8.4** | Base-architecture-preserving shared PEFT targets both documented score components, normalizes unit exposure, and demotes curriculum order to an ablation | Context prompt/scoring, loader/package acceptance, exact profiles, admitted data, native baseline, and model evidence are absent |
+| Competition strategy | **9.0** | One active competition lane now has a five-arm task-only/dual-objective comparator graph, score-aligned confirmation, hard public firewall, strong controls, and a measured native B1 feasibility envelope | The exact scientific-decision receipt, admitted data, full-run compute budget, and organizer loader remain uninstantiated |
+| Best current competition idea: B2 dual-objective answer/context adaptation | **8.4** | Base-architecture-preserving shared PEFT targets both documented score components, normalizes unit exposure, and demotes curriculum order to an ablation | Context prompt/scoring, loader/package acceptance, exact scientific profiles, admitted data, and native B2 task/context evidence are absent |
 | Competition-system innovation | **4.2** | The conditional [system-interaction hypothesis](SYSTEM_INTERACTION_HYPOTHESIS.md) specifies isolation tests for answer/context × unit-normalization and a separate adaptation-response-frontier claim; direct multitask and transfer-selection antecedents narrow both to empirical residuals | Organizer-defined scoring/serialization and ordinary compliance are not innovation; close complete medical systems exist, scientific literals remain unfrozen, and no native result isolates either claim |
 | System novelty | **3.5** | The planned training interaction has a prospective `SYS-A0`–`SYS-A3` falsification target, while the frontier contrast is explicitly separate; both remain unexecuted and heavily anticipated by prior work | No matched full-system/component ablation isolates the interaction beyond more supervision, filtering, updates, compute, or evaluator tailoring; H2 and independent replication are also absent |
 | Learner-method novelty | **2.0** | Shared PEFT with dual answer/context supervision is the active learner | Shared PEFT, multitask supervision, preservation, task-specific adapters, constrained fine-tuning, and interpolation are established |
@@ -20,26 +20,27 @@
 | Highest research-package novelty | **5.8 diagnostic, not method** | The factorial interaction audit is the strongest diagnostic distinction | It is task-vector/composition analysis, not a learner or submission mechanism |
 | QUILT idea / concept / paper novelty | **4.0 / 3.5 / 3.0** | The controlled basis recipe remains a valid diagnostic hypothesis | LoRA-FA, GPM/InfLoRA, AND-mask/Fish/Fishr, R2F, and direct 2026 medical-VLM paraphrase-consistency work collapse the former novelty claim; loss-scale interactions can make the basis task-bearing |
 | MOSAIC current-grid competition value / concept novelty | **4.5 / 5.5** | The hypothesis is falsifiable, but the current source-adjusted design cannot identify its claimed factors | Routed/factor-specific medical LoRA already exists, and current G-1 fails before biomedical training |
-| Technical design correctness | **8.6** | Circular routing was removed; residual composition, parameter/FLOP controls, and route/source diagnostics are specified; QUILT's estimator now has an explicit adverse disposition | No implementation, tensor-shape proof, gradient test, native memory measurement, or accepted replacement novelty mechanism |
+| Technical design correctness | **9.0** | The B1 path now has exact processor geometry, target-only loss, cache, batch/microbatch, gradient/update, 56-module LoRA scope, export, and offline-reload evidence on the pinned native model; higher-risk research branches remain demoted | B2 projector integration, a real trainer/data path, full-run throughput, and official-loader conformance remain unproved |
 | Scientific validity / anti-bias | **9.3** | Split-before-expansion, disjoint roles, one-opening confirmation, group bootstrap, held-out sources, negative controls, and explicit falsification gates are bound | Source support, exact decision literals, and preregistration against real data do not yet exist |
 | Experiment-design quality | **8.9** | The freeze contract separates schema, experiment freeze, and execution; Package F now implements the closed manifest, exposure/role validators, exact score proxy, and conjunctive promotion mechanics | Exact candidate profiles, hyperparameters, margins, source support, compute budgets, and decision literals are still unknown rather than scientifically frozen |
 | Evaluation design | **8.5** | Same-unit reporting, macro-source/task slices, typed visual interventions, conjunctive gates, negative flips, and current task protocol are specified | The entire final context endpoint, malformed/multi-label precedence, executable evaluator/runtime, probe registry, and decision literals remain unbound |
-| Reproducibility / auditability | **9.4** | Immutable IDs, lineage, fail-closed registries, canonical-record rules, packet closure, explicit unknowns, offline reload gates, and Package F's implementation-backed synthetic schema are unusually strong | The resealed packet requires fresh acknowledgement for later work; scientific bindings, native receipts, independent code review, and remote reproduction remain absent |
-| Repository engineering | **9.4** | Fresh verification passes 277 historical-package tests, 42 root-tool tests, and 302 Phase 1 tests; Package B and F synthetic contracts are now implementation-backed, and contract, schemas, registries, negative paths, and link/evidence checks exist | The fresh historical run skipped 44 optional-image tests; real trainer/model/export integration, remote CI, and independent code review remain absent |
-| Rule compliance | **8.4** | Organizer answers, current task-card drift, contradictions, and the stricter local public-set firewall are recorded without treating contributing-source proximity as automatically prohibited | The organizer's Discord evaluation material is not receipted; final context/harness, packaging/loader, disclosure, hardware/runtime, and exact cutoff time remain unresolved |
-| Data design | **9.1** | Package B implements the synthetic annotation lattice and exact exposure accounting; Package F binds per-unit allocation and four-dimensional role separation, while context fields remain source-authoritative or masked unknown | Synthetic validators do not establish real-source conformance; every biomedical source still requires admission plus medical/rights review |
-| Data readiness | **5.0** | Candidate inventories, quarantine evidence, and a primary-source-backed intake priority now exist; BUS-BRA and BUS-UCLM are the strongest metadata-only global/spatial candidates | No real source currently has complete admission; an optimistic scaffold is already rank deficient, the exact incidence table does not exist, and admitted-data G-1 remains unevaluated |
-| Compute readiness | **3.5** | Official UTC VPN, node, and partition guidance plus repeated bounded local route/DNS/SSH probes are recorded; the redacted local route targets the public `login.mocshpc.utc.edu` hostname | Neither official hostname resolves off the required UTC path; no active UTC VPN, authenticated account/allocation, GPU receipt, model load, memory, step-time, export, or reload measurement |
+| Reproducibility / auditability | **9.6** | Immutable IDs, lineage, fail-closed registries, canonical-record rules, explicit unknowns, preserved failed attempts, exact native artifact hashes, and a fresh socket-denied reload are all receipted | Scientific bindings, independent native reproduction on a second environment, and external code/scientific review remain absent |
+| Repository engineering | **9.7** | Fresh verification passes 277 historical-package tests, 63 root tests, and 342 Phase 1 tests; remote CI passes Python 3.11/3.12/3.14 plus the image-enabled suite; the real pinned model path now loads, steps, exports, and reloads | Full biomedical trainer integration, official loader integration, and independent external review remain absent |
+| Rule compliance | **8.4** | Organizer answers, current task-card drift, contradictions, and the stricter local public-set firewall are recorded without treating contributing-source proximity as automatically prohibited | The organizer's Discord evaluation material is not receipted; final context/harness, packaging/loader, disclosure, official runtime constraints, and exact cutoff time remain unresolved |
+| Data design | **9.2** | Package B implements the synthetic annotation lattice and exact exposure accounting; the two strongest source candidates now have exact structure receipts, while context fields remain source-authoritative or masked unknown | Structural validators do not establish medical correctness or rights/purpose approval; every biomedical source still requires full admission review |
+| Data readiness | **5.8** | BUS-BRA now has full 1,875-pair structural/duplicate-risk evidence and BUS-UCLM has exact 683-row metadata/image/mask closure with patient grouping; both gates preserve their discovered exceptions instead of silently repairing them | No real source has complete medical, rights, purpose, source-proximity, and release admission; BUS-BRA has geometry/provenance exceptions and BUS-UCLM has schema/license blockers |
+| Compute readiness | **8.8** | The exact pinned Qwen2.5-VL-7B runtime loaded on one MOCS A100, processed ten synthetic image classes, completed forward/backward and one AdamW step, exported the exact language-only adapter, and reloaded it in a fresh network-denied process with measured memory and timing | Full biomedical training throughput, queue/quota reliability, B2 projector memory, multi-seed cost, and official-runtime equivalence remain unmeasured |
 | Release-plan quality | **8.7** | The fail-closed state machine now covers explicit failure states, complete offline bytes, quarantine-to-offline verification, disclosure reconciliation, human approval, upload verification, and rollback | Exact challenge loader, form fields, repository visibility/layout, deadline clock time, artifact/runtime limits, and a real rehearsal remain unavailable |
 | Claude handoff quality | **8.8** | The handoff binds packet closure, scientific-decision ownership, qualified identifiers, context-missing semantics, confirmation closure, strict package boundaries, and Package F now implements its closed schema and fixtures | The resealed successor packet is pending acknowledgement; no literal scientific receipt, compute authorization, or independent execution exists yet |
-| Packaging/submission readiness | **5.5** | Hermetic load, complete-byte inventory, state-dict closure, and disclosure gates are specified | No trained artifact, and even ordinary adapter/layout acceptance—not only custom routers—remains unconfirmed |
-| Local empirical evidence | **0.5** | Engineering behavior and synthetic arithmetic are verified | There is no model forward, training run, valid baseline score, ablation, or biomedical result |
+| Packaging/submission readiness | **7.2** | A real minimal adapter with 56 exact language targets and 112 exact state keys exports and reloads offline with identical three-token generation; complete-byte inventory and disclosure gates are specified | The artifact is a synthetic one-step feasibility artifact, not a trained entrant; official adapter/layout acceptance and end-to-end challenge loading remain unconfirmed |
+| Local empirical evidence | **3.5** | The pinned model now has measured native image processing, visual-path dependence, loss, gradients, one optimizer step, generation, export, and offline reload on a real A100 | There is still no admitted-biomedical-data run, valid baseline score, task/context ablation, multi-seed result, or competition-performance evidence |
 
 ## Interpretation
 
-The project is not a 9.5/10 completed entry. It is a strong research and competition **plan** with excellent audit
-infrastructure and almost no model evidence yet. Averaging the table would be misleading because the empirical score is
-a hard dependency: a zero-result project cannot be made competition-ready by adding more prose. The October 18
+The project is not a 9.5/10 completed entry. It is now a strong research and competition **system scaffold** with
+excellent audit infrastructure and bounded native-model feasibility evidence, but no biomedical performance result.
+Averaging the table would be misleading because the empirical score is a hard dependency: a zero-biomedical-result
+project cannot be made competition-ready by adding more prose. The October 18
 executability audit also showed that detailed prose is not an executable experiment until every scientific choice,
 dependency, role, cap, and decision function is literal and hash-bound.
 
@@ -90,8 +91,9 @@ equivalence plus a fresh offline load are mandatory.
 ## Conservative no-new-evidence ceilings
 
 These are working ceilings under the current evidence class, not promises or mathematical upper bounds. “No new
-evidence” means no additional organizer answer beyond the October 14 reply, audited Discord capture, admitted real
-data, native model/HPC receipt, implementation, or experiment result.
+evidence” means no evidence beyond the October 23 repository state: the October 14 organizer reply, current source
+audits, remote CI, and the bounded B1 native synthetic receipt. It excludes a new organizer answer, admitted real data,
+B2/full-training receipt, or biomedical experiment result.
 More prose cannot legitimately cross these ceilings.
 
 The last column states promotion eligibility, not an executable decision rule. Any novelty or idea score increase from
@@ -103,7 +105,7 @@ conjunctive pass/fail function.
 | Category | Current | Ceiling before new evidence | Evidence required to cross it |
 |---|---:|---:|---|
 | Challenge fit | 9.4 | 9.4 | Final context/evaluator/runtime and hidden-task-aligned validation evidence |
-| Competition strategy | 8.8 | 8.9 | Literal frozen frontier/decision packet; native baseline cost/performance and loader measurements are needed beyond it |
+| Competition strategy | 9.0 | 9.1 | Literal frozen frontier/decision packet; admitted data, full-run cost/performance, and loader measurements are needed beyond it |
 | B2 dual-objective answer/context idea quality | 8.4 | 8.6 | Finalize a literal freeze packet; native answer/context, visual-dependence, and loader evidence are needed beyond it |
 | Competition-system innovation | 4.2 subjective pre-result estimate | 4.5 | Direct co-training and transfer-selection antecedents narrow the residual; a higher score requires matched execution evidence under the prospective decision object above |
 | System novelty | 3.5 | 4.0 | The primary interaction is named and closest-system-audited; reaching 5.0 still requires the prospectively frozen matched `SYS-A0`–`SYS-A3` result under equal records, updates, compute, serializer, and evaluator |
@@ -113,28 +115,28 @@ conjunctive pass/fail function.
 | MRFSS concept / paper novelty | 5.2 / 4.5 | 5.2 / 4.5 | Direct CVPR 2022 characteristic-function frequency-counting antecedent prevents a higher no-result score |
 | MOSAIC current-grid competition value / concept novelty | 4.5 / 5.5 | 4.5 / 5.5 | A future crossed grid is a different evidence state and must be rescored after G-1 |
 | QUILT idea / concept / paper novelty | 4.0 / 3.5 / 3.0 | 4.0 / 3.5 / 3.0 | Image-reliant held-out-template benefit beyond GPM/InfLoRA, R2F, and supervised consistency controls |
-| Technical design correctness | 8.6 | 8.6 | Replacement-design review plus tensor/optimizer conformance and native receipts |
+| Technical design correctness | 9.0 | 9.1 | B2 projector/trainer conformance and official-loader evidence |
 | Scientific validity | 9.3 | 9.4 | Literal prospective decision object can raise design readiness; admitted source incidence and execution remain new evidence |
-| Experiment design | 8.8 | 9.1 | Versioned typed schema, literal scientific receipt, probe registry, and decision pseudocode before outputs |
+| Experiment design | 8.9 | 9.1 | Literal scientific receipt, probe registry, and decision pseudocode before outputs |
 | Evaluation design | 8.5 | 8.7 | A complete local proxy decision function can improve design; official context/evaluator evidence is still required |
-| Reproducibility/auditability | 9.3 | 9.5 | Independently acknowledge the verified dependency-manifest digest, then add typed schema/negative fixtures |
-| Repository engineering | 9.3 | 9.4 | Remote CI plus independent review of the clean commit series; real trainer/model/export integration remains new evidence |
+| Reproducibility/auditability | 9.6 | 9.7 | Independent second-environment native reproduction plus external scientific/code review |
+| Repository engineering | 9.7 | 9.7 | Full biomedical trainer and official-loader integration are new evidence, not prose work |
 | Rule compliance | 8.4 | 8.5 | Audit exact Discord evaluation evidence; loader/package and cutoff still require organizer authority |
-| Data design | 9.0 | 9.0 | Source-specific schema conformance and medical/rights review of real derivations |
-| Data readiness | 5.0 | 5.0 | At least one real source passes complete admission and purpose authorization |
-| Compute readiness | 3.5 | 3.5 | MOCS identity/allocation plus native load, step, export, reload, memory, and timing receipts |
+| Data design | 9.2 | 9.2 | Source-specific medical/rights/purpose review of real derivations |
+| Data readiness | 5.8 | 5.8 | At least one real source passes complete admission and purpose authorization |
+| Compute readiness | 8.8 | 8.8 | Full biomedical training throughput, B2 memory, multi-seed cost, and queue reliability |
 | Release-plan quality | 8.7 | 8.8 | Separate dated status from procedure and finish the typed release decision contract; official loader/form still blocks more |
 | Claude handoff quality | 8.6 | 9.1 | Independently acknowledge the closed dependency-manifest digest, then add typed schema/fixtures and a literal pre-output decision receipt |
-| Packaging/submission readiness | 5.5 | 5.5 | A real artifact plus official loader/layout evidence is required; prose cannot raise it |
-| Local empirical evidence | 0.5 | 0.5 | Prospectively registered synthetic/model/biomedical runs, labeled by evidence class |
+| Packaging/submission readiness | 7.2 | 7.2 | A trained entrant plus official loader/layout evidence is required; prose cannot raise it |
+| Local empirical evidence | 3.5 | 3.5 | Prospectively frozen admitted-biomedical B0/B1/B2 runs with task/context results |
 
 ## Fastest honest path upward
 
 | Gate | Categories it can raise | Success evidence |
 |---|---|---|
-| Metadata-only BUS-BRA/BUS-UCLM intake | data design, eventual data readiness | Exact version/terms, patient/fold schema, label/mask joins, and source-family decision are receipted without opening pixels; this does not itself admit data |
+| BUS-BRA/BUS-UCLM source admission | data readiness, empirical eligibility | Resolve recorded geometry/schema/license exceptions, complete medical/provenance/purpose/release review, and admit exact records without using MMBU public evidence |
 | G-1 source-factor incidence | idea, novelty, scientific validity, data readiness | Admitted independent sources break modality/specimen/task confounding; held-out combinations have support and the frozen design matrix passes its rank/alias checks |
-| MOCS native preflight | compute, technical feasibility, packaging | Pinned base loads, forwards, takes one training step, exports, and reloads offline with measured resources |
+| B2 MOCS integration preflight | compute, technical feasibility, packaging | Add the prospectively selected projector target set to the already-passing B1 envelope and remeasure memory, gradients, export, and offline reload |
 | B0/B1/B2 execution | empirical evidence, competition strategy | Frozen-manifest results with paired group intervals, negative flips, malformed rate, visual-dependence and cost slices |
 | Conditional learner-mechanism test after a qualifying residual | novelty-probe eligibility | A prospectively frozen repeated B2/B4 residual on admitted, non-public external data, or a precisely cited independently replicated residual matching the task, modality, and constraints with a predeclared reason B2 cannot address it; then a fresh collision search and claim-specific prospective decision object |
 | Matched integrated-system ablation | system/paper novelty eligibility | Under the [system-interaction contract](SYSTEM_INTERACTION_HYPOTHESIS.md), `SYS-A3` passes the separately frozen task and context interaction conditions against `SYS-A0`–`SYS-A2`, the exposure-equalized arms satisfy the preregistered equivalence/null prediction, the full system beats the strongest faithful complete-system comparator, and the interaction replicates across independently governed source parents; extra supervision, filtering, exposure, or compute cannot explain the benefit |

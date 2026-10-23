@@ -641,6 +641,15 @@ def run() -> None:
         dict(sorted(gradient_deltas.items(), key=lambda item: item[0].encode("utf-8"))),
         MICROBATCH_LOSS_ATOL, MICROBATCH_GRAD_ATOL,
     )
+    # The microbatch pass is diagnostic only. Restore the declared one-step,
+    # full-batch training path before the optimizer consumes any gradients.
+    optimizer.zero_grad(set_to_none=True)
+    optimizer_output = model(**training_inputs, use_cache=False, return_dict=True)
+    _finite(torch, optimizer_output.loss, "training.optimizer_loss")
+    optimizer_loss_delta = float((optimizer_output.loss.float() - output.loss.float()).abs().item())
+    f.require(optimizer_loss_delta <= LOSS_ATOL, "training.optimizer_loss",
+              "repeated full-batch loss exceeds tolerance")
+    optimizer_output.loss.backward()
     gradient_names = []
     for name, parameter in model.named_parameters():
         if parameter.requires_grad:
@@ -768,6 +777,8 @@ def run() -> None:
         "training": {"loss": float(output.loss.detach().float().item()), "manual_loss": float(manual_loss.detach().item()),
                      "loss_abs_delta": loss_delta, "loss_tolerance": LOSS_ATOL, "inventory": inventory,
                      "microbatch_equivalence": microbatch_summary,
+                     "optimizer_full_batch_loss": float(optimizer_output.loss.detach().float().item()),
+                     "optimizer_full_batch_loss_abs_delta": optimizer_loss_delta,
                      "parameter_records": parameter_records,
                      "optimizer_state_records": optimizer_state_records,
                      "logits_dtype": str(output.logits.dtype), "loss_dtype": str(output.loss.dtype)},

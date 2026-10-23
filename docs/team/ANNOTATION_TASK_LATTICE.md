@@ -132,10 +132,11 @@ answer-changing target tracking is not evidence that the spatial multi-view inte
 
 ## Secondary closed-answer construction
 
-Closed questions are useful because the benchmark paper reports a large closed-to-open gap, but naive distractors can
-create shortcuts. Under the visible current task card, separate options are judge-only and are not sent to the model;
-these views therefore cannot establish official-protocol equivalence or drive the primary challenge-aligned promotion
-endpoint. A secondary closed view is admissible only when:
+Closed questions are an optional external-source robustness diagnostic when an admitted ontology supplies a complete
+candidate neighborhood, but naive distractors can create shortcuts. This diagnostic is justified by general VQA
+methodology, not MMBU output behavior. Under the visible current task card, separate options are judge-only and are not
+sent to the model; these views therefore cannot establish official-protocol equivalence or drive the primary
+challenge-aligned promotion endpoint. A secondary closed view is admissible only when:
 
 - the candidate set is built from the frozen training ontology before model execution;
 - the correct term appears exactly once after normalization;

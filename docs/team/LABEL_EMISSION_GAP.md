@@ -1,8 +1,10 @@
 # Label-emission gap: competition upgrade, not novelty theater
 
 **Date:** October 23, 2026  
-**Evidence class:** public benchmark paper, public third-party self-report, and prospective design only  
-**Decision:** add one bounded external-only diagnostic and ablation after the ordinary B2 baseline; do not replace B2
+**Evidence class:** published task interface, established open-answer literature, external source-ontology needs, and
+prospective design only
+**Decision:** retain one low-priority external-only diagnostic and ablation after the ordinary B2 baseline; do not
+replace or delay B2
 
 ## Plain-language thesis
 
@@ -14,30 +16,25 @@ must measure and improve both sides.
 This is a competition thesis, not a clinical deployment claim. It is deliberately understandable: correct perception,
 correct words, and correct location should agree.
 
-## Why this enters the portfolio now
+## Independent reason to retain this optional control
 
-The MMBU paper reports large average closed-to-open gaps for classification tasks and identifies weak spatial
-localization and inconsistent transfer after medical adaptation. A public October 2026 participant case study reports
-a sharper local diagnostic: on its own scorer, one checkpoint selected the correct hidden option for about 41% of
-eligible rows but generated an accepted answer for about 20%; later target-vocabulary training improved its reported
-region-answer score by 0.026. The same report explicitly says these are local, non-official scores and documents a
-held-out context result that changed sign when the answer key vocabulary changed.
+The published benchmark interface includes open free-generation classification, while eligible external biomedical
+sources can encode the same concept under abbreviations, spelling variants, ontology identifiers, or institution-
+specific names. That creates a general measurement question independent of any MMBU example or participant output:
+does the adapted model fail to perceive the source concept, or perceive it but emit a string outside the prospectively
+reviewed external ontology?
+
+This distinction is established in open-answer VQA and multi-reference generation research; it is not inferred from a
+public challenge result. The control remains post-B2 and optional because no local admitted-biomedical evidence shows
+that emission is a material failure mode. It becomes eligible only when an admitted external source requires a reviewed
+ontology mapping for its own labels. A public MMBU example, answer, option set, output, error pattern, score, or dataset
+revision can never create or prioritize this comparison.
 
 Sources:
 
-- [MMBU benchmark paper](https://arxiv.org/abs/2606.06696)
-- [Official public dataset card and file history](https://huggingface.co/datasets/mmbu/mmbu-public/tree/main)
-- [Public MMBU participant case study](https://harperz9.github.io/night-school-mmbu.html)
-
-The official file history adds direct evaluation-contract evidence. On October 21, commit `d1132643...` expanded the
-judge `options` in 904 public rows with reviewed closed-VQA labels that were previously absent. This is not model
-evidence, and the affected labels remain forbidden inputs to training or selection under the project firewall. It does
-show that candidate-set coverage materially affects the official judge and that scores from different metadata
-revisions cannot be compared as if the evaluator were fixed.
-
-The case study is useful adverse intelligence, not ground truth. Its option readout is easier than open generation, its
-judge is local, and its vocabulary re-score was post hoc. It therefore motivates a prospective diagnostic; it does not
-justify copying its data recipe or claiming that vocabulary is the hidden test's dominant error.
+- [MMBU benchmark paper](https://arxiv.org/abs/2606.06696), used only for the general task/interface definition
+- [Teney et al., CVPR 2018](https://openaccess.thecvf.com/content_cvpr_2018/papers/Teney_Tips_and_Tricks_CVPR_2018_paper.pdf)
+- [Hu et al., CVPR 2018](https://openaccess.thecvf.com/content_cvpr_2018/html/Hu_Learning_Answer_Embeddings_CVPR_2018_paper.html)
 
 ## Competition decision
 
@@ -58,11 +55,8 @@ external development population and its ontology are frozen:
 
 The canonical vocabulary must come from source-authoritative annotations and a reviewed external ontology mapping. It
 may not be learned from MMBU public questions, options, answers, outputs, label frequencies, embeddings, or error
-buckets. The benchmark paper can define coarse public terminology only where the rules and repository firewall permit;
-it cannot supply example-dependent target selection.
-
-The October 21 label-set repair strengthens this boundary: it motivates external ontology coverage, but copying the
-new public option inventory would turn an evaluator correction into benchmark-target leakage.
+buckets. The benchmark paper can define the task class only where the rules and repository firewall permit; it cannot
+supply terminology, target selection, ontology coverage, or an example-dependent design choice.
 
 ## Matched comparison
 
@@ -118,11 +112,11 @@ expert review, and deployment evidence that this challenge does not provide.
 
 | Axis | Pre-result score / 10 | Reason |
 |---|---:|---|
-| Competition fit | **9.0** | Directly attacks the documented open-answer gap while preserving the visual and spatial gates |
+| Competition fit | **8.0** | Fits the open free-generation interface but remains optional until an admitted external source creates an ontology-mapping need |
 | Human explainability | **9.0** | “See it, say it, point to it” is concrete and maps failures to observable stages |
 | System novelty | **4.0** | The matched diagnostic package is specific, but vocabulary normalization and readout/free-generation comparisons are established ideas |
 | Learner-method novelty | **2.0** | Canonical-label SFT, multi-reference generation, VQA soft targets, and semantic answer embeddings occupy the mechanism |
-| Current evidence | **1.5** | MMBU and a third-party local result motivate the test; this project has no admitted-biomedical result yet |
+| Current evidence | **1.0** | Only the task interface, external-ontology need, and established literature motivate the optional test; this project has no admitted-biomedical result |
 
 This upgrade can raise competition value if it works. It does not honestly turn the project into a 9/10 learning
 method. The strongest story remains a rigorously isolated, score-aligned system that makes perception, language, and

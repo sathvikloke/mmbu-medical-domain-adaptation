@@ -115,11 +115,11 @@ These are engineering and governance results. They are not evidence that adaptat
 
 | Order | Gate | Exit condition |
 | ---: | --- | --- |
-| 1 | Admit one real external source | Qualified medical, provenance, rights, purpose, grouping, and release decisions are complete and receipt-bound. |
-| 2 | Freeze the scientific comparison | Exact B0/B1/B2 profiles, seeds, exposure, endpoints, margins, resampling, multiplicity, missing-data behavior, compute caps, and decision code predate outputs. |
-| 3 | Run the smallest biomedical baseline | One source-held-out B0/B1/B2 pilot establishes real loss, throughput, visual dependence, task/context behavior, and failure modes. |
-| 4 | Repeat only a surviving comparison | Close effects receive frozen independent seeds and an untouched confirmation role; failed hypotheses stop. |
-| 5 | Add post-B2 ablations only if justified | Canonical label emission, preservation, interpolation, or a specialist encoder must beat ordinary B2 under matched cost and cannot delay the entrant. |
+| 1 | Admit one source for engineering | A qualified, receipt-bound source enables a non-promotable real-path pilot of loading, target construction, gradients, loss, throughput, memory, serialization, and failure discovery. It cannot select or kill a scientific arm. |
+| 2 | Admit the decision portfolio | Before any B1-L/B2-P selection, kill, or effect-floor decision, admit BUS-BRA plus at least two independent semantic-breadth families with prospective development and held-out-family roles. BBBC039 is capped wiring smoke only; BBBC038 is post-selection stress and neither can satisfy this minimum. |
+| 3 | Freeze the scientific comparison | Exact B0/B1/B2 profiles, seeds, exposure, endpoints, margins, resampling, multiplicity, missing-data behavior, compute caps, and decision code predate decision-bearing outputs. |
+| 4 | Run the matched biomedical comparison | B0/B1/B2 execute on the frozen multi-family roles; same-source and held-out-family results, visual dependence, task/context behavior, cost, and regressions stay separate. |
+| 5 | Confirm only a survivor | A surviving comparison receives frozen independent seeds and one untouched confirmation role; failed hypotheses stop, and post-B2 ablations cannot delay the entrant. |
 | 6 | Rehearse the official package | Fresh loader, runtime, artifact, disclosure, and rollback checks pass before any human-approved upload. |
 
 ## Decision rule for the team
@@ -133,6 +133,7 @@ next unit of compute only where a frozen comparison can change a decision.
 
 This dossier is an entry point, not a replacement for binding contracts. Use the
 [project scorecard](PROJECT_SCORECARD.md) for evidence-separated ratings, the
+[public model repository audit](PUBLIC_MODEL_REPOSITORY_AUDIT.md) for one reporting-only field observation and its zero-authority firewall disposition, the
 [competition-first recipe](COMPETITION_FIRST_RECIPE.md) for the entrant, the
 [system-interaction hypothesis](SYSTEM_INTERACTION_HYPOTHESIS.md) for the conditional research claim, the
 [research portfolio](RESEARCH_PORTFOLIO.md) for lane priorities, and the

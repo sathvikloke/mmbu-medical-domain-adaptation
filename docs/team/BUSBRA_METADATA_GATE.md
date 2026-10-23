@@ -119,3 +119,13 @@ The local triage receipt digest is
 `automatic_merge_or_exclusion=false`, `absence_of_near_duplicates_certified=false`, `training_ready=false`, and
 `model_use_authorized=false`. Crops, mirrors, overlays, and altered panels may escape this weak hash; source proximity
 and cross-source duplicate review remain open.
+
+## Later structural transform decision
+
+The subsequent [structural transform contract](BUSBRA_TRANSFORM_CONTRACT.md) resolves the software policy without
+rewriting source evidence. Decoded dimensions are canonical; localization geometry is the deterministic tight
+half-open mask extent; source `Width`, `Height`, and `BBOX` remain QA-only; every `valid_*` field is prohibited; and
+cases 110 and 536 are conservatively co-assigned until provenance review resolves their perceptual-hash candidate.
+
+This raises only `structural_transform_clearance` to true. Medical correctness, source proximity, rights and purpose,
+training readiness, and model-use authorization remain false.

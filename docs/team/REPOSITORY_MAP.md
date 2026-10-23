@@ -38,6 +38,7 @@ Paths in this guide are relative to the repository root. The historical layout i
 | [docs/team/DATA_SOURCE_PORTFOLIO.md](DATA_SOURCE_PORTFOLIO.md) | Rights-, grouping-, annotation-, and independence-first prioritization of external data candidates with exact admission gates |
 | [docs/team/DATA_SOURCE_METADATA_RECEIPT.md](DATA_SOURCE_METADATA_RECEIPT.md) | Dated no-pixel primary-metadata receipt for BUS-BRA, BUS-UCLM, and conditional BUSI-WHU with unresolved fields |
 | [docs/team/BUSBRA_METADATA_GATE.md](BUSBRA_METADATA_GATE.md) | Reproducible BUS-BRA archive, grouping, split, geometry, and within-source duplicate-risk gate |
+| [docs/team/BUSBRA_TRANSFORM_CONTRACT.md](BUSBRA_TRANSFORM_CONTRACT.md) | Receipt-bound decoded-geometry, mask-box, split, and unresolved-case linkage policy without source-admission authority |
 | [docs/team/BUSUCLM_METADATA_GATE.md](BUSUCLM_METADATA_GATE.md) | Reproducible BUS-UCLM v3 inventory, patient-grouping, schema-anomaly, and license-conflict gate |
 | [docs/team/FACTORIAL_UPDATE_ADVERSE_REVIEW.md](FACTORIAL_UPDATE_ADVERSE_REVIEW.md) | Hostile prior-art review, synthetic kill test, gauge/identifiability risks, and diagnostic-only disposition for factorial update decomposition |
 | [docs/team/NOVELTY_AUDIT.md](NOVELTY_AUDIT.md) | Adverse prior-art matrix, revised novelty scores, surviving distinction, and required strong baseline |

@@ -5,6 +5,7 @@ REQUIRED_PHASE1_TEST_MODULES = (
     "test_admission.py",
     "test_authority.py",
     "test_b1_preflight.py",
+    "test_b2_preflight.py",
     "test_bundle.py",
     "test_canonical.py",
     "test_condition.py",

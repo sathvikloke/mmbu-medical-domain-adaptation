@@ -204,9 +204,9 @@ novelty do not receive challenge credit.
 | Competition design | **8.6** | Context semantics, literal scientific freeze packet, admitted data, full B2 run, and official loader are absent |
 | Challenge alignment | **9.4** | Hidden distribution and unresolved context/evaluator/runtime |
 | Learner-method novelty | **2.0** | Deliberately combines established best practices |
-| Implementation readiness | **8.0** | The five-arm schema and B1 native load/step/export/reload path are verified; source admission, literal scientific values, B2 projector integration, full trainer, and official loader remain |
+| Implementation readiness | **8.4** | The five-arm schema and B1 plus B2-P native load/step/export/reload paths are verified; source admission, literal scientific values, answer/context objective integration, full trainer, and official loader remain |
 | Empirical evidence | **3.5** | Native synthetic model behavior is measured, but no admitted-biomedical baseline, ablation, or competition result exists |
 
-The route to 9.5 competition readiness is evidence, not another acronym: admit data, extend the verified B1 native path
-to B2, freeze literal scientific choices, run the B0/B1/B2 comparison, preserve image reliance, package the winner, and
-rehearse the official load path.
+The route to 9.5 competition readiness is evidence, not another acronym: admit data, extend the verified B2-P mechanical
+path into the frozen answer/context trainer, freeze literal scientific choices, run the B0/B1/B2 comparison, preserve
+image reliance, package the winner, and rehearse the official load path.

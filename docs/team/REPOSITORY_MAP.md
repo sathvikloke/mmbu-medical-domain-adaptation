@@ -60,6 +60,8 @@ Paths in this guide are relative to the repository root. The historical layout i
 | [outputs](../../outputs) | All preserved plan/audit/status documents, v0.1–v0.3 portable ZIPs, and verification receipts |
 | [work](../../work) | Authored acquisition/analysis/review drivers and reports; original input paths restored by `workspace-data.zip` |
 | [tools/team.py](../../tools/team.py) | Root test, smoke, link, and saved-evidence checks |
+| [tools/protocol_drift.py](../../tools/protocol_drift.py) | Public-repository metadata-only revision guard; no challenge files or rows |
+| [config/mmbu-public-revision-pin.json](../../config/mmbu-public-revision-pin.json) | Exact reviewed dataset identity, revision, access state, observation time, and scope for the drift guard |
 | [THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md) | Attribution and recorded rights constraints; no blanket license grant |
 
 ## Package modules

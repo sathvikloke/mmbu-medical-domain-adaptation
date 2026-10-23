@@ -1,0 +1,10 @@
+{
+  "dataset_id": "mmbu/mmbu-public",
+  "expected_gated": "auto",
+  "expected_private": false,
+  "expected_revision": "d11326436d37a9a560549156bf205ef1b120aa36",
+  "observed_at_utc": "2026-10-23T22:10:00Z",
+  "schema_id": "mmbu.public_protocol_revision_pin",
+  "schema_version": 1,
+  "scope": "repository metadata only; no dataset rows or files"
+}

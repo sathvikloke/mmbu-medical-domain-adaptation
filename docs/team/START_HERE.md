@@ -52,7 +52,12 @@ Then run:
 python3 tools/team.py smoke
 python3 tools/team.py verify-links
 python3 tools/team.py verify-evidence
+python3 tools/protocol_drift.py
 ```
+
+The last command checks only the public repository metadata against
+[`config/mmbu-public-revision-pin.json`](../../config/mmbu-public-revision-pin.json). It never opens challenge rows or
+files and fails closed when the repository revision or access state drifts.
 
 With supported Pillow installed, `python3 tools/team.py test --images` requires image coverage rather than silently accepting a missing dependency. This helper also runs the additional team-tool tests. See [Development](DEVELOPMENT.md) for the wrapper and CI details.
 

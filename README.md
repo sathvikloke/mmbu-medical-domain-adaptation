@@ -33,7 +33,11 @@ python3 tools/team.py test
 python3 tools/team.py smoke
 python3 tools/team.py verify-links
 python3 tools/team.py verify-evidence
+python3 tools/protocol_drift.py
 ```
+
+The protocol-drift check reads only the public Hugging Face repository metadata endpoint. It does not open dataset
+files or rows, and it exits nonzero if the pinned revision, dataset identity, or gated/public state changes.
 
 These checks validate software and saved artifacts. They cannot establish source clearance, medical correctness, model quality, or official protocol equivalence.
 

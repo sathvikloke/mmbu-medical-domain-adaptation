@@ -13,12 +13,12 @@
 ## Global Constraints
 
 - Exact model and processor: `Qwen/Qwen2.5-VL-7B-Instruct@cc594898137f460bfe9f0759e9844b3ce807cfb5`.
-- The exhausted run-1 envelope and both failed receipts remain immutable. A fresh run-2 envelope permits one job and zero retries on one `tesla_a100_80gb`, partition `epyc-gpu`, four CPUs, 96 GiB host memory, and a two-hour wall-time ceiling. It reuses the byte-verified run-1 model/runtime read-only but writes to a clean run-2 evidence root. Attempts 85410 and 85413 selected no scientific value: the first failed before model load due overwritten Slurm visibility, and the second reached the synthetic optimizer step before an incorrect all-tensors-must-update LoRA assertion. Run 2 changes only those mechanical contracts; every model, fixture, seed, target, optimizer, tolerance, and scientific setting remains identical.
+- The exhausted run-1 and run-2 envelopes and all three receipts remain immutable. A fresh run-3 envelope permits one job and zero retries on one `tesla_a100_80gb`, partition `epyc-gpu`, four CPUs, 96 GiB host memory, and a two-hour wall-time ceiling. It reuses the byte-verified run-1 model/runtime read-only but writes to a clean run-3 evidence root. Run 2 completed its runtime checks, but independent verification rejected packaging because PEFT serialized the 56 exact language targets as broad `q_proj`/`v_proj` suffixes. Run 3 changes only export/reload validation so the adapter config and state keys preserve all 56 exact language paths; every model, fixture, seed, optimizer, tolerance, and scientific setting remains identical.
 - Single-GPU BF16, SDPA, dynamic cache, `trust_remote_code=false`, no optional kernels, no compilation, no offload, no distributed execution.
 - Synthetic fixtures only; no biomedical or MMBU image, label, answer, output, embedding, or derivative may be read.
 - One minimal optimizer step only; no epoch, checkpoint search, evaluation, or performance selection.
 - Network is allowed only during explicit artifact acquisition. The GPU execution begins from verified local bytes; fresh reload runs with Hugging Face offline flags and a socket-denial guard.
-- Remote output root: `/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run2`; immutable acquisition inputs remain under the dedicated run-1 root; never inspect or modify sibling projects.
+- Remote output root: `/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run3`; immutable acquisition inputs remain under the dedicated run-1 root; never inspect or modify sibling projects.
 - No upload, submission, public release, or packet reseal.
 
 ## Review Focus

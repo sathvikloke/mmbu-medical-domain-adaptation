@@ -93,9 +93,9 @@ class B1PreflightTests(unittest.TestCase):
             },
             "paths": {
                 "cache_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/cache",
-                "evidence_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run2/evidence",
+                "evidence_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run3/evidence",
                 "model_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/model",
-                "remote_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run2",
+                "remote_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run3",
                 "venv_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/venv",
                 "wheelhouse_root": "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/wheelhouse",
             },
@@ -487,7 +487,7 @@ class B1PreflightTests(unittest.TestCase):
         self.assertNotIn("sbatch ", script)
         self.assertEqual(script.count("b1_native_preflight.py"), 1)
         self.assertEqual(script.count("b1_offline_reload.py"), 1)
-        self.assertIn("/tmp/npl015-mmbu-b1-run2-${SLURM_JOB_ID}", script)
+        self.assertIn("/tmp/npl015-mmbu-b1-run3-${SLURM_JOB_ID}", script)
         self.assertNotIn("/scratch/", script)
         self.assertNotIn("export CUDA_VISIBLE_DEVICES=", script)
         self.assertIn('test -n "${CUDA_VISIBLE_DEVICES:-}"', script)

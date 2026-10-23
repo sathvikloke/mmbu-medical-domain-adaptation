@@ -4,13 +4,15 @@ import importlib.util
 import io
 import json
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 import unittest
 import zipfile
 
 
 def api():
-    from mmbu_prep.busbra import build_sample_plan
+    from tools.busbra_quarantine import build_sample_plan
     return build_sample_plan
 
 
@@ -119,7 +121,7 @@ class QuarantineInspectionTests(unittest.TestCase):
 
     def fixture(self, root, *, changed_metadata=False, dimension_mismatch=False,
                 empty_mask=False, rgb_mask=False):
-        from mmbu_prep.busbra import build_sample_plan
+        from tools.busbra_quarantine import build_sample_plan
         rows = [
             row("bus_0001-l", 1, "benign", 4, bbox="[1,1,2,2]", width="4", height="4"),
             row("bus_0002-l", 2, "malignant", 5, bbox="[0,0,1,1]", width="4", height="4"),
@@ -150,7 +152,7 @@ class QuarantineInspectionTests(unittest.TestCase):
         return archive, plan, len(payload), hashlib.md5(payload).hexdigest()
 
     def test_inspection_binds_archive_decodes_geometry_and_reports_sample_duplicates(self):
-        from mmbu_prep.busbra import inspect_quarantine
+        from tools.busbra_quarantine import inspect_quarantine
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             archive, plan, size, md5 = self.fixture(root)
@@ -170,7 +172,7 @@ class QuarantineInspectionTests(unittest.TestCase):
             self.assertEqual(json.loads((root / "out" / "receipt.json").read_text()), receipt)
 
     def test_archive_or_metadata_drift_fails_without_publishing(self):
-        from mmbu_prep.busbra import inspect_quarantine
+        from tools.busbra_quarantine import inspect_quarantine
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             archive, plan, size, md5 = self.fixture(root, changed_metadata=True)
@@ -183,7 +185,7 @@ class QuarantineInspectionTests(unittest.TestCase):
                 self.assertFalse(output.exists())
 
     def test_bad_decoded_structure_fails_without_publishing(self):
-        from mmbu_prep.busbra import inspect_quarantine
+        from tools.busbra_quarantine import inspect_quarantine
         options = ("dimension_mismatch", "empty_mask", "rgb_mask")
         for option in options:
             with self.subTest(option=option), tempfile.TemporaryDirectory() as directory:
@@ -195,7 +197,7 @@ class QuarantineInspectionTests(unittest.TestCase):
                 self.assertFalse((root / "out").exists())
 
     def test_existing_output_and_tampered_plan_fail_closed(self):
-        from mmbu_prep.busbra import inspect_quarantine
+        from tools.busbra_quarantine import inspect_quarantine
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             archive, plan, size, md5 = self.fixture(root)
@@ -209,6 +211,42 @@ class QuarantineInspectionTests(unittest.TestCase):
                 inspect_quarantine(archive, tampered, root / "fresh", expected_archive_bytes=size,
                                    expected_archive_md5=md5)
             self.assertFalse((root / "fresh").exists())
+
+
+class StandaloneCliTests(unittest.TestCase):
+    def run_cli(self, *args):
+        script = Path(__file__).resolve().parents[1] / "tools/busbra_quarantine.py"
+        return subprocess.run([sys.executable, str(script), *args], text=True, capture_output=True, timeout=30)
+
+    def test_plan_cli_is_json_only_and_refuses_overwrite(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "bus_data.csv"
+            output = root / "plan.json"
+            source.write_bytes(metadata([row("bus_0001-l", 1, "benign", 4)]))
+            made = self.run_cli("plan", str(source), "--output", str(output))
+            self.assertEqual(made.returncode, 0, made.stderr)
+            self.assertEqual(json.loads(made.stdout), json.loads(output.read_text()))
+            again = self.run_cli("plan", str(source), "--output", str(output))
+            self.assertEqual(again.returncode, 2)
+            self.assertEqual(json.loads(again.stderr)["command"], "plan")
+
+    @unittest.skipUnless(HAS_PIL, "Pillow is an optional image-test dependency")
+    def test_inspect_cli_publishes_closed_receipt(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            fixture = QuarantineInspectionTests(
+                methodName="test_inspection_binds_archive_decodes_geometry_and_reports_sample_duplicates")
+            archive, plan, size, md5 = fixture.fixture(root)
+            plan_path = root / "plan.json"
+            plan_path.write_text(json.dumps(plan))
+            out = self.run_cli("inspect", str(archive), str(plan_path), "--output", str(root / "out"),
+                               "--expected-archive-bytes", str(size), "--expected-archive-md5", md5)
+            self.assertEqual(out.returncode, 0, out.stderr)
+            receipt = json.loads(out.stdout)
+            self.assertEqual(receipt, json.loads((root / "out/receipt.json").read_text()))
+            self.assertFalse(receipt["training_ready"])
+            self.assertFalse(receipt["model_use_authorized"])
 
 
 if __name__ == "__main__":

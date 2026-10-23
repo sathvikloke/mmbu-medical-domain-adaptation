@@ -47,3 +47,17 @@ remain unresolved.
 This closes the largest BUS-BRA metadata unknown and rejects an unsafe validation path. It does not make the source
 training-ready by itself. Data readiness can rise only after a deterministic structural sample verifies decoded image
 and mask semantics, duplicates and source proximity are reviewed, and an independent reviewer grants exact purposes.
+
+## Quarantine inspector added after the gate
+
+The repository now includes a two-phase local-only inspector in `tools/busbra_quarantine.py`:
+
+1. `plan` reads only `bus_data.csv`, prioritizes the rarest pathology × BI-RADS strata, prevents reuse of
+   a `Case`, and freezes exact image/mask member names under a digest before pixels open.
+2. `inspect` verifies the complete local archive against the pinned byte count and MD5, reconstructs the plan
+   from the archive metadata, and opens only the frozen members. It verifies PNG integrity, decoded dimensions, binary
+   mask values, foreground presence, mask-derived `xywh`, box IoU, and exact decoded duplicates within the sample.
+
+The receipt always records `training_ready=false` and `model_use_authorized=false`. A clean deterministic sample is not
+a corpus-wide duplicate audit, clinical annotation review, source-proximity decision, rights decision, or purpose
+authorization. The CLI has no network or model path and refuses to overwrite plans or receipt directories.

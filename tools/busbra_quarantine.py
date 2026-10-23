@@ -1,8 +1,10 @@
-"""Prospective BUS-BRA quarantine planning; never grants model-use approval."""
+#!/usr/bin/env python3
+"""Plan and inspect a local BUS-BRA quarantine sample; never grant model use."""
 
 from __future__ import annotations
 
 import csv
+import argparse
 import hashlib
 import io
 import json
@@ -10,6 +12,7 @@ from pathlib import Path, PurePosixPath
 import re
 import shutil
 import stat
+import sys
 import tempfile
 import unicodedata
 import zipfile
@@ -382,3 +385,56 @@ def inspect_quarantine(archive_path: Path, plan: dict, output: Path, *,
     finally:
         if staging.exists():
             shutil.rmtree(staging)
+
+
+def _load_json(path):
+    def pairs(items):
+        value = {}
+        for key, item in items:
+            if key in value:
+                raise ValueError(f"duplicate JSON key: {key}")
+            value[key] = item
+        return value
+    return json.loads(Path(path).read_text(encoding="utf-8"), object_pairs_hook=pairs,
+                      parse_constant=lambda value: (_ for _ in ()).throw(ValueError(f"non-finite JSON: {value}")))
+
+
+def _parser():
+    parser = argparse.ArgumentParser(description=__doc__)
+    commands = parser.add_subparsers(dest="command", required=True)
+    plan = commands.add_parser("plan", help="Freeze a metadata-only sample")
+    plan.add_argument("metadata", type=Path)
+    plan.add_argument("--per-stratum", type=int, default=1)
+    plan.add_argument("--output", type=Path, required=True)
+    inspect = commands.add_parser("inspect", help="Inspect a frozen sample in a local archive")
+    inspect.add_argument("archive", type=Path)
+    inspect.add_argument("plan", type=Path)
+    inspect.add_argument("--output", type=Path, required=True)
+    inspect.add_argument("--expected-archive-bytes", type=int, default=ARCHIVE_BYTES,
+                         help="Pinned source size; override only for synthetic conformance tests")
+    inspect.add_argument("--expected-archive-md5", default=ARCHIVE_MD5,
+                         help="Pinned source MD5; override only for synthetic conformance tests")
+    return parser
+
+
+def main(argv=None):
+    args = _parser().parse_args(argv)
+    try:
+        if args.command == "plan":
+            result = build_sample_plan(args.metadata.read_bytes(), per_stratum=args.per_stratum)
+            with args.output.open("x", encoding="utf-8") as stream:
+                json.dump(result, stream, indent=2, sort_keys=True, allow_nan=False)
+                stream.write("\n")
+        else:
+            result = inspect_quarantine(args.archive, _load_json(args.plan), args.output,
+                                        expected_archive_bytes=args.expected_archive_bytes,
+                                        expected_archive_md5=args.expected_archive_md5)
+        print(json.dumps(result, indent=2, sort_keys=True, allow_nan=False))
+        return 0
+    except (OSError, ValueError, TypeError, KeyError, zipfile.BadZipFile) as exc:
+        print(json.dumps({"error": str(exc), "command": args.command}), file=sys.stderr)
+        return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

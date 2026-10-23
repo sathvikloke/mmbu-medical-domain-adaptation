@@ -31,8 +31,8 @@
 ### Task 1: Prospective deterministic sample plan
 
 **Files:**
-- Create: `outputs/mmbu-precompute/src/mmbu_prep/busbra.py`
-- Create: `outputs/mmbu-precompute/tests/test_busbra.py`
+- Create: `tools/busbra_quarantine.py`
+- Create: `tests/test_busbra_quarantine.py`
 
 **Interfaces:**
 - Consumes: UTF-8 BUS-BRA `bus_data.csv` bytes.
@@ -44,7 +44,7 @@ Test that the planner rejects duplicate IDs and `valid_*` influence, groups by `
 
 - [ ] **Step 2: Run tests and verify RED**
 
-Run: `python -m unittest outputs/mmbu-precompute/tests/test_busbra.py -v`
+Run: `python -m unittest tests/test_busbra_quarantine.py -v`
 Expected: FAIL because `mmbu_prep.busbra` does not exist.
 
 - [ ] **Step 3: Implement the minimal pure planner**
@@ -53,14 +53,14 @@ Implement strict CSV parsing, normalized BUS-BRA member naming, closed plan fiel
 
 - [ ] **Step 4: Run tests and verify GREEN**
 
-Run: `python -m unittest outputs/mmbu-precompute/tests/test_busbra.py -v`
+Run: `python -m unittest tests/test_busbra_quarantine.py -v`
 Expected: planner tests PASS.
 
 ### Task 2: Fail-closed local archive inspection
 
 **Files:**
-- Modify: `outputs/mmbu-precompute/src/mmbu_prep/busbra.py`
-- Modify: `outputs/mmbu-precompute/tests/test_busbra.py`
+- Modify: `tools/busbra_quarantine.py`
+- Modify: `tests/test_busbra_quarantine.py`
 
 **Interfaces:**
 - Consumes: a local BUS-BRA ZIP path and the exact output of `build_sample_plan`.
@@ -72,7 +72,7 @@ Use tiny real PNG fixtures in a ZIP. Assert pinned archive identity, plan/metada
 
 - [ ] **Step 2: Run tests and verify RED**
 
-Run: `python -m unittest outputs/mmbu-precompute/tests/test_busbra.py -v`
+Run: `python -m unittest tests/test_busbra_quarantine.py -v`
 Expected: FAIL because `inspect_quarantine` is absent.
 
 - [ ] **Step 3: Implement the minimal inspector**
@@ -81,19 +81,19 @@ Verify the complete local archive hash before opening selected pixels, revalidat
 
 - [ ] **Step 4: Run tests and verify GREEN**
 
-Run: `python -m unittest outputs/mmbu-precompute/tests/test_busbra.py -v`
+Run: `python -m unittest tests/test_busbra_quarantine.py -v`
 Expected: all BUS-BRA tests PASS.
 
 ### Task 3: CLI and evidence documentation
 
 **Files:**
-- Modify: `outputs/mmbu-precompute/src/mmbu_prep/__main__.py`
-- Modify: `outputs/mmbu-precompute/tests/test_cli_batch3.py`
+- Modify: `tools/busbra_quarantine.py`
+- Modify: `tests/test_busbra_quarantine.py`
 - Modify: `docs/team/BUSBRA_METADATA_GATE.md`
 
 **Interfaces:**
 - Consumes: local metadata/ZIP paths and a new output path.
-- Produces: `plan-busbra-sample` and `inspect-busbra` CLI commands plus explicit limitations.
+- Produces: standalone `plan` and `inspect` CLI commands plus explicit limitations.
 
 - [ ] **Step 1: Write failing CLI behavior tests**
 
@@ -101,7 +101,7 @@ Assert exclusive output creation, JSON-only stdout, nonzero JSON error output, a
 
 - [ ] **Step 2: Run tests and verify RED**
 
-Run: `python -m unittest outputs/mmbu-precompute/tests/test_cli_batch3.py -v`
+Run: `python -m unittest tests/test_busbra_quarantine.py -v`
 Expected: FAIL because the new commands are unknown.
 
 - [ ] **Step 3: Implement CLI wiring and update the gate document**

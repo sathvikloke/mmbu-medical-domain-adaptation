@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 import hashlib
+import importlib.util
 from pathlib import Path
 import tempfile
 import unittest
@@ -15,6 +16,14 @@ try:
     from mmbu_phase1 import b1_preflight
 except ImportError:
     b1_preflight = None
+
+ACQUIRE_PATH = Path(__file__).resolve().parents[2] / "tools/b1_acquire.py"
+acquire_spec = importlib.util.spec_from_file_location("b1_acquire", ACQUIRE_PATH)
+if ACQUIRE_PATH.exists() and acquire_spec and acquire_spec.loader:
+    b1_acquire = importlib.util.module_from_spec(acquire_spec)
+    acquire_spec.loader.exec_module(b1_acquire)
+else:
+    b1_acquire = None
 
 
 def sha(raw: bytes) -> str:
@@ -208,6 +217,56 @@ class B1PreflightTests(unittest.TestCase):
                         path.unlink()
                     for name, raw in files.items():
                         (root / name).write_bytes(raw)
+
+    def test_acquisition_plan_is_immutable_and_floating_free(self):
+        self.assertIsNotNone(b1_acquire, "B1 acquisition tool is missing")
+        config = self.valid_config()
+        plan = b1_acquire.build_plan(config)
+        self.assertEqual([row["path"] for row in plan["model_files"]], config["model"]["allowed_files"])
+        for row in plan["model_files"]:
+            self.assertIn(config["model"]["revision"], row["url"])
+            self.assertNotIn("/main/", row["url"])
+        self.assertEqual(plan["requirements"], [
+            "accelerate==1.15.0", "numpy==2.5.4", "peft==0.21.2", "pillow==13.0.0",
+            "safetensors==0.8.0", "torch==2.11.0+cu128", "torchvision==0.26.0+cu128",
+            "transformers==5.19.0",
+        ])
+
+    def test_resolver_report_rejects_vcs_editable_missing_and_version_drift(self):
+        config = self.valid_config()
+        installs = []
+        for requirement in b1_acquire.build_plan(config)["requirements"]:
+            name, version = requirement.split("==")
+            installs.append({
+                "metadata": {"name": name, "version": version},
+                "download_info": {
+                    "url": f"https://packages.example/{name}-{version}.whl",
+                    "archive_info": {"hash": "sha256=" + "a" * 64},
+                },
+                "requested": True,
+            })
+        report = {"version": "1", "install": installs}
+        self.assertEqual(b1_acquire.validate_resolver_report(report, config), report)
+        mutations = []
+        missing = deepcopy(report); missing["install"].pop(); mutations.append(missing)
+        drift = deepcopy(report); drift["install"][0]["metadata"]["version"] = "0"; mutations.append(drift)
+        vcs = deepcopy(report); vcs["install"][0]["download_info"]["vcs_info"] = {"vcs": "git"}; mutations.append(vcs)
+        editable = deepcopy(report); editable["install"][0]["download_info"]["dir_info"] = {"editable": True}; mutations.append(editable)
+        unhashed = deepcopy(report); unhashed["install"][0]["download_info"]["archive_info"] = {}; mutations.append(unhashed)
+        for mutation in mutations:
+            with self.subTest(mutation=mutation), self.assertRaises(ContractViolation):
+                b1_acquire.validate_resolver_report(mutation, config)
+
+    def test_download_inventory_rejects_missing_extra_and_hash_drift(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "one.whl").write_bytes(b"one")
+            (root / "two.whl").write_bytes(b"two")
+            inventory = b1_acquire.inventory_directory(root, ".whl")
+            self.assertEqual(b1_acquire.verify_inventory(root, inventory, ".whl"), inventory)
+            (root / "one.whl").write_bytes(b"ONE")
+            with self.assertRaises(ContractViolation):
+                b1_acquire.verify_inventory(root, inventory, ".whl")
 
 
 if __name__ == "__main__":

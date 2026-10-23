@@ -13,7 +13,7 @@
 ## Global Constraints
 
 - Exact model and processor: `Qwen/Qwen2.5-VL-7B-Instruct@cc594898137f460bfe9f0759e9844b3ce807cfb5`.
-- One job, zero retries, one `tesla_a100_80gb`, partition `epyc-gpu`, eight CPUs, 96 GiB host memory, two-hour wall-time ceiling.
+- One job, zero retries, one `tesla_a100_80gb`, partition `epyc-gpu`, four CPUs, 96 GiB host memory, two-hour wall-time ceiling. The CPU count was mechanically amended from eight before submission after `sbatch --test-only` reported the partition's four-CPU-per-GPU cap.
 - Single-GPU BF16, SDPA, dynamic cache, `trust_remote_code=false`, no optional kernels, no compilation, no offload, no distributed execution.
 - Synthetic fixtures only; no biomedical or MMBU image, label, answer, output, embedding, or derivative may be read.
 - One minimal optimizer step only; no epoch, checkpoint search, evaluation, or performance selection.

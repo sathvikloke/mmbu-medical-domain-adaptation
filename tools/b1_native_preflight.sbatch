@@ -4,7 +4,7 @@
 #SBATCH --account=allusers
 #SBATCH --qos=u-default
 #SBATCH --gres=gpu:tesla_a100_80gb:1
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=4
 #SBATCH --mem=96G
 #SBATCH --time=02:00:00
 #SBATCH --nodes=1

@@ -72,7 +72,7 @@ def validate_preflight_config(record: Any) -> dict:
     f.literal(authorization["prohibited_actions"], "b1_preflight.authorization.prohibited_actions", _PROHIBITED)
 
     _exact_object(record["scheduler"], "b1_preflight.scheduler", {
-        "account": "allusers", "cluster": "mocshpc", "cpus_per_task": 8,
+        "account": "allusers", "cluster": "mocshpc", "cpus_per_task": 4,
         "gpu_count": 1, "gpu_type": "tesla_a100_80gb", "max_jobs": 1,
         "max_retries": 0, "memory_gib": 96, "partition": "epyc-gpu",
         "qos": "u-default", "wall_seconds": 7200,

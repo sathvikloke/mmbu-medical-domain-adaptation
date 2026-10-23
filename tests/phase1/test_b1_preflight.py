@@ -80,7 +80,7 @@ class B1PreflightTests(unittest.TestCase):
             "scheduler": {
                 "account": "allusers",
                 "cluster": "mocshpc",
-                "cpus_per_task": 8,
+                "cpus_per_task": 4,
                 "gpu_count": 1,
                 "gpu_type": "tesla_a100_80gb",
                 "max_jobs": 1,
@@ -441,7 +441,7 @@ class B1PreflightTests(unittest.TestCase):
         script = (Path(__file__).resolve().parents[2] / "tools/b1_native_preflight.sbatch").read_text()
         for directive in ("#SBATCH --partition=epyc-gpu", "#SBATCH --account=allusers",
                           "#SBATCH --qos=u-default", "#SBATCH --gres=gpu:tesla_a100_80gb:1",
-                          "#SBATCH --cpus-per-task=8", "#SBATCH --mem=96G", "#SBATCH --time=02:00:00"):
+                          "#SBATCH --cpus-per-task=4", "#SBATCH --mem=96G", "#SBATCH --time=02:00:00"):
             self.assertIn(directive, script)
         self.assertNotIn("sbatch ", script)
         self.assertEqual(script.count("b1_native_preflight.py"), 1)

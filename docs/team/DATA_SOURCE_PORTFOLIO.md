@@ -6,8 +6,9 @@
 
 ## Decision
 
-The first B2 intake should prioritize **BUS-BRA**, **BUS-UCLM v3**, selected non-Derma **MedMNIST+** subsets, and
-**BBBC038 v1**. For MOSAIC-specific structural intake, the later
+The first B2 decision portfolio should prioritize **BUS-BRA**, **BUS-UCLM v3**, and selected non-Derma **MedMNIST+**
+subsets. **BBBC039** is limited to capped non-promotable geometry/count wiring smoke, while **BBBC038 v1** is deferred
+to post-selection heterogeneous stress. For MOSAIC-specific structural intake, the later
 [crossover-source search](CROSSOVER_SOURCE_SEARCH.md) places **SegThy** first because it contains paired MRI/ultrasound
 subjects. This is a prioritization decision, not a license opinion. It replaces the earlier tendency to add sources
 because they were medically relevant without first asking whether their annotations, grouping, rights, and source-family
@@ -60,7 +61,7 @@ service; it is not an automatic prohibition.
 | 1 | **BUS-BRA 1.0** — ultrasound global, grounded, and localization views | [Zenodo record](https://doi.org/10.5281/zenodo.8231412); [dataset paper](https://doi.org/10.1002/mp.16812) | 1,875 images from 1,064 patients; biopsy/pathology, BI-RADS, lesion masks, and standardized folds; metadata, patient-disjoint outer folds, all decoded pairs, and within-source exact/perceptual triage are now receipted | Adjudicate four dimension errata and the `bus_0845-s` box/mask discrepancy; resolve the one perceptual provenance candidate; audit MMBU/cross-source proximity; obtain medical, purpose, rights, disclosure, and release sign-off |
 | 2 | **BUS-UCLM v3** — independent ultrasound global, grounded, and localization views | [Mendeley v3](https://doi.org/10.17632/7fvgj4jsp7.3); [dataset paper](https://doi.org/10.1038/s41597-025-04562-3) | Exact 683-row image/mask name closure and 38 patient prefixes are now receipted; label totals match the paper; expert RGB masks remain unopened | Resolve CC BY versus CC BY-NC conflict and `Doppler=Y` anomaly; freeze patient-grouped treatment of normal, marked, Doppler, and combined images; inspect pixels/masks and duplicates; review attribution, purpose, weight release, disclosure, and source proximity |
 | 3 | **Selected MedMNIST+ 224 subsets, excluding DermaMNIST** — global classification breadth only | [Official repository](https://github.com/MedMNIST/MedMNIST); [MedMNIST+ construction](https://github.com/MedMNIST/MedMNIST/blob/main/on_medmnist_plus.md); [v2 paper](https://doi.org/10.1038/s41597-022-01721-8) | Standard train/validation/test partitions, 224-pixel versions, source-image mapping CSVs, and aggregate CC BY 4.0 statement except DermaMNIST | Review each subset separately; join the published mapping back to upstream grouping where possible; collapse Organ A/C/S/3D and other shared origins into one family; reject subsets whose patient/slide/study grouping cannot be reconstructed for the intended comparison; verify upstream obligations and label semantics; do not treat wrapper subsets as independent families |
-| 4 | **BBBC038 v1** — microscopy instance localization/counting | [Official BBBC038 page](https://bbbc.broadinstitute.org/BBBC038) | 670 heterogeneous nuclei images; instance masks for the training portion; official page declares CC0 | Use only annotation-bearing source-training material; reconcile documented BBBC039 overlap and all upstream contributors; prove instance-set completeness before count views; retain source/contributor grouping when available; do not count the trivial label “nucleus” as meaningful region-conditioned medical recognition |
+| 4 | **BBBC038 v1** — post-selection heterogeneous localization/count stress only | [Official BBBC038 page](https://bbbc.broadinstitute.org/BBBC038) | 670 heterogeneous nuclei images; instance masks for the training portion; official page declares CC0 | Cannot satisfy the semantic-family minimum; use only after candidate selection, reconcile documented BBBC039 overlap and all upstream contributors, prove instance-set completeness, and retain source/contributor grouping |
 
 **MOSAIC structural priority:** [SegThy](https://www.cs.cit.tum.de/en/camp/publications/segthy-dataset/) is a separate
 Tier 1 metadata/schema candidate. Its 28 paired MRI/ultrasound volunteers can repair part of the modality alias for
@@ -82,8 +83,9 @@ stop after metadata/structure inspection if a hard gate fails.
 
 ### Existing quarantine sources
 
-- **BBBC039** remains useful engineering material, but BBBC038 and BBBC039 have documented partial overlap and are one
-  conservative BBBC/upstream family until reconciled.
+- **BBBC039** is capped non-promotable geometry/count wiring smoke only. It cannot select or kill a candidate, establish
+  an effect floor, or satisfy the semantic-family minimum. BBBC038 and BBBC039 have documented partial overlap and are
+  one conservative BBBC/upstream family until reconciled.
 - **ROCOv2 and PMC-VQA** remain one conservative PMC-literature family because inspected metadata already shows shared
   PMCIDs. Their figure-level rights and semantic-label suitability remain unresolved.
 - **DermaMNIST** is excluded from the first screen because its official aggregate license is CC BY-NC 4.0. It adds no
@@ -108,11 +110,18 @@ instances cannot yield counts.
 
 ### B2 competition curriculum
 
-The smallest credible intake target is:
+The minimum decision-bearing source rule is exact:
 
-1. BUS-BRA plus BUS-UCLM for patient-grouped ultrasound classification, grounding, and localization;
-2. selected MedMNIST+ subsets for classification breadth only, after subset-level lineage/group review; and
-3. BBBC038 for genuinely instance-based coordinate/count views after completeness and overlap review.
+1. **BBBC039** may be used only for capped, non-promotable geometry/count wiring smoke.
+2. **BUS-BRA alone** is engineering-only and cannot select or kill B1-L/B2-P or establish an effect floor.
+3. **B1-L/B2-P decisions require BUS-BRA plus at least two independently admitted semantic-breadth families**, with
+   prospectively assigned development and held-out-family roles. BUS-UCLM and separately reviewed MedMNIST+ source
+   families are current candidates, not pre-approved satisfiers.
+4. **BBBC038 is a post-selection heterogeneous stress source** and cannot satisfy the semantic-family minimum.
+
+BUS-BRA engineering can verify loading, target construction, gradients, loss behavior, throughput, memory,
+serialization, and within-source failure modes. It cannot support a held-out-source claim. The semantic-family minimum
+follows from the declared task breadth and this document's source-coverage analysis, not from MMBU model outputs.
 
 This portfolio can test whether task-form curriculum helps a base-architecture-preserving adapter, pending loader
 confirmation. It does not need to prove semantic

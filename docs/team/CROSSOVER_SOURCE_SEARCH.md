@@ -47,7 +47,8 @@ does not establish that.
 ## Bound next decisions
 
 1. Add SegThy to the first metadata/schema intake packet, ahead of BBBC038 for MOSAIC-specific structural value.
-2. Keep BBBC038 in the B2 task-view pool; its counting/localization value is separate from MOSAIC identifiability.
+2. Defer BBBC038 to post-selection heterogeneous localization/count stress; exclude it from B1-L/B2-P selection,
+   training, and the semantic-family minimum.
 3. Do not request BCMID or VinDr-Mammo access until credential/data-use, intended-purpose, disclosure, and trained-weight
    release compatibility are resolved in writing. The general organizer permission for independently obtained
    contributor-source training splits is already recorded and does not override source terms.

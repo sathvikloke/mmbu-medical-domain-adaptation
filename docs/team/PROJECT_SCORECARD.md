@@ -9,7 +9,7 @@
 
 | Category | Score / 10 | Evidence-based reason | What prevents 9.5 |
 |---|---:|---|---|
-| Challenge-problem fit | **9.4** | The portfolio directly targets the benchmark's weak localization, open-answer gap, visual shortcuts, and base-model regressions; the visible task-card revision, October 21 expansion of 904 judge label sets, manual protocol transcription, and bounded label-emission diagnostic are recorded | Raw card bytes, final context prompt, evaluator/runtime, future drift, contradictory malformed/multi-label branches, and hidden distribution remain organizer-controlled |
+| Challenge-problem fit | **9.4** | The portfolio covers the declared classification, grounded-classification, localization, context, and base-relative score interfaces; the task contract, manual protocol transcription, and bounded external-only label-emission diagnostic are recorded | Raw card bytes, final context prompt, evaluator/runtime, future drift, contradictory malformed/multi-label branches, and hidden distribution remain organizer-controlled |
 | Competition strategy | **9.0** | One active competition lane now has a five-arm task-only/dual-objective comparator graph, score-aligned confirmation, hard public firewall, strong controls, and a measured native B1 feasibility envelope | The exact scientific-decision receipt, admitted data, full-run compute budget, and organizer loader remain uninstantiated |
 | Best current competition idea: B2 dual-objective answer/context adaptation | **8.5** | Base-architecture-preserving shared PEFT targets both documented score components, normalizes unit exposure, demotes curriculum order to an ablation, and now executes separate answer/context targets through the native B2-P optimizer path | Context prompt/scoring, loader/package acceptance, exact scientific profiles, admitted data, and biomedical effect evidence are absent; heterogeneous concatenated-batch equivalence failed |
 | Competition-system innovation | **4.2** | The conditional [system-interaction hypothesis](SYSTEM_INTERACTION_HYPOTHESIS.md) specifies isolation tests for answer/context × unit-normalization and a separate adaptation-response-frontier claim; direct multitask and transfer-selection antecedents narrow both to empirical residuals | Organizer-defined scoring/serialization and ordinary compliance are not innovation; close complete medical systems exist, scientific literals remain unfrozen, and no native result isolates either claim |
@@ -27,8 +27,8 @@
 | Reproducibility / auditability | **9.6** | Immutable IDs, lineage, fail-closed registries, canonical-record rules, explicit unknowns, preserved failed attempts, exact native artifact hashes, and a fresh socket-denied reload are all receipted | Scientific bindings, independent native reproduction on a second environment, and external code/scientific review remain absent |
 | Repository engineering | **9.7** | Fresh verification passes 277 historical-package tests, 68 root tests, and 360 Phase 1 tests; remote CI passes Python 3.11/3.12/3.14 plus the image-enabled suite; the pinned B1/B2-P paths and singleton dual-objective adapter execute natively | Full biomedical trainer integration, official loader integration, and independent external review remain absent |
 | Rule compliance | **8.4** | Organizer answers, current task-card drift, contradictions, and the stricter local public-set firewall are recorded without treating contributing-source proximity as automatically prohibited | The organizer's Discord evaluation material is not receipted; final context/harness, packaging/loader, disclosure, official runtime constraints, and exact cutoff time remain unresolved |
-| Data design | **9.2** | Package B implements the synthetic annotation lattice and exact exposure accounting; the two strongest source candidates now have exact structure receipts, while context fields remain source-authoritative or masked unknown | Structural validators do not establish medical correctness or rights/purpose approval; every biomedical source still requires full admission review |
-| Data readiness | **5.8** | BUS-BRA now has full 1,875-pair structural/duplicate-risk evidence and BUS-UCLM has exact 683-row metadata/image/mask closure with patient grouping; both gates preserve their discovered exceptions instead of silently repairing them | No real source has complete medical, rights, purpose, source-proximity, and release admission; BUS-BRA has geometry/provenance exceptions and BUS-UCLM has schema/license blockers |
+| Data design | **9.2** | Package B implements the synthetic annotation lattice and exact exposure accounting; the decision gate requires BUS-BRA plus at least two independently admitted semantic-breadth families, while BBBC039 is capped wiring smoke and BBBC038 is post-selection stress | Structural validators do not establish medical correctness or rights/purpose approval; every biomedical source still requires full admission review |
+| Data readiness | **5.8** | BUS-BRA now has full 1,875-pair structural/duplicate-risk evidence and BUS-UCLM has exact 683-row metadata/image/mask closure with patient grouping; both gates preserve their discovered exceptions instead of silently repairing them | No real source is admitted; BUS-BRA alone is engineering-only, and the two additional independent semantic-breadth families required for B1-L/B2-P decisions do not exist yet |
 | Compute readiness | **9.1** | The pinned runtime has B1, B2-P, and native answer/context one-step receipts on MOCS A100s; the safe singleton objective path measured 17.33 GB peak allocation and completed an exact 117-tensor update | Larger heterogeneous batches failed the frozen equivalence gate; full biomedical throughput, multi-seed cost, and official-runtime equivalence remain unmeasured |
 | Release-plan quality | **8.7** | The fail-closed state machine now covers explicit failure states, complete offline bytes, quarantine-to-offline verification, disclosure reconciliation, human approval, upload verification, and rollback | Exact challenge loader, form fields, repository visibility/layout, deadline clock time, artifact/runtime limits, and a real rehearsal remain unavailable |
 | Claude handoff quality | **8.8** | The handoff binds packet closure, scientific-decision ownership, qualified identifiers, context-missing semantics, confirmation closure, strict package boundaries, and Package F now implements its closed schema and fixtures | The resealed successor packet is pending acknowledgement; no literal scientific receipt, compute authorization, or independent execution exists yet |
@@ -44,11 +44,11 @@ project cannot be made competition-ready by adding more prose. The October 18
 executability audit also showed that detailed prose is not an executable experiment until every scientific choice,
 dependency, role, cap, and decision function is literal and hash-bound.
 
-The October 23 [label-emission-gap audit](LABEL_EMISSION_GAP.md) adds a high-fit post-B2 comparison without changing
-the novelty verdict. A public participant self-reports a large option-readout versus free-generation gap and a later
-target-vocabulary gain under its own scorer; the MMBU paper independently reports large closed-to-open classification
-gaps. That combination warrants a matched external-only canonical-label ablation. It does not prove the hidden test has
-the same failure, validate the participant's local judge, or make vocabulary normalization a new learning method.
+The October 23 [label-emission-gap audit](LABEL_EMISSION_GAP.md) retains a low-priority post-B2 external-only control
+without changing the novelty verdict. Its independent basis is the open free-generation interface, established
+open-answer literature, and any ontology mapping required by an admitted external source. No public MMBU example,
+metadata change, output, score, or participant report can create or prioritize the ablation. With no local biomedical
+evidence that emission is a material failure mode, its current evidence score is only 1.0/10.
 
 The earlier 8.1 MOSAIC novelty estimate was wrong. The current rank-deficient grid earns only 4.5 competition value
 and 5.5 concept novelty; a genuinely crossed future design must be rescored from zero evidence and does not inherit the
@@ -69,6 +69,11 @@ reopens only after a qualifying residual: either a prospectively frozen repeated
 external data, or a precisely cited independently replicated residual matching the task, modality, and constraints with a
 predeclared reason B2 cannot address it. Low-cost system, data-objective, and evaluation ideation remains open and
 cannot alter frozen Lane 1 or consume protected evidence.
+
+The October 23 [public model repository audit](PUBLIC_MODEL_REPOSITORY_AUDIT.md) records two self-reported local
+evaluations of the blended `0.8T+0.2C` proxy and the repository's declared recipe. It is neither official nor Track 2
+evidence, cannot establish a competitive threshold, and has zero authority over this project's candidate, data,
+recipe, or stopping decisions under the stricter public-set firewall. No current score changes because of it.
 
 The later factorial/Möbius update-decomposition search also does not raise the ceiling. Task Arithmetic already owns
 three-corner analogy completion, while compositional merging and functional non-additivity audits cover the key

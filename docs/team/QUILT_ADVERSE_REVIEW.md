@@ -44,8 +44,9 @@ medical competence.
    [Fishr](https://proceedings.mlr.press/v162/rame22a.html); null-space removal is established by
    [INLP](https://aclanthology.org/2020.acl-main.647/); and same-fact paraphrase-gradient aggregation is already present
    in R2F. QUILT's remaining distinction is the controlled basis-construction recipe, not the optimizer operator.
-6. **Competition targeting is secondary.** The current MMBU evidence prioritizes visual grounding, localization,
-   source/modality shift, open-answer behavior, and text-only shortcuts. QUILT primarily attacks strict wording changes.
+6. **Competition targeting is secondary.** QUILT primarily attacks strict wording changes, lacks an admitted-external
+   residual that ordinary supervised robustness controls cannot address, and aligns less directly with the declared
+   classification, grounding, localization, and context score interfaces than B2.
 
 ## Review claims not accepted without qualification
 

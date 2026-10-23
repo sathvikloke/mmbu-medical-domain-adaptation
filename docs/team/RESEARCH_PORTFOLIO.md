@@ -35,8 +35,10 @@ Training data should exploit source annotations across the task forms MMBU actua
 classification, box/mask-grounded classification, and coordinate localization, plus authoritative values for the
 versioned requested fields in the [context objective contract](CONTEXT_OBJECTIVE_CONTRACT.md). Deterministic conversions
 may create multiple supervision views from one admitted annotation, but all views share the same independent-unit ID,
-may not inflate sample independence, and receive no extra total loss mass from annotation density. Open/closed wording is a secondary paper-motivated robustness condition because the
-visible current card withholds the separate `options` field from model input. Answer serialization, image-absent
+may not inflate sample independence, and receive no extra total loss mass from annotation density. Open/closed wording
+is an optional external-source robustness condition only when an admitted ontology supplies the candidate set; its
+basis is general VQA methodology, not MMBU behavior. The visible current card withholds the separate `options` field
+from model input. Answer serialization, image-absent
 diagnostics, and base-preservation losses are supporting techniques, not novelty claims.
 
 Promote the simplest method whose lower paired group-bootstrap bound exceeds the frozen practical margin, survives the
@@ -97,9 +99,9 @@ These are prospective judgments, not measured performance.
 
 The annotation-view/task-consistency row is a training/data strategy, not a new architecture or core curriculum claim.
 Cross-task consistency and grounded multi-task training already exist. Its value is close alignment with the current
-card's ungrounded, region-grounded, localization, and counting routes; the paper's closed-to-open gap motivates a
-separately labeled robustness condition rather than an official-input claim. Static, forward, reverse, and shuffled
-schedules require identical exposure. The [independent arbitration](INDEPENDENT_IDEA_ARBITRATION.md) records the direct
+card's ungrounded, region-grounded, localization, and counting interfaces. Any separately labeled robustness condition
+must arise from admitted external-source semantics and non-MMBU literature, never MMBU outputs or reported behavior.
+Static, forward, reverse, and shuffled schedules require identical exposure. The [independent arbitration](INDEPENDENT_IDEA_ARBITRATION.md) records the direct
 frequency-domain counting collision that demotes MRFSS and the region inclusion–exclusion collision that demotes
 WRLVT. Neither may delay Lane 1 or claim method novelty. QUILT remains diagnostic.
 
@@ -130,7 +132,7 @@ The [weight-interpolation branch](WEIGHT_INTERPOLATION_BRANCH.md) is a post-B2 c
 not a research claim. It is eligible only after effective-delta/export equivalence and must beat ordinary B2 without
 trading away either the answer or context endpoint.
 
-## New evidence from the MMBU paper
+## Reporting-only observations from the MMBU paper
 
 The current MMBU v2 paper reports:
 
@@ -141,9 +143,11 @@ The current MMBU v2 paper reports:
 - medically adapted models that can lose to their general-purpose bases; and
 - meaningful text-only performance, showing that language shortcuts remain possible.
 
-Those observations prioritize spatial supervision, open-answer instruction quality, visual-reliance controls, and
-base-relative negative-flip reporting. They do not justify using the MMBU public examples for training or selection.
-Source: [MMBU v2](https://arxiv.org/html/2606.06696v2).
+These aggregate outcomes are retained only as benchmark context. They have zero authority over candidate, source,
+curriculum, prompt, resolution, vocabulary, hyperparameter, budget, or stopping decisions. Spatial views follow from
+the task interface; visual-use and preservation controls follow from general causal testing and non-MMBU adaptation
+literature; open-answer handling follows from the output contract and admitted external-source ontologies. Source:
+[MMBU v2](https://arxiv.org/html/2606.06696v2).
 
 ## B4 feasibility facts
 

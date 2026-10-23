@@ -7,9 +7,9 @@
 ## Why this branch exists
 
 The binding challenge contract permits multiple vision encoders only when they are components of one end-to-end VLM
-and all active parameters are counted. MMBU reports that medical adaptation gains vary sharply by modality and that
-all tested VLMs remain weak at object detection. A frozen biomedical specialist encoder could therefore complement the
-native general encoder without requiring a router at inference.
+and all active parameters are counted. Non-MMBU multi-encoder and medical grounding literature shows a plausible but
+unproved route for a frozen biomedical specialist encoder to complement the native general encoder without requiring
+a router at inference. MMBU aggregate performance results have zero role in opening or prioritizing this branch.
 
 This is not a new architecture family. [LEO](https://arxiv.org/abs/2501.06986) studies dual-branch vision encoders and
 fusion; [MoVE-KD](https://openaccess.thecvf.com/content/CVPR2025/html/Cao_MoVE-KD_Knowledge_Distillation_for_VLMs_with_Mixture_of_Visual_Encoders_CVPR_2025_paper.html)

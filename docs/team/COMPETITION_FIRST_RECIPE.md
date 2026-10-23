@@ -43,6 +43,11 @@ candidate set or any choice.
 
 ## Data and sampling
 
+- Before any B1-L/B2-P selection, kill, or practical-effect decision, admit BUS-BRA plus at least two independently
+  admitted semantic-breadth source families with prospectively assigned development and held-out-family roles.
+  BUS-BRA alone is non-promotable engineering evidence. BBBC039 may be used only for capped non-promotable
+  geometry/count wiring smoke. BBBC038 is a post-selection heterogeneous stress source and cannot satisfy the semantic-
+  family minimum.
 - Split duplicate/patient/study/specimen/source-parent groups before view expansion.
 - Hold out complete sources and complete prompt-template lineage families for development.
 - Generate only deterministic views authorized by [the annotation lattice](ANNOTATION_TASK_LATTICE.md).
@@ -174,8 +179,10 @@ inference component or a promotion endpoint. A synonym/equivalence-set objective
 length treatment, canonical-output anchor, and unit-mass accounting are frozen and tested. No MMBU public example,
 option, answer, output, frequency, embedding, or error bucket may define the vocabulary.
 
-This is motivated by the benchmark's closed-to-open gaps and a public participant's non-official local report, not by
-an observed result in this project. Canonical-label SFT is competition engineering, not a learner-method novelty claim.
+This optional control is motivated only by the open free-generation task interface, established open-answer research,
+and ontology mapping that may be required by an admitted external source. No MMBU public example, output, score,
+participant report, or metadata revision can create or prioritize it. Canonical-label SFT is competition engineering,
+not a learner-method novelty claim.
 
 ### Rejected by default
 

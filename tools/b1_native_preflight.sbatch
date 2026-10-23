@@ -9,16 +9,16 @@
 #SBATCH --time=02:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --output=/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/evidence/slurm-%j.out
-#SBATCH --error=/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/evidence/slurm-%j.err
+#SBATCH --output=/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run2/evidence/slurm-%j.out
+#SBATCH --error=/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run2/evidence/slurm-%j.err
 
 set -euo pipefail
 umask 077
 
-readonly RUN_ROOT=/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1
+readonly RUN_ROOT=/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run2
 readonly CODE_ROOT=${RUN_ROOT}/code
-readonly VENV_ROOT=${RUN_ROOT}/venv
-readonly OFFLINE_CACHE=/tmp/npl015-mmbu-b1-${SLURM_JOB_ID}
+readonly VENV_ROOT=/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/venv
+readonly OFFLINE_CACHE=/tmp/npl015-mmbu-b1-run2-${SLURM_JOB_ID}
 export B1_STARTED_UTC
 B1_STARTED_UTC=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
@@ -46,7 +46,7 @@ export HUGGINGFACE_HUB_CACHE=${OFFLINE_CACHE}/hub
 export TRANSFORMERS_CACHE=${OFFLINE_CACHE}/transformers
 export CUBLAS_WORKSPACE_CONFIG=:4096:8
 test -n "${CUDA_VISIBLE_DEVICES:-}"
-export B1_ATTEMPT=2
+export B1_ATTEMPT=1
 
 cd "${CODE_ROOT}"
 "${VENV_ROOT}/bin/python" -B tools/b1_acquire.py verify

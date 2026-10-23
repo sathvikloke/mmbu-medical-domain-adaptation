@@ -43,7 +43,8 @@ _FILES = [
 ]
 _MODEL_ID = "Qwen/Qwen2.5-VL-7B-Instruct"
 _REVISION = "cc594898137f460bfe9f0759e9844b3ce807cfb5"
-_REMOTE_ROOT = "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1"
+_ACQUISITION_ROOT = "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1"
+_REMOTE_ROOT = "/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run2"
 
 
 def _exact_object(value: Any, path: str, expected: dict[str, Any]) -> dict:
@@ -74,7 +75,7 @@ def validate_preflight_config(record: Any) -> dict:
     _exact_object(record["scheduler"], "b1_preflight.scheduler", {
         "account": "allusers", "cluster": "mocshpc", "cpus_per_task": 4,
         "gpu_count": 1, "gpu_type": "tesla_a100_80gb", "max_jobs": 1,
-        "max_retries": 1, "memory_gib": 96, "partition": "epyc-gpu",
+        "max_retries": 0, "memory_gib": 96, "partition": "epyc-gpu",
         "qos": "u-default", "wall_seconds": 7200,
     })
 
@@ -85,11 +86,14 @@ def validate_preflight_config(record: Any) -> dict:
     )
     f.literal(paths["remote_root"], "b1_preflight.paths.remote_root", _REMOTE_ROOT)
     children = {
-        "cache_root": "cache", "evidence_root": "evidence", "model_root": "model",
-        "venv_root": "venv", "wheelhouse_root": "wheelhouse",
+        "cache_root": (_ACQUISITION_ROOT, "cache"),
+        "evidence_root": (_REMOTE_ROOT, "evidence"),
+        "model_root": (_ACQUISITION_ROOT, "model"),
+        "venv_root": (_ACQUISITION_ROOT, "venv"),
+        "wheelhouse_root": (_ACQUISITION_ROOT, "wheelhouse"),
     }
-    for key, leaf in children.items():
-        expected = f"{_REMOTE_ROOT}/{leaf}"
+    for key, (parent, leaf) in children.items():
+        expected = f"{parent}/{leaf}"
         f.literal(paths[key], f"b1_preflight.paths.{key}", expected)
         candidate = PurePosixPath(paths[key])
         f.require(candidate.is_absolute() and str(candidate) == paths[key], f"b1_preflight.paths.{key}", "must be an absolute normalized POSIX path")

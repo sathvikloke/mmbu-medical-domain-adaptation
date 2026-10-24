@@ -1,9 +1,33 @@
 # UTC MOCS access audit
 
+> **Historical access snapshot, superseded for compute status.** This document preserves the October 18 route failure.
+> On October 23, receipted MOCS/Slurm execution succeeded on A100 nodes for the bounded B1, B2-P, and B2
+> answer/context synthetic preflights. Use the [current verification](CURRENT_VERIFICATION.md) and the three linked
+> native traces below for current compute claims. The earlier DNS failure remains useful adverse history; it is not the
+> present readiness state.
+
 **Observed:** `2026-10-18T03:38:37Z`, repeated `2026-10-18T03:56:22Z`, alternate-host check
 `2026-10-17 23:01 CDT`, route-state recheck `2026-10-18T04:28:05Z`, and independent route recheck
 `2026-10-18T04:47:44Z`, with a latest bounded recheck at `2026-10-18T05:34:02Z`  
 **Scope:** read-only local configuration and non-interactive login reachability; no job, allocation, model, or GPU action
+
+## Superseding October 23 evidence
+
+The access problem recorded below no longer blocks the tested job path. Three successful scheduler receipts establish
+real Slurm job execution on observed MOCS nodes, one A100 80 GB GPU per admitted job, the pinned runtime, measured
+process-level CUDA memory, and one optimizer step. B1 and B2-P also establish export and fresh offline reload:
+
+- [B1 native preflight](B1_NATIVE_PREFLIGHT_TRACE.md): job `85434`, completed `0:0`;
+- [B2-P projector preflight](B2_PROJECTOR_PREFLIGHT_TRACE.md): job `85459`, completed `0:0`; and
+- [B2 dual-objective preflight](B2_DUAL_OBJECTIVE_PREFLIGHT_TRACE.md): job `85472`, completed under the singleton
+  correctness reference.
+
+These receipts supersede the audit-time claims that scheduler execution, job-level GPU allocation, and native model
+feasibility were unknown. They do not establish the VPN, Duo, SSH, or login-host path; durable account entitlement or
+project quota; future queue availability; multi-job capacity; full-training throughput; biomedical validity;
+official-runtime equivalence; or competition performance. Two preserved B2 attempts also show that heterogeneous
+concatenated-batch equivalence is not established. The scorecard's **9.1/10** is a bounded mechanical-runtime planning
+score, not proof of overall full-training compute readiness.
 
 ## Result
 
@@ -70,7 +94,7 @@ VPN access may require account elevation for privileged services. A read-only lo
 that it is connected, authenticated, elevated for MocsHPC, or carrying the current route. Connecting would require an
 interactive account/Duo action and was not attempted by this audit.
 
-## Current classification
+## Classification at the October 18 audit time
 
 | Fact | Status | Reason |
 |---|---|---|
@@ -86,7 +110,7 @@ interactive account/Duo action and was not attempted by this audit.
 | GPU availability | unknown | Public inventory is not account availability |
 | Native model feasibility | unknown | No weights, runtime, load, forward, step, export, or reload |
 
-## Smallest safe next gate
+## Historical next gate
 
 1. The user connects the installed GlobalProtect client to official portal `vpn.utc.edu` and completes UTC/Duo login;
    if MocsHPC remains unreachable, verify whether VPN account elevation is required. This interactive identity action
@@ -100,5 +124,8 @@ interactive account/Duo action and was not attempted by this audit.
 5. Only after an allocation and bounded run condition are separately authorized may the first preflight job follow
    Work package D in [the Claude handoff](CLAUDE_HANDOFF.md).
 
-Until steps 1–4 succeed, compute readiness remains **3.5/10**. The DNS failure is not a reason to change the SSH config,
-request resources, submit a job, or substitute public hardware specifications for account evidence.
+Successful later jobs bypassed the reachability blocker for those bounded runs, but they do not retrospectively prove
+steps 1–4: login-host resolution, VPN/Duo/SSH authentication, durable account limits, storage, and quota remain
+unreceipted. At the time of this audit, the access-specific rating was **3.5/10**; that historical rating must not be
+reused as the current mechanical-runtime score. The original DNS failure was not a reason to change the SSH config or
+substitute public hardware specifications for account evidence.

@@ -34,23 +34,34 @@ compensate for worse task performance.
 
 ## The actual competition idea
 
-The flagship is **B2 dual-objective answer-and-context adaptation** using parameter-efficient fine-tuning (PEFT): a
-small learned adapter changes the model without replacing its base architecture.
+The strongest current strategy proposal is an **answer-first candidate ladder**, not a predetermined dual-objective
+model. It compares the untouched base with language-only and projector-plus-language parameter-efficient adapters, then admits context
+co-training only if the matched arm remains task-noninferior and improves the frozen score contrast. The exact design
+and its score-sensitivity rationale are in the
+[answer-first, evidence-coupled strategy](../superpowers/specs/2026-10-23-answer-first-evidence-coupled-strategy-design.md).
+It remains non-executable until the current acknowledged handoff packet is superseded through its existing review and
+acknowledgement process.
 
-1. train the answer behavior needed for classification, grounded classification, localization, and related task
-   outputs;
-2. train only source-authoritative requested context fields, masking unknown fields rather than inventing them;
+1. prospectively freeze task-only answer arms for classification, grounded classification, localization, and related
+   task outputs;
+2. freeze matched context arms using only source-authoritative requested fields, masking unknown fields rather than
+   inventing them;
 3. normalize loss mass by the underlying patient, slide, study, or other independent unit so sources with more derived
    views do not receive accidental extra influence;
-4. compare five matched arms under the same records, updates, tokens, compute, serializer, and evaluator: the
-   untouched base (`B0`), plus progressively broader adapter architectures (`B1-L` and `B2-P`) each trained once with
+4. compare five arms: the four adapted arms share the same training records and matched updates, tokens, compute, and
+   troubleshooting allowance; the untouched base (`B0`) is not trained; all five share evaluation records, prompts,
+   serializers, runtime, and endpoints. The adapter architectures (`B1-L` and `B2-P`) are each trained once with
    task-only targets and once with answer-plus-context targets; then compare the strongest survivor with matched
    external systems; and
-5. promote only a model that improves task and context endpoints while passing image-use, negative-flip,
-   preservation, invalid-output, runtime, and fresh-offline-load gates.
+5. promote the simplest model that improves the uncertainty-aware score contrast, keeps task performance inside its
+   frozen noninferiority boundary, and passes image-use, negative-flip, invalid-output, runtime, and fresh-offline-load
+   gates.
 
-This is deliberately a simple entrant. The challenge score rewards performance, not architectural complexity. If the
-simpler answer-only model wins the frozen comparison, that is the model to submit.
+This is deliberately a simple entrant. The challenge score rewards performance, not architectural complexity or
+novelty. If the simpler answer-only model wins the frozen comparison, that is the model to submit. An
+answer–localization consistency challenger becomes eligible only after a real baseline exposes the residual it targets.
+“Answer first” is a promotion rule, not permission to inspect task-only outputs before all five profiles and decision
+rules are frozen.
 
 ## What is potentially interesting—and what is not novel
 

@@ -1,8 +1,8 @@
 # Current clone verification
 
-**Observed:** October 23, 2026 20:16 CDT
+**Observed:** October 23, 2026 20:34 CDT
 **Runtime:** Python 3.14.6
-**Verified revision:** `a187a18e1c8e56494f24b87d6f0810f47939e0ec`
+**Status authority digest:** `cc162ece6394cdabe18ee889e36c181145dc34dd80da712e2340c5ce91208539`
 **Scope:** repository integrity plus the bounded synthetic native receipts listed below
 
 ## Fresh local results
@@ -11,7 +11,7 @@
 |---|---|---|
 | Historical preparation suite | **277 tests passed; 44 optional-Pillow image tests skipped** | Re-executes the preserved CPU package without Pillow; it does not replace the image-enabled CI lane or test a model |
 | Root repository/tool suite | **75 tests passed; 13 optional-Pillow image tests skipped** | Covers repository, publication, scope, receipt, and authorization tooling; it is not scientific evidence |
-| Phase 1 suite | **389 tests passed; one optional-Pillow image test skipped** | Covers current fail-closed contracts, manifests, registries, evidence chains, geometry, bundles, and synthetic orchestration; native model execution is evidenced separately below |
+| Phase 1 suite | **398 tests passed; one optional-Pillow image test skipped** | Covers current fail-closed contracts, manifests, registries, evidence chains, geometry, bundles, and synthetic orchestration; native model execution is evidenced separately below |
 | Offline smoke workflow | **passed** | Replays historical synthetic demonstrations and toy arithmetic only; it reports `model_executed=false` and `official_evaluation=false` |
 | Maintained local Markdown links and anchors | **passed** | External URLs were not fetched by this check |
 | Published v0.3 artifact verification | **passed** for 275 files, ZIP members, fixed transforms, and historical receipts | Establishes byte integrity only, not scientific validity or medical truth |
@@ -37,22 +37,25 @@ The admitted B1 job was `85434`, the admitted B2-P job was `85459`, and the admi
 `85472`. The traces retain the exact pinned model revision, runtime, scheduler receipts, resource measurements,
 artifact hashes, and adverse attempts. They do not authorize or imply a source-data decision.
 
-## Current authority mismatch
+## Current authority reconciliation
 
-`config/phase1/current-status.json` is still the sole Phase 1 status authority under the frozen contract, but its
-October 16 bootstrap record still says the MOCS account, allocation, GPU, and B1 runtime are unknown and unexecuted.
-That record predates the native receipts above and is stale. It was not edited here because existing evidence bundles
-bind an exact byte copy and digest; changing it without a prospective migration and replacement bundle would break the
-provenance contract. Until that reconciliation is designed and verified, readers must not treat the stale status file
-as proof that the later receipts do not exist, or treat the later receipts as a silent rewrite of Phase 1 acceptance.
+`config/phase1/current-status.json` remains the sole Phase 1 status authority under the frozen contract. Its October 24
+successor, record digest `cc162ece6394cdabe18ee889e36c181145dc34dd80da712e2340c5ce91208539`, binds the exact
+October 16 predecessor plus the B1, B2-P, and dual-objective manifests. It records only bounded synthetic runtime
+facts, retains both failed heterogeneous-batch attempts, and keeps `phase=design_only`.
 
-The historical offline smoke package also retains its older Einstein-only status text. That output is a preserved
+MOCS account, durable allocation, and account-wide GPU entitlement remain unknown; per-job scheduler receipts cannot
+promote them. Real-source admission remains `blocked_external`. The successor and its exact status-evidence artifacts
+are copied into new Phase 1A bundles, so standalone validation does not depend on an unbundled repository claim. The
+predecessor bytes and every historical native receipt remain unchanged.
+
+The historical offline smoke package retains its older Einstein-only status text. That output is a preserved
 historical artifact, not the current project status.
 
 ## Current evidence boundary
 
-- `origin/main` and this verification revision are the same merged commit. The latest merged pull request passed all
-  four required CI jobs.
+- The branch base is `origin/main` at `165ae6a`; the status reconciliation and its 398-test local verification remain
+  uncommitted until review and merge. The four green remote CI jobs apply to the merged base, not yet to these changes.
 - The repository now has strong mechanical evidence for the pinned B1 and B2-P adapter paths, including a bounded
   answer/context objective. This raises engineering readiness, not learner novelty or biomedical evidence.
 - No real biomedical source is admitted. BUS-BRA remains structural engineering evidence only, and decision-bearing
@@ -65,6 +68,6 @@ historical artifact, not the current project status.
 - The public model repository and MMBU paper observations are quarantined as reporting-only evidence with zero
   model-selection, recipe-selection, rating, or promotion authority.
 
-The next honest evidence gain is not another prose score increase. It is a versioned status-authority reconciliation
-followed by human-governed admission of multiple eligible external biomedical source families. Only then can a
-prospective biomedical baseline/ablation program begin without contaminating the competition decision process.
+The next honest evidence gain is not another prose score increase. It is human-governed admission of BUS-BRA plus at
+least two additional eligible external biomedical source families. Only then can a prospective biomedical
+baseline/ablation program begin without contaminating the competition decision process.

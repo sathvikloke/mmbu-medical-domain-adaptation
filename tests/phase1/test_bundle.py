@@ -10,7 +10,7 @@ import subprocess
 import tempfile
 import unittest
 
-from mmbu_phase1 import bundle, canonical, claims as claim_rules, evidence, scope
+from mmbu_phase1 import authority, bundle, canonical, claims as claim_rules, evidence, scope
 from mmbu_phase1.fields import ContractViolation
 
 REPO = Path(__file__).resolve().parents[2]
@@ -148,6 +148,26 @@ class BundleTests(unittest.TestCase):
         self.reroot(root, retention)
         with self.assertRaises(ContractViolation):
             bundle.validate(root, retention, REPO)
+
+    def test_native_status_evidence_is_self_contained_and_fail_closed(self):
+        for relative in authority.RUNTIME_EVIDENCE_BUNDLE_PATHS.values():
+            self.assertTrue((self.root / relative).is_file(), relative)
+        self.assertEqual(bundle.validate(self.root, self.temp / "retention.json"), "returned_blocked")
+        root, retention = self.copy_bundle()
+        (root / authority.RUNTIME_EVIDENCE_BUNDLE_PATHS["b2_dual"]).unlink()
+        self.reroot(root, retention)
+        with self.assertRaises(ContractViolation):
+            bundle.validate(root, retention)
+
+    def test_exact_bootstrap_cannot_replace_reconciled_bundle_head(self):
+        root, retention = self.copy_bundle()
+        rollback = authority.build_authority(
+            authority.contract_pins(REPO), "2026-10-24T03:00:00.000000Z"
+        )[authority.STATUS_PATH]
+        self.rewrite(root, "authority/current-status.json", rollback)
+        self.reroot(root, retention)
+        with self.assertRaises(ContractViolation):
+            bundle.validate(root, retention)
 
     def test_second_claims_trace_or_decision_record_rejects(self):
         for source, duplicate in (("claims.json", "zz-claims-overlay.json"),

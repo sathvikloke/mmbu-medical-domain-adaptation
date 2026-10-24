@@ -12,6 +12,7 @@ import unittest
 
 from mmbu_phase1 import authority, canonical, fields, registries, status
 from mmbu_phase1.fields import ContractViolation
+from mmbu_phase1.store import RecordStore
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -147,6 +148,159 @@ class CurrentStatusTests(unittest.TestCase):
         with self.assertRaises(ContractViolation):
             check_status(reseal(record, schema_id="mmbu.phase1.current_status_overlay"))
 
+    def test_repository_status_reconciles_only_bounded_native_runtime_evidence(self):
+        record = authority.load_authority(REPO)[authority.STATUS_PATH]
+        facts = {row["fact_id"]: row for row in record["facts"]}
+        self.assertEqual(record["phase"], "design_only")
+        for fact_id in ("account.gpu_allocation", "account.mocs_account", "account.mocs_allocation"):
+            self.assertEqual(facts[fact_id]["status"], "unknown")
+            self.assertIsNone(facts[fact_id]["value"])
+            self.assertEqual(facts[fact_id]["evidence_digests"], [])
+        self.assertEqual(facts["data.real_source_admission"]["status"], "blocked_external")
+        self.assertEqual(facts["runtime.b1_native_admission"]["value"], "synthetic_engineering_only")
+        self.assertEqual(facts["runtime.b2_projector_preflight"]["value"], "synthetic_engineering_only")
+        self.assertEqual(facts["runtime.b2_dual_objective_preflight"]["value"],
+                         "singleton_microbatch_reference_only")
+        self.assertIs(facts["runtime.b2_heterogeneous_batch_equivalence"]["value"], False)
+        authority.validate_runtime_status_evidence(record, REPO)
+
+    def test_native_runtime_evidence_rejects_authority_and_receipt_mutations(self):
+        record = authority.load_authority(REPO)[authority.STATUS_PATH]
+        facts = {row["fact_id"]: row for row in record["facts"]}
+        cases = []
+        b1 = facts["runtime.b1_native_admission"]
+        cases.append(reseal(record, facts=sorted([
+            *(row for row in record["facts"] if row["fact_id"] != b1["fact_id"]),
+            {**b1, "evidence_digests": ["0" * 64]},
+        ], key=lambda row: row["fact_id"])))
+        account = facts["account.mocs_account"]
+        cases.append(reseal(record, facts=sorted([
+            *(row for row in record["facts"] if row["fact_id"] != account["fact_id"]),
+            {**account, "status": "measured", "value": "usable", "unit": "state",
+             "evidence_digests": b1["evidence_digests"], "limitation": None},
+        ], key=lambda row: row["fact_id"])))
+        source = facts["data.real_source_admission"]
+        cases.append(reseal(record, facts=sorted([
+            *(row for row in record["facts"] if row["fact_id"] != source["fact_id"]),
+            {**source, "status": "measured", "value": "admitted", "unit": "state",
+             "evidence_digests": b1["evidence_digests"], "limitation": None},
+        ], key=lambda row: row["fact_id"])))
+        predecessor = facts["authority.current_status_predecessor"]
+        cases.append(reseal(record, facts=sorted([
+            *(row for row in record["facts"] if row["fact_id"] != predecessor["fact_id"]),
+            {**predecessor, "value": "0" * 64},
+        ], key=lambda row: row["fact_id"])))
+        for mutated in cases:
+            with self.subTest(facts=[row["fact_id"] for row in mutated["facts"]]):
+                with self.assertRaises(ContractViolation):
+                    authority.validate_runtime_status_evidence(mutated, REPO)
+
+    def test_native_runtime_evidence_rejects_erased_batch_failure(self):
+        record = authority.load_authority(REPO)[authority.STATUS_PATH]
+        artifacts = authority.runtime_status_evidence_bytes(REPO, record)
+        dual = json.loads(artifacts["b2_dual"])
+        dual["failed_predecessors"] = dual["failed_predecessors"][1:]
+        forged_dual = canonical.dumps(dual)
+        forged_digest = canonical.raw_digest(forged_dual)
+        facts = []
+        for row in record["facts"]:
+            if row["fact_id"] in {"runtime.b2_dual_objective_preflight",
+                                   "runtime.b2_heterogeneous_batch_equivalence"}:
+                row = {**row, "evidence_digests": [forged_digest]}
+            facts.append(row)
+        forged_status = reseal(record, facts=facts)
+        store = RecordStore(artifacts=[
+            forged_dual if key == "b2_dual" else data for key, data in artifacts.items()
+        ])
+        with self.assertRaises(ContractViolation):
+            authority.validate_runtime_status_evidence(forged_status, store)
+
+    def test_native_runtime_reconciliation_cannot_be_removed_or_extended(self):
+        record = authority.load_authority(REPO)[authority.STATUS_PATH]
+        predecessor_id = authority.PREDECESSOR_FACT["fact_id"]
+        without_predecessor = reseal(
+            record,
+            facts=[row for row in record["facts"] if row["fact_id"] != predecessor_id],
+        )
+        arbitrary_runtime = {
+            "fact_id": "runtime.full_training_ready",
+            "status": "measured",
+            "value": True,
+            "unit": "ready",
+            "evidence_digests": ["0" * 64],
+            "limitation": None,
+        }
+        extended_bootstrap = reseal(
+            valid_status(),
+            facts=sorted(valid_status()["facts"] + [arbitrary_runtime], key=lambda row: row["fact_id"]),
+        )
+        account = next(row for row in record["facts"] if row["fact_id"] == "account.mocs_account")
+        changed_limitation = reseal(
+            record,
+            facts=sorted([
+                *[row for row in record["facts"] if row["fact_id"] != account["fact_id"]],
+                {**account, "limitation": "Authenticated with full MOCS entitlement."},
+            ], key=lambda row: row["fact_id"]),
+        )
+        for mutated in (without_predecessor, extended_bootstrap, changed_limitation):
+            with self.subTest(facts=[row["fact_id"] for row in mutated["facts"]]):
+                with self.assertRaises(ContractViolation):
+                    authority.validate_runtime_status_evidence(mutated, REPO)
+        with self.assertRaises(ContractViolation):
+            authority.validate_runtime_status_evidence(valid_status(), RecordStore())
+        authority.validate_runtime_status_evidence(valid_status(), RecordStore(), allow_bootstrap=True)
+
+    def test_exact_bootstrap_cannot_replace_reconciled_repository_head(self):
+        rollback = reseal(valid_status(), updated_at="2026-10-24T03:00:00.000000Z")
+        with self.assertRaises(ContractViolation):
+            authority.validate_runtime_status_evidence(rollback, REPO)
+
+    def test_standalone_runtime_validation_enforces_frozen_status_schema(self):
+        record = authority.load_authority(REPO)[authority.STATUS_PATH]
+        artifacts = authority.runtime_status_evidence_bytes(REPO, record)
+        store = RecordStore(artifacts=artifacts.values())
+        mutations = (
+            {"schema_version": 999},
+            {"extra_overlay": True},
+            {"facts": record["facts"] + [record["facts"][-1]]},
+            {"facts": record["facts"][:-1]},
+            {"contract_manifest_digest": "0" * 64},
+            {"official_source_hashes": {**record["official_source_hashes"],
+                                        "MMBU_challenge_update.pdf": "0" * 64}},
+            {"updated_at": "2026-10-23 00:00:00"},
+        )
+        for mutation in mutations:
+            with self.subTest(mutation=sorted(mutation)):
+                with self.assertRaises(ContractViolation):
+                    authority.validate_runtime_status_evidence(reseal(record, **mutation), store)
+
+    def test_runtime_receipts_are_fixed_independently_of_status_selected_digests(self):
+        record = authority.load_authority(REPO)[authority.STATUS_PATH]
+        artifacts = authority.runtime_status_evidence_bytes(REPO, record)
+        skeletal = canonical.dumps({
+            "schema": "mmbu.b2.projector_preflight.evidence_manifest.v1",
+            "successful_job_id": "85459",
+            "attempt": 2,
+            "failed_attempt": {"job_id": "85458", "optimizer_step_executed": False},
+        })
+        skeletal_digest = canonical.raw_digest(skeletal)
+        facts = [
+            {**row, "evidence_digests": [skeletal_digest]}
+            if row["fact_id"] == "runtime.b2_projector_preflight" else row
+            for row in record["facts"]
+        ]
+        forged_status = reseal(record, facts=facts)
+        store = RecordStore(artifacts=[
+            skeletal if key == "b2_projector" else data for key, data in artifacts.items()
+        ])
+        with self.assertRaises(ContractViolation):
+            authority.validate_runtime_status_evidence(forged_status, store)
+
+        subordinate_key = "b2_projector_native"
+        missing = RecordStore(artifacts=[data for key, data in artifacts.items() if key != subordinate_key])
+        with self.assertRaises(ContractViolation):
+            authority.validate_runtime_status_evidence(record, missing)
+
 
 class GenerationZeroRegistryTests(unittest.TestCase):
     def setUp(self):
@@ -233,7 +387,7 @@ class BootstrapCommandTests(unittest.TestCase):
         )
         after = fields.timestamp(fields.utc_now(), "after")
         self.assertEqual(result.returncode, 0, result.stderr)
-        loaded = authority.load_authority(root)
+        loaded = authority.load_authority(root, allow_bootstrap=True)
         self.assertEqual(set(loaded), set(authority.AUTHORITY_PATHS))
         for relative in authority.AUTHORITY_PATHS:
             raw = (root / relative).read_bytes()

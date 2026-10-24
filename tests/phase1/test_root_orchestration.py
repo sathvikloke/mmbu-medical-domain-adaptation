@@ -44,7 +44,7 @@ class Phase1PreflightTests(unittest.TestCase):
 
     def test_repository_preflight_passes(self):
         self.assertEqual(self.team.phase1_preflight(REPO), [])
-        self.assertEqual(self.team.phase1_preflight(self.root), [])
+        self.assertEqual(self.team.phase1_preflight(self.root, allow_bootstrap=True), [])
 
     def test_test_command_fails_closed_when_each_authority_file_is_missing(self):
         for relative in authority.AUTHORITY_PATHS:

@@ -1,7 +1,8 @@
 # Current clone verification
 
-**Observed:** October 23, 2026 20:34 CDT
+**Observed:** October 23, 2026 21:09 CDT
 **Runtime:** Python 3.14.6
+**Verified revision:** `f1aeaee8b8d5a2eb2556dbb17edb6aab0d390643`
 **Status authority digest:** `cc162ece6394cdabe18ee889e36c181145dc34dd80da712e2340c5ce91208539`
 **Scope:** repository integrity plus the bounded synthetic native receipts listed below
 
@@ -54,8 +55,8 @@ historical artifact, not the current project status.
 
 ## Current evidence boundary
 
-- The branch base is `origin/main` at `165ae6a`; the status reconciliation and its 398-test local verification remain
-  uncommitted until review and merge. The four green remote CI jobs apply to the merged base, not yet to these changes.
+- The status reconciliation is merged at `f1aeaee8b8d5a2eb2556dbb17edb6aab0d390643`. Its four required remote CI
+  jobs passed on Python 3.11, 3.12, 3.14, and the image-enabled Python 3.12 lane.
 - The repository now has strong mechanical evidence for the pinned B1 and B2-P adapter paths, including a bounded
   answer/context objective. This raises engineering readiness, not learner novelty or biomedical evidence.
 - No real biomedical source is admitted. BUS-BRA remains structural engineering evidence only, and decision-bearing

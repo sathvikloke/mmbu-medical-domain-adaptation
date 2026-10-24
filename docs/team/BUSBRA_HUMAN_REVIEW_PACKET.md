@@ -2,6 +2,7 @@
 
 **Prepared:** October 23, 2026  
 **Machine-readable plan:** [`config/busbra-human-review-plan.json`](../../config/busbra-human-review-plan.json)  
+**Reviewer dispatch:** [`BUSBRA_REVIEWER_DISPATCH.md`](BUSBRA_REVIEWER_DISPATCH.md)
 **Status:** ready for human review; no task, record, purpose, training, or release approval is granted
 
 ## Why this is the next gate
@@ -64,13 +65,22 @@ Packet generation is not review and does not authorize source admission. Qualifi
 retain identity/qualification/date/evidence locators, resolve disagreements, and pass the separate Phase 1 admission
 and purpose-authorization process.
 
-Treat the generated packet as immutable. Before opening any review asset, freeze the `receipt_digest` from
-`packet-receipt.json` in the authorized review-opening record, then copy `record-review-template.csv` and
-`source-review-template.json` outside the packet. Reviewers complete only those copies. The source form uses
-`mmbu.busbra.source_review_completed.v1`; every reviewer profile contains its exact controlled `role` and
+Treat the generated packet as immutable. Only packet manifest and receipt schema v2 are current; discard and rebuild
+any unopened v1 packet. Before opening any review asset, freeze the `receipt_digest` from `packet-receipt.json` in a
+separately authorized `mmbu.busbra.review_opening_record.v1`, then copy `record-review-template.csv` and
+`source-review-template.json` outside the packet. Reviewers complete only those copies. The opening record contains
+exactly `schema`, `source_id`, `source_version`, `packet_receipt_digest`, `opened_at`, `opened_by`,
+`authorization_evidence_locator`, `human_attested`, `review_opening_authorized`, `training_ready`, and
+`model_use_authorized`. The last three authority values must be `true`, `false`, and `false`, respectively. The source form uses
+`mmbu.busbra.source_review_completed.v2`; every reviewer profile contains its exact controlled `role` and
 `qualification`, a nonblank `reviewer_id`, qualification-evidence and review-evidence locators, UTC `reviewed_at`,
-and `human_attested=true`. Those claims still require separate authenticated Phase 1 reviewer attestations. Rights
+conflict status and evidence, and `human_attested=true`. Those claims still require separate authenticated Phase 1 reviewer attestations. Rights
 decisions use `approve`, `narrow`, `decline`, or `unresolved`; `narrow` remains blocked until an exact scope is bound.
+
+The writable source copy begins as `mmbu.busbra.source_review_template.v2`. After all required fields are complete, the
+coordinator changes only `schema` to `mmbu.busbra.source_review_completed.v2`, `decision_status` to
+`completed_human_review`, and `review_complete` to `true`. `training_ready` and `model_use_authorized` remain `false`.
+No other envelope transformation is permitted.
 
 Validate the completed copies against the pre-review digest:
 
@@ -79,12 +89,14 @@ PYTHONPATH=src python3 -m mmbu_phase1.busbra_review_validation \
   .local/busbra/human-review-packet \
   --completed-records <record-review-completed.csv> \
   --completed-source <source-review-completed.json> \
+  --review-opening <review-opening.json> \
   --expected-packet-receipt-digest <pre-review-receipt-digest>
 ```
 
 The validator checks every original packet member, the exact frozen record population, geometry and asset locators,
-closed answer vocabularies, controlled source-level role claims, real chronological timestamps, mandatory independent
-second review, and distinct adjudication for disagreements. It binds the exact packet receipt and raw/canonical
+closed answer vocabularies, controlled source-level role claims, review timestamps strictly after the digest-bound
+authorized opening, non-future chronological timestamps, mandatory independent
+second review, and distinct adjudication for any answer, task-scope, or disposition disagreement. It binds the exact packet receipt and raw/canonical
 digests of both completed evidence files. Its report can mark the forms mechanically ready for a Phase 1 admission
 review or identify blocked/excluded records, but reviewer identity remains unauthenticated and
 `admission_review_ready`, `source_admission_authorized`, `training_ready`, and `model_use_authorized` always remain
@@ -96,7 +108,7 @@ false. A separate Phase 1 admission chain must authenticate roles and bind the r
 |---|---|---|
 | Visual and clinical semantics | Human reviewer experienced with breast ultrasound; an independent second reviewer handles every disagreement and material exception | approve exact task/field, narrow it, exclude record/task, or unresolved |
 | Mask completeness and lesion policy | Same two-reviewer path; material disagreement requires independent adjudication | approve mask-derived geometry, exclude, or unresolved |
-| Cases 110 and 536 provenance | Human data steward or source-author evidence; visual similarity alone is insufficient | distinct lineage, linked lineage, exclude/co-assign, or unresolved |
+| Cases 110 and 536 provenance | Human data steward or source-author evidence; visual similarity alone is insufficient | `distinct_lineage`, `linked_lineage`, `exclude_both`, `coassign`, or `unresolved` |
 | Rights, purpose, attribution, disclosure, and trained-weight release | Human team authority who has reviewed the exact Zenodo version, CC BY 4.0 obligations, challenge disclosure, and planned Hugging Face release | approve named purposes, narrow, decline, or unresolved |
 
 An AI review, clean decoder run, citation, public download, repository license, or deadline cannot fill any of these
@@ -111,13 +123,22 @@ source box, and mask-derived half-open box. Record each answer separately:
 2. Does the mask identify the intended lesion, and is its boundary usable for the claimed localization target?
 3. Is there evidence of an additional lesion or incomplete annotation that makes single-target detection or grounded
    classification invalid?
-4. Are the pathology and BI-RADS fields correctly joined to this case and appropriate as source-authoritative targets?
-   The reviewer need not re-diagnose biopsy truth from pixels, but must reject a broken join or unsupported task use.
+4. Are the pathology and BI-RADS values clinically plausible for the displayed record and appropriate for the claimed
+   task? The reviewer is not asked to prove a database join from pixels. Packet construction separately binds the exact
+   source row, record ID, image member, and mask member; any suspected mismatch is escalated as a mechanical join defect.
 5. Does the image reveal a crop, overlay, caliper, panel, or acquisition artifact that could create a non-medical
    shortcut? If yes, name the permitted task or exclusion policy; do not erase the artifact.
 6. Are `modality=ultrasound` and `body_part=breast` supported? Leave submodality, specimen, stain, and any finer context
    unknown unless the source record explicitly supports them.
-7. Final record disposition: eligible for named tasks, eligible only after a named correction, excluded, or unresolved.
+7. Final record disposition and exact permitted tasks: eligible for named tasks, eligible only after a named correction,
+   excluded, or unresolved.
+
+Eligibility is task-specific. Pathology classification does not require a usable mask, and BI-RADS classification does
+not require a usable mask. Mask-grounded pathology classification and mask-derived object detection require a usable mask and no
+evidence of an additional or incompletely annotated lesion. Every permitted task requires an interpretable image with
+`modality=ultrasound` and `body_part=breast` supported. The second reviewer records the same complete decision vector.
+Any disagreement in an answer, task list, or disposition requires a distinct adjudicator to record a complete final
+decision and rationale.
 
 Every `bus_0845-s` review must explicitly adjudicate the material source-box versus mask-extent discrepancy. The source
 box remains QA evidence; the mask-derived box is the only proposed localization transform. All other box exceptions
@@ -131,7 +152,7 @@ The rights/release reviewer must answer each item explicitly rather than signing
 - exact archive: 133,917,740 bytes, MD5 `1f8b2be6476d58fc97bfb5e5a1ea9bab`;
 - recorded license evidence: Zenodo API identifier `cc-by-4.0`;
 - permitted purposes: training, development, untouched confirmation, public-weight release, and challenge submission are
-  five separate yes/no decisions;
+  five separate decisions using `approve`, `narrow`, `decline`, or `unresolved`;
 - attribution text and placement for the model card, repository, technical report, and challenge disclosure;
 - whether source-derived labels, masks, boxes, and trained weights may be redistributed, and under what notices;
 - whether the proposed public Hugging Face checkpoint and its disclosure are acceptable; and

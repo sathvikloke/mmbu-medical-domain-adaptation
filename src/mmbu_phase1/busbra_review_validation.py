@@ -12,36 +12,30 @@ from pathlib import Path, PurePosixPath
 import re
 import stat
 
-from .busbra_review import _canonical_digest, _load_json
+from .busbra_review import REVIEW_FIELDS, _canonical_digest, _load_json
 
 
-REVIEW_FIELDS = (
-    "record_id", "case_id", "pathology", "birads", "width", "height",
-    "decoded_width", "decoded_height",
-    "source_bbox_xywh", "mask_derived_bbox_xywh", "image_member", "mask_member",
-    "image_path", "mask_path", "mandatory_reasons",
-    "primary_reviewer_id", "primary_reviewed_at", "image_interpretable",
-    "mask_usable", "additional_or_incomplete_lesion", "source_fields_joined",
-    "shortcut_artifact", "permitted_tasks", "primary_disposition", "primary_notes",
-    "secondary_reviewer_id", "secondary_reviewed_at", "secondary_disposition",
-    "secondary_notes", "adjudicator_id", "adjudicated_at", "final_disposition",
-)
 TASKS = (
     "pathology classification",
     "BI-RADS classification",
-    "mask-grounded classification",
+    "mask-grounded pathology classification",
     "mask-derived object detection",
 )
 ANSWERS = {"yes", "no", "uncertain"}
 SHORTCUTS = {"none", "present", "uncertain"}
 DISPOSITIONS = {"eligible", "correction_required", "excluded", "unresolved"}
 RIGHTS_DECISIONS = {"approve", "narrow", "decline", "unresolved"}
-PROVENANCE_DECISIONS = {"distinct_lineage", "linked_lineage", "exclude_or_coassign", "unresolved"}
+PROVENANCE_DECISIONS = {"distinct_lineage", "linked_lineage", "exclude_both", "coassign", "unresolved"}
 TIMESTAMP = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z")
 PROFILE_KEYS = {
     "role", "reviewer_id", "qualification", "qualification_evidence_locator", "reviewed_at",
-    "evidence_locator", "human_attested",
+    "conflict_status", "conflict_evidence_locator", "evidence_locator", "human_attested",
 }
+CONFLICT_STATUSES = {"none_declared", "declared_managed", "unresolved"}
+DECISION_ANSWERS = (
+    "image_interpretable", "modality_supported", "body_part_supported", "mask_usable",
+    "additional_or_incomplete_lesion", "pathology_target_plausible", "birads_target_plausible",
+)
 ROLE_QUALIFICATIONS = {
     "medical_primary": {
         "breast_imaging_clinician", "breast_ultrasound_clinician",
@@ -76,6 +70,11 @@ MANIFEST_KEYS = {
     "records", "review_status", "review_complete", "training_ready", "model_use_authorized",
     "manifest_digest",
 }
+OPENING_KEYS = {
+    "schema", "source_id", "source_version", "packet_receipt_digest", "opened_at", "opened_by",
+    "authorization_evidence_locator", "human_attested", "review_opening_authorized", "training_ready",
+    "model_use_authorized",
+}
 
 
 def _text(value, label: str) -> str:
@@ -92,6 +91,8 @@ def _timestamp(value, label: str) -> datetime:
         parsed = datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
     except ValueError as exc:
         raise ValueError(f"{label} must be a real UTC second timestamp") from exc
+    if parsed > datetime.now(timezone.utc):
+        raise ValueError(f"{label} may not be in the future")
     return parsed
 
 
@@ -111,6 +112,9 @@ def _profile(value, label: str, role: str, *, optional: bool = False) -> dict | 
     if value["qualification"] not in ROLE_QUALIFICATIONS[role]:
         raise ValueError(f"{label}.qualification is not allowed for {role}")
     _text(value["qualification_evidence_locator"], f"{label}.qualification_evidence_locator")
+    if value["conflict_status"] not in CONFLICT_STATUSES:
+        raise ValueError(f"{label}.conflict_status is unknown")
+    _text(value["conflict_evidence_locator"], f"{label}.conflict_evidence_locator")
     _timestamp(value["reviewed_at"], f"{label}.reviewed_at")
     _text(value["evidence_locator"], f"{label}.evidence_locator")
     if value["human_attested"] is not True:
@@ -131,7 +135,7 @@ def _validate_packet(packet: Path, expected_receipt_digest: str) -> tuple[dict, 
             re.fullmatch(r"[0-9a-f]{64}", expected_receipt_digest) is None or
             claimed_receipt_digest != expected_receipt_digest):
         raise ValueError("packet does not match the frozen packet receipt")
-    if (receipt["schema"] != "mmbu.busbra.human_review_packet_receipt.v1" or
+    if (receipt["schema"] != "mmbu.busbra.human_review_packet_receipt.v2" or
             receipt["source_id"] != "busbra" or receipt["source_version"] != "1.0" or
             receipt["review_complete"] is not False or receipt["training_ready"] is not False or
             receipt["model_use_authorized"] is not False):
@@ -168,7 +172,7 @@ def _validate_packet(packet: Path, expected_receipt_digest: str) -> tuple[dict, 
     if (claimed_manifest_digest != _canonical_digest(unsigned_manifest) or
             claimed_manifest_digest != receipt["manifest_digest"]):
         raise ValueError("review manifest digest mismatch")
-    if (manifest["schema"] != "mmbu.busbra.human_review_packet_manifest.v1" or
+    if (manifest["schema"] != "mmbu.busbra.human_review_packet_manifest.v2" or
             manifest["source_id"] != "busbra" or manifest["source_version"] != "1.0" or
             manifest["review_status"] != "pending_human_review" or
             manifest["review_complete"] is not False or manifest["training_ready"] is not False or
@@ -183,7 +187,7 @@ def _validate_packet(packet: Path, expected_receipt_digest: str) -> tuple[dict, 
 
 def _validate_source_review(source: dict) -> tuple[dict, dict[str, dict | None]]:
     source = _closed(source, SOURCE_KEYS, "completed source review")
-    if (source["schema"] != "mmbu.busbra.source_review_completed.v1" or
+    if (source["schema"] != "mmbu.busbra.source_review_completed.v2" or
             source["source_id"] != "busbra" or source["source_version"] != "1.0" or
             source["decision_status"] != "completed_human_review" or
             source["review_complete"] is not True or source["training_ready"] is not False or
@@ -205,12 +209,16 @@ def _validate_source_review(source: dict) -> tuple[dict, dict[str, dict | None]]
     if len(profile_ids) != len(set(profile_ids)):
         raise ValueError("medical reviewer identities must be distinct")
     provenance = _closed(source["provenance_review"], PROVENANCE_KEYS, "provenance_review")
-    _profile(provenance["reviewer"], "provenance_review.reviewer", "provenance")
+    profiles["provenance"] = _profile(
+        provenance["reviewer"], "provenance_review.reviewer", "provenance"
+    )
     if provenance["case_110_536_disposition"] not in PROVENANCE_DECISIONS:
         raise ValueError("provenance_review disposition is unknown")
     _text(provenance["evidence_locator"], "provenance_review.evidence_locator")
     rights = _closed(source["rights_and_release_review"], RIGHTS_KEYS, "rights_and_release_review")
-    _profile(rights["reviewer"], "rights_and_release_review.reviewer", "rights_release")
+    profiles["rights"] = _profile(
+        rights["reviewer"], "rights_and_release_review.reviewer", "rights_release"
+    )
     for name in (
         "training", "development", "untouched_confirmation", "public_weight_release", "challenge_submission",
     ):
@@ -228,6 +236,65 @@ def _split_tasks(value: str, label: str) -> list[str]:
     if len(tasks) != len(set(tasks)) or any(task not in TASKS for task in tasks):
         raise ValueError(f"{label} contains unknown or duplicate tasks")
     return tasks
+
+
+def _decision(row: dict[str, str], prefix: str, label: str) -> dict:
+    answers = {}
+    for name in DECISION_ANSWERS:
+        value = row[f"{prefix}_{name}"]
+        if value not in ANSWERS:
+            raise ValueError(f"{label}.{prefix}_{name} has an unknown answer")
+        answers[name] = value
+    shortcut = row[f"{prefix}_shortcut_artifact"]
+    if shortcut not in SHORTCUTS:
+        raise ValueError(f"{label}.{prefix}_shortcut_artifact has an unknown answer")
+    tasks = _split_tasks(row[f"{prefix}_permitted_tasks"], f"{label}.{prefix}_permitted_tasks")
+    disposition = row[f"{prefix}_disposition"]
+    if disposition not in DISPOSITIONS:
+        raise ValueError(f"{label}.{prefix}_disposition is unknown")
+    _text(row[f"{prefix}_notes"], f"{label}.{prefix}_notes")
+    decision = {**answers, "shortcut_artifact": shortcut, "tasks": tasks, "disposition": disposition}
+    _validate_task_scope(decision, label, prefix)
+    return decision
+
+
+def _validate_task_scope(decision: dict, label: str, prefix: str) -> None:
+    tasks = decision["tasks"]
+    disposition = decision["disposition"]
+    if disposition == "eligible" and not tasks:
+        raise ValueError(f"{label}.{prefix} eligible decision must name permitted tasks")
+    if disposition in {"excluded", "unresolved"} and tasks:
+        raise ValueError(f"{label}.{prefix} excluded or unresolved decision cannot name permitted tasks")
+    if not tasks:
+        return
+    for task in tasks:
+        for field in ("image_interpretable", "modality_supported", "body_part_supported"):
+            if decision[field] != "yes":
+                raise ValueError(f"{label}.{prefix} {task} requires {field}=yes")
+        if task in {"pathology classification", "mask-grounded pathology classification"}:
+            if decision["pathology_target_plausible"] != "yes":
+                raise ValueError(
+                    f"{label}.{prefix} {task} requires pathology_target_plausible=yes"
+                )
+        if task == "BI-RADS classification" and decision["birads_target_plausible"] != "yes":
+            raise ValueError(
+                f"{label}.{prefix} {task} requires birads_target_plausible=yes"
+            )
+        if task in {"mask-grounded pathology classification", "mask-derived object detection"}:
+            if (decision["mask_usable"] != "yes" or
+                    decision["additional_or_incomplete_lesion"] != "no"):
+                raise ValueError(
+                    f"{label}.{prefix} {task} requires a usable, complete single-lesion mask"
+                )
+
+
+def _blank_decision_fields(row: dict[str, str], prefix: str) -> bool:
+    names = (
+        *(f"{prefix}_{name}" for name in DECISION_ANSWERS),
+        f"{prefix}_shortcut_artifact", f"{prefix}_permitted_tasks", f"{prefix}_disposition",
+        f"{prefix}_notes",
+    )
+    return all(row[name] == "" for name in names)
 
 
 def _bbox_wire(value: str, width: int, height: int, label: str) -> list[int]:
@@ -266,6 +333,23 @@ def _strict_json_bytes(payload: bytes, label: str):
     )
 
 
+def _validate_review_opening(value: dict, packet_receipt_digest: str) -> tuple[dict, datetime]:
+    value = _closed(value, OPENING_KEYS, "review opening record")
+    if (value["schema"] != "mmbu.busbra.review_opening_record.v1" or
+            value["source_id"] != "busbra" or value["source_version"] != "1.0" or
+            value["human_attested"] is not True or value["review_opening_authorized"] is not True or
+            value["training_ready"] is not False or value["model_use_authorized"] is not False):
+        raise ValueError("review opening record identity or authority scope mismatch")
+    if value["packet_receipt_digest"] != packet_receipt_digest:
+        raise ValueError("review opening record packet receipt digest mismatch")
+    _text(value["opened_by"], "review opening record.opened_by")
+    _text(
+        value["authorization_evidence_locator"],
+        "review opening record.authorization_evidence_locator",
+    )
+    return value, _timestamp(value["opened_at"], "review opening record.opened_at")
+
+
 def _completed_rows(payload: bytes) -> list[dict[str, str]]:
     try:
         text = payload.decode("utf-8")
@@ -285,15 +369,25 @@ def validate_completed_review(
     completed_records: Path,
     completed_source: Path,
     *,
+    review_opening: Path,
     expected_packet_receipt_digest: str,
 ) -> dict:
     """Validate completeness and consistency; never emit an authorization."""
     manifest, receipt = _validate_packet(Path(packet), expected_packet_receipt_digest)
     records_payload = Path(completed_records).read_bytes()
     source_payload = Path(completed_source).read_bytes()
+    opening_payload = Path(review_opening).read_bytes()
+    opening, opened_at = _validate_review_opening(
+        _strict_json_bytes(opening_payload, "review opening record"), receipt["receipt_digest"]
+    )
     source, profiles = _validate_source_review(
         _strict_json_bytes(source_payload, "completed source review")
     )
+    for profile in profiles.values():
+        if profile is not None and _timestamp(
+            profile["reviewed_at"], f"{profile['role']} profile reviewed_at"
+        ) <= opened_at:
+            raise ValueError(f"{profile['role']} review must occur after the authorized review opening")
     rows = _completed_rows(records_payload)
     expected = manifest["records"]
     if [row.get("record_id") for row in rows] != [row.get("record_id") for row in expected]:
@@ -334,33 +428,23 @@ def validate_completed_review(
         if row["primary_reviewer_id"] != profiles["primary"]["reviewer_id"]:
             raise ValueError(f"{label} primary reviewer differs from the source review")
         primary_time = _timestamp(row["primary_reviewed_at"], f"{label}.primary_reviewed_at")
+        if primary_time <= opened_at:
+            raise ValueError(f"{label} primary review must occur after the authorized review opening")
         if primary_time > _timestamp(profiles["primary"]["reviewed_at"], "primary profile reviewed_at"):
             raise ValueError(f"{label} primary review occurs after the primary profile completion")
-        for name in (
-            "image_interpretable", "mask_usable", "additional_or_incomplete_lesion", "source_fields_joined",
-        ):
-            if row[name] not in ANSWERS:
-                raise ValueError(f"{label}.{name} has an unknown answer")
-        if row["shortcut_artifact"] not in SHORTCUTS:
-            raise ValueError(f"{label}.shortcut_artifact has an unknown answer")
-        tasks = _split_tasks(row["permitted_tasks"], f"{label}.permitted_tasks")
-        primary = row["primary_disposition"]
-        final = row["final_disposition"]
-        if primary not in DISPOSITIONS or final not in DISPOSITIONS:
-            raise ValueError(f"{label} has an unknown disposition")
-        _text(row["primary_notes"], f"{label}.primary_notes")
+        primary = _decision(row, "primary", label)
 
         material = bool(frozen["mandatory_reasons"])
-        needs_secondary = material or primary != "eligible" or any(
-            row[name] == "uncertain" for name in (
-                "image_interpretable", "mask_usable", "additional_or_incomplete_lesion", "source_fields_joined",
-            )
-        ) or row["shortcut_artifact"] != "none"
-        secondary_fields = (
-            "secondary_reviewer_id", "secondary_reviewed_at", "secondary_disposition", "secondary_notes",
+        needs_secondary = material or primary["disposition"] != "eligible" or any(
+            primary[name] == "uncertain" for name in DECISION_ANSWERS
+        ) or primary["shortcut_artifact"] != "none" or primary["mask_usable"] != "yes" or (
+            primary["additional_or_incomplete_lesion"] != "no"
         )
+        secondary_identity_fields = ("secondary_reviewer_id", "secondary_reviewed_at")
+        adjudicator_identity_fields = ("adjudicator_id", "adjudicated_at")
+        controlling = primary
         if needs_secondary:
-            if any(not row[name] for name in secondary_fields):
+            if any(not row[name] for name in secondary_identity_fields):
                 raise ValueError(f"{label} requires a complete secondary review")
             if row["secondary_reviewer_id"] != profiles["secondary"]["reviewer_id"]:
                 raise ValueError(f"{label} requires the distinct secondary reviewer")
@@ -371,9 +455,7 @@ def validate_completed_review(
                 raise ValueError(f"{label} secondary review must occur after the primary review")
             if secondary_time > _timestamp(profiles["secondary"]["reviewed_at"], "secondary profile reviewed_at"):
                 raise ValueError(f"{label} secondary review occurs after the secondary profile completion")
-            secondary = row["secondary_disposition"]
-            if secondary not in DISPOSITIONS:
-                raise ValueError(f"{label}.secondary_disposition is unknown")
+            secondary = _decision(row, "secondary", label)
             if secondary != primary:
                 adjudicator = profiles["adjudicator"]
                 if (adjudicator is None or row["adjudicator_id"] != adjudicator["reviewer_id"] or
@@ -384,22 +466,26 @@ def validate_completed_review(
                     raise ValueError(f"{label} adjudication must occur after both reviews")
                 if adjudicated_time > _timestamp(adjudicator["reviewed_at"], "adjudicator profile reviewed_at"):
                     raise ValueError(f"{label} adjudication occurs after the adjudicator profile completion")
-            elif row["adjudicator_id"] or row["adjudicated_at"] or final != primary:
+                controlling = _decision(row, "adjudicator", label)
+            elif (any(row[name] for name in adjudicator_identity_fields) or
+                    not _blank_decision_fields(row, "adjudicator")):
                 raise ValueError(f"{label} cannot claim adjudication without a disagreement")
         else:
-            if any(row[name] for name in (*secondary_fields, "adjudicator_id", "adjudicated_at")):
+            if (any(row[name] for name in (*secondary_identity_fields, *adjudicator_identity_fields)) or
+                    not _blank_decision_fields(row, "secondary") or
+                    not _blank_decision_fields(row, "adjudicator")):
                 raise ValueError(f"{label} has an undeclared secondary or adjudication review")
-            if final != primary:
-                raise ValueError(f"{label} final disposition differs without adjudication")
+
+        final_tasks = _split_tasks(row["final_permitted_tasks"], f"{label}.final_permitted_tasks")
+        final = row["final_disposition"]
+        if final not in DISPOSITIONS:
+            raise ValueError(f"{label}.final_disposition is unknown")
+        if final != controlling["disposition"] or final_tasks != controlling["tasks"]:
+            raise ValueError(f"{label} final decision differs from the controlling human decision")
 
         if final == "eligible":
-            if not tasks:
-                raise ValueError(f"{label} eligible record must name permitted tasks")
-            if (row["image_interpretable"] != "yes" or row["mask_usable"] != "yes" or
-                    row["additional_or_incomplete_lesion"] != "no" or row["source_fields_joined"] != "yes"):
-                raise ValueError(f"{label} eligible disposition conflicts with review answers")
             eligible.append(row["record_id"])
-        elif final in {"excluded", "unresolved"} and tasks:
+        elif final in {"excluded", "unresolved"} and final_tasks:
             raise ValueError(f"{label} excluded or unresolved record cannot name permitted tasks")
         if final == "excluded":
             excluded.append(row["record_id"])
@@ -413,12 +499,21 @@ def validate_completed_review(
     )
     allowed = [name for name in purpose_names if rights[name] == "approve"]
     source_blockers = []
+    for profile in profiles.values():
+        if profile is not None and profile["conflict_status"] == "unresolved":
+            source_blockers.append(f"{profile['role']}_conflict_unresolved")
     provenance_decision = provenance["case_110_536_disposition"]
     required_linked_case_groups = []
-    if provenance_decision == "linked_lineage":
+    required_excluded_case_ids = []
+    if provenance_decision in {"linked_lineage", "coassign"}:
         required_linked_case_groups = [["110", "536"]]
-    elif provenance_decision == "exclude_or_coassign":
-        source_blockers.append("case_110_536_exclusion_or_coassignment_unresolved")
+    elif provenance_decision == "exclude_both":
+        required_excluded_case_ids = ["110", "536"]
+        excluded_by_provenance = {
+            row["record_id"] for row in rows if row["case_id"] in required_excluded_case_ids
+        }
+        eligible = [record_id for record_id in eligible if record_id not in excluded_by_provenance]
+        excluded = list(dict.fromkeys([*excluded, *sorted(excluded_by_provenance)]))
     elif provenance_decision == "unresolved":
         source_blockers.append("case_110_536_provenance_unresolved")
     for name in purpose_names:
@@ -428,7 +523,7 @@ def validate_completed_review(
             source_blockers.append(f"{name}_{rights[name]}")
 
     report = {
-        "schema": "mmbu.busbra.human_review_validation.v1",
+        "schema": "mmbu.busbra.human_review_validation.v2",
         "source_id": "busbra",
         "source_version": "1.0",
         "packet_receipt_digest": receipt["receipt_digest"],
@@ -438,6 +533,9 @@ def validate_completed_review(
         "completed_records_semantic_digest": _canonical_digest(rows),
         "completed_source_sha256": hashlib.sha256(source_payload).hexdigest(),
         "completed_source_canonical_digest": _canonical_digest(source),
+        "review_opening_sha256": hashlib.sha256(opening_payload).hexdigest(),
+        "review_opening_canonical_digest": _canonical_digest(opening),
+        "review_opened_at": opening["opened_at"],
         "record_count": len(rows),
         "review_evidence_complete": True,
         "mechanically_ready_for_phase1_admission_review": not blocked and not source_blockers,
@@ -449,6 +547,7 @@ def validate_completed_review(
         "blocked_record_ids": blocked,
         "source_blockers": source_blockers,
         "required_linked_case_groups": required_linked_case_groups,
+        "required_excluded_case_ids": required_excluded_case_ids,
         "proposed_allowed_purposes": allowed,
         "source_admission_authorized": False,
         "training_ready": False,
@@ -469,6 +568,7 @@ def main(argv=None) -> int:
     parser.add_argument("packet", type=Path)
     parser.add_argument("--completed-records", type=Path, required=True)
     parser.add_argument("--completed-source", type=Path, required=True)
+    parser.add_argument("--review-opening", type=Path, required=True)
     parser.add_argument("--expected-packet-receipt-digest", required=True)
     args = parser.parse_args(argv)
     try:
@@ -477,6 +577,7 @@ def main(argv=None) -> int:
                 args.packet,
                 args.completed_records,
                 args.completed_source,
+                review_opening=args.review_opening,
                 expected_packet_receipt_digest=args.expected_packet_receipt_digest,
             ),
             indent=2,

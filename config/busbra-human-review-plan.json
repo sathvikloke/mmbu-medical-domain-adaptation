@@ -22,7 +22,7 @@
   "proposed_task_decisions": [
     "pathology classification",
     "BI-RADS classification",
-    "mask-grounded classification",
+    "mask-grounded pathology classification",
     "mask-derived object detection"
   ],
   "review_roles": {

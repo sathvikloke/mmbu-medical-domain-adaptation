@@ -29,7 +29,7 @@ ARCHIVE_MD5 = "1f8b2be6476d58fc97bfb5e5a1ea9bab"
 SELECTION_ALGORITHM = "rarest-pathology-birads-stratum-then-record-id-case-exclusive-v1"
 PER_STRATUM = 35
 STRATIFIED_PLAN_DIGEST = "71281236f41d658b1985906c872896647f773f6598947b526221509d34a5b912"
-HUMAN_PLAN_DIGEST = "98f9f5f00658429bd68a90102dcc4b325f657d1544b15b55d69074c42443d247"
+HUMAN_PLAN_DIGEST = "14ee75d451dea296e04756275d60a7ed533fb9d83e22c150e0dc38a8c8c755da"
 STRUCTURAL_CONTRACT_DIGEST = "6d9f478cc55ffd761f94bf21dee9e66ec111846c63113aa440bcac8afd8ddf4f"
 METADATA_MEMBER = "BUSBRA/bus_data.csv"
 METADATA_FIELDS = (
@@ -62,6 +62,26 @@ HUMAN_POPULATION_KEYS = {
     "stratified_plan_selection_algorithm",
 }
 REVIEW_ROLE_KEYS = {"medical_primary", "medical_secondary", "provenance", "rights_release"}
+REVIEW_FIELDS = (
+    "record_id", "case_id", "pathology", "birads", "width", "height",
+    "decoded_width", "decoded_height", "source_bbox_xywh", "mask_derived_bbox_xywh",
+    "image_member", "mask_member", "image_path", "mask_path", "mandatory_reasons",
+    "primary_reviewer_id", "primary_reviewed_at", "primary_image_interpretable",
+    "primary_modality_supported", "primary_body_part_supported", "primary_mask_usable",
+    "primary_additional_or_incomplete_lesion", "primary_pathology_target_plausible",
+    "primary_birads_target_plausible", "primary_shortcut_artifact", "primary_permitted_tasks",
+    "primary_disposition", "primary_notes", "secondary_reviewer_id", "secondary_reviewed_at",
+    "secondary_image_interpretable", "secondary_modality_supported", "secondary_body_part_supported",
+    "secondary_mask_usable", "secondary_additional_or_incomplete_lesion",
+    "secondary_pathology_target_plausible", "secondary_birads_target_plausible",
+    "secondary_shortcut_artifact", "secondary_permitted_tasks", "secondary_disposition",
+    "secondary_notes", "adjudicator_id", "adjudicated_at", "adjudicator_image_interpretable",
+    "adjudicator_modality_supported", "adjudicator_body_part_supported", "adjudicator_mask_usable",
+    "adjudicator_additional_or_incomplete_lesion", "adjudicator_pathology_target_plausible",
+    "adjudicator_birads_target_plausible", "adjudicator_shortcut_artifact",
+    "adjudicator_permitted_tasks", "adjudicator_disposition", "adjudicator_notes",
+    "final_permitted_tasks", "final_disposition",
+)
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
 ID_PATTERN = re.compile(r"bus_([0-9]{4})-([lrs])")
 
@@ -491,7 +511,7 @@ def build_review_packet(
                 })
 
         manifest = {
-            "schema": "mmbu.busbra.human_review_packet_manifest.v1",
+            "schema": "mmbu.busbra.human_review_packet_manifest.v2",
             "source_id": "busbra",
             "source_version": "1.0",
             "archive_bytes": ARCHIVE_BYTES,
@@ -510,19 +530,8 @@ def build_review_packet(
         manifest["manifest_digest"] = _canonical_digest(manifest)
         _write_json(staging / "review-manifest.json", manifest)
 
-        review_fields = [
-            "record_id", "case_id", "pathology", "birads", "width", "height",
-            "decoded_width", "decoded_height",
-            "source_bbox_xywh", "mask_derived_bbox_xywh", "image_member", "mask_member",
-            "image_path", "mask_path", "mandatory_reasons",
-            "primary_reviewer_id", "primary_reviewed_at", "image_interpretable",
-            "mask_usable", "additional_or_incomplete_lesion", "source_fields_joined",
-            "shortcut_artifact", "permitted_tasks", "primary_disposition", "primary_notes",
-            "secondary_reviewer_id", "secondary_reviewed_at", "secondary_disposition",
-            "secondary_notes", "adjudicator_id", "adjudicated_at", "final_disposition",
-        ]
         with (staging / "record-review-template.csv").open("x", newline="", encoding="utf-8") as stream:
-            writer = csv.DictWriter(stream, fieldnames=review_fields, lineterminator="\n")
+            writer = csv.DictWriter(stream, fieldnames=REVIEW_FIELDS, lineterminator="\n")
             writer.writeheader()
             for row in manifest_rows:
                 writer.writerow({
@@ -550,12 +559,14 @@ def build_review_packet(
             "reviewer_id": None,
             "qualification": None,
             "qualification_evidence_locator": None,
+            "conflict_status": None,
+            "conflict_evidence_locator": None,
             "reviewed_at": None,
             "evidence_locator": None,
             "human_attested": None,
         }
         source_review = {
-            "schema": "mmbu.busbra.source_review_template.v1",
+            "schema": "mmbu.busbra.source_review_template.v2",
             "source_id": "busbra",
             "source_version": "1.0",
             "decision_status": "pending_human_review",
@@ -599,7 +610,7 @@ def build_review_packet(
             key=lambda path: path.relative_to(staging).as_posix().encode("utf-8"),
         )
         receipt = {
-            "schema": "mmbu.busbra.human_review_packet_receipt.v1",
+            "schema": "mmbu.busbra.human_review_packet_receipt.v2",
             "source_id": "busbra",
             "source_version": "1.0",
             "manifest_digest": manifest["manifest_digest"],

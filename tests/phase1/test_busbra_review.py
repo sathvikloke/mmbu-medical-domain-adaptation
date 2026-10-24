@@ -48,6 +48,13 @@ class BusbraReviewPacketTests(unittest.TestCase):
             busbra_review.STRATIFIED_PLAN_DIGEST,
         )
 
+    def test_mask_grounded_task_names_one_explicit_target(self):
+        root = Path(__file__).resolve().parents[2]
+        human_plan = json.loads((root / "config/busbra-human-review-plan.json").read_text())
+        tasks = human_plan["proposed_task_decisions"]
+        self.assertIn("mask-grounded pathology classification", tasks)
+        self.assertNotIn("mask-grounded classification", tasks)
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
@@ -131,7 +138,7 @@ class BusbraReviewPacketTests(unittest.TestCase):
                 "stratified_plan_selection_algorithm": "rarest-pathology-birads-stratum-then-record-id-case-exclusive-v1",
             },
             "proposed_task_decisions": [
-                "pathology classification", "BI-RADS classification", "mask-grounded classification", "mask-derived object detection"
+                "pathology classification", "BI-RADS classification", "mask-grounded pathology classification", "mask-derived object detection"
             ],
             "review_roles": {
                 "medical_primary": "human breast-imaging reviewer",
@@ -170,6 +177,36 @@ class BusbraReviewPacketTests(unittest.TestCase):
                 self.output,
             )
 
+    def test_template_exposes_independent_decision_vectors_and_context_fields(self):
+        receipt = self.build()
+        manifest = json.loads((self.output / "review-manifest.json").read_text())
+        self.assertEqual(receipt["schema"], "mmbu.busbra.human_review_packet_receipt.v2")
+        self.assertEqual(manifest["schema"], "mmbu.busbra.human_review_packet_manifest.v2")
+        with (self.output / "record-review-template.csv").open(newline="", encoding="utf-8") as stream:
+            fields = set(csv.DictReader(stream).fieldnames or [])
+        required = {
+            "primary_modality_supported", "primary_body_part_supported",
+            "primary_pathology_target_plausible", "primary_birads_target_plausible",
+            "primary_permitted_tasks", "secondary_image_interpretable",
+            "secondary_permitted_tasks", "adjudicator_image_interpretable",
+            "adjudicator_permitted_tasks", "adjudicator_disposition", "adjudicator_notes",
+            "final_permitted_tasks",
+        }
+        self.assertEqual(required - fields, set())
+
+    def test_source_template_retains_reviewer_conflict_declarations(self):
+        self.build()
+        source = json.loads((self.output / "source-review-template.json").read_text())
+        self.assertEqual(source["schema"], "mmbu.busbra.source_review_template.v2")
+        for review in (
+            source["medical_review"]["primary_reviewer"],
+            source["medical_review"]["secondary_reviewer"],
+            source["provenance_review"]["reviewer"],
+            source["rights_and_release_review"]["reviewer"],
+        ):
+            self.assertIn("conflict_status", review)
+            self.assertIn("conflict_evidence_locator", review)
+
     def completed_review_files(self):
         self.build()
         manifest = json.loads((self.output / "review-manifest.json").read_text())
@@ -200,20 +237,44 @@ class BusbraReviewPacketTests(unittest.TestCase):
                 "mandatory_reasons": "|".join(record["mandatory_reasons"]),
                 "primary_reviewer_id": "medical-primary",
                 "primary_reviewed_at": "2026-10-23T20:00:00Z",
-                "image_interpretable": "yes",
-                "mask_usable": "yes",
-                "additional_or_incomplete_lesion": "no",
-                "source_fields_joined": "yes",
-                "shortcut_artifact": "none",
-                "permitted_tasks": tasks,
+                "primary_image_interpretable": "yes",
+                "primary_modality_supported": "yes",
+                "primary_body_part_supported": "yes",
+                "primary_mask_usable": "yes",
+                "primary_additional_or_incomplete_lesion": "no",
+                "primary_pathology_target_plausible": "yes",
+                "primary_birads_target_plausible": "yes",
+                "primary_shortcut_artifact": "none",
+                "primary_permitted_tasks": tasks,
                 "primary_disposition": "eligible",
                 "primary_notes": "reviewed against the frozen image, mask, and source fields",
                 "secondary_reviewer_id": "medical-secondary" if mandatory else "",
                 "secondary_reviewed_at": "2026-10-23T21:00:00Z" if mandatory else "",
+                "secondary_image_interpretable": "yes" if mandatory else "",
+                "secondary_modality_supported": "yes" if mandatory else "",
+                "secondary_body_part_supported": "yes" if mandatory else "",
+                "secondary_mask_usable": "yes" if mandatory else "",
+                "secondary_additional_or_incomplete_lesion": "no" if mandatory else "",
+                "secondary_pathology_target_plausible": "yes" if mandatory else "",
+                "secondary_birads_target_plausible": "yes" if mandatory else "",
+                "secondary_shortcut_artifact": "none" if mandatory else "",
+                "secondary_permitted_tasks": tasks if mandatory else "",
                 "secondary_disposition": "eligible" if mandatory else "",
                 "secondary_notes": "independent mandatory-case review" if mandatory else "",
                 "adjudicator_id": "",
                 "adjudicated_at": "",
+                "adjudicator_image_interpretable": "",
+                "adjudicator_modality_supported": "",
+                "adjudicator_body_part_supported": "",
+                "adjudicator_mask_usable": "",
+                "adjudicator_additional_or_incomplete_lesion": "",
+                "adjudicator_pathology_target_plausible": "",
+                "adjudicator_birads_target_plausible": "",
+                "adjudicator_shortcut_artifact": "",
+                "adjudicator_permitted_tasks": "",
+                "adjudicator_disposition": "",
+                "adjudicator_notes": "",
+                "final_permitted_tasks": tasks,
                 "final_disposition": "eligible",
             })
         completed_records = self.root / "record-review-completed.csv"
@@ -227,12 +288,14 @@ class BusbraReviewPacketTests(unittest.TestCase):
             "reviewer_id": reviewer_id,
             "qualification": qualification,
             "qualification_evidence_locator": "qualification-record:" + reviewer_id,
+            "conflict_status": "none_declared",
+            "conflict_evidence_locator": "conflict-declaration:" + reviewer_id,
             "reviewed_at": reviewed_at,
             "evidence_locator": "local-review-log:" + reviewer_id,
             "human_attested": True,
         }
         completed_source = {
-            "schema": "mmbu.busbra.source_review_completed.v1",
+            "schema": "mmbu.busbra.source_review_completed.v2",
             "source_id": "busbra",
             "source_version": "1.0",
             "decision_status": "completed_human_review",
@@ -270,6 +333,22 @@ class BusbraReviewPacketTests(unittest.TestCase):
         }
         completed_source_path = self.root / "source-review-completed.json"
         completed_source_path.write_text(json.dumps(completed_source))
+        receipt = json.loads((self.output / "packet-receipt.json").read_text())
+        opening = {
+            "schema": "mmbu.busbra.review_opening_record.v1",
+            "source_id": "busbra",
+            "source_version": "1.0",
+            "packet_receipt_digest": receipt["receipt_digest"],
+            "opened_at": "2026-10-23T19:00:00Z",
+            "opened_by": "review-coordinator",
+            "authorization_evidence_locator": "controller-authorization:busbra-review-opening",
+            "human_attested": True,
+            "review_opening_authorized": True,
+            "training_ready": False,
+            "model_use_authorized": False,
+        }
+        self.opening_path = self.root / "review-opening.json"
+        self.opening_path.write_text(json.dumps(opening))
         return completed_records, completed_source_path, rows, completed_source
 
     def validate_completed(self, records_path, source_path):
@@ -278,8 +357,16 @@ class BusbraReviewPacketTests(unittest.TestCase):
             self.output,
             records_path,
             source_path,
+            review_opening=self.opening_path,
             expected_packet_receipt_digest=receipt["receipt_digest"],
         )
+
+    @staticmethod
+    def write_rows(path, rows):
+        with path.open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.DictWriter(stream, fieldnames=rows[0], lineterminator="\n")
+            writer.writeheader()
+            writer.writerows(rows)
 
     def test_completed_human_review_is_machine_checkable_but_grants_no_authority(self):
         records_path, source_path, _, _ = self.completed_review_files()
@@ -307,7 +394,9 @@ class BusbraReviewPacketTests(unittest.TestCase):
         records_path, source_path, rows, _ = self.completed_review_files()
         mandatory = next(row for row in rows if row["mandatory_reasons"])
         mandatory["secondary_disposition"] = "excluded"
+        mandatory["secondary_permitted_tasks"] = ""
         mandatory["final_disposition"] = "excluded"
+        mandatory["final_permitted_tasks"] = ""
         with records_path.open("w", newline="", encoding="utf-8") as stream:
             writer = csv.DictWriter(stream, fieldnames=rows[0], lineterminator="\n")
             writer.writeheader()
@@ -315,13 +404,89 @@ class BusbraReviewPacketTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "adjudicator"):
             self.validate_completed(records_path, source_path)
 
+    def test_classification_only_record_does_not_require_a_usable_mask(self):
+        records_path, source_path, rows, _ = self.completed_review_files()
+        row = next(value for value in rows if not value["mandatory_reasons"])
+        row["primary_mask_usable"] = "no"
+        row["primary_additional_or_incomplete_lesion"] = "yes"
+        row["primary_permitted_tasks"] = "pathology classification|BI-RADS classification"
+        row["final_permitted_tasks"] = row["primary_permitted_tasks"]
+        self.write_rows(records_path, rows)
+        with self.assertRaisesRegex(ValueError, "secondary review"):
+            self.validate_completed(records_path, source_path)
+
+        row["secondary_reviewer_id"] = "medical-secondary"
+        row["secondary_reviewed_at"] = "2026-10-23T21:00:00Z"
+        for name in (
+            "image_interpretable", "modality_supported", "body_part_supported", "mask_usable",
+            "additional_or_incomplete_lesion", "pathology_target_plausible",
+            "birads_target_plausible", "shortcut_artifact", "permitted_tasks", "disposition",
+        ):
+            row[f"secondary_{name}"] = row[f"primary_{name}"]
+        row["secondary_notes"] = "independent review of the annotation-completeness concern"
+        self.write_rows(records_path, rows)
+        report = self.validate_completed(records_path, source_path)
+        self.assertIn(row["record_id"], report["eligible_record_ids"])
+
+    def test_localization_task_requires_mask_and_complete_lesion_annotation(self):
+        records_path, source_path, rows, _ = self.completed_review_files()
+        row = next(value for value in rows if not value["mandatory_reasons"])
+        row["primary_mask_usable"] = "no"
+        row["primary_permitted_tasks"] = "mask-derived object detection"
+        row["final_permitted_tasks"] = row["primary_permitted_tasks"]
+        self.write_rows(records_path, rows)
+        with self.assertRaisesRegex(ValueError, "mask-derived object detection"):
+            self.validate_completed(records_path, source_path)
+
+    def test_task_disagreement_requires_full_adjudication_even_when_dispositions_match(self):
+        records_path, source_path, rows, source = self.completed_review_files()
+        row = next(value for value in rows if value["mandatory_reasons"])
+        row["secondary_permitted_tasks"] = "pathology classification"
+        self.write_rows(records_path, rows)
+        with self.assertRaisesRegex(ValueError, "adjudicator"):
+            self.validate_completed(records_path, source_path)
+
+    def test_adjudicator_decision_vector_controls_the_final_result(self):
+        records_path, source_path, rows, source = self.completed_review_files()
+        row = next(value for value in rows if value["mandatory_reasons"])
+        row["secondary_permitted_tasks"] = "pathology classification"
+        source["medical_review"]["adjudicator"] = {
+            "role": "adjudicator",
+            "reviewer_id": "medical-adjudicator",
+            "qualification": "breast_ultrasound_clinician",
+            "qualification_evidence_locator": "qualification-record:medical-adjudicator",
+            "conflict_status": "none_declared",
+            "conflict_evidence_locator": "conflict-declaration:medical-adjudicator",
+            "reviewed_at": "2026-10-23T22:00:00Z",
+            "evidence_locator": "local-review-log:medical-adjudicator",
+            "human_attested": True,
+        }
+        for name in (
+            "image_interpretable", "modality_supported", "body_part_supported", "mask_usable",
+            "additional_or_incomplete_lesion", "pathology_target_plausible",
+            "birads_target_plausible", "shortcut_artifact",
+        ):
+            row[f"adjudicator_{name}"] = row[f"primary_{name}"]
+        row["adjudicator_id"] = "medical-adjudicator"
+        row["adjudicated_at"] = "2026-10-23T21:30:00Z"
+        row["adjudicator_permitted_tasks"] = "pathology classification"
+        row["adjudicator_disposition"] = "eligible"
+        row["adjudicator_notes"] = "resolved the task-scope disagreement"
+        row["final_permitted_tasks"] = row["adjudicator_permitted_tasks"]
+        self.write_rows(records_path, rows)
+        source_path.write_text(json.dumps(source))
+        report = self.validate_completed(records_path, source_path)
+        self.assertIn(row["record_id"], report["eligible_record_ids"])
+
     def test_unresolved_decision_blocks_readiness_without_becoming_authority(self):
         records_path, source_path, rows, _ = self.completed_review_files()
         row = next(value for value in rows if value["mandatory_reasons"])
         row["primary_disposition"] = "unresolved"
         row["secondary_disposition"] = "unresolved"
         row["final_disposition"] = "unresolved"
-        row["permitted_tasks"] = ""
+        row["primary_permitted_tasks"] = ""
+        row["secondary_permitted_tasks"] = ""
+        row["final_permitted_tasks"] = ""
         with records_path.open("w", newline="", encoding="utf-8") as stream:
             writer = csv.DictWriter(stream, fieldnames=rows[0], lineterminator="\n")
             writer.writeheader()
@@ -365,6 +530,7 @@ class BusbraReviewPacketTests(unittest.TestCase):
                 self.output,
                 records_path,
                 source_path,
+                review_opening=self.opening_path,
                 expected_packet_receipt_digest=frozen_digest,
             )
 
@@ -410,13 +576,27 @@ class BusbraReviewPacketTests(unittest.TestCase):
     def test_narrow_rights_or_ambiguous_provenance_stays_blocked(self):
         records_path, source_path, _, source = self.completed_review_files()
         source["rights_and_release_review"]["training"] = "narrow"
-        source["provenance_review"]["case_110_536_disposition"] = "exclude_or_coassign"
+        source["provenance_review"]["case_110_536_disposition"] = "unresolved"
         source_path.write_text(json.dumps(source))
         report = self.validate_completed(records_path, source_path)
         self.assertIs(report["mechanically_ready_for_phase1_admission_review"], False)
         self.assertNotIn("training", report["proposed_allowed_purposes"])
         self.assertIn("training_narrow_requires_scope_binding", report["source_blockers"])
-        self.assertIn("case_110_536_exclusion_or_coassignment_unresolved", report["source_blockers"])
+        self.assertIn("case_110_536_provenance_unresolved", report["source_blockers"])
+
+    def test_explicit_provenance_actions_emit_exclusion_or_coassignment(self):
+        records_path, source_path, _, source = self.completed_review_files()
+        source["provenance_review"]["case_110_536_disposition"] = "exclude_both"
+        source_path.write_text(json.dumps(source))
+        report = self.validate_completed(records_path, source_path)
+        self.assertEqual(report["required_excluded_case_ids"], ["110", "536"])
+        self.assertNotIn("bus_0110-l", report["eligible_record_ids"])
+        self.assertNotIn("bus_0536-r", report["eligible_record_ids"])
+
+        source["provenance_review"]["case_110_536_disposition"] = "coassign"
+        source_path.write_text(json.dumps(source))
+        report = self.validate_completed(records_path, source_path)
+        self.assertEqual(report["required_linked_case_groups"], [["110", "536"]])
 
     def test_linked_lineage_emits_the_required_coassignment(self):
         records_path, source_path, _, source = self.completed_review_files()
@@ -444,6 +624,40 @@ class BusbraReviewPacketTests(unittest.TestCase):
             writer.writerows(rows)
         with self.assertRaisesRegex(ValueError, "after the primary review"):
             self.validate_completed(records_path, source_path)
+
+    def test_future_review_timestamp_is_rejected(self):
+        records_path, source_path, rows, _ = self.completed_review_files()
+        rows[0]["primary_reviewed_at"] = "2999-01-01T00:00:00Z"
+        self.write_rows(records_path, rows)
+        with self.assertRaisesRegex(ValueError, "future"):
+            self.validate_completed(records_path, source_path)
+
+    def test_reviews_must_follow_the_digest_bound_authorized_opening(self):
+        records_path, source_path, _, _ = self.completed_review_files()
+        opening = json.loads(self.opening_path.read_text())
+        opening["opened_at"] = "2026-10-23T20:30:00Z"
+        self.opening_path.write_text(json.dumps(opening))
+        try:
+            with self.assertRaisesRegex(ValueError, "after the authorized review opening"):
+                self.validate_completed(records_path, source_path)
+        except TypeError as exc:
+            self.fail(f"review-opening evidence is not accepted by the validator: {exc}")
+
+    def test_review_opening_must_bind_the_frozen_packet_receipt(self):
+        records_path, source_path, _, _ = self.completed_review_files()
+        opening = json.loads(self.opening_path.read_text())
+        opening["packet_receipt_digest"] = "0" * 64
+        self.opening_path.write_text(json.dumps(opening))
+        with self.assertRaisesRegex(ValueError, "packet receipt digest"):
+            self.validate_completed(records_path, source_path)
+
+    def test_reviewer_conflict_status_is_retained_and_unresolved_conflict_blocks(self):
+        records_path, source_path, _, source = self.completed_review_files()
+        source["medical_review"]["primary_reviewer"]["conflict_status"] = "unresolved"
+        source_path.write_text(json.dumps(source))
+        report = self.validate_completed(records_path, source_path)
+        self.assertIn("medical_primary_conflict_unresolved", report["source_blockers"])
+        self.assertIs(report["mechanically_ready_for_phase1_admission_review"], False)
 
     def test_frozen_geometry_and_asset_fields_are_carried_and_checked(self):
         records_path, source_path, rows, _ = self.completed_review_files()

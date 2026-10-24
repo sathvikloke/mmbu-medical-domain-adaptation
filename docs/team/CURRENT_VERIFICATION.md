@@ -1,8 +1,8 @@
 # Current clone verification
 
-**Observed:** October 23, 2026 21:09 CDT
+**Observed:** October 23, 2026 23:12 CDT
 **Runtime:** Python 3.14.6
-**Verified revision:** `f1aeaee8b8d5a2eb2556dbb17edb6aab0d390643`
+**Verified revision:** `4a9ada5a239d2e2b69bc63f1fc968895f442c598`
 **Status authority digest:** `cc162ece6394cdabe18ee889e36c181145dc34dd80da712e2340c5ce91208539`
 **Scope:** repository integrity plus the bounded synthetic native receipts listed below
 
@@ -12,7 +12,7 @@
 |---|---|---|
 | Historical preparation suite | **277 tests passed; 44 optional-Pillow image tests skipped** | Re-executes the preserved CPU package without Pillow; it does not replace the image-enabled CI lane or test a model |
 | Root repository/tool suite | **75 tests passed; 13 optional-Pillow image tests skipped** | Covers repository, publication, scope, receipt, and authorization tooling; it is not scientific evidence |
-| Phase 1 suite | **398 tests passed; one optional-Pillow image test skipped** | Covers current fail-closed contracts, manifests, registries, evidence chains, geometry, bundles, and synthetic orchestration; native model execution is evidenced separately below |
+| Phase 1 suite | **410 tests passed; one optional-Pillow image test skipped** | Covers current fail-closed contracts, manifests, registries, evidence chains, geometry, bundles, and synthetic orchestration; native model execution is evidenced separately below |
 | Offline smoke workflow | **passed** | Replays historical synthetic demonstrations and toy arithmetic only; it reports `model_executed=false` and `official_evaluation=false` |
 | Maintained local Markdown links and anchors | **passed** | External URLs were not fetched by this check |
 | Published v0.3 artifact verification | **passed** for 275 files, ZIP members, fixed transforms, and historical receipts | Establishes byte integrity only, not scientific validity or medical truth |
@@ -55,13 +55,16 @@ historical artifact, not the current project status.
 
 ## Current evidence boundary
 
-- The status reconciliation is merged at `f1aeaee8b8d5a2eb2556dbb17edb6aab0d390643`. Its four required remote CI
+- The source-specific semantic-breadth intake decision is merged at
+  `4a9ada5a239d2e2b69bc63f1fc968895f442c598`. Its four required remote CI
   jobs passed on Python 3.11, 3.12, 3.14, and the image-enabled Python 3.12 lane.
 - The repository now has strong mechanical evidence for the pinned B1 and B2-P adapter paths, including a bounded
   answer/context objective. This raises engineering readiness, not learner novelty or biomedical evidence.
 - No real biomedical source is admitted. BUS-BRA remains structural engineering evidence only, and decision-bearing
   B1-L/B2-P work requires admission of BUS-BRA plus at least two additional independently admitted semantic-breadth
-  source families, with prospective development and held-out-family roles.
+  source families, with prospective development and held-out-family roles. BUS-UCLM is the preferred independent
+  ultrasound replication candidate. PathMNIST-224 / NCT-CRC is the first non-ultrasound breadth candidate only if
+  complete parent grouping can be recovered; ChestMNIST is a noisy-label fallback and OrganAMNIST is context only.
 - No MMBU public/private example, label, output, embedding, or derivative has informed model, data, curriculum,
   hyperparameter, stopping, or promotion decisions in the native runs.
 - No full training, official challenge loader, official/hidden evaluation, medically reviewed result, upload, or

@@ -40,6 +40,7 @@ Paths in this guide are relative to the repository root. The historical layout i
 | [docs/team/BASE_CONDITIONAL_PRESERVATION.md](BASE_CONDITIONAL_PRESERVATION.md) | Post-B2 negative-flip ablation, prior-art boundary, controls, and promotion/kill rule |
 | [docs/team/DATA_SOURCE_PORTFOLIO.md](DATA_SOURCE_PORTFOLIO.md) | Rights-, grouping-, annotation-, and independence-first prioritization of external data candidates with exact admission gates |
 | [docs/team/DATA_SOURCE_METADATA_RECEIPT.md](DATA_SOURCE_METADATA_RECEIPT.md) | Dated no-pixel primary-metadata receipt for BUS-BRA, BUS-UCLM, and conditional BUSI-WHU with unresolved fields |
+| [docs/team/SEMANTIC_BREADTH_INTAKE_DECISION.md](SEMANTIC_BREADTH_INTAKE_DECISION.md) | Source-specific metadata-only intake order, gates, exclusions, and stop rules for PathMNIST, ChestMNIST, and OrganAMNIST |
 | [docs/team/BUSBRA_METADATA_GATE.md](BUSBRA_METADATA_GATE.md) | Reproducible BUS-BRA archive, grouping, split, geometry, and within-source duplicate-risk gate |
 | [docs/team/BUSBRA_TRANSFORM_CONTRACT.md](BUSBRA_TRANSFORM_CONTRACT.md) | Receipt-bound decoded-geometry, mask-box, split, and unresolved-case linkage policy without source-admission authority |
 | [docs/team/BUSBRA_HUMAN_REVIEW_PACKET.md](BUSBRA_HUMAN_REVIEW_PACKET.md) | Frozen 244-record medical/provenance review population, qualified roles, questions, and separate rights/purpose/release decision surface |

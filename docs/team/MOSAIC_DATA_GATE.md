@@ -58,7 +58,9 @@ row split and retain the compositional-generalization claim.
 | BBBC039 v1 | fluorescence microscopy; counts and mask-derived boxes | BBBC family; CC0 statement recorded; conversion and model-use approval pending | Quarantine engineering evidence only; one family cannot validate task transfer |
 | ROCOv2 2.0.1 | varied medical figures and modality metadata | PMC-literature family; aggregate CC BY-NC 4.0 and item-level figure/release questions unresolved | Candidate for reviewed global/context examples, not approved |
 | PMC-VQA | figure VQA | Same PMC-literature family as ROCO; shared PMCIDs recorded; images absent and rights/use pending | Does not add an independent family merely by using another release |
-| MedMNIST+ | many modalities/specimens with standardized classification labels | Newly screened candidate; official site states CC BY 4.0 except DermaMNIST CC BY-NC 4.0; subset lineage, source splits, MMBU proximity, resolution, and release review pending | Promising Phase-A classification coverage; cannot validate spatial transfer alone |
+| PathMNIST / NCT-CRC | H&E tissue classes | First-ranked non-ultrasound breadth candidate; parent grouping, source mapping, rights, and release review remain blocking | Promising Phase-A classification coverage only if slide/patient lineage is complete; cannot validate spatial transfer alone |
+| ChestMNIST / NIH | frontal radiograph finding labels | Fallback candidate with patient grouping and positive-label QA required; absent text-mined labels are not negatives | Noisy-label Phase-A fallback; cannot validate spatial transfer alone |
+| OrganAMNIST / LiTS | CT organ identity/context | Anatomy/context candidate; CT-volume grouping and shortcut audit required; all views are one family | Context support only; never disease evidence or an independent family per view |
 | BBBC038 v1 | heterogeneous nuclei images with instance masks | Newly screened candidate; official BBBC page states CC0; BBBC-family dependence and source overlap require review | Could test microscopy localization robustness, not independent-family transfer |
 | VinDr-CXR v1.0.0 | radiology classification and radiologist boxes | Newly screened candidate; credentialed PhysioNet Health Data License; user access and public-weight compatibility unestablished | Potential second-modality spatial source only after credentials and review |
 | BUS-BRA 1.0 | breast ultrasound classification, BI-RADS, pathology, and lesion masks | Newly screened priority candidate; public record reports CC BY, 1,875 images from 1,064 patients, and standardized folds; exact terms/schema/group joins uninspected | Strongest metadata-only dual global/spatial candidate; not admitted |
@@ -83,10 +85,12 @@ does not close the rank deficiency.
 
 ### Phase A: factorization sanity check
 
-If selected MedMNIST+ subsets pass source admission, use only source-provided training partitions and create grouped
-external development splits without opening source validation/test material unless separately authorized. This phase
-may test modality/specimen routing and source confounding. Because every task remains global classification, it cannot
-support the spatial-transfer or full MOSAIC claim.
+If PathMNIST-224 / NCT-CRC passes source admission and complete parent-group reconstruction, construct prospectively
+frozen parent-disjoint training and adaptive-development roles from the source training population and keep
+CRC-VAL-HE-7K unopened for confirmation. ChestMNIST may replace it only through a successor decision that preserves
+patient grouping and noisy-label safeguards; OrganAMNIST remains anatomy/context support only. This phase may test
+modality/specimen routing and source confounding. Because every task remains global classification, it cannot support
+the spatial-transfer or full MOSAIC claim.
 
 ### Phase B: crossed spatial evidence
 

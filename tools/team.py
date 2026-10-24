@@ -494,14 +494,14 @@ def phase1_environment(root: Path) -> dict:
     return env
 
 
-def phase1_preflight(root: Path) -> list[str]:
+def phase1_preflight(root: Path, *, allow_bootstrap: bool = False) -> list[str]:
     """Fail closed unless every Phase 1 authority file and scoped test module exists and validates."""
     try:
         from mmbu_phase1.authority import authority_errors
         from mmbu_phase1.scope import REQUIRED_PHASE1_TEST_MODULES
     except ImportError as exc:
         return [f"cannot import the Phase 1 preflight validators: {exc}"]
-    errors = authority_errors(root)
+    errors = authority_errors(root, allow_bootstrap=allow_bootstrap)
     suite = root / "tests/phase1"
     if os.path.lexists(suite / "__init__.py"):
         errors.append("tests/phase1/__init__.py is forbidden: it would make the general repository pass rerun Phase 1 tests")

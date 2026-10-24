@@ -61,10 +61,13 @@ ROW_SPECS = {
         ("test_authority.CurrentStatusTests.", "test_authority.BootstrapCommandTests.",
          "test_authority.GenerationZeroRegistryTests."),
         {},
-        ("authority/current-status.json", "commands/authority-verify.json"),
-        ("Status is design_only; every account, allocation, GPU, data-admission, and native-runtime fact is unknown "
-         "or blocked_external with a limitation; no measured fact exists.",
-         "Account facts can never be measured in Phase 1A because no allocation-evidence schema exists.",
+        ("authority/current-status.json", "authority/status-evidence/predecessor.json",
+         "authority/status-evidence/b1.json", "authority/status-evidence/b2-projector.json",
+         "authority/status-evidence/b2-dual.json", "commands/authority-verify.json"),
+        ("Status is design_only; every account, allocation, GPU, and data-admission fact remains unknown or "
+         "blocked_external, while only exact bounded synthetic native-runtime facts are measured.",
+         "Account facts cannot be promoted by per-job runtime receipts because no account-wide allocation-evidence "
+         "schema or receipt exists.",
          "Unmeasured facts must carry null value and unit (a stricter reading of the status schema)."),
     ),
     "P1-06": (
@@ -205,7 +208,8 @@ ROW_SPECS = {
     "P1-03": (
         (_CODE + "admission.py", _CODE + "registries.py", _CODE + "locks.py", _CODE + "environment.py",
          _CODE + "condition.py", _CODE + "experiment.py"),
-        ("test_admission.", "test_locks.", "test_environment.", "test_authority.GenerationZeroRegistryTests."),
+        ("test_admission.", "test_locks.", "test_environment.", "test_authority.GenerationZeroRegistryTests.",
+         "test_firewall.LineageRecordTests.test_purpose_and_split_are_independent"),
         {"purpose_and_split_are_independent": ("test_firewall.LineageRecordTests.test_purpose_and_split_are_independent",),
          "environment_launch_starts_empty_and_matches_policy_receipt_condition_and_reproducibility":
          ("test_environment.LaunchTests.test_environment_launch_starts_empty_and_matches_policy_receipt",),
@@ -218,13 +222,13 @@ ROW_SPECS = {
     ),
 }
 DEFERRAL_REASONS = {
-    "P1-04": "B1 weights and the D1 runtime were not downloaded, installed, loaded, or executed (no model/GPU authority).",
+    "P1-04": "A separate bounded B1 synthetic preflight exists, but no model or weights execute in the Phase 1A bundle and no biomedical task evidence exists.",
     "P1-05": "Native task/context calls were not executed; only synthetic stateless calls exist (see P1-09).",
     "P1-11": "Visual-benefit states require verified answer-changing native pairs; not implemented in Phase 1A.",
-    "P1-13": "No native collator, forward/backward, or optimizer step was run (no model/GPU authority).",
-    "P1-14": "No adapter save, network-denied fresh reload, or interrupted resume was run.",
+    "P1-13": "Separate bounded B1/B2 synthetic native steps exist, but the Phase 1A bundle runs no native collator, model forward/backward, or optimizer step.",
+    "P1-14": "Separate bounded B1/B2-P export and offline-reload receipts exist, but Phase 1A has no native adapter save/reload/resume result.",
     "P1-15": "The empty-mapping launch and synthetic reproducibility records exist, but resource_measurement is not "
-             "implemented and no native run, allocation, or resource counter was observed.",
+             "implemented for the Phase 1A run; separate native receipts do not supply its resource record.",
     "P1-16": "No generation-path fixture schema was prepared in Phase 1A.",
     "P1-17a": "Local R0 release preflight was not implemented in Phase 1A.",
     "P1-17b": "External repository lifecycle requires a separate user-directed step and organizer route; nothing was "

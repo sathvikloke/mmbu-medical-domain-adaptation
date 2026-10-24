@@ -230,6 +230,8 @@ def generate(repo: Path, bundle_root: Path, retention_path: Path, *, run_command
     pins = authority.contract_pins(repo)
     authority.load_authority(repo)
     authority_bytes = {p: paths.member_bytes(repo, p) for p in authority.AUTHORITY_PATHS}
+    status_record = canonical.loads_canonical(authority_bytes[authority.STATUS_PATH])
+    runtime_evidence = authority.runtime_status_evidence_bytes(repo, status_record)
     clock = phase1a.Clock()
     source_state, patch = evidence.build_source_state(repo, clock())
     run_root = run_root or str(Path(os.path.realpath(tempfile.gettempdir())) /
@@ -237,6 +239,8 @@ def generate(repo: Path, bundle_root: Path, retention_path: Path, *, run_command
     world = phase1a.build_world(bundle_root, repository_root=str(repo), run_root=run_root,
                                 python_executable=os.path.realpath(sys.executable), authority_files=authority_bytes,
                                 clock=clock)
+    for key, data in runtime_evidence.items():
+        world.write(authority.RUNTIME_EVIDENCE_BUNDLE_PATHS[key], data)
     world.record("source_state", "source-state.json", source_state)
     if patch:
         world.write("source/canonical.patch", patch)
@@ -302,6 +306,7 @@ def validate(bundle_root: Path, retention_path: Path, repo: Path | None = None) 
     source_state = evidence.validate_source_state(states[0])
     statuses = store.records("current_status")
     f.require(len(statuses) == 1, "bundle", "exactly one current-status authority copy (no second overlay)")
+    authority.validate_runtime_status_evidence(statuses[0], store)
     if repo is not None:
         patch = read("source/canonical.patch") if "source/canonical.patch" in manifest_paths else None
         evidence.check_source_state(source_state, Path(repo), patch)

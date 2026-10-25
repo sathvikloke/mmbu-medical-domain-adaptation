@@ -9,7 +9,7 @@ from __future__ import annotations
 from fractions import Fraction
 from typing import Any
 
-from mmbu_phase1 import canonical, competition_manifest_v2, rational
+from mmbu_phase1 import canonical, competition_manifest_v2, rational, track2_score
 from mmbu_phase1 import lane1_synthetic
 from mmbu_phase1.fields import (
     array,
@@ -195,32 +195,144 @@ def _ordered_training_rows(fixture: dict, config: dict) -> tuple[list[dict], lis
     return rows, units
 
 
-def _run_matched_arm(arm: dict, fixture: dict, config: dict, backend_factory) -> dict:
-    row = _empty_arm_result(arm, "passed")
+class _RuntimeStageError(RuntimeError):
+    def __init__(self, stage: str, cause: Exception):
+        super().__init__(str(cause))
+        self.stage = stage
+
+
+def _at(stage: str, operation):
+    try:
+        return operation()
+    except Exception as exc:
+        raise _RuntimeStageError(stage, exc) from exc
+
+
+def _initialize_backend(backend_factory, arm: dict, config: dict):
     backend = backend_factory()
-    backend.initialize(base_state=lane1_synthetic.BASE_STATE_BYTES, arm=arm, seed=config["seed"])
-    if backend.base_state_bytes() != lane1_synthetic.BASE_STATE_BYTES:
-        fail("lane1.backend.base_state", "backend did not preserve the common base bytes")
-    actual_scope = tuple(backend.trainable_parameter_names())
+    _at("initialize", lambda: backend.initialize(
+        base_state=lane1_synthetic.BASE_STATE_BYTES, arm=arm, seed=config["seed"]
+    ))
+    preserved = _at("base_state", backend.base_state_bytes)
+    if preserved != lane1_synthetic.BASE_STATE_BYTES:
+        raise _RuntimeStageError("base_state", ValueError("backend did not preserve the common base bytes"))
+    actual_scope = tuple(_at("scope", backend.trainable_parameter_names))
     expected_scope = tuple(config["trainable_names_by_architecture"][arm["architecture_id"]])
     if actual_scope != expected_scope:
-        fail("lane1.backend.trainable_parameter_names", "backend scope differs from the bound engineering config")
-    row["trainable_parameter_names"] = list(actual_scope)
+        raise _RuntimeStageError("scope", ValueError("backend scope differs from the bound engineering config"))
+    return backend, actual_scope
+
+
+def _predictions(backend, fixture: dict) -> tuple[tuple[int, int | None], ...]:
+    return tuple(backend.predict(item) for item in fixture["evaluation_rows"])
+
+
+def _metrics(predictions: tuple[tuple[int, int | None], ...], fixture: dict) -> tuple[Fraction, Fraction]:
+    evaluation = fixture["evaluation_rows"]
+    task_correct = sum(prediction[0] == item["task_target"] for prediction, item in zip(predictions, evaluation))
+    applicable = [(prediction, item) for prediction, item in zip(predictions, evaluation)
+                  if item["context_target"] is not None]
+    context_correct = sum(prediction[1] == item["context_target"] for prediction, item in applicable)
+    return Fraction(task_correct, len(evaluation)), Fraction(context_correct, len(applicable))
+
+
+def _apply_updates(backend, rows: list[dict], mode: str, learning_rate: Fraction, *, stage: str) -> None:
+    for item in rows:
+        _at(stage, lambda item=item: backend.step(
+            item, objective_mode=mode, learning_rate=learning_rate
+        ))
+
+
+def _run_matched_arm(arm: dict, fixture: dict, config: dict, backend_factory) -> dict:
+    row = _empty_arm_result(arm, "passed")
     training_rows, units = _ordered_training_rows(fixture, config)
     row["ordered_unit_digest"] = canonical.value_digest(units)
-    if arm["objective_mode"] == "base":
-        return row
     learning_rate = rational.from_wire(config["learning_rate"], "config.learning_rate")
-    for item in training_rows:
-        try:
-            backend.step(item, objective_mode=arm["objective_mode"], learning_rate=learning_rate)
-        except Exception as exc:
-            row["status"] = "failed"
-            row["failure_stage"] = "update"
-            row["failure_message"] = str(exc)
-            return row
-        row["optimizer_updates"] += 1
+    try:
+        backend, actual_scope = _initialize_backend(backend_factory, arm, config)
+        row["trainable_parameter_names"] = list(actual_scope)
+        if arm["objective_mode"] != "base":
+            _apply_updates(backend, training_rows, arm["objective_mode"], learning_rate, stage="update")
+            row["optimizer_updates"] = len(training_rows)
+
+            boundary = config["checkpoint_after_updates"]
+            prefix_backend, _ = _initialize_backend(backend_factory, arm, config)
+            _apply_updates(prefix_backend, training_rows[:boundary], arm["objective_mode"], learning_rate,
+                           stage="checkpoint_prefix_update")
+            checkpoint = _at("checkpoint_dump", prefix_backend.dump_state)
+            resumed_backend, _ = _initialize_backend(backend_factory, arm, config)
+            _at("checkpoint_reload", lambda: resumed_backend.load_state(checkpoint))
+            _apply_updates(resumed_backend, training_rows[boundary:], arm["objective_mode"], learning_rate,
+                           stage="checkpoint_suffix_update")
+            full_state = _at("final_state_dump", backend.dump_state)
+            resumed_state = _at("resumed_state_dump", resumed_backend.dump_state)
+            row["resume_state_match"] = full_state == resumed_state
+            if not row["resume_state_match"]:
+                raise _RuntimeStageError("resume_state", ValueError("resumed state differs from uninterrupted state"))
+            full_predictions = _at("evaluation", lambda: _predictions(backend, fixture))
+            resumed_predictions = _at("resume_prediction", lambda: _predictions(resumed_backend, fixture))
+            row["resume_prediction_match"] = full_predictions == resumed_predictions
+            if not row["resume_prediction_match"]:
+                raise _RuntimeStageError(
+                    "resume_prediction", ValueError("resumed predictions differ from uninterrupted predictions")
+                )
+        else:
+            full_predictions = _at("evaluation", lambda: _predictions(backend, fixture))
+
+        exported = _at("export", backend.export)
+        reload_backend, _ = _initialize_backend(backend_factory, arm, config)
+        _at("export_reload", lambda: reload_backend.load_export(exported))
+        reload_predictions = _at("export_reload_prediction", lambda: _predictions(reload_backend, fixture))
+        row["reload_prediction_match"] = full_predictions == reload_predictions
+        if not row["reload_prediction_match"]:
+            raise _RuntimeStageError(
+                "export_reload_prediction", ValueError("reloaded predictions differ from final predictions")
+            )
+        task, context = _metrics(full_predictions, fixture)
+        row["task_accuracy"] = rational.to_wire(task)
+        row["context_accuracy"] = rational.to_wire(context)
+    except _RuntimeStageError as exc:
+        row["status"] = "failed"
+        row["failure_stage"] = exc.stage
+        row["failure_message"] = str(exc)
     return row
+
+
+def _add_scores_and_comparisons(result: dict, manifest: dict) -> None:
+    by_id = {item["candidate_id"]: item for item in result["arm_results"]}
+    base = by_id[ARM_IDS[0]]
+    if base["status"] == "passed":
+        base_task = rational.from_wire(base["task_accuracy"], "result.arm_results.B0.task_accuracy")
+        for item in result["arm_results"]:
+            if item["status"] == "passed":
+                task = rational.from_wire(item["task_accuracy"], "result.arm_results.task_accuracy")
+                context = rational.from_wire(item["context_accuracy"], "result.arm_results.context_accuracy")
+                item["score_proxy"] = rational.to_wire(track2_score.score_proxy(task, context, base_task))
+    comparisons = []
+    for candidate_id, comparator_ids in competition_manifest_v2.expected_comparator_map(manifest).items():
+        for comparator_id in comparator_ids:
+            candidate = by_id[candidate_id]
+            comparator = by_id[comparator_id]
+            comparison = {
+                "candidate_id": candidate_id,
+                "comparator_id": comparator_id,
+                "context_delta": None,
+                "score_proxy_delta": None,
+                "status": "unavailable",
+                "task_delta": None,
+            }
+            if candidate["status"] == comparator["status"] == "passed":
+                comparison["status"] = "available"
+                for result_key, metric_key in (
+                    ("task_delta", "task_accuracy"),
+                    ("context_delta", "context_accuracy"),
+                    ("score_proxy_delta", "score_proxy"),
+                ):
+                    left = rational.from_wire(candidate[metric_key], f"result.{candidate_id}.{metric_key}")
+                    right = rational.from_wire(comparator[metric_key], f"result.{comparator_id}.{metric_key}")
+                    comparison[result_key] = rational.to_wire(left - right)
+            comparisons.append(comparison)
+    result["comparisons"] = comparisons
 
 
 def run_lane1(manifest: Any, fixture: Any, config: Any, *, backend_factory=lane1_synthetic.SyntheticBackend) -> dict:
@@ -238,11 +350,11 @@ def run_lane1(manifest: Any, fixture: Any, config: Any, *, backend_factory=lane1
             result = _run_matched_arm(arm, fixture, config, backend_factory)
         except Exception as exc:
             result = _empty_arm_result(arm, "failed")
-            result["failure_stage"] = "pre_update"
+            result["failure_stage"] = "runtime_internal"
             result["failure_message"] = str(exc)
         arm_results.append(result)
         stopped = result["status"] != "passed"
-    return {
+    result = {
         "arm_results": arm_results,
         "comparisons": [],
         "config_digest": canonical.value_digest(config),
@@ -257,6 +369,8 @@ def run_lane1(manifest: Any, fixture: Any, config: Any, *, backend_factory=lane1
         "schema_version": 1,
         "scientific_selection_output_observed": False,
     }
+    _add_scores_and_comparisons(result, manifest)
+    return result
 
 
 __all__ = [

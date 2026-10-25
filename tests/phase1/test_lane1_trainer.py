@@ -46,8 +46,8 @@ def valid_fixture():
         "schema_id": "mmbu.synthetic.lane1_fixture",
         "schema_version": 1,
         "train_rows": [
-            row("train-1", "train-unit-1", q(-1), 0, 0),
-            row("train-2", "train-unit-2", q(1), 1, 1),
+            row("train-1", "train-unit-1", q(1), 1, 0),
+            row("train-2", "train-unit-2", q(1), 1, 0),
         ],
     }
 
@@ -58,7 +58,7 @@ def valid_config(fixture=None):
         "allowed_fixture_digest": canonical.value_digest(fixture),
         "checkpoint_after_updates": 1,
         "epochs": 1,
-        "learning_rate": q(1, 4),
+        "learning_rate": q(1, 2),
         "schema_id": "mmbu.synthetic.lane1_config",
         "schema_version": 1,
         "seed": 17,
@@ -187,8 +187,9 @@ class MatchedExecutionTests(unittest.TestCase):
         self.assertEqual({call[1] for call in initializations}, {lane1_synthetic.BASE_STATE_BYTES})
         self.assertEqual({call[3] for call in initializations}, {17})
         steps = [call for instance in instances for call in instance.calls if call[0] == "step"]
-        self.assertEqual([call[2] for call in steps].count("task"), 4)
-        self.assertEqual([call[2] for call in steps].count("dual"), 4)
+        # Each adapted arm executes one uninterrupted path and one checkpoint/resume replay.
+        self.assertEqual([call[2] for call in steps].count("task"), 8)
+        self.assertEqual([call[2] for call in steps].count("dual"), 8)
 
     def test_scope_drift_fails_before_first_update_and_stops_later_arms(self):
         instances = []
@@ -229,6 +230,130 @@ class MatchedExecutionTests(unittest.TestCase):
                 backend_factory=lambda: calls.append(True),
             )
         self.assertEqual(calls, [])
+
+
+class ResumeReloadAndMetricTests(unittest.TestCase):
+    def test_resume_reload_and_hand_worked_metrics_are_exact(self):
+        instances = []
+        result = lane1_trainer.run_lane1(
+            valid_v2_manifest(), valid_fixture(), valid_config(),
+            backend_factory=lambda: RecordingBackend(instances),
+        )
+        rows = {item["candidate_id"]: item for item in result["arm_results"]}
+        self.assertIsNone(rows[B0]["resume_state_match"])
+        self.assertTrue(rows[B0]["reload_prediction_match"])
+        for candidate_id in ARM_IDS[1:]:
+            self.assertTrue(rows[candidate_id]["resume_state_match"])
+            self.assertTrue(rows[candidate_id]["resume_prediction_match"])
+            self.assertTrue(rows[candidate_id]["reload_prediction_match"])
+
+        one = q(1)
+        zero = q(0)
+        two_thirds = q(2, 3)
+        minus_eleven_forty_fifths = q(-11, 45)
+        self.assertEqual(
+            (rows[B0]["task_accuracy"], rows[B0]["context_accuracy"], rows[B0]["score_proxy"]),
+            (one, one, zero),
+        )
+        self.assertEqual(
+            (rows[B1_TASK]["task_accuracy"], rows[B1_TASK]["context_accuracy"],
+             rows[B1_TASK]["score_proxy"]),
+            (two_thirds, one, minus_eleven_forty_fifths),
+        )
+        for candidate_id in (B1_DUAL, B2_TASK, B2_DUAL):
+            self.assertEqual(
+                (rows[candidate_id]["task_accuracy"], rows[candidate_id]["context_accuracy"],
+                 rows[candidate_id]["score_proxy"]),
+                (one, one, zero),
+            )
+
+        comparisons = {
+            (item["candidate_id"], item["comparator_id"]): item
+            for item in result["comparisons"]
+        }
+        self.assertEqual(comparisons[(B1_TASK, B0)]["task_delta"], q(-1, 3))
+        self.assertEqual(comparisons[(B1_TASK, B0)]["context_delta"], zero)
+        self.assertEqual(comparisons[(B1_TASK, B0)]["score_proxy_delta"], minus_eleven_forty_fifths)
+        self.assertEqual(comparisons[(B1_DUAL, B1_TASK)]["task_delta"], q(1, 3))
+        self.assertEqual(comparisons[(B1_DUAL, B1_TASK)]["score_proxy_delta"], q(11, 45))
+        self.assertEqual(len(comparisons), 8)
+        self.assertFalse(any("selected" in key for key in result))
+        canonical.dumps(result)
+
+    def test_corrupt_checkpoint_fails_current_arm_and_closes_population(self):
+        instances = []
+
+        class CorruptCheckpointBackend(RecordingBackend):
+            def load_state(self, data):
+                if self.candidate_id == B1_TASK:
+                    data = b"not-json"
+                return super().load_state(data)
+
+        result = lane1_trainer.run_lane1(
+            valid_v2_manifest(), valid_fixture(), valid_config(),
+            backend_factory=lambda: CorruptCheckpointBackend(instances),
+        )
+        self.assertEqual([item["status"] for item in result["arm_results"]],
+                         ["passed", "failed", "not_run", "not_run", "not_run"])
+        self.assertEqual(result["arm_results"][1]["failure_stage"], "checkpoint_reload")
+        self.assertTrue(all(item["status"] == "unavailable" for item in result["comparisons"]))
+
+    def test_reload_prediction_drift_is_not_reported_as_passed(self):
+        instances = []
+
+        class ReloadDriftBackend(RecordingBackend):
+            def load_export(self, data):
+                super().load_export(data)
+                if self.candidate_id == B0:
+                    self._state["language_adapter"] += 10
+
+        result = lane1_trainer.run_lane1(
+            valid_v2_manifest(), valid_fixture(), valid_config(),
+            backend_factory=lambda: ReloadDriftBackend(instances),
+        )
+        self.assertEqual(result["arm_results"][0]["status"], "failed")
+        self.assertEqual(result["arm_results"][0]["failure_stage"], "export_reload_prediction")
+        self.assertEqual([item["status"] for item in result["arm_results"][1:]], ["not_run"] * 4)
+
+    def test_resumed_state_drift_is_not_reported_as_passed(self):
+        instances = []
+
+        class ResumeDriftBackend(RecordingBackend):
+            resumed = False
+
+            def load_state(self, data):
+                super().load_state(data)
+                self.resumed = True
+
+            def dump_state(self):
+                if not self.resumed:
+                    return super().dump_state()
+                self._state["language_adapter"] += 1
+                try:
+                    return super().dump_state()
+                finally:
+                    self._state["language_adapter"] -= 1
+
+        result = lane1_trainer.run_lane1(
+            valid_v2_manifest(), valid_fixture(), valid_config(),
+            backend_factory=lambda: ResumeDriftBackend(instances),
+        )
+        self.assertEqual(result["arm_results"][1]["status"], "failed")
+        self.assertEqual(result["arm_results"][1]["failure_stage"], "resume_state")
+
+    def test_corrupt_export_is_not_reported_as_passed(self):
+        instances = []
+
+        class CorruptExportBackend(RecordingBackend):
+            def export(self):
+                return b"corrupt" if self.candidate_id == B0 else super().export()
+
+        result = lane1_trainer.run_lane1(
+            valid_v2_manifest(), valid_fixture(), valid_config(),
+            backend_factory=lambda: CorruptExportBackend(instances),
+        )
+        self.assertEqual(result["arm_results"][0]["status"], "failed")
+        self.assertEqual(result["arm_results"][0]["failure_stage"], "export_reload")
 
 
 if __name__ == "__main__":

@@ -6,6 +6,7 @@ import copy
 import importlib
 import importlib.util
 from pathlib import Path
+import tempfile
 import unittest
 
 from mmbu_phase1 import canonical
@@ -14,6 +15,13 @@ from mmbu_phase1.fields import ContractViolation
 
 REPO = Path(__file__).resolve().parents[2]
 MANIFEST = REPO / "config/phase1/replicated-response-screen-2026-10-25.json"
+
+
+def _load_tool(name: str, path: Path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 class ReplicatedResponseManifestTests(unittest.TestCase):
@@ -137,6 +145,98 @@ class ReplicatedResponseManifestTests(unittest.TestCase):
         })
         with self.assertRaises(ContractViolation):
             self.module.official_context_row({"row_id": "x", "source_id": "unknown"})
+
+
+class ReplicatedResponseNativeEnvelopeTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.path = REPO / "tools/replicated_response_screen.py"
+        cls.runner = _load_tool("replicated_response_screen_for_test", cls.path) if cls.path.is_file() else None
+        cls.manifest = importlib.import_module("mmbu_phase1.replicated_response").load_manifest(MANIFEST)
+
+    def setUp(self):
+        if self.runner is None and self._testMethodName != "test_native_runner_exists":
+            self.skipTest("replicated response native runner is not implemented")
+
+    def test_native_runner_exists(self):
+        self.assertTrue(self.path.is_file(), "native response runner must exist")
+
+    def test_output_root_is_one_shot(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "new"
+            self.runner.require_new_output_root(path)
+            path.mkdir()
+            with self.assertRaises(ContractViolation):
+                self.runner.require_new_output_root(path)
+
+    def test_population_selection_is_independent_of_training_seed(self):
+        rows = []
+        for source in ("busbra", "pathmnist"):
+            for split, count in (("train", 520), ("development", 130)):
+                for index in range(count):
+                    rows.append({
+                        "independent_unit_id": f"{source}::{split}::{index}",
+                        "row_id": f"{source}::{split}::{index}",
+                        "source_id": source,
+                        "split": split,
+                    })
+        portfolio = {"rows": rows}
+        left = self.runner.select_populations(portfolio, self.manifest,
+                                              self.runner.response.condition_by_index(self.manifest, 1))
+        right = self.runner.select_populations(portfolio, self.manifest,
+                                               self.runner.response.condition_by_index(self.manifest, 3))
+        self.assertEqual(left, right)
+        self.assertEqual(len(left["train"]), 1024)
+        self.assertEqual(len(left["development"]), 256)
+
+    def test_generic_loader_and_exact_language_lora_scope(self):
+        source = self.path.read_text(encoding="utf-8")
+        self.assertIn("AutoModelForImageTextToText", source)
+        self.assertNotIn("Qwen2_5_VLForConditionalGeneration", source)
+
+        class Fake:
+            def named_modules(self):
+                return iter((
+                    ("model.language_model.layers.0.self_attn.q_proj", object()),
+                    ("model.language_model.layers.0.self_attn.v_proj", object()),
+                    ("model.visual.q_proj", object()),
+                    ("model.language_model.layers.0.mlp.down_proj", object()),
+                ))
+
+        self.assertEqual(self.runner.exact_lora_targets(Fake(), ["q_proj", "v_proj"]), [
+            "model.language_model.layers.0.self_attn.q_proj",
+            "model.language_model.layers.0.self_attn.v_proj",
+        ])
+
+    def test_expected_updates_are_zero_for_base_and_exact_for_adapted(self):
+        base = self.runner.response.condition_by_index(self.manifest, 0)
+        adapted = self.runner.response.condition_by_index(self.manifest, 1)
+        self.assertEqual(self.runner.expected_optimizer_updates(self.manifest, base), 0)
+        self.assertEqual(self.runner.expected_optimizer_updates(self.manifest, adapted), 1024)
+
+    def test_failure_receipt_is_closed_and_never_claims_reload(self):
+        condition = self.runner.response.condition_by_index(self.manifest, 1)
+        candidate = self.runner.response.candidate_by_id(self.manifest, condition["candidate_id"])
+        receipt = self.runner.failure_receipt(
+            candidate, condition, "training", "RuntimeError: synthetic", "start", "end", "manifest", "portfolio",
+        )
+        self.assertEqual(receipt["status"], "failed")
+        self.assertEqual(receipt["terminal_stage"], "training")
+        self.assertEqual(receipt["optimizer_updates"], 0)
+        self.assertIsNone(receipt["reload_prediction_match"])
+        self.assertFalse(receipt["mmbu_public_content_used"])
+        self.assertFalse(receipt["promotion_eligible"])
+
+    def test_reload_command_is_explicit_and_offline_capable(self):
+        command = self.runner.reload_command(
+            "/python", "/reload.py", "/manifest.json", 2, "/portfolio.json", "/snapshots",
+            "/sources", "/adapter", "/output.json",
+        )
+        self.assertEqual(command[:6], [
+            "/python", "/reload.py", "--manifest", "/manifest.json", "--condition-index", "2",
+        ])
+        self.assertIn("--adapter", command)
+        self.assertEqual(command[-1], "/output.json")
 
 
 if __name__ == "__main__":

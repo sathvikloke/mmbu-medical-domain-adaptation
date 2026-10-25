@@ -32,7 +32,24 @@
       "archive_md5": "2c51a510bcdc9cf8ddb2af93af1eadec",
       "citation": "Jiancheng Yang, Rui Shi, and Bingbing Ni, MedMNIST Classification Decathlon: A Lightweight AutoML Benchmark for Medical Image Analysis, ISBI 2021; Zenodo record 10519652",
       "download_url": "https://zenodo.org/api/records/10519652/files/pathmnist_224.npz/content",
+      "image_shape": [224, 224, 3],
+      "labels": [
+        "adipose",
+        "background",
+        "debris",
+        "lymphocytes",
+        "mucus",
+        "smooth muscle",
+        "normal colon mucosa",
+        "cancer-associated stroma",
+        "colorectal adenocarcinoma epithelium"
+      ],
       "license_id": "CC-BY-4.0",
+      "sample_counts": {
+        "test": 7180,
+        "train": 89996,
+        "val": 10004
+      },
       "source_id": "pathmnist",
       "source_version": "3",
       "split_roles": {

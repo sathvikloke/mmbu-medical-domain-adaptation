@@ -12,6 +12,7 @@ import hashlib
 import io
 from pathlib import Path
 import re
+import struct
 from typing import Any
 import zipfile
 
@@ -53,6 +54,31 @@ _PATHOLOGIES = {"benign", "malignant"}
 _SIDES = {"left", "right", "single"}
 _SPLITS = {"train", "development", "confirmation"}
 _EXCLUDED_CASES = ["110", "536"]
+_PATHMNIST_DECLARATION_KEYS = (
+    "archive_bytes",
+    "archive_md5",
+    "citation",
+    "download_url",
+    "image_shape",
+    "labels",
+    "license_id",
+    "sample_counts",
+    "source_id",
+    "source_version",
+    "split_roles",
+    "status",
+)
+_PATHMNIST_LABELS = [
+    "adipose",
+    "background",
+    "debris",
+    "lymphocytes",
+    "mucus",
+    "smooth muscle",
+    "normal colon mucosa",
+    "cancer-associated stroma",
+    "colorectal adenocarcinoma epithelium",
+]
 
 
 def _hex(value: Any, path: str, pattern: re.Pattern[str]) -> str:
@@ -255,4 +281,161 @@ def compile_busbra(archive_path: str | Path, declaration: Any) -> dict:
     return {"receipt": receipt, "rows": rows}
 
 
-__all__ = ["BUSBRA_METADATA_COLUMNS", "ContractViolation", "compile_busbra", "validate_busbra_declaration"]
+def validate_pathmnist_declaration(value: Any) -> dict:
+    """Validate the official PathMNIST-224 artifact and split declaration."""
+    value = closed(value, "pathmnist_declaration", _PATHMNIST_DECLARATION_KEYS)
+    literal(value["source_id"], "pathmnist_declaration.source_id", "pathmnist")
+    literal(value["source_version"], "pathmnist_declaration.source_version", "3")
+    literal(value["license_id"], "pathmnist_declaration.license_id", "CC-BY-4.0")
+    require(value["status"] in {"acquisition_pending", "acquired_verified"},
+            "pathmnist_declaration.status", "unsupported acquisition status")
+    integer(value["archive_bytes"], "pathmnist_declaration.archive_bytes", minimum=1)
+    _hex(value["archive_md5"], "pathmnist_declaration.archive_md5", _MD5)
+    for key in ("citation", "download_url"):
+        text(value[key], f"pathmnist_declaration.{key}")
+    shape = array(value["image_shape"], "pathmnist_declaration.image_shape")
+    require(len(shape) == 3, "pathmnist_declaration.image_shape", "must have height, width, channels")
+    for index, dimension in enumerate(shape):
+        integer(dimension, f"pathmnist_declaration.image_shape[{index}]", minimum=1)
+    labels = array(value["labels"], "pathmnist_declaration.labels")
+    require(labels == _PATHMNIST_LABELS, "pathmnist_declaration.labels", "must match official label order")
+    counts = closed(value["sample_counts"], "pathmnist_declaration.sample_counts", ("test", "train", "val"))
+    for split, count in counts.items():
+        integer(count, f"pathmnist_declaration.sample_counts.{split}", minimum=1)
+    roles = closed(value["split_roles"], "pathmnist_declaration.split_roles", ("test", "train", "val"))
+    require(roles == {"test": "confirmation", "train": "train", "val": "development"},
+            "pathmnist_declaration.split_roles", "must preserve the official external-center confirmation split")
+    return value
+
+
+def _hash_file(path: Path) -> tuple[int, str]:
+    checksum = hashlib.md5()  # nosec: published dataset checksum
+    total = 0
+    with path.open("rb") as stream:
+        while True:
+            chunk = stream.read(8 * 1024 * 1024)
+            if not chunk:
+                break
+            total += len(chunk)
+            checksum.update(chunk)
+    return total, checksum.hexdigest()
+
+
+def _npy_header(stream: Any, path: str) -> tuple[str, tuple[int, ...], int]:
+    require(stream.read(6) == b"\x93NUMPY", path, "invalid NPY magic")
+    version = stream.read(2)
+    require(version in {b"\x01\x00", b"\x02\x00", b"\x03\x00"}, path, "unsupported NPY version")
+    width = 2 if version == b"\x01\x00" else 4
+    raw_length = stream.read(width)
+    require(len(raw_length) == width, path, "truncated NPY header length")
+    header_length = struct.unpack("<H" if width == 2 else "<I", raw_length)[0]
+    header_raw = stream.read(header_length)
+    require(len(header_raw) == header_length, path, "truncated NPY header")
+    try:
+        header = ast.literal_eval(header_raw.decode("latin1").strip())
+    except (SyntaxError, ValueError, UnicodeDecodeError):
+        raise ContractViolation(path, "invalid NPY header") from None
+    require(type(header) is dict and set(header) == {"descr", "fortran_order", "shape"},
+            path, "NPY header must contain exactly descr, fortran_order, and shape")
+    require(header["fortran_order"] is False, path, "Fortran-order arrays are unsupported")
+    require(type(header["descr"]) is str, path, "invalid dtype descriptor")
+    shape = header["shape"]
+    require(type(shape) is tuple and shape and all(type(item) is int and item > 0 for item in shape),
+            path, "invalid positive array shape")
+    return header["descr"], shape, 6 + 2 + width + header_length
+
+
+def compile_pathmnist(archive_path: str | Path, declaration: Any) -> dict:
+    """Compile PathMNIST indexes and labels while leaving the large image payload in place."""
+    declaration = validate_pathmnist_declaration(declaration)
+    archive_path = Path(archive_path)
+    require(archive_path.is_file(), "pathmnist_archive", "must be a regular file")
+    byte_count, md5 = _hash_file(archive_path)
+    require(byte_count == declaration["archive_bytes"], "pathmnist_archive.bytes", "does not match declaration")
+    require(md5 == declaration["archive_md5"], "pathmnist_archive.md5", "does not match declaration")
+    expected_members = {f"{split}_{kind}.npy" for split in ("train", "val", "test")
+                        for kind in ("images", "labels")}
+    try:
+        archive = zipfile.ZipFile(archive_path)
+    except zipfile.BadZipFile:
+        raise ContractViolation("pathmnist_archive", "must be a valid NPZ/ZIP file") from None
+    rows = []
+    with archive:
+        infos = archive.infolist()
+        names = [info.filename for info in infos]
+        require(len(names) == len(set(names)), "pathmnist_archive.members", "duplicate member names are forbidden")
+        require(set(names) == expected_members, "pathmnist_archive.members", "must contain exactly six official arrays")
+        by_name = {info.filename: info for info in infos}
+        for split in ("test", "train", "val"):
+            count = declaration["sample_counts"][split]
+            image_name = f"{split}_images.npy"
+            with archive.open(image_name) as stream:
+                dtype, shape, offset = _npy_header(stream, f"pathmnist_archive.{image_name}")
+            require(dtype == "|u1", f"pathmnist_archive.{image_name}.dtype", "must be uint8")
+            require(shape == (count, *declaration["image_shape"]),
+                    f"pathmnist_archive.{image_name}.shape", "does not match declaration")
+            expected_image_bytes = count
+            for dimension in declaration["image_shape"]:
+                expected_image_bytes *= dimension
+            require(by_name[image_name].file_size == offset + expected_image_bytes,
+                    f"pathmnist_archive.{image_name}.bytes", "image payload length does not match shape")
+
+            label_name = f"{split}_labels.npy"
+            with archive.open(label_name) as stream:
+                dtype, shape, offset = _npy_header(stream, f"pathmnist_archive.{label_name}")
+                require(dtype == "<i8", f"pathmnist_archive.{label_name}.dtype", "must be little-endian int64")
+                require(shape == (count, 1), f"pathmnist_archive.{label_name}.shape", "does not match declaration")
+                payload = stream.read()
+            require(len(payload) == count * 8 and by_name[label_name].file_size == offset + len(payload),
+                    f"pathmnist_archive.{label_name}.bytes", "label payload length does not match shape")
+            labels = struct.unpack(f"<{count}q", payload)
+            for index, label in enumerate(labels):
+                require(0 <= label < len(declaration["labels"]),
+                        f"pathmnist_archive.{label_name}[{index}]", "label is out of range")
+                row_id = f"pathmnist::{split}::{index}"
+                rows.append({
+                    "context_prompt": None,
+                    "context_target": None,
+                    "context_target_text": None,
+                    "image_array_key": f"{split}_images",
+                    "image_index": index,
+                    "independent_unit_id": row_id,
+                    "row_id": row_id,
+                    "source_id": "pathmnist",
+                    "split": declaration["split_roles"][split],
+                    "task_prompt": (
+                        "Classify this colorectal histology patch as one of: adipose, background, debris, "
+                        "lymphocytes, mucus, smooth muscle, normal colon mucosa, cancer-associated stroma, "
+                        "or colorectal adenocarcinoma epithelium. Answer with the class name only."
+                    ),
+                    "task_target": declaration["labels"][label],
+                })
+    receipt = {
+        "archive_bytes": byte_count,
+        "archive_md5": md5,
+        "citation": declaration["citation"],
+        "image_shape": declaration["image_shape"],
+        "license_id": declaration["license_id"],
+        "mmbu_content_used": False,
+        "row_count": len(rows),
+        "rows_digest": canonical.value_digest(rows),
+        "schema_id": "mmbu.biomedical.pathmnist_compilation_receipt",
+        "schema_version": 1,
+        "source_id": "pathmnist",
+        "source_version": declaration["source_version"],
+        "split_row_counts": {
+            role: sum(row["split"] == role for row in rows)
+            for role in ("confirmation", "development", "train")
+        },
+    }
+    return {"receipt": receipt, "rows": rows}
+
+
+__all__ = [
+    "BUSBRA_METADATA_COLUMNS",
+    "ContractViolation",
+    "compile_busbra",
+    "compile_pathmnist",
+    "validate_busbra_declaration",
+    "validate_pathmnist_declaration",
+]

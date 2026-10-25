@@ -96,6 +96,12 @@ the raw reply, and the October 14 direct organizer email independently says malf
 answers control local policy: malformed committed JSON is a failure and is never repaired. Preserve the contradictory
 card text as revision-drift evidence rather than implementing it.
 
+The user-supplied October 17 Discord transcript records a further direct organizer answer: when multiple answer fields
+appear, the last answer field is scored in both passes, and thinking blocks are removed before extraction. The reply's
+wording does not define code-fence handling, extraction grammar, malformed thinking tags, or whether “answer field” is
+shorthand for Pass 2's differently named committed field. The local serializer still emits exactly one terminal JSON
+object, so it does not rely on those unresolved recovery paths.
+
 For object detection, parse pixel `xywh` boxes, compare every predicted box with every ground-truth box, retain maximum
 IoU, and mark the row correct at maximum IoU at least 0.5. The direct organizer email separately confirms that an
 “any one” prompt should emit one box and match any one ground-truth box.
@@ -116,8 +122,8 @@ precedence or an executable harness before official-equivalent multi-label scori
 1. The older `d09ff622...` dataset pin is historical and cannot be called current.
 2. A task-protocol proxy may use this revision-recorded manual transcription, but not protocol-equivalent language until the raw bytes,
    model chat rendering, generation configuration, judge access, and runtime are independently receipted.
-3. Context scoring remains provisional because the organizer said the context prompt was unfinished and the current
-   task card does not supply it.
+3. Context scoring remains provisional because the organizer said the context prompt was unfinished, repeated on
+   October 15 that it would be shared later, and the current task card does not supply it.
 4. Metadata fixes after the old pin invalidate row-level duplicate counts or label audits as statements about the
    current public release. Historical findings stay historical; do not reopen the public rows for development.
 5. The October 21 judge-label-set expansion invalidates score comparisons across the old and current metadata unless

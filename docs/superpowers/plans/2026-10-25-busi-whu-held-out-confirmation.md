@@ -36,11 +36,11 @@
 - Create: `src/mmbu_phase1/heldout_confirmation.py`
 - Test: `tests/phase1/test_heldout_confirmation.py`
 
-- [ ] Implement exact-key, exact-type, exact-value validation with repository `ContractViolation` behavior.
-- [ ] Reject binary floats in every decision-bearing field and require canonical reduced rationals.
-- [ ] Validate that legacy exploratory adapters are ineligible and post-admission retraining is mandatory.
-- [ ] Validate the Qwen3.5-9B successor runtime-gate requirement and complete training-source purpose lineage references.
-- [ ] Make the focused validator tests pass.
+- [x] Implement exact-key, exact-type, exact-value validation with repository `ContractViolation` behavior.
+- [x] Reject binary floats in every decision-bearing field and require canonical reduced rationals.
+- [x] Validate that legacy exploratory adapters are ineligible and post-admission retraining is mandatory.
+- [x] Validate the Qwen3.5-9B successor runtime-gate requirement and complete training-source purpose lineage references.
+- [x] Make the focused validator tests pass.
 
 ### Task 3: Implement exact patient statistics and locked randomization artifacts
 

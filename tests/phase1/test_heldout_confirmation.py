@@ -69,5 +69,54 @@ class HeldoutConfirmationSpecTests(unittest.TestCase):
                 self.module.validate_spec(changed)
 
 
+class HeldoutConfirmationLineageTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.module = importlib.import_module("mmbu_phase1.heldout_confirmation")
+
+    def valid_lineage(self):
+        return {
+            "base_model_id": "Qwen/Qwen3.5-9B",
+            "base_revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+            "expected_parameter_count": 9409813744,
+            "legacy_exploratory_adapter_used": False,
+            "lora_alpha": 16,
+            "lora_dropout": 0,
+            "lora_rank": 8,
+            "lora_target_suffixes": ["q_proj", "v_proj"],
+            "mmbu_public_content_used": False,
+            "optimizer_updates": 1024,
+            "post_admission_retraining": True,
+            "profile": "dual",
+            "runtime_gate_id": "qwen3.5-9b-successor-native-runtime",
+            "runtime_gate_passed": True,
+            "source_purposes": {"busbra": "train", "pathmnist": "train"},
+            "training_seed": 20261025,
+        }
+
+    def test_complete_post_admission_lineage_passes(self):
+        self.assertEqual(self.module.validate_checkpoint_lineage(self.valid_lineage())["training_seed"], 20261025)
+
+    def test_ineligible_or_incomplete_lineage_rejects(self):
+        mutations = (
+            lambda row: row.__setitem__("unknown", True),
+            lambda row: row.__setitem__("legacy_exploratory_adapter_used", True),
+            lambda row: row.__setitem__("post_admission_retraining", False),
+            lambda row: row.__setitem__("runtime_gate_passed", False),
+            lambda row: row.__setitem__("runtime_gate_id", "qwen2.5-vl-b1"),
+            lambda row: row.__setitem__("source_purposes", {"busbra": "train"}),
+            lambda row: row.__setitem__("source_purposes", {"busbra": "train", "pathmnist": "eval"}),
+            lambda row: row.__setitem__("lora_dropout", 0.05),
+            lambda row: row.__setitem__("optimizer_updates", 1023),
+            lambda row: row.__setitem__("training_seed", 7),
+            lambda row: row.__setitem__("mmbu_public_content_used", True),
+        )
+        for index, mutate in enumerate(mutations):
+            changed = self.valid_lineage()
+            mutate(changed)
+            with self.subTest(index=index), self.assertRaises(ContractViolation):
+                self.module.validate_checkpoint_lineage(changed)
+
+
 if __name__ == "__main__":
     unittest.main()

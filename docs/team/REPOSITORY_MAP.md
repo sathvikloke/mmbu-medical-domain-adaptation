@@ -63,7 +63,7 @@ Paths in this guide are relative to the repository root. The historical layout i
 | [docs/team/DISCORD_RULE_AUDIT_2026-10-24.md](DISCORD_RULE_AUDIT_2026-10-24.md) | Authenticated read-only audit of rule-bearing Discord messages, exact locators, dates, authors, and observed pin state |
 | [docs/team/TASK_PROTOCOL_SNAPSHOT.md](TASK_PROTOCOL_SNAPSHOT.md) | Dated visible task prompt/routing/judge snapshot, revision drift, and later malformed-output precedence |
 | [docs/team/BIOMEDICAL_LANE1_SHAKEDOWN_TRACE.md](BIOMEDICAL_LANE1_SHAKEDOWN_TRACE.md) | Hash-bound five-arm external-biomedical shakedown, matched-population metrics, reload checks, and non-promotion interpretation |
-| [docs/team/COMPETITION_DIRECTION_DECISION_2026-10-25.md](COMPETITION_DIRECTION_DECISION_2026-10-25.md) | Post-shakedown Track 1/Track 2 decision, zero-context diagnosis, unbiased four-model shortlist, staged bake-off, compute ceiling, risks, and stopping rules |
+| [docs/team/COMPETITION_DIRECTION_DECISION_2026-10-25.md](COMPETITION_DIRECTION_DECISION_2026-10-25.md) | Amended post-shakedown Track 1/2/3 decision, score arithmetic, dual-track uncertainties, family-diverse model screens, measured resource range, switch evidence, and stopping point |
 | [outputs/MMBU-domain-adaptation-plan-v2.md](../../outputs/MMBU-domain-adaptation-plan-v2.md) | Historical scientific rationale; its provisional model order is superseded by the current [experiment workflow](EXPERIMENT_WORKFLOW.md) |
 | [outputs/MMBU-precompute-v0.3-status.md](../../outputs/MMBU-precompute-v0.3-status.md) | Historical CPU completion status and limitations |
 | [outputs/mmbu-precompute](../../outputs/mmbu-precompute) | Version 0.3 package: source, tests, examples, configs, documentation, tools, and evidence |

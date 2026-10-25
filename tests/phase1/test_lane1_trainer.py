@@ -1,7 +1,14 @@
 """Competition Lane 1 CPU-only synthetic trainer conformance tests."""
 
 from copy import deepcopy
+import builtins
+from pathlib import Path
+import socket
+import subprocess
+import sys
+import tempfile
 import unittest
+from unittest import mock
 
 from mmbu_phase1 import canonical, lane1_synthetic, lane1_trainer
 from mmbu_phase1.fields import ContractViolation
@@ -354,6 +361,100 @@ class ResumeReloadAndMetricTests(unittest.TestCase):
         )
         self.assertEqual(result["arm_results"][0]["status"], "failed")
         self.assertEqual(result["arm_results"][0]["failure_stage"], "export_reload")
+
+
+class OfflineBoundaryTests(unittest.TestCase):
+    def test_native_runner_attempts_no_files_network_or_model_framework_imports(self):
+        attempts = []
+        original_import = builtins.__import__
+
+        def guarded_import(name, *args, **kwargs):
+            root = name.split(".", 1)[0]
+            if root in {"torch", "transformers", "peft", "datasets", "requests", "urllib"}:
+                attempts.append(("import", name))
+                raise AssertionError(f"forbidden import: {name}")
+            return original_import(name, *args, **kwargs)
+
+        def forbidden_file(*args, **kwargs):
+            attempts.append(("file", args[0] if args else None))
+            raise AssertionError("backend attempted file access")
+
+        def forbidden_socket(*args, **kwargs):
+            attempts.append(("socket", args))
+            raise AssertionError("backend attempted socket access")
+
+        with mock.patch("builtins.__import__", side_effect=guarded_import), \
+             mock.patch("builtins.open", side_effect=forbidden_file), \
+             mock.patch.object(socket, "socket", side_effect=forbidden_socket):
+            result = lane1_trainer.run_lane1(valid_v2_manifest(), valid_fixture(), valid_config())
+        self.assertEqual([item["status"] for item in result["arm_results"]], ["passed"] * 5)
+        self.assertEqual(attempts, [])
+
+
+class Lane1CliTests(unittest.TestCase):
+    def run_cli(self, root, manifest, fixture, config, output):
+        manifest_path = root / "manifest.json"
+        fixture_path = root / "fixture.json"
+        config_path = root / "config.json"
+        manifest_path.write_bytes(canonical.dumps(manifest))
+        fixture_path.write_bytes(canonical.dumps(fixture))
+        config_path.write_bytes(canonical.dumps(config))
+        return subprocess.run(
+            [
+                sys.executable,
+                str(Path(__file__).resolve().parents[2] / "tools/lane1_synthetic.py"),
+                "--manifest", str(manifest_path),
+                "--fixture", str(fixture_path),
+                "--config", str(config_path),
+                "--output", str(output),
+            ],
+            cwd=Path(__file__).resolve().parents[2],
+            capture_output=True,
+            text=True,
+            check=False,
+            env={"PATH": "", "PYTHONDONTWRITEBYTECODE": "1"},
+        )
+
+    def test_cli_writes_exact_canonical_line_and_refuses_overwrite(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            output = root / "result.json"
+            completed = self.run_cli(root, valid_v2_manifest(), valid_fixture(), valid_config(), output)
+            self.assertEqual(completed.returncode, 0, completed.stderr)
+            raw = output.read_bytes()
+            value = canonical.loads(raw)
+            self.assertEqual(raw, canonical.dumps(value) + b"\n")
+            sentinel = raw
+            repeated = self.run_cli(root, valid_v2_manifest(), valid_fixture(), valid_config(), output)
+            self.assertNotEqual(repeated.returncode, 0)
+            self.assertEqual(output.read_bytes(), sentinel)
+
+    def test_cli_preflight_failure_creates_no_output(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            output = root / "result.json"
+            fixture = valid_fixture()
+            fixture["biomedical_content"] = True
+            completed = self.run_cli(root, valid_v2_manifest(), fixture, valid_config(fixture), output)
+            self.assertNotEqual(completed.returncode, 0)
+            self.assertFalse(output.exists())
+
+    def test_cli_runtime_failure_writes_closed_result_once_and_exits_nonzero(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            output = root / "result.json"
+            fixture = valid_fixture()
+            # Each component is representable, but the B2 projector update multiplies
+            # the denominators and fails when serializing its synthetic state.
+            fixture["train_rows"][0]["feature"] = q(1, 9007199254740991)
+            fixture["train_rows"][1]["feature"] = q(1, 9007199254740991)
+            config = valid_config(fixture)
+            config["learning_rate"] = q(1, 9007199254740991)
+            completed = self.run_cli(root, valid_v2_manifest(), fixture, config, output)
+            self.assertEqual(completed.returncode, 1, completed.stderr)
+            value = canonical.loads(output.read_bytes())
+            self.assertEqual(len(value["arm_results"]), 5)
+            self.assertIn("failed", [item["status"] for item in value["arm_results"]])
 
 
 if __name__ == "__main__":

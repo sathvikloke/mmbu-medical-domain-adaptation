@@ -87,10 +87,10 @@
 - Create: `tests/phase1/fixtures/heldout-confirmation/threshold-failure.json`
 - Modify: `tests/phase1/test_heldout_confirmation.py`
 
-- [ ] Build a 60-patient synthetic positive case with no biomedical content.
-- [ ] Add underpowered, exact-threshold, lower-bound, nonpositive-seed, parser-failure, chronology, matrix-drift, retry, and lineage-negative fixtures.
-- [ ] Confirm every fixture declares `synthetic_only: true`, `biomedical_content_used: false`, and `mmbu_public_content_used: false`.
-- [ ] Confirm synthetic pass results are labeled mechanics evidence only and never promotion or readiness evidence.
+- [x] Build a 60-patient synthetic positive case with no biomedical content.
+- [x] Add underpowered, exact-threshold, lower-bound, nonpositive-seed, parser-failure, chronology, matrix-drift, retry, and lineage-negative fixtures.
+- [x] Confirm every fixture declares `synthetic_only: true`, `biomedical_content_used: false`, and `mmbu_public_content_used: false`.
+- [x] Confirm synthetic pass results are labeled mechanics evidence only and never promotion or readiness evidence.
 
 ### Task 7: Verify, document, and seal the implementation
 

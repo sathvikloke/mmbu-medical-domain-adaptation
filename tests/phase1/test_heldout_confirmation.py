@@ -20,6 +20,7 @@ from mmbu_phase1.fields import ContractViolation
 REPO = Path(__file__).resolve().parents[2]
 SPEC = REPO / "config/phase1/busi-whu-confirmation-spec-2026-10-25.json"
 TOOL = REPO / "tools/busi_whu_confirmation.py"
+FIXTURES = REPO / "tests/phase1/fixtures/heldout-confirmation"
 
 
 class HeldoutConfirmationRegistrationTests(unittest.TestCase):
@@ -382,6 +383,43 @@ class HeldoutConfirmationReadinessTests(unittest.TestCase):
             )
         self.assertEqual(result.returncode, 2, result.stderr)
         self.assertEqual(json.loads(result.stdout), {"missing": "rights-review", "status": "blocked"})
+
+
+class HeldoutConfirmationFixtureTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.module = importlib.import_module("mmbu_phase1.heldout_confirmation")
+
+    def test_closed_synthetic_fixtures_have_expected_outcomes(self):
+        expected = {
+            "positive.json": "confirmation_passed",
+            "threshold-failure.json": "confirmation_failed",
+            "underpowered.json": "underpowered",
+        }
+        for name, status in expected.items():
+            path = FIXTURES / name
+            self.assertTrue(path.is_file(), name)
+            fixture = json.loads(path.read_text(encoding="utf-8"))
+            result = self.module.validate_synthetic_fixture(fixture)
+            self.assertEqual(result["status"], status)
+            self.assertEqual(result["evidence_scope"], "synthetic_mechanics_only")
+            self.assertFalse(result["promotion_eligible"])
+            self.assertFalse(result["readiness_evidence"])
+
+    def test_fixture_boundary_and_unknown_fields_reject(self):
+        fixture = json.loads((FIXTURES / "positive.json").read_text(encoding="utf-8"))
+        mutations = (
+            lambda row: row.__setitem__("unknown", True),
+            lambda row: row.__setitem__("synthetic_only", False),
+            lambda row: row.__setitem__("biomedical_content_used", True),
+            lambda row: row.__setitem__("mmbu_public_content_used", True),
+            lambda row: row.__setitem__("expected_status", "ready_for_authorized_execution"),
+        )
+        for mutate in mutations:
+            changed = copy.deepcopy(fixture)
+            mutate(changed)
+            with self.assertRaises(ContractViolation):
+                self.module.validate_synthetic_fixture(changed)
 
 
 if __name__ == "__main__":

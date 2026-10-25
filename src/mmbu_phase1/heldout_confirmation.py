@@ -318,6 +318,10 @@ READINESS_KEYS = (
     "attempts_started", "checkpoint_lineages", "chronology", "gate_records", "mmbu_public_content_used",
     "source_id", "source_role",
 )
+SYNTHETIC_FIXTURE_KEYS = (
+    "biomedical_content_used", "expected_status", "fixture_id", "lower_bound", "mmbu_public_content_used",
+    "patient_count", "point_delta", "seed_deltas", "synthetic_only",
+)
 GATE_ORDER = (
     "training-source-admission", "successor-runtime", "checkpoint-retraining-lineage",
     "confirmation-source-acquisition", "rights-review", "protected-inventory", "qa-lock-and-review",
@@ -426,8 +430,61 @@ def readiness_status(value: object) -> dict:
     return {"missing": None, "status": "ready_for_authorized_execution"}
 
 
+def validate_synthetic_fixture(value: object) -> dict:
+    """Run a closed decision vector that can never count as data or readiness evidence."""
+    fixture = closed(value, "heldout_confirmation.synthetic_fixture", SYNTHETIC_FIXTURE_KEYS)
+    text(fixture["fixture_id"], "heldout_confirmation.synthetic_fixture.fixture_id")
+    literal(fixture["synthetic_only"], "heldout_confirmation.synthetic_fixture.synthetic_only", True)
+    literal(fixture["biomedical_content_used"],
+            "heldout_confirmation.synthetic_fixture.biomedical_content_used", False)
+    literal(fixture["mmbu_public_content_used"],
+            "heldout_confirmation.synthetic_fixture.mmbu_public_content_used", False)
+    require(fixture["expected_status"] in ("confirmation_passed", "confirmation_failed", "underpowered"),
+            "heldout_confirmation.synthetic_fixture.expected_status", "must be a synthetic decision status")
+    patient_count = integer(fixture["patient_count"],
+                            "heldout_confirmation.synthetic_fixture.patient_count", minimum=0)
+    seed_deltas = closed(fixture["seed_deltas"],
+                         "heldout_confirmation.synthetic_fixture.seed_deltas", SEED_CONDITIONS)
+    for condition in SEED_CONDITIONS:
+        rational.from_wire(seed_deltas[condition],
+                           f"heldout_confirmation.synthetic_fixture.seed_deltas.{condition}")
+    rational.from_wire(fixture["point_delta"], "heldout_confirmation.synthetic_fixture.point_delta")
+    rational.from_wire(fixture["lower_bound"], "heldout_confirmation.synthetic_fixture.lower_bound")
+    analysis = {
+        "base": {"context": rational.to_wire(0), "q": rational.to_wire(0), "task": rational.to_wire(0)},
+        "class_diagnostics": {},
+        "lower_bound": fixture["lower_bound"],
+        "output_failure_count": 0,
+        "patient_count": patient_count,
+        "point_delta": fixture["point_delta"],
+        "seed_deltas": seed_deltas,
+        "seed_mean": {"context": rational.to_wire(0), "q": rational.to_wire(0), "task": rational.to_wire(0)},
+        "sign_randomization_p": rational.to_wire(1),
+    }
+    execution = {
+        "adapted_attempts": {condition: 1 for condition in SEED_CONDITIONS},
+        "adapted_reload_match": {condition: True for condition in SEED_CONDITIONS},
+        "base_attempts": 1,
+        "base_reload_match": True,
+        "identity_drift": False,
+        "mmbu_public_content_used": False,
+        "source_id": "busi-whu-v3",
+        "source_role": "confirmation",
+    }
+    decision = confirmation_decision(analysis, execution)
+    literal(decision["status"], "heldout_confirmation.synthetic_fixture.expected_status",
+            fixture["expected_status"])
+    return {
+        "decision": decision,
+        "evidence_scope": "synthetic_mechanics_only",
+        "promotion_eligible": False,
+        "readiness_evidence": False,
+        "status": decision["status"],
+    }
+
+
 __all__ = [
     "SPEC_DIGEST", "analyze_patient_results", "build_randomization_artifacts", "confirmation_decision", "load_spec",
-    "readiness_status", "validate_checkpoint_lineage", "validate_spec",
+    "readiness_status", "validate_checkpoint_lineage", "validate_spec", "validate_synthetic_fixture",
 ]
 

@@ -2,7 +2,7 @@
 
 ## Bottom line
 
-The strategy and evaluator work passed. After storage cleanup, all five exact model revisions downloaded successfully. The first GPU F0 array then failed before Python initialization because its Slurm launcher omitted the required MOCS Python module load. No model loaded and no scientific conclusion was drawn.
+The strategy and evaluator work passed. All five exact model revisions were acquired and the approved repaired F0 array reached terminal evidence: Qwen3-VL-8B, Qwen3-VL-2B, and InternVL3.5-2B passed every engineering gate; Qwen3.5-9B and Qwen3.5-4B failed closed because their frozen expected parameter counts did not match their native loaded model objects. No biomedical-quality conclusion was drawn.
 
 ## What passed
 
@@ -11,6 +11,7 @@ The strategy and evaluator work passed. After storage cleanup, all five exact mo
 - **Freeze:** five exact candidate IDs and revisions, one generated image, one prompt and target, matched LoRA/optimizer settings, comparison rules, one-attempt policy, and one-A100-hour ceiling are closed in a validated manifest.
 - **Repository verification:** 465 tests passed before cluster launch, with two optional-dependency skips.
 - **Evidence preservation:** failed jobs `85746` and `85751`, their receipts, and logs remain preserved in their separate run roots.
+- **F0 passes:** three candidates completed one LoRA update, adapter save, fresh-process offline reload, deterministic prediction equality, and memory/runtime measurement without MMBU public or biomedical content.
 
 ## What failed or did not run
 
@@ -18,8 +19,10 @@ The strategy and evaluator work passed. After storage cleanup, all five exact mo
 - The one authorized clean scratch reacquisition, job `85751`, also failed under the account-level GPFS quota despite abundant cluster-wide free space.
 - After cleanup, acquisition job `85823` passed for all five exact revisions.
 - GPU array `85828` failed all five tasks with exit code `127` because `libpython3.12.so.1.0` was unavailable before the runner started.
-- No model was loaded. No forward pass, backward pass, LoRA update, save, offline reload, deterministic prediction check, GPU memory measurement, or model-runtime measurement occurred.
 - A failing regression test reproduced the missing module declaration; the repaired launcher now requires `module load python/3.12.12`, and the focused suite passes.
+- Approved replacement array `85836` completed without retrying any task.
+- Qwen3.5-9B and Qwen3.5-4B failed at the frozen parameter-count gate before GPU placement or adaptation. Config-only diagnostic reconstruction found `9,409,813,744` and `4,539,265,536` parameters respectively, rather than the frozen `9,653,104,368` and `4,659,865,088` values.
+- These two failures do not establish model infeasibility; they establish that their identity contract requires correction before another bounded attempt.
 
 ## Track decision and uncertainty
 
@@ -39,6 +42,6 @@ The following organizer questions remain unresolved and must not be guessed:
 
 ## Required next approval
 
-The exact snapshots are now present and revision-verified. The next action requiring approval is **one replacement F0 launch using the repaired Slurm environment, without reacquiring models or changing any frozen scientific setting**. Until that approval is given, do not relaunch, load models, train, evaluate, upload, submit, or select a winner.
+The next action requiring approval is **an identity-contract amendment backed by the native post-tie counts, followed by one bounded F0 attempt for only Qwen3.5-9B and Qwen3.5-4B using the existing snapshots**. Do not rerun the three passing candidates.
 
-The later decision-bearing experiment remains a matched unchanged-base versus adapted comparison on one frozen external-biomedical development population with three seeds. It is not authorized and should not be launched before F0 produces valid memory/runtime and reload evidence.
+After the shortlist has complete F0 evidence, the first decision-bearing experiment remains a matched unchanged-base versus adapted comparison on one frozen external-biomedical development population with three seeds. It is not authorized. No MMBU public-set evaluation, upload, submission, full training, or model selection occurred.

@@ -1,0 +1,79 @@
+{
+  "authorization": {
+    "biomedical_content_opening_allowed": false,
+    "gpu_or_hpc_allowed": false,
+    "mmbu_public_content_allowed": false,
+    "model_loading_allowed": false,
+    "training_allowed": false
+  },
+  "candidate": {
+    "expected_parameter_count": 9409813744,
+    "model_id": "Qwen/Qwen3.5-9B",
+    "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+    "runtime_gate": "qwen3.5-9b-successor-native-runtime",
+    "track": "track2"
+  },
+  "confirmation_id": "busi-whu-held-out-confirmation-2026-10-25",
+  "gates": [
+    "training-source-admission",
+    "successor-runtime",
+    "checkpoint-retraining-lineage",
+    "confirmation-source-acquisition",
+    "rights-review",
+    "protected-inventory",
+    "qa-lock-and-review",
+    "duplicate-review",
+    "confirmation-purpose-authorization",
+    "eligible-population-lock",
+    "hermetic-decision-receipt",
+    "opening-and-execution-lock"
+  ],
+  "prompts": {
+    "context": "Return one raw JSON object with exactly these keys in this order: body_part, medical_domain, modality. Use lowercase strings and no other text.",
+    "context_target": {
+      "body_part": "breast",
+      "medical_domain": "breast imaging",
+      "modality": "ultrasound"
+    },
+    "parser": "exact-v1-no-repair",
+    "task": "What is the breast ultrasound classification? Respond with exactly one label: benign or malignant.",
+    "task_labels": ["benign", "malignant"]
+  },
+  "resources": {
+    "attempts_per_condition": 1,
+    "automatic_rescue_allowed": false,
+    "replacement_source_allowed": false
+  },
+  "schema_id": "mmbu.confirmation.busi_whu",
+  "schema_version": 1,
+  "source": {
+    "doi": "10.17632/k6cpmwybk3.3",
+    "forbidden_substitutes": ["bus-uclm", "mmbu-public"],
+    "minimum_independent_patients": 60,
+    "role": "confirmation",
+    "source_id": "busi-whu-v3"
+  },
+  "statistics": {
+    "bootstrap_draws": 10000,
+    "bootstrap_seed": 20261025,
+    "decision_margin": {"denominator": 20, "numerator": 1},
+    "lower_bound_index_zero_based": 999,
+    "patient_order": "ascending-utf8-bytes",
+    "randomization_draws": 10000,
+    "randomization_seed": 20261026,
+    "resampling_unit": "patient",
+    "seed_aggregation": "equal",
+    "tie_order": "generation-order"
+  },
+  "training": {
+    "lora_alpha": 16,
+    "lora_dropout": 0,
+    "lora_rank": 8,
+    "lora_target_suffixes": ["q_proj", "v_proj"],
+    "optimizer_updates": 1024,
+    "profile": "dual",
+    "requires_post_admission_retraining": true,
+    "seeds": [20261025, 20261026, 20261027],
+    "training_sources": ["busbra", "pathmnist"]
+  }
+}

@@ -149,6 +149,53 @@ class ReplicatedResponseManifestTests(unittest.TestCase):
         with self.assertRaises(ContractViolation):
             self.module.official_context_row({"row_id": "x", "source_id": "unknown"})
 
+    def test_seed_mean_task_bootstrap_is_paired_and_source_balanced(self):
+        rows = [
+            {"record_id": "a1", "source_id": "a", "group_id": "a1",
+             "base_correct": 0, "adapted_correct": 1},
+            {"record_id": "a2", "source_id": "a", "group_id": "a2",
+             "base_correct": 0, "adapted_correct": 1},
+            {"record_id": "b1", "source_id": "b", "group_id": "b1",
+             "base_correct": 1, "adapted_correct": 1},
+            {"record_id": "b2", "source_id": "b", "group_id": "b2",
+             "base_correct": 0, "adapted_correct": 0},
+            {"record_id": "b3", "source_id": "b", "group_id": "b3",
+             "base_correct": 1, "adapted_correct": 1},
+            {"record_id": "b4", "source_id": "b", "group_id": "b4",
+             "base_correct": 0, "adapted_correct": 0},
+        ]
+        result = self.module.paired_seed_mean_task_bootstrap(
+            {"seed-1": rows, "seed-2": copy.deepcopy(rows)},
+            iterations=50,
+            bootstrap_seed=7,
+            confidence=0.90,
+        )
+        self.assertEqual(result["point_delta"], {"denominator": 2, "numerator": 1})
+        self.assertEqual(result["interval"], [0.5, 0.5])
+        self.assertEqual(result["groups_per_source"], {"a": 2, "b": 4})
+        self.assertEqual(result["seed_ids"], ["seed-1", "seed-2"])
+
+    def test_seed_mean_task_bootstrap_rejects_unpaired_or_invalid_rows(self):
+        rows = [
+            {"record_id": "a1", "source_id": "a", "group_id": "a1",
+             "base_correct": 0, "adapted_correct": 1},
+            {"record_id": "a2", "source_id": "a", "group_id": "a2",
+             "base_correct": 1, "adapted_correct": 0},
+        ]
+        mismatched = copy.deepcopy(rows)
+        mismatched[1]["group_id"] = "changed"
+        with self.assertRaises(ContractViolation):
+            self.module.paired_seed_mean_task_bootstrap(
+                {"seed-1": rows, "seed-2": mismatched}, iterations=10,
+                bootstrap_seed=1, confidence=0.90,
+            )
+        invalid = copy.deepcopy(rows)
+        invalid[0]["adapted_correct"] = 0.5
+        with self.assertRaises(ContractViolation):
+            self.module.paired_seed_mean_task_bootstrap(
+                {"seed-1": invalid}, iterations=10, bootstrap_seed=1, confidence=0.90,
+            )
+
 
 class ReplicatedResponseNativeEnvelopeTests(unittest.TestCase):
     @classmethod
@@ -312,6 +359,64 @@ class ReplicatedResponseSchedulerEnvelopeTests(unittest.TestCase):
         self.assertNotIn("curl ", source)
         self.assertNotIn("wget ", source)
         self.assertNotIn("sbatch ", source)
+
+    def test_post_output_aggregator_grades_real_aligned_predictions(self):
+        path = REPO / "tools/aggregate_replicated_response.py"
+        self.assertTrue(path.is_file(), "post-output response aggregator must exist")
+        module = _load_tool("aggregate_replicated_response_for_test", path)
+        rows = [
+            {"independent_unit_id": "patient-1", "row_id": "r1", "source_id": "busbra",
+             "task_target": "Benign"},
+            {"independent_unit_id": "patch-2", "row_id": "r2", "source_id": "pathmnist",
+             "task_target": "adipose"},
+        ]
+        base = [
+            {"context": "{}", "row_id": "r1", "task": "malignant"},
+            {"context": "{}", "row_id": "r2", "task": "Answer: adipose."},
+        ]
+        adapted = [
+            {"context": "{}", "row_id": "r1", "task": "benign"},
+            {"context": "{}", "row_id": "r2", "task": "adipose"},
+        ]
+        self.assertEqual(module.grade_task_rows(rows, base, adapted), [
+            {"adapted_correct": 1, "base_correct": 0, "group_id": "patient-1",
+             "record_id": "r1", "source_id": "busbra"},
+            {"adapted_correct": 1, "base_correct": 1, "group_id": "patch-2",
+             "record_id": "r2", "source_id": "pathmnist"},
+        ])
+
+    def test_post_output_aggregator_reports_each_profile_without_promotion(self):
+        module = _load_tool(
+            "aggregate_replicated_response_analysis_for_test",
+            REPO / "tools/aggregate_replicated_response.py",
+        )
+        rows = [
+            {"independent_unit_id": "b1", "row_id": "b1", "source_id": "busbra",
+             "task_target": "benign"},
+            {"independent_unit_id": "b2", "row_id": "b2", "source_id": "busbra",
+             "task_target": "benign"},
+            {"independent_unit_id": "p1", "row_id": "p1", "source_id": "pathmnist",
+             "task_target": "adipose"},
+            {"independent_unit_id": "p2", "row_id": "p2", "source_id": "pathmnist",
+             "task_target": "adipose"},
+        ]
+        base = [{"row_id": row["row_id"], "task": "wrong", "context": "{}"} for row in rows]
+        correct = [{"row_id": row["row_id"], "task": row["task_target"], "context": "{}"} for row in rows]
+        analysis = module.analyze_candidate(
+            rows,
+            base,
+            {
+                "dual": {"20261025": correct, "20261026": copy.deepcopy(correct)},
+                "task_only": {"20261025": copy.deepcopy(correct), "20261026": copy.deepcopy(correct)},
+            },
+            iterations=25,
+            bootstrap_seed=9,
+            confidence=0.90,
+        )
+        self.assertFalse(analysis["promotion_eligible"])
+        self.assertEqual(analysis["profiles"]["dual"]["point_delta"],
+                         {"denominator": 1, "numerator": 1})
+        self.assertEqual(analysis["profiles"]["task_only"]["interval"], [1.0, 1.0])
 
 
 if __name__ == "__main__":

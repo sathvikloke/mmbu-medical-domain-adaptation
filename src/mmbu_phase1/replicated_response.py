@@ -3,7 +3,11 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from collections import defaultdict
+from fractions import Fraction
+from math import floor
 from pathlib import Path
+import random
 import re
 from typing import Any
 
@@ -185,6 +189,109 @@ def candidate_by_id(manifest: dict, candidate_id: str) -> dict:
     return matches[0]
 
 
+def paired_seed_mean_task_bootstrap(
+    seed_rows: dict[str, list[dict]], *, iterations: int, bootstrap_seed: int, confidence: float,
+) -> dict:
+    """Estimate a source-balanced seed-mean paired task delta over shared group draws."""
+    f.require(type(seed_rows) is dict and bool(seed_rows), "response.bootstrap.seed_rows",
+              "must be a nonempty object")
+    f.integer(iterations, "response.bootstrap.iterations", minimum=1)
+    f.integer(bootstrap_seed, "response.bootstrap.bootstrap_seed", minimum=0)
+    f.require(type(confidence) in (int, float) and not isinstance(confidence, bool)
+              and 0 < confidence < 1, "response.bootstrap.confidence", "must be between zero and one")
+
+    seed_ids = sorted(seed_rows, key=lambda value: value.encode("utf-8"))
+    for seed_id in seed_ids:
+        f.text(seed_id, "response.bootstrap.seed_id")
+        f.array(seed_rows[seed_id], f"response.bootstrap.seed_rows[{seed_id}]", nonempty=True)
+
+    aligned: dict[str, dict[str, dict]] = {}
+    reference: dict[str, tuple[str, str, int]] | None = None
+    for seed_id in seed_ids:
+        rows: dict[str, dict] = {}
+        for index, row in enumerate(seed_rows[seed_id]):
+            path = f"response.bootstrap.seed_rows[{seed_id}][{index}]"
+            f.closed(row, path, ("adapted_correct", "base_correct", "group_id", "record_id", "source_id"))
+            for name in ("group_id", "record_id", "source_id"):
+                f.text(row[name], f"{path}.{name}")
+            for name in ("adapted_correct", "base_correct"):
+                f.require(type(row[name]) is int and row[name] in (0, 1), f"{path}.{name}",
+                          "must be integer zero or one")
+            f.require(row["record_id"] not in rows, f"{path}.record_id", "must be unique")
+            rows[row["record_id"]] = row
+        projection = {
+            record_id: (row["source_id"], row["group_id"], row["base_correct"])
+            for record_id, row in rows.items()
+        }
+        if reference is None:
+            reference = projection
+        else:
+            f.require(projection == reference, f"response.bootstrap.seed_rows[{seed_id}]",
+                      "record, source, group, and base grades must align across seeds")
+        aligned[seed_id] = rows
+
+    assert reference is not None
+    grouped: dict[str, dict[str, str]] = defaultdict(dict)
+    for record_id, (source_id, group_id, _) in reference.items():
+        f.require(group_id not in grouped[source_id], "response.bootstrap.group_id",
+                  "the response screen requires one row per independent group")
+        grouped[source_id][group_id] = record_id
+    for source_id, groups in grouped.items():
+        f.require(len(groups) >= 2, f"response.bootstrap.groups[{source_id}]",
+                  "requires at least two independent groups")
+
+    sources = sorted(grouped, key=lambda value: value.encode("utf-8"))
+
+    def estimate(sampled: dict[str, list[str]]) -> Fraction:
+        seed_estimates = []
+        for seed_id in seed_ids:
+            source_estimates = []
+            for source_id in sources:
+                identifiers = sampled[source_id]
+                delta = sum(
+                    aligned[seed_id][record_id]["adapted_correct"]
+                    - aligned[seed_id][record_id]["base_correct"]
+                    for record_id in identifiers
+                )
+                source_estimates.append(Fraction(delta, len(identifiers)))
+            seed_estimates.append(sum(source_estimates, Fraction(0)) / len(source_estimates))
+        return sum(seed_estimates, Fraction(0)) / len(seed_estimates)
+
+    observed = {
+        source_id: [grouped[source_id][group_id] for group_id in sorted(grouped[source_id])]
+        for source_id in sources
+    }
+    point = estimate(observed)
+    rng = random.Random(bootstrap_seed)
+    samples = []
+    for _ in range(iterations):
+        sampled = {}
+        for source_id in sources:
+            groups = sorted(grouped[source_id])
+            sampled[source_id] = [grouped[source_id][rng.choice(groups)] for _ in groups]
+        samples.append(float(estimate(sampled)))
+    samples.sort()
+
+    def quantile(probability: float) -> float:
+        position = (len(samples) - 1) * probability
+        low = floor(position)
+        high = min(low + 1, len(samples) - 1)
+        return samples[low] + (samples[high] - samples[low]) * (position - low)
+
+    tail = (1 - confidence) / 2
+    return {
+        "bootstrap_seed": bootstrap_seed,
+        "confidence": confidence,
+        "estimand": "source_balanced_seed_mean_paired_task_delta_on_fixed_development_population",
+        "groups_per_source": {source_id: len(grouped[source_id]) for source_id in sources},
+        "interval": [quantile(tail), quantile(1 - tail)],
+        "iterations": iterations,
+        "point_delta": rational.to_wire(point),
+        "seed_ids": seed_ids,
+        "warning": "Post-output exploratory interval unless every bootstrap literal was frozen before model output.",
+    }
+
+
 def official_context_row(row: dict) -> dict:
     f.require(type(row) is dict, "response.row", "must be an object")
     source = row.get("source_id")
@@ -203,5 +310,5 @@ def official_context_row(row: dict) -> dict:
 
 __all__ = [
     "candidate_by_id", "condition_by_index", "conditions", "load_manifest", "official_context_row",
-    "validate_manifest",
+    "paired_seed_mean_task_bootstrap", "validate_manifest",
 ]

@@ -12,7 +12,7 @@ import random
 
 from mmbu_phase1 import canonical, rational
 from mmbu_phase1.fields import (
-    ContractViolation, boolean, closed, fail, integer, literal, require, text, timestamp,
+    ContractViolation, boolean, closed, digest, fail, integer, literal, require, text, timestamp,
 )
 
 
@@ -314,6 +314,16 @@ EXECUTION_KEYS = (
     "adapted_attempts", "adapted_reload_match", "base_attempts", "base_reload_match", "identity_drift",
     "mmbu_public_content_used", "source_id", "source_role",
 )
+READINESS_KEYS = (
+    "attempts_started", "checkpoint_lineages", "chronology", "gate_records", "mmbu_public_content_used",
+    "source_id", "source_role",
+)
+GATE_ORDER = (
+    "training-source-admission", "successor-runtime", "checkpoint-retraining-lineage",
+    "confirmation-source-acquisition", "rights-review", "protected-inventory", "qa-lock-and-review",
+    "duplicate-review", "confirmation-purpose-authorization", "eligible-population-lock",
+    "hermetic-decision-receipt", "opening-and-execution-lock",
+)
 
 
 def confirmation_decision(analysis: object, execution: object) -> dict:
@@ -369,8 +379,55 @@ def confirmation_decision(analysis: object, execution: object) -> dict:
     return {"reasons": reasons, "status": "confirmation_failed" if reasons else "confirmation_passed"}
 
 
+def readiness_status(value: object) -> dict:
+    """Validate reference-only pre-execution readiness without opening referenced artifacts."""
+    record = closed(value, "heldout_confirmation.readiness", READINESS_KEYS)
+    gates = closed(record["gate_records"], "heldout_confirmation.readiness.gate_records", GATE_ORDER)
+    for gate in GATE_ORDER:
+        reference = gates[gate]
+        if reference is None:
+            return {"missing": gate, "status": "blocked"}
+        digest(reference, f"heldout_confirmation.readiness.gate_records.{gate}")
+
+    literal(record["source_id"], "heldout_confirmation.readiness.source_id", "busi-whu-v3")
+    literal(record["source_role"], "heldout_confirmation.readiness.source_role", "confirmation")
+    literal(record["mmbu_public_content_used"],
+            "heldout_confirmation.readiness.mmbu_public_content_used", False)
+
+    lineages = record["checkpoint_lineages"]
+    require(type(lineages) is list and len(lineages) == 3,
+            "heldout_confirmation.readiness.checkpoint_lineages", "must contain exactly three checkpoints")
+    expected_seeds = (20261025, 20261026, 20261027)
+    for index, (lineage, seed) in enumerate(zip(lineages, expected_seeds)):
+        validated = validate_checkpoint_lineage(
+            lineage, f"heldout_confirmation.readiness.checkpoint_lineages[{index}]"
+        )
+        literal(validated["training_seed"],
+                f"heldout_confirmation.readiness.checkpoint_lineages[{index}].training_seed", seed)
+
+    attempts = closed(record["attempts_started"], "heldout_confirmation.readiness.attempts_started", CONDITIONS)
+    for condition in CONDITIONS:
+        literal(attempts[condition], f"heldout_confirmation.readiness.attempts_started.{condition}", 0)
+
+    chronology = closed(record["chronology"], "heldout_confirmation.readiness.chronology", (
+        "confirmation_lock_at", "first_output_at", "inventory_closed_at", "qa_opened_at", "qa_plan_frozen_at",
+    ))
+    inventory = timestamp(chronology["inventory_closed_at"],
+                          "heldout_confirmation.readiness.chronology.inventory_closed_at")
+    qa_plan = timestamp(chronology["qa_plan_frozen_at"],
+                        "heldout_confirmation.readiness.chronology.qa_plan_frozen_at")
+    qa_opened = timestamp(chronology["qa_opened_at"],
+                          "heldout_confirmation.readiness.chronology.qa_opened_at")
+    lock = timestamp(chronology["confirmation_lock_at"],
+                     "heldout_confirmation.readiness.chronology.confirmation_lock_at")
+    require(inventory < qa_plan < qa_opened < lock, "heldout_confirmation.readiness.chronology",
+            "must satisfy inventory close < QA plan freeze < QA opening < confirmation lock")
+    literal(chronology["first_output_at"], "heldout_confirmation.readiness.chronology.first_output_at", None)
+    return {"missing": None, "status": "ready_for_authorized_execution"}
+
+
 __all__ = [
     "SPEC_DIGEST", "analyze_patient_results", "build_randomization_artifacts", "confirmation_decision", "load_spec",
-    "validate_checkpoint_lineage", "validate_spec",
+    "readiness_status", "validate_checkpoint_lineage", "validate_spec",
 ]
 

@@ -5,7 +5,11 @@ from __future__ import annotations
 import copy
 import importlib
 import importlib.util
+import json
 from pathlib import Path
+import subprocess
+import sys
+import tempfile
 import unittest
 
 from mmbu_phase1 import rational
@@ -15,6 +19,7 @@ from mmbu_phase1.fields import ContractViolation
 
 REPO = Path(__file__).resolve().parents[2]
 SPEC = REPO / "config/phase1/busi-whu-confirmation-spec-2026-10-25.json"
+TOOL = REPO / "tools/busi_whu_confirmation.py"
 
 
 class HeldoutConfirmationRegistrationTests(unittest.TestCase):
@@ -286,6 +291,97 @@ class HeldoutConfirmationDecisionTests(unittest.TestCase):
         execution["source_id"] = "bus-uclm"
         result = self.module.confirmation_decision(self.analysis(), execution)
         self.assertEqual(result, {"reasons": ["source_identity_or_role"], "status": "blocked"})
+
+
+class HeldoutConfirmationReadinessTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.module = importlib.import_module("mmbu_phase1.heldout_confirmation")
+
+    def lineage(self, seed):
+        row = HeldoutConfirmationLineageTests().valid_lineage()
+        row["training_seed"] = seed
+        return row
+
+    def manifest(self):
+        return {
+            "attempts_started": {
+                "base": 0, "seed-20261025": 0, "seed-20261026": 0, "seed-20261027": 0,
+            },
+            "checkpoint_lineages": [self.lineage(seed) for seed in (20261025, 20261026, 20261027)],
+            "chronology": {
+                "confirmation_lock_at": "2026-10-25T12:00:03Z",
+                "first_output_at": None,
+                "inventory_closed_at": "2026-10-25T12:00:00Z",
+                "qa_opened_at": "2026-10-25T12:00:02Z",
+                "qa_plan_frozen_at": "2026-10-25T12:00:01Z",
+            },
+            "gate_records": {gate: "a" * 64 for gate in (
+                "training-source-admission", "successor-runtime", "checkpoint-retraining-lineage",
+                "confirmation-source-acquisition", "rights-review", "protected-inventory",
+                "qa-lock-and-review", "duplicate-review", "confirmation-purpose-authorization",
+                "eligible-population-lock", "hermetic-decision-receipt", "opening-and-execution-lock",
+            )},
+            "mmbu_public_content_used": False,
+            "source_id": "busi-whu-v3",
+            "source_role": "confirmation",
+        }
+
+    def test_first_missing_gate_is_reported_in_frozen_order(self):
+        manifest = self.manifest()
+        manifest["gate_records"]["successor-runtime"] = None
+        manifest["gate_records"]["training-source-admission"] = None
+        self.assertEqual(self.module.readiness_status(manifest), {
+            "missing": "training-source-admission", "status": "blocked",
+        })
+
+    def test_complete_structural_envelope_is_ready(self):
+        self.assertEqual(self.module.readiness_status(self.manifest()), {
+            "missing": None, "status": "ready_for_authorized_execution",
+        })
+
+    def test_drift_attempts_and_qa_order_reject(self):
+        mutations = (
+            lambda row: row.__setitem__("mmbu_public_content_used", True),
+            lambda row: row.__setitem__("source_id", "bus-uclm"),
+            lambda row: row["attempts_started"].__setitem__("base", 1),
+            lambda row: row["chronology"].__setitem__("qa_plan_frozen_at", "2026-10-25T11:59:59Z"),
+            lambda row: row["chronology"].__setitem__("first_output_at", "2026-10-25T12:00:04Z"),
+            lambda row: row["checkpoint_lineages"][0].__setitem__("legacy_exploratory_adapter_used", True),
+        )
+        for mutate in mutations:
+            manifest = self.manifest()
+            mutate(manifest)
+            with self.assertRaises(ContractViolation):
+                self.module.readiness_status(manifest)
+
+    def test_command_has_only_three_safe_modes_and_no_runtime_imports(self):
+        source = TOOL.read_text(encoding="utf-8")
+        for forbidden in ("subprocess", "socket", "requests", "transformers", "datasets", "torch", "paramiko", "slurm", "sbatch"):
+            self.assertNotIn(forbidden, source)
+        result = subprocess.run(
+            [sys.executable, str(TOOL), "validate-spec", "--spec", str(SPEC)],
+            cwd=REPO, text=True, capture_output=True, check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout)["status"], "valid")
+        result = subprocess.run(
+            [sys.executable, str(TOOL), "not-a-mode"], cwd=REPO, text=True, capture_output=True, check=False,
+        )
+        self.assertNotEqual(result.returncode, 0)
+
+    def test_readiness_command_reports_missing_without_opening_references(self):
+        manifest = self.manifest()
+        manifest["gate_records"]["rights-review"] = None
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "manifest.json"
+            path.write_text(json.dumps(manifest), encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, str(TOOL), "readiness", "--manifest", str(path)],
+                cwd=REPO, text=True, capture_output=True, check=False,
+            )
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertEqual(json.loads(result.stdout), {"missing": "rights-review", "status": "blocked"})
 
 
 if __name__ == "__main__":

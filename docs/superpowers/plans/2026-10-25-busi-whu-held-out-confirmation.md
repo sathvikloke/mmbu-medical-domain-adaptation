@@ -73,11 +73,11 @@
 - Create: `tools/busi_whu_confirmation.py`
 - Modify: `tests/phase1/test_heldout_confirmation.py`
 
-- [ ] Write failing command tests for every missing admission/gate reference and for forbidden network, scheduler, data, model, and output actions.
-- [ ] Implement `validate-spec`, `synthetic-check`, and `readiness` modes only.
-- [ ] Make readiness report the first missing real record in frozen gate order and return nonzero while any value is unknown.
-- [ ] Reject training-source authorization gaps, missing successor runtime evidence, old exploratory adapters, QA-order violations, outputs predating locks, repeated attempts, and any MMBU content lineage.
-- [ ] Ensure the command never imports model, dataset, network, SSH, or scheduler libraries and never opens a referenced biomedical artifact.
+- [x] Write failing command tests for every missing admission/gate reference and for forbidden network, scheduler, data, model, and output actions.
+- [x] Implement `validate-spec`, `synthetic-check`, and `readiness` modes only.
+- [x] Make readiness report the first missing real record in frozen gate order and return nonzero while any value is unknown.
+- [x] Reject training-source authorization gaps, missing successor runtime evidence, old exploratory adapters, QA-order violations, outputs predating locks, repeated attempts, and any MMBU content lineage.
+- [x] Ensure the command never imports model, dataset, network, SSH, or scheduler libraries and never opens a referenced biomedical artifact.
 
 ### Task 6: Add synthetic conformance fixtures and adversarial coverage
 

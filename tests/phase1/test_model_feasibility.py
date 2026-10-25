@@ -195,6 +195,17 @@ class NativeF0EnvelopeTests(unittest.TestCase):
         self.assertEqual(text.count("model_feasibility_f0.py"), 1)
         self.assertNotIn("sbatch ", text)
 
+    def test_acquisition_job_is_cpu_only_and_revision_bound(self):
+        text = (REPO / "tools/acquire_model_feasibility_snapshots.sbatch").read_text(encoding="utf-8")
+        self.assertIn("#SBATCH --partition=epyc-cpu", text)
+        self.assertIn("#SBATCH --array=0-4%5", text)
+        self.assertNotIn("--gres=gpu", text)
+        self.assertEqual(text.count("acquire_model_feasibility_snapshots.py"), 1)
+        source = (REPO / "tools/acquire_model_feasibility_snapshots.py").read_text(encoding="utf-8")
+        self.assertIn("revision=candidate[\"revision\"]", source)
+        self.assertIn("f.literal(info.sha", source)
+        self.assertNotIn("from_pretrained", source)
+
 
 if __name__ == "__main__":
     unittest.main()

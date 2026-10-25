@@ -90,11 +90,11 @@ Here `x, y` is the top-left pixel coordinate in the image as shown.
 
 ## Parsing and scoring
 
-The card says to parse the committed `answer` field. It also says that when the JSON object is missing or invalid, the
-raw reply is scored. This conflicts with the separate October 14 direct organizer email stating that malformed JSON is
-incorrect. The team retains the safer production policy—malformed committed JSON is a failure and is never repaired—but
-must label raw-fallback behavior `unresolved precedence`, not organizer-confirmed, until a later answer reconciles the
-two sources.
+The card says to parse the committed `answer` field and, at this captured revision, says that missing or invalid JSON
+falls back to the raw reply. The October 6 Discord answer explicitly states that official scoring will not fall back to
+the raw reply, and the October 14 direct organizer email independently says malformed JSON is incorrect. These direct
+answers control local policy: malformed committed JSON is a failure and is never repaired. Preserve the contradictory
+card text as revision-drift evidence rather than implementing it.
 
 For object detection, parse pixel `xywh` boxes, compare every predicted box with every ground-truth box, retain maximum
 IoU, and mark the row correct at maximum IoU at least 0.5. The direct organizer email separately confirms that an

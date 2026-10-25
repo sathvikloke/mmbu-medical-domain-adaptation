@@ -26,18 +26,19 @@ This is the team's human-readable register at handoff. The source records are th
 The October 14 organizer reply resolved part of the historical question draft. The authoritative sanitized governance
 receipt is [Phase 1 organizer clarification](../phase1/ORGANIZER_CLARIFICATION.md), and the readable answer map is
 [Organizer clarifications](ORGANIZER_CLARIFICATIONS.md). The older draft remains evidence of what was asked; it is no
-longer an unsent next action. The direct reply says malformed JSON is incorrect while the current card specifies raw
-fallback, so local behavior remains fail-closed and official precedence is unresolved. Public-set selection is
+longer an unsent next action. The October 6 Discord answer explicitly rejects raw-reply fallback and the October 14
+direct reply independently says malformed JSON is incorrect, so local behavior remains fail-closed despite the
+contradictory card text. Public-set selection is
 organizer-permitted but locally forbidden by the stricter project firewall; independently obtained contributing-source training splits are allowed with
 full disclosure; an explicit “any one” detection request takes one box and passes at IoU at least 0.5; enrollment is
-complete; the deadline timezone is organizer-confirmed as PST, while the exact clock time and displayed timestamp remain
-unknown. The organizer also pointed to earlier Discord evaluation information, but no exact message, author/channel,
-timestamp, pin state, or attachment has been receipted. None of these answers supplies a final harness or model result.
+complete; the best current written deadline is December 31, 2026 at 23:30 PST, pending final-form display verification.
+The authenticated [Discord audit](DISCORD_RULE_AUDIT_2026-10-24.md) records exact message locators, timestamps, authors,
+and observed pin state. None of these answers supplies a final harness or model result.
 
 | ID / decision | Missing fact or deliverable | Blocks | Suggested workstream |
 | --- | --- | --- | --- |
 | PROTO-01: task prompt | Current card at visible README revision `b2faa991...` specifies rationale before a terminal answer-only JSON object and exact task suffix routing; current metadata head `d1132643...` separately expands judge label sets in 904 rows. Raw card bytes, chat rendering, generation settings, and an executable drift check are not yet receipted | Protocol-equivalent production serializer and schema-specific training; revision-matched score comparison | Model/evaluation |
-| PROTO-02: malformed output | Direct email says malformed JSON is incorrect; current card says missing/invalid JSON falls back to raw-reply scoring. Local policy remains fail-closed and never repairs output. | Organizer precedence between the two official statements and exact fallback parser behavior | Model/evaluation |
+| PROTO-02: malformed output | The October 6 Discord answer says official scoring does not fall back to the raw reply; the October 14 direct email independently says malformed JSON is incorrect. The conflicting card fallback is preserved as revision drift. | Exact final parser implementation and harness bytes | Model/evaluation |
 | PROTO-03: segmentation labels | Current suffix allows comma-separated multiple labels while the displayed judge Gate 1 requires one specific label-set concept | Multi-label grading and score-based promotion | Model/evaluation |
 | PROTO-04: context pass | Confirmed only that prompts request applicable fields. Final prompt bytes, field registry/mapping, key schema, unknown convention, extra/missing-key treatment, zero-field behavior, parser, scoring, and exact task/context call topology remain unresolved. | Official C and S claims | Model/evaluation |
 | PROTO-05: public development | Organizer permits public-result-driven selection, but the project deliberately retains a stricter no-public-optimization firewall; gated access and exact custody still require authority | Authorized access and any later proposal to revise the stricter local policy | Review/release |
@@ -63,7 +64,7 @@ Use the [data checklist](../../outputs/mmbu-precompute/docs/data-review-checklis
 ## Calendar and stop conditions
 
 The historical strategy's AoE deadline assumption is superseded by the October 14 organizer email naming Pacific
-Standard Time. The organizer did not supply an exact clock time, so neither “end of day” nor a Chicago conversion is
-authoritative. Retain the earlier internal freeze, then bind the exact displayed timestamp when the final form arrives.
+Standard Time and the October 3 pinned Discord answer naming December 31 at 23:30. Retain the earlier internal freeze,
+then verify the exact displayed timestamp when the final form arrives.
 
 If access is still unresolved on October 9, the plan calls for local data/contract work and a reduced experiment queue. The seven-day sprint begins when access and compute are ready; it is a work-order target, not a runtime promise. Maintain the planned 15% compute reserve and base later commitments on measured per-run costs. Do not erase data review, untouched baselines, or export testing to recover a missed calendar milestone.

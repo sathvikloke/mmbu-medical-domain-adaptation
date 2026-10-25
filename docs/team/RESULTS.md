@@ -1,6 +1,10 @@
 # Results and evidence
 
-This ledger summarizes the recorded CPU preparation milestone through October 4, 2026 and links the bounded October 23 native synthetic supplements. It does not add biomedical or competition-performance results. Read the [v0.3 status](../../outputs/MMBU-precompute-v0.3-status.md) for the historical narrative and [release verification](../../outputs/MMBU-precompute-v0.3-verification.json) for the original portable archive receipt.
+This ledger summarizes the recorded CPU preparation milestone through October 4, 2026, the bounded October 23 native
+synthetic supplements, and the October 25 external-biomedical five-arm wiring shakedown. The shakedown is not a model
+selection or an MMBU result. Read the [v0.3 status](../../outputs/MMBU-precompute-v0.3-status.md) for the historical
+narrative and [release verification](../../outputs/MMBU-precompute-v0.3-verification.json) for the original portable
+archive receipt.
 
 The publication step removes captured transport session cookies from staged evidence and affected archived members. [Publication redactions](../../research/publication-redactions.json) record original and exported hashes. Historical test/release receipts retain the original measurements; use the publication verifier for exported copies rather than expecting a transformed archive to equal its original hash. The original local workspace remains unchanged.
 
@@ -23,6 +27,7 @@ The publication step removes captured transport session cookies from staged evid
 | Einstein diagnostic | Read-only diagnostic and IT handoff executed locally, including CPU/missing-dependency conditions | [Execution receipt](../../outputs/mmbu-precompute/evidence/einstein-preflight-execution.json), [AI-agent review](../../outputs/mmbu-precompute/evidence/einstein-preflight-independent-review.md) | No remote diagnostic or GPU allocation was verified |
 | B2-P native projector preflight | One MOCS A100 completed exact language-LoRA plus five-tensor visual-merger backward/update/export and fresh offline reload; 117 serialized tensors and zero reload logit drift | [B2-P trace](B2_PROJECTOR_PREFLIGHT_TRACE.md), [native receipt](../../outputs/b2-projector-preflight/attempt-2/native-preflight.json), [terminal receipt](../../outputs/b2-projector-preflight/attempt-2/terminal-run.json) | Synthetic one-step mechanics only; no answer/context effect, biomedical validity, official-loader acceptance, or competition score |
 | B2 native answer/context objective | Exact per-unit/per-view target weights reached the B2-P optimizer; fixed singleton forward/reverse accumulation had zero loss drift, 0.238% gradient relative drift, and one exact-scope update on job `85472` | [Objective trace](B2_DUAL_OBJECTIVE_PREFLIGHT_TRACE.md), [native receipt](../../outputs/b2-dual-objective-preflight/attempt-3/native-dual-objective.json), [terminal receipt](../../outputs/b2-dual-objective-preflight/attempt-3/terminal-run.json) | Synthetic one-step mechanics only; two preserved predecessor attempts failed heterogeneous concatenated-batch equivalence, and there is no biomedical effect or competition score |
+| External-biomedical five-arm shakedown | All five arms passed canonical result, reload, and matched-population checks; adapted arms also passed export/reload, language-LoRA task-only was descriptively highest at 17/32 answer macro versus 7/16 base, and every context score was zero | [Five-arm trace](BIOMEDICAL_LANE1_SHAKEDOWN_TRACE.md) | One seed and tiny proxy populations; BUS-BRA was unchanged across arms, context failed, no independent confirmation or MMBU evaluation occurred, and no candidate was promoted |
 
 ## Findings that change the next experiment
 

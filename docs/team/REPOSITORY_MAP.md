@@ -62,6 +62,7 @@ Paths in this guide are relative to the repository root. The historical layout i
 | [docs/team/ORGANIZER_CLARIFICATIONS.md](ORGANIZER_CLARIFICATIONS.md) | Dated organizer-reply register and stricter local policy |
 | [docs/team/DISCORD_RULE_AUDIT_2026-10-24.md](DISCORD_RULE_AUDIT_2026-10-24.md) | Authenticated read-only audit of rule-bearing Discord messages, exact locators, dates, authors, and observed pin state |
 | [docs/team/TASK_PROTOCOL_SNAPSHOT.md](TASK_PROTOCOL_SNAPSHOT.md) | Dated visible task prompt/routing/judge snapshot, revision drift, and later malformed-output precedence |
+| [docs/team/BIOMEDICAL_LANE1_SHAKEDOWN_TRACE.md](BIOMEDICAL_LANE1_SHAKEDOWN_TRACE.md) | Hash-bound five-arm external-biomedical shakedown, matched-population metrics, reload checks, and non-promotion interpretation |
 | [outputs/MMBU-domain-adaptation-plan-v2.md](../../outputs/MMBU-domain-adaptation-plan-v2.md) | Historical scientific rationale; its provisional model order is superseded by the current [experiment workflow](EXPERIMENT_WORKFLOW.md) |
 | [outputs/MMBU-precompute-v0.3-status.md](../../outputs/MMBU-precompute-v0.3-status.md) | Historical CPU completion status and limitations |
 | [outputs/mmbu-precompute](../../outputs/mmbu-precompute) | Version 0.3 package: source, tests, examples, configs, documentation, tools, and evidence |

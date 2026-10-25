@@ -14,6 +14,8 @@
 set -euo pipefail
 umask 077
 
+module load python/3.12.12
+
 : "${MMBU_REPO_ROOT:?Set MMBU_REPO_ROOT to the staged repository checkout}"
 : "${MMBU_LANE1_ROOT:?Set MMBU_LANE1_ROOT to the dedicated scratch run root}"
 : "${MMBU_VENV_ROOT:=/storage/home/npl015/mmbu-b1-preflight/2026-10-23-run1/venv}"

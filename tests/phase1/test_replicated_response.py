@@ -5,7 +5,10 @@ from __future__ import annotations
 import copy
 import importlib
 import importlib.util
+import os
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -237,6 +240,20 @@ class ReplicatedResponseNativeEnvelopeTests(unittest.TestCase):
         ])
         self.assertIn("--adapter", command)
         self.assertEqual(command[-1], "/output.json")
+
+    def test_reload_entrypoint_bootstraps_repo_src_without_pythonpath(self):
+        environment = dict(os.environ)
+        environment.pop("PYTHONPATH", None)
+        completed = subprocess.run(
+            [sys.executable, str(REPO / "tools/replicated_response_reload.py"), "--help"],
+            cwd=REPO,
+            env=environment,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertIn("--manifest", completed.stdout)
 
 
 class ReplicatedResponseSchedulerEnvelopeTests(unittest.TestCase):

@@ -6,6 +6,11 @@ from __future__ import annotations
 import argparse
 import os
 from pathlib import Path
+import sys
+
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
 
 from mmbu_phase1 import canonical, replicated_response as response
 from mmbu_phase1 import fields as f

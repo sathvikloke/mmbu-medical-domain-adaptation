@@ -20,11 +20,11 @@ _CANDIDATE = (
     "revision", "track_roles", "trust_remote_code",
 )
 _EXPECTED = (
-    ("f0-qwen35-9b", "Qwen/Qwen3.5-9B", "c202236235762e1c871ad0ccb60c8ee5ba337b9a", 9653104368,
+    ("f0-qwen35-9b", "Qwen/Qwen3.5-9B", "c202236235762e1c871ad0ccb60c8ee5ba337b9a", 9409813744,
      "qwen3_5", ["track2"]),
     ("f0-qwen3vl-8b", "Qwen/Qwen3-VL-8B-Instruct", "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
      8767123696, "qwen3_vl", ["track2"]),
-    ("f0-qwen35-4b", "Qwen/Qwen3.5-4B", "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a", 4659865088,
+    ("f0-qwen35-4b", "Qwen/Qwen3.5-4B", "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a", 4539265536,
      "qwen3_5", ["track2", "track3"]),
     ("f0-qwen3vl-2b", "Qwen/Qwen3-VL-2B-Instruct", "89644892e4d85e24eaac8bacfd4f463576704203",
      2127532032, "qwen3_vl", ["track3"]),

@@ -44,6 +44,14 @@ class ModelFeasibilityManifestTests(unittest.TestCase):
         with self.assertRaises(ContractViolation):
             model_feasibility.candidate_by_index(self.value, 5)
 
+    def test_qwen35_counts_match_native_post_tie_models(self):
+        counts = {
+            row["candidate_id"]: row["expected_parameter_count"]
+            for row in self.value["candidates"]
+        }
+        self.assertEqual(counts["f0-qwen35-9b"], 9409813744)
+        self.assertEqual(counts["f0-qwen35-4b"], 4539265536)
+
     def test_manifest_freezes_generated_input_and_matched_update(self):
         self.assertEqual(self.value["fixture"]["origin"], "synthetic_engineering")
         self.assertFalse(self.value["authorization"]["mmbu_public_content_allowed"])

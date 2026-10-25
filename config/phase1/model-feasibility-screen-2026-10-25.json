@@ -22,7 +22,7 @@
   "candidates": [
     {
       "candidate_id": "f0-qwen35-9b",
-      "expected_parameter_count": 9653104368,
+      "expected_parameter_count": 9409813744,
       "gated": false,
       "license_id": "Apache-2.0",
       "loader_family": "qwen3_5",
@@ -44,7 +44,7 @@
     },
     {
       "candidate_id": "f0-qwen35-4b",
-      "expected_parameter_count": 4659865088,
+      "expected_parameter_count": 4539265536,
       "gated": false,
       "license_id": "Apache-2.0",
       "loader_family": "qwen3_5",

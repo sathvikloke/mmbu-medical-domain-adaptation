@@ -10,6 +10,7 @@ from fractions import Fraction
 from typing import Any
 
 from mmbu_phase1 import canonical, competition_manifest_v2, rational
+from mmbu_phase1 import lane1_synthetic
 from mmbu_phase1.fields import (
     array,
     boolean,
@@ -164,10 +165,105 @@ def resolve_arms(manifest: Any) -> tuple[dict, ...]:
     return tuple(arms)
 
 
+def _empty_arm_result(arm: dict, status: str) -> dict:
+    return {
+        "architecture_id": arm["architecture_id"],
+        "candidate_id": arm["candidate_id"],
+        "context_accuracy": None,
+        "failure_message": None,
+        "failure_stage": None,
+        "objective_profile_id": arm["objective_profile_id"],
+        "optimizer_updates": 0,
+        "ordered_unit_digest": None,
+        "reload_prediction_match": None,
+        "resume_prediction_match": None,
+        "resume_state_match": None,
+        "score_proxy": None,
+        "status": status,
+        "task_accuracy": None,
+        "trainable_parameter_names": None,
+    }
+
+
+def _ordered_training_rows(fixture: dict, config: dict) -> tuple[list[dict], list[str]]:
+    rows = []
+    units = []
+    for _epoch in range(config["epochs"]):
+        for row in fixture["train_rows"]:
+            rows.append(row)
+            units.append(row["independent_unit_id"])
+    return rows, units
+
+
+def _run_matched_arm(arm: dict, fixture: dict, config: dict, backend_factory) -> dict:
+    row = _empty_arm_result(arm, "passed")
+    backend = backend_factory()
+    backend.initialize(base_state=lane1_synthetic.BASE_STATE_BYTES, arm=arm, seed=config["seed"])
+    if backend.base_state_bytes() != lane1_synthetic.BASE_STATE_BYTES:
+        fail("lane1.backend.base_state", "backend did not preserve the common base bytes")
+    actual_scope = tuple(backend.trainable_parameter_names())
+    expected_scope = tuple(config["trainable_names_by_architecture"][arm["architecture_id"]])
+    if actual_scope != expected_scope:
+        fail("lane1.backend.trainable_parameter_names", "backend scope differs from the bound engineering config")
+    row["trainable_parameter_names"] = list(actual_scope)
+    training_rows, units = _ordered_training_rows(fixture, config)
+    row["ordered_unit_digest"] = canonical.value_digest(units)
+    if arm["objective_mode"] == "base":
+        return row
+    learning_rate = rational.from_wire(config["learning_rate"], "config.learning_rate")
+    for item in training_rows:
+        try:
+            backend.step(item, objective_mode=arm["objective_mode"], learning_rate=learning_rate)
+        except Exception as exc:
+            row["status"] = "failed"
+            row["failure_stage"] = "update"
+            row["failure_message"] = str(exc)
+            return row
+        row["optimizer_updates"] += 1
+    return row
+
+
+def run_lane1(manifest: Any, fixture: Any, config: Any, *, backend_factory=lane1_synthetic.SyntheticBackend) -> dict:
+    """Run the exact five-arm engineering lane and preserve a closed failure population."""
+    arms = resolve_arms(manifest)
+    fixture = validate_fixture(fixture)
+    config = validate_config(config, fixture)
+    arm_results = []
+    stopped = False
+    for arm in arms:
+        if stopped:
+            arm_results.append(_empty_arm_result(arm, "not_run"))
+            continue
+        try:
+            result = _run_matched_arm(arm, fixture, config, backend_factory)
+        except Exception as exc:
+            result = _empty_arm_result(arm, "failed")
+            result["failure_stage"] = "pre_update"
+            result["failure_message"] = str(exc)
+        arm_results.append(result)
+        stopped = result["status"] != "passed"
+    return {
+        "arm_results": arm_results,
+        "comparisons": [],
+        "config_digest": canonical.value_digest(config),
+        "evidence_class": "synthetic_engineering_only",
+        "fixture_digest": canonical.value_digest(fixture),
+        "limitations": [
+            "Synthetic engineering evidence only; no biomedical performance was measured.",
+            "No model weights, GPU, HPC, MMBU public examples, upload, or submission were used.",
+        ],
+        "manifest_digest": manifest["canonical_digest"],
+        "schema_id": "mmbu.synthetic.lane1_result",
+        "schema_version": 1,
+        "scientific_selection_output_observed": False,
+    }
+
+
 __all__ = [
     "ARM_IDS",
     "ContractViolation",
     "resolve_arms",
+    "run_lane1",
     "validate_config",
     "validate_fixture",
 ]

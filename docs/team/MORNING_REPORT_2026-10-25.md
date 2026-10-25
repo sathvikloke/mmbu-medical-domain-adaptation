@@ -2,7 +2,7 @@
 
 ## Bottom line
 
-The strategy and evaluator work passed; the model-feasibility screen did not run because MOCS rejected both the original home download and the single approved scratch reacquisition at the user-quota boundary. No GPU time was consumed and no scientific conclusion was drawn from the failed downloads.
+The strategy and evaluator work passed. After storage cleanup, all five exact model revisions downloaded successfully. The first GPU F0 array then failed before Python initialization because its Slurm launcher omitted the required MOCS Python module load. No model loaded and no scientific conclusion was drawn.
 
 ## What passed
 
@@ -16,8 +16,10 @@ The strategy and evaluator work passed; the model-feasibility screen did not run
 
 - All five model downloads in job `85746` failed under the home-backed GPFS quota.
 - The one authorized clean scratch reacquisition, job `85751`, also failed under the account-level GPFS quota despite abundant cluster-wide free space.
-- No model was loaded. No forward pass, backward pass, LoRA update, save, offline reload, deterministic prediction check, GPU memory measurement, or runtime measurement occurred.
-- No GPU F0 array was submitted. No candidate passed or failed model feasibility.
+- After cleanup, acquisition job `85823` passed for all five exact revisions.
+- GPU array `85828` failed all five tasks with exit code `127` because `libpython3.12.so.1.0` was unavailable before the runner started.
+- No model was loaded. No forward pass, backward pass, LoRA update, save, offline reload, deterministic prediction check, GPU memory measurement, or model-runtime measurement occurred.
+- A failing regression test reproduced the missing module declaration; the repaired launcher now requires `module load python/3.12.12`, and the focused suite passes.
 
 ## Track decision and uncertainty
 
@@ -37,6 +39,6 @@ The following organizer questions remain unresolved and must not be guessed:
 
 ## Required next approval
 
-After storage is cleaned or the MOCS quota is increased, the next action requiring approval is **one new exact-snapshot acquisition attempt followed, only if all five revision checks pass, by the already frozen one-attempt F0 array**. Until that approval is given, do not reacquire, load models, launch GPUs, train, evaluate, upload, submit, or select a winner.
+The exact snapshots are now present and revision-verified. The next action requiring approval is **one replacement F0 launch using the repaired Slurm environment, without reacquiring models or changing any frozen scientific setting**. Until that approval is given, do not relaunch, load models, train, evaluate, upload, submit, or select a winner.
 
 The later decision-bearing experiment remains a matched unchanged-base versus adapted comparison on one frozen external-biomedical development population with three seeds. It is not authorized and should not be launched before F0 produces valid memory/runtime and reload evidence.

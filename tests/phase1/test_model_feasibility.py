@@ -190,6 +190,7 @@ class NativeF0EnvelopeTests(unittest.TestCase):
         self.assertIn("#SBATCH --array=0-4%5", text)
         self.assertIn("#SBATCH --time=01:00:00", text)
         self.assertIn("#SBATCH --gres=gpu:tesla_a100_80gb:1", text)
+        self.assertIn("module load python/3.12.12", text)
         self.assertIn("HF_HUB_OFFLINE=1", text)
         self.assertIn("TRANSFORMERS_OFFLINE=1", text)
         self.assertEqual(text.count("model_feasibility_f0.py"), 1)

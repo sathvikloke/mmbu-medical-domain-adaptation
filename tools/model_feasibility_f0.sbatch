@@ -10,6 +10,8 @@
 
 set -euo pipefail
 
+module load python/3.12.12
+
 : "${F0_REPO:?F0_REPO is required}"
 : "${F0_RUN_ROOT:?F0_RUN_ROOT is required}"
 : "${F0_SNAPSHOT_ROOT:?F0_SNAPSHOT_ROOT is required}"

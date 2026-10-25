@@ -8,6 +8,7 @@ import importlib.util
 from pathlib import Path
 import unittest
 
+from mmbu_phase1 import rational
 from mmbu_phase1.scope import REQUIRED_PHASE1_TEST_MODULES
 from mmbu_phase1.fields import ContractViolation
 
@@ -116,6 +117,95 @@ class HeldoutConfirmationLineageTests(unittest.TestCase):
             mutate(changed)
             with self.subTest(index=index), self.assertRaises(ContractViolation):
                 self.module.validate_checkpoint_lineage(changed)
+
+
+class HeldoutConfirmationStatisticsTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.module = importlib.import_module("mmbu_phase1.heldout_confirmation")
+
+    def patients(self):
+        return [f"patient-{index:03d}" for index in range(60)]
+
+    def rows(self):
+        rows = []
+        for patient_id in self.patients():
+            for condition in ("base", "seed-20261025", "seed-20261026", "seed-20261027"):
+                adapted = condition != "base"
+                rows.append({
+                    "condition_id": condition,
+                    "context_field_grades": {
+                        "body_part": 1 if adapted else 0,
+                        "medical_domain": 1 if adapted else 0,
+                        "modality": 1 if adapted else 0,
+                    },
+                    "output_failed": False,
+                    "patient_id": patient_id,
+                    "record_id": patient_id + "::image-0",
+                    "task_grade": rational.to_wire(1 if adapted else 0),
+                    "target_label": "benign" if int(patient_id[-3:]) % 2 == 0 else "malignant",
+                })
+        return rows
+
+    def artifacts(self):
+        return self.module.build_randomization_artifacts(
+            self.patients(), created_at="2026-10-25T12:00:00Z"
+        )
+
+    def test_exact_patient_analysis_uses_locked_matrices(self):
+        result = self.module.analyze_patient_results(
+            self.rows(), self.artifacts(), first_output_at="2026-10-25T12:00:01Z"
+        )
+        self.assertEqual(result["patient_count"], 60)
+        self.assertEqual(result["point_delta"], rational.to_wire(1))
+        self.assertEqual(result["lower_bound"], rational.to_wire(1))
+        self.assertEqual(result["seed_deltas"], {
+            "seed-20261025": rational.to_wire(1),
+            "seed-20261026": rational.to_wire(1),
+            "seed-20261027": rational.to_wire(1),
+        })
+        self.assertEqual(result["base"]["task"], rational.to_wire(0))
+        self.assertEqual(result["seed_mean"]["context"], rational.to_wire(1))
+
+    def test_population_and_chronology_drift_reject(self):
+        with self.assertRaises(ContractViolation):
+            self.module.build_randomization_artifacts(self.patients()[:-1], created_at="2026-10-25T12:00:00Z")
+        with self.assertRaises(ContractViolation):
+            self.module.build_randomization_artifacts(list(reversed(self.patients())), created_at="2026-10-25T12:00:00Z")
+        with self.assertRaises(ContractViolation):
+            self.module.analyze_patient_results(
+                self.rows(), self.artifacts(), first_output_at="2026-10-25T11:59:59Z"
+            )
+
+    def test_missing_duplicate_and_matrix_drift_reject(self):
+        rows = self.rows()
+        for changed in (rows[:-1], rows + [copy.deepcopy(rows[0])]):
+            with self.assertRaises(ContractViolation):
+                self.module.analyze_patient_results(
+                    changed, self.artifacts(), first_output_at="2026-10-25T12:00:01Z"
+                )
+        artifact = self.artifacts()
+        artifact["index_matrix"][0][0] = 59
+        with self.assertRaises(ContractViolation):
+            self.module.analyze_patient_results(
+                rows, artifact, first_output_at="2026-10-25T12:00:01Z"
+            )
+
+    def test_failures_stay_as_exact_zero_and_floats_reject(self):
+        rows = self.rows()
+        rows[0]["output_failed"] = True
+        rows[0]["task_grade"] = rational.to_wire(0)
+        result = self.module.analyze_patient_results(
+            rows, self.artifacts(), first_output_at="2026-10-25T12:00:01Z"
+        )
+        self.assertEqual(result["output_failure_count"], 1)
+
+        rows = self.rows()
+        rows[0]["task_grade"] = 0.0
+        with self.assertRaises(ContractViolation):
+            self.module.analyze_patient_results(
+                rows, self.artifacts(), first_output_at="2026-10-25T12:00:01Z"
+            )
 
 
 if __name__ == "__main__":

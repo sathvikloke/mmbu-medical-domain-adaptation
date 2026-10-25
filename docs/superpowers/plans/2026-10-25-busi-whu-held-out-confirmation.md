@@ -48,12 +48,12 @@
 - Modify: `src/mmbu_phase1/heldout_confirmation.py`
 - Modify: `tests/phase1/test_heldout_confirmation.py`
 
-- [ ] Write failing tests for patient-order drift, fewer than 60 patients, duplicate/missing condition rows, unequal image dropping, output failures removed from denominators, float arithmetic, and index/sign matrices generated after output.
-- [ ] Implement exact per-image, per-patient, per-seed, and family task/context calculations with `fractions.Fraction` converted only to canonical rational wire values.
-- [ ] Implement deterministic patient index and sign matrix construction from sorted UTF-8 patient IDs.
-- [ ] Validate matrix dimensions, values, canonical digest, creation chronology, and binding to the closed population before accepting result rows.
-- [ ] Compute the exact zero-based index-999 one-sided bound without interpolation and the exact sign-randomization diagnostic.
-- [ ] Make the focused statistics tests pass.
+- [x] Write failing tests for patient-order drift, fewer than 60 patients, duplicate/missing condition rows, unequal image dropping, output failures removed from denominators, float arithmetic, and index/sign matrices generated after output.
+- [x] Implement exact per-image, per-patient, per-seed, and family task/context calculations with `fractions.Fraction` converted only to canonical rational wire values.
+- [x] Implement deterministic patient index and sign matrix construction from sorted UTF-8 patient IDs.
+- [x] Validate matrix dimensions, values, canonical digest, creation chronology, and binding to the closed population before accepting result rows.
+- [x] Compute the exact zero-based index-999 one-sided bound without interpolation and the exact sign-randomization diagnostic.
+- [x] Make the focused statistics tests pass.
 
 ### Task 4: Implement the non-rescuable decision and diagnostics
 

@@ -239,5 +239,63 @@ class ReplicatedResponseNativeEnvelopeTests(unittest.TestCase):
         self.assertEqual(command[-1], "/output.json")
 
 
+class ReplicatedResponseSchedulerEnvelopeTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.prepare_path = REPO / "tools/prepare_replicated_response_portfolio.py"
+        cls.prepare_sbatch = REPO / "tools/prepare_replicated_response_portfolio.sbatch"
+        cls.screen_sbatch = REPO / "tools/replicated_response_screen.sbatch"
+
+    def test_launch_files_exist(self):
+        self.assertTrue(self.prepare_path.is_file())
+        self.assertTrue(self.prepare_sbatch.is_file())
+        self.assertTrue(self.screen_sbatch.is_file())
+
+    def test_preparation_is_new_output_only(self):
+        if not self.prepare_path.is_file():
+            self.skipTest("portfolio preparation tool is not implemented")
+        module = _load_tool("prepare_replicated_response_for_test", self.prepare_path)
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / "portfolio.json"
+            module.publish(output, b"first\n")
+            self.assertEqual(output.read_bytes(), b"first\n")
+            with self.assertRaises(FileExistsError):
+                module.publish(output, b"second\n")
+
+    def test_scheduler_is_exactly_bounded_and_offline(self):
+        if not self.screen_sbatch.is_file():
+            self.skipTest("response screen Slurm envelope is not implemented")
+        source = self.screen_sbatch.read_text(encoding="utf-8")
+        self.assertIn("#SBATCH --array=0-13%5", source)
+        self.assertIn("#SBATCH --gres=gpu:tesla_a100_80gb:1", source)
+        self.assertIn("#SBATCH --time=04:00:00", source)
+        self.assertIn("export HF_HUB_OFFLINE=1", source)
+        self.assertIn("export TRANSFORMERS_OFFLINE=1", source)
+        self.assertIn('--condition-index "${SLURM_ARRAY_TASK_ID}"', source)
+        self.assertNotIn("sbatch ", source)
+
+    def test_source_and_snapshot_paths_are_explicit(self):
+        if not self.screen_sbatch.is_file() or not self.prepare_sbatch.is_file():
+            self.skipTest("response screen Slurm envelopes are not implemented")
+        screen = self.screen_sbatch.read_text(encoding="utf-8")
+        prepare = self.prepare_sbatch.read_text(encoding="utf-8")
+        for name in ("MMBU_SOURCE_ROOT", "MMBU_RESPONSE_ROOT"):
+            self.assertIn(name, screen)
+            self.assertIn(name, prepare)
+        self.assertIn("MMBU_SNAPSHOT_ROOT", screen)
+        self.assertIn('BUSBRA.zip', prepare)
+        self.assertIn('pathmnist_224.npz', prepare)
+
+    def test_preparation_scheduler_is_cpu_only_and_does_not_download(self):
+        if not self.prepare_sbatch.is_file():
+            self.skipTest("portfolio preparation Slurm envelope is not implemented")
+        source = self.prepare_sbatch.read_text(encoding="utf-8")
+        self.assertIn("#SBATCH --partition=epyc-cpu", source)
+        self.assertNotIn("--gres=gpu", source)
+        self.assertNotIn("curl ", source)
+        self.assertNotIn("wget ", source)
+        self.assertNotIn("sbatch ", source)
+
+
 if __name__ == "__main__":
     unittest.main()

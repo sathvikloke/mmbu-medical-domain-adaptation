@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import copy
+import importlib.util
 from pathlib import Path
+import tempfile
 import unittest
+from unittest import mock
 
 from mmbu_phase1 import model_feasibility
 from mmbu_phase1.fields import ContractViolation
@@ -12,6 +15,13 @@ from mmbu_phase1.fields import ContractViolation
 
 REPO = Path(__file__).resolve().parents[2]
 MANIFEST = REPO / "config/phase1/model-feasibility-screen-2026-10-25.json"
+
+
+def _load_tool(name: str, path: Path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 class ModelFeasibilityManifestTests(unittest.TestCase):
@@ -84,6 +94,106 @@ class ModelFeasibilityManifestTests(unittest.TestCase):
         ranking["comparison_rules"]["decision_use"] = "select_winner"
         with self.assertRaises(ContractViolation):
             model_feasibility.validate_manifest(ranking)
+
+
+class NativeF0EnvelopeTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.runner = _load_tool("model_feasibility_f0_for_test", REPO / "tools/model_feasibility_f0.py")
+
+    def test_one_shot_output_root_must_not_exist(self):
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / "new"
+            self.runner.require_new_output_root(output)
+            output.mkdir()
+            with self.assertRaises(ContractViolation):
+                self.runner.require_new_output_root(output)
+
+    def test_offline_environment_is_required(self):
+        valid = {"HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1"}
+        self.assertEqual(self.runner.validate_offline_environment(valid), valid)
+        for key in valid:
+            changed = dict(valid)
+            changed[key] = "0"
+            with self.subTest(key=key), self.assertRaises(ContractViolation):
+                self.runner.validate_offline_environment(changed)
+
+    def test_fresh_reload_command_is_explicit_and_offline(self):
+        command = self.runner.reload_command(
+            "/python", "/reload.py", "/manifest.json", 2, "/snapshot", "/adapter", "/reload-result.json"
+        )
+        self.assertEqual(command, [
+            "/python", "/reload.py", "--manifest", "/manifest.json", "--candidate-index", "2",
+            "--snapshot", "/snapshot", "--adapter", "/adapter", "--output", "/reload-result.json",
+        ])
+
+    def test_frozen_target_text_is_not_normalized(self):
+        class Mask:
+            def sum(self):
+                return self
+
+            def item(self):
+                return 1
+
+        class Processor:
+            def __call__(self, **_kwargs):
+                return {"attention_mask": Mask()}
+
+        conversations = []
+
+        def render(_processor, _family, conversation, *, generation):
+            conversations.append((conversation, generation))
+            return "rendered"
+
+        with mock.patch.object(self.runner, "render_chat", side_effect=render):
+            self.runner.encode(Processor(), "qwen3_5", object(), "prompt", " blue")
+        self.assertEqual(conversations[1][0][1]["content"][0]["text"], " blue")
+
+    def test_tensor_digest_supports_bfloat16(self):
+        try:
+            import torch
+        except ImportError:
+            self.skipTest("torch unavailable")
+        value = torch.tensor([1.0, 2.0], dtype=torch.bfloat16)
+        digest = self.runner.tensor_digest([("adapter", value)])
+        self.assertEqual(len(digest), 64)
+
+    def test_failure_receipt_retains_stage_and_never_claims_later_gates(self):
+        candidate = model_feasibility.candidate_by_index(model_feasibility.load_manifest(MANIFEST), 0)
+        receipt = self.runner.failure_receipt(
+            candidate, "backward", "RuntimeError: synthetic failure", "2026-10-25T01:00:00Z",
+            "2026-10-25T01:00:03Z", "/snapshot", "abc123",
+        )
+        self.assertEqual(receipt["status"], "failed")
+        self.assertEqual(receipt["terminal_stage"], "backward")
+        self.assertEqual(receipt["optimizer_updates"], 0)
+        self.assertIsNone(receipt["reload_prediction_match"])
+        self.assertFalse(receipt["mmbu_public_content_used"])
+        self.assertFalse(receipt["biomedical_content_used"])
+
+    def test_late_failure_receipt_retains_observed_update_and_adapter(self):
+        candidate = model_feasibility.candidate_by_index(model_feasibility.load_manifest(MANIFEST), 1)
+        receipt = self.runner.failure_receipt(
+            candidate, "reload", "offline mismatch", "2026-10-25T01:00:00Z", "2026-10-25T01:00:03Z",
+            "/snapshot", "abc123", optimizer_updates=1,
+            adapter_inventory=[{"bytes": 3, "path": "adapter_model.safetensors", "sha256": "a" * 64}],
+            snapshot_tree_sha256="b" * 64,
+            resources={"elapsed_seconds": 3},
+        )
+        self.assertEqual(receipt["optimizer_updates"], 1)
+        self.assertEqual(receipt["adapter_inventory"][0]["path"], "adapter_model.safetensors")
+        self.assertEqual(receipt["snapshot_tree_sha256"], "b" * 64)
+        self.assertEqual(receipt["resources"], {"elapsed_seconds": 3})
+
+    def test_sbatch_enforces_one_hour_one_attempt_offline_array(self):
+        text = (REPO / "tools/model_feasibility_f0.sbatch").read_text(encoding="utf-8")
+        self.assertIn("#SBATCH --array=0-4%5", text)
+        self.assertIn("#SBATCH --time=01:00:00", text)
+        self.assertIn("#SBATCH --gres=gpu:tesla_a100_80gb:1", text)
+        self.assertIn("HF_HUB_OFFLINE=1", text)
+        self.assertIn("TRANSFORMERS_OFFLINE=1", text)
+        self.assertEqual(text.count("model_feasibility_f0.py"), 1)
+        self.assertNotIn("sbatch ", text)
 
 
 if __name__ == "__main__":

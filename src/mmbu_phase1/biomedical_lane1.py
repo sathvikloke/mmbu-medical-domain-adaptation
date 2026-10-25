@@ -8,7 +8,7 @@ import json
 import re
 from typing import Any
 
-from mmbu_phase1 import rational
+from mmbu_phase1 import official_context, rational
 from mmbu_phase1.fields import ContractViolation, require
 
 
@@ -137,7 +137,13 @@ def score_predictions(rows: list[dict], predictions: list[dict]) -> dict:
         if row.get("context_target") is not None:
             context_by_source.setdefault(source, Fraction(0))
             context_counts[source] = context_counts.get(source, 0) + 1
-            context_by_source[source] += _context_score(prediction.get("context"), row["context_target"])
+            if "requested_context_fields" in row:
+                result = official_context.score_context_output(
+                    prediction.get("context"), row["context_target"], row["requested_context_fields"]
+                )
+                context_by_source[source] += rational.from_wire(result["score"])
+            else:
+                context_by_source[source] += _context_score(prediction.get("context"), row["context_target"])
     answer_counts = {source: sum(row["source_id"] == source for row in rows) for source in answer_by_source}
     answer_accuracies = {source: answer_by_source[source] / answer_counts[source] for source in answer_by_source}
     context_scores = {source: context_by_source[source] / context_counts[source] for source in context_by_source}

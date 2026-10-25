@@ -21,6 +21,7 @@ REQUIRED_PHASE1_TEST_MODULES = (
     "test_geometry.py",
     "test_locks.py",
     "test_lane1_trainer.py",
+    "test_official_context.py",
     "test_package_b.py",
     "test_package_f.py",
     "test_package_f_manifest_v2.py",

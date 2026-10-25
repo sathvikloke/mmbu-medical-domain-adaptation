@@ -169,7 +169,7 @@ def _npy(descr, shape, payload):
     return b"\x93NUMPY\x01\x00" + struct.pack("<H", len(header)) + header + payload
 
 
-def _build_pathmnist(path: Path, *, bad_label=False):
+def _build_pathmnist(path: Path, *, bad_label=False, label_descr="|u1"):
     counts = {"train": 3, "val": 2, "test": 1}
     with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_STORED) as archive:
         for split, count in counts.items():
@@ -179,8 +179,11 @@ def _build_pathmnist(path: Path, *, bad_label=False):
                 labels = [9 if bad_label else 1]
             elif split == "val":
                 labels = [2, 7]
-            payload = b"".join(struct.pack("<q", value) for value in labels)
-            archive.writestr(f"{split}_labels.npy", _npy("<i8", (count, 1), payload))
+            if label_descr == "|u1":
+                payload = bytes(labels)
+            else:
+                payload = b"".join(struct.pack("<q", value) for value in labels)
+            archive.writestr(f"{split}_labels.npy", _npy(label_descr, (count, 1), payload))
 
 
 def _pathmnist_declaration(path: Path):
@@ -237,6 +240,11 @@ class PathmnistCompilerTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "pathmnist_224.npz"
             _build_pathmnist(path, bad_label=True)
+            with self.assertRaises(ContractViolation):
+                biomedical_sources.compile_pathmnist(path, _pathmnist_declaration(path))
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "pathmnist_224.npz"
+            _build_pathmnist(path, label_descr="<i8")
             with self.assertRaises(ContractViolation):
                 biomedical_sources.compile_pathmnist(path, _pathmnist_declaration(path))
 

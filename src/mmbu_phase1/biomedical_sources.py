@@ -383,12 +383,12 @@ def compile_pathmnist(archive_path: str | Path, declaration: Any) -> dict:
             label_name = f"{split}_labels.npy"
             with archive.open(label_name) as stream:
                 dtype, shape, offset = _npy_header(stream, f"pathmnist_archive.{label_name}")
-                require(dtype == "<i8", f"pathmnist_archive.{label_name}.dtype", "must be little-endian int64")
+                require(dtype == "|u1", f"pathmnist_archive.{label_name}.dtype", "must match official uint8 labels")
                 require(shape == (count, 1), f"pathmnist_archive.{label_name}.shape", "does not match declaration")
                 payload = stream.read()
-            require(len(payload) == count * 8 and by_name[label_name].file_size == offset + len(payload),
+            require(len(payload) == count and by_name[label_name].file_size == offset + len(payload),
                     f"pathmnist_archive.{label_name}.bytes", "label payload length does not match shape")
-            labels = struct.unpack(f"<{count}q", payload)
+            labels = payload
             for index, label in enumerate(labels):
                 require(0 <= label < len(declaration["labels"]),
                         f"pathmnist_archive.{label_name}[{index}]", "label is out of range")

@@ -7,6 +7,7 @@ REQUIRED_PHASE1_TEST_MODULES = (
     "test_b1_preflight.py",
     "test_b2_dual_preflight.py",
     "test_b2_preflight.py",
+    "test_biomedical_sources.py",
     "test_bundle.py",
     "test_busbra_review.py",
     "test_canonical.py",

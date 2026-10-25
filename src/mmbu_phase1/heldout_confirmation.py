@@ -261,11 +261,37 @@ def analyze_patient_results(rows: list[dict], artifacts: dict, *, first_output_a
         condition: _mean(list(context_patient[condition].values()), f"condition_context.{condition}")
         for condition in CONDITIONS
     }
+    condition_q = {
+        condition: Fraction(4, 5) * condition_task[condition] + Fraction(1, 5) * condition_context[condition]
+        for condition in CONDITIONS
+    }
+    class_diagnostics: dict[str, dict[str, dict]] = {}
+    for condition in CONDITIONS:
+        class_diagnostics[condition] = {}
+        for label in ("benign", "malignant"):
+            patient_scores: list[Fraction] = []
+            image_count = 0
+            for patient_id in patient_ids:
+                matching = [row for row in by_condition[condition][patient_id].values()
+                            if row["target_label"] == label]
+                if matching:
+                    image_count += len(matching)
+                    patient_scores.append(_mean(
+                        [rational.from_wire(row["task_grade"]) for row in matching],
+                        f"class.{condition}.{label}.{patient_id}",
+                    ))
+            class_diagnostics[condition][label] = {
+                "image_count": image_count,
+                "patient_count": len(patient_scores),
+                "score": rational.to_wire(_mean(patient_scores, f"class.{condition}.{label}")),
+            }
     return {
         "base": {
             "context": rational.to_wire(condition_context["base"]),
+            "q": rational.to_wire(condition_q["base"]),
             "task": rational.to_wire(condition_task["base"]),
         },
+        "class_diagnostics": class_diagnostics,
         "lower_bound": rational.to_wire(lower),
         "output_failure_count": output_failures,
         "patient_count": len(patient_ids),
@@ -273,14 +299,78 @@ def analyze_patient_results(rows: list[dict], artifacts: dict, *, first_output_a
         "seed_deltas": {key: rational.to_wire(value) for key, value in seed_deltas.items()},
         "seed_mean": {
             "context": rational.to_wire(_mean([condition_context[key] for key in SEED_CONDITIONS], "seed_context")),
+            "q": rational.to_wire(_mean([condition_q[key] for key in SEED_CONDITIONS], "seed_q")),
             "task": rational.to_wire(_mean([condition_task[key] for key in SEED_CONDITIONS], "seed_task")),
         },
         "sign_randomization_p": rational.to_wire(sign_p),
     }
 
 
+ANALYSIS_KEYS = (
+    "base", "class_diagnostics", "lower_bound", "output_failure_count", "patient_count", "point_delta",
+    "seed_deltas", "seed_mean", "sign_randomization_p",
+)
+EXECUTION_KEYS = (
+    "adapted_attempts", "adapted_reload_match", "base_attempts", "base_reload_match", "identity_drift",
+    "mmbu_public_content_used", "source_id", "source_role",
+)
+
+
+def confirmation_decision(analysis: object, execution: object) -> dict:
+    """Apply the one non-rescuable primary confirmation decision in frozen order."""
+    result = closed(analysis, "heldout_confirmation.analysis", ANALYSIS_KEYS)
+    run = closed(execution, "heldout_confirmation.execution", EXECUTION_KEYS)
+    blocked: list[str] = []
+    if run["source_id"] != "busi-whu-v3" or run["source_role"] != "confirmation":
+        blocked.append("source_identity_or_role")
+    if type(run["mmbu_public_content_used"]) is not bool or run["mmbu_public_content_used"]:
+        blocked.append("mmbu_public_content_boundary")
+    if blocked:
+        return {"reasons": blocked, "status": "blocked"}
+
+    patient_count = integer(result["patient_count"], "heldout_confirmation.analysis.patient_count", minimum=0)
+    if patient_count < 60:
+        return {"reasons": ["minimum_independent_patients"], "status": "underpowered"}
+
+    reasons: list[str] = []
+    if type(run["base_attempts"]) is not int or run["base_attempts"] != 1:
+        reasons.append("base_attempt_count")
+    if type(run["base_reload_match"]) is not bool or not run["base_reload_match"]:
+        reasons.append("base_reload_mismatch")
+    attempts = closed(run["adapted_attempts"], "heldout_confirmation.execution.adapted_attempts", SEED_CONDITIONS)
+    reloads = closed(run["adapted_reload_match"], "heldout_confirmation.execution.adapted_reload_match", SEED_CONDITIONS)
+    for condition in SEED_CONDITIONS:
+        if type(attempts[condition]) is not int or attempts[condition] != 1:
+            reasons.append(f"adapted_attempt_count:{condition}")
+        if type(reloads[condition]) is not bool or not reloads[condition]:
+            reasons.append(f"adapted_reload_mismatch:{condition}")
+    if type(run["identity_drift"]) is not bool or run["identity_drift"]:
+        reasons.append("identity_drift")
+
+    margin = Fraction(1, 20)
+    seed_deltas = closed(result["seed_deltas"], "heldout_confirmation.analysis.seed_deltas", SEED_CONDITIONS)
+    for condition in SEED_CONDITIONS:
+        if rational.from_wire(seed_deltas[condition], f"heldout_confirmation.analysis.seed_deltas.{condition}") <= 0:
+            reasons.append(f"nonpositive_seed_delta:{condition}")
+    if rational.from_wire(result["point_delta"], "heldout_confirmation.analysis.point_delta") <= margin:
+        reasons.append("point_delta_not_above_margin")
+    if rational.from_wire(result["lower_bound"], "heldout_confirmation.analysis.lower_bound") <= margin:
+        reasons.append("lower_bound_not_above_margin")
+
+    # Validate descriptive exact values but never let them rescue or block the primary claim.
+    rational.from_wire(result["sign_randomization_p"], "heldout_confirmation.analysis.sign_randomization_p")
+    for name in ("base", "seed_mean"):
+        scores = closed(result[name], f"heldout_confirmation.analysis.{name}", ("context", "q", "task"))
+        for key in ("context", "q", "task"):
+            rational.from_wire(scores[key], f"heldout_confirmation.analysis.{name}.{key}")
+    integer(result["output_failure_count"], "heldout_confirmation.analysis.output_failure_count", minimum=0)
+    require(type(result["class_diagnostics"]) is dict, "heldout_confirmation.analysis.class_diagnostics",
+            "must be an object")
+    return {"reasons": reasons, "status": "confirmation_failed" if reasons else "confirmation_passed"}
+
+
 __all__ = [
-    "SPEC_DIGEST", "analyze_patient_results", "build_randomization_artifacts", "load_spec",
+    "SPEC_DIGEST", "analyze_patient_results", "build_randomization_artifacts", "confirmation_decision", "load_spec",
     "validate_checkpoint_lineage", "validate_spec",
 ]
 

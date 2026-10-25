@@ -61,11 +61,11 @@
 - Modify: `src/mmbu_phase1/heldout_confirmation.py`
 - Modify: `tests/phase1/test_heldout_confirmation.py`
 
-- [ ] Write failing boundary tests for equality at `1/20`, one nonpositive seed, lower-bound failure, incomplete replay, drift, secondary-score failure, and attempted seed/source substitution.
-- [ ] Require all three seed deltas, the family point estimate, and the one-sided bound to satisfy their exact rules.
-- [ ] Implement exact patient-balanced `T`, `C`, `Q`, class-conditioned scores, counts, and output-failure reporting as descriptive fields only.
-- [ ] Prove in tests that no secondary field or sign diagnostic can rescue or block the primary decision.
-- [ ] Emit only `confirmation_passed`, `confirmation_failed`, `underpowered`, or `blocked` with deterministic reason ordering.
+- [x] Write failing boundary tests for equality at `1/20`, one nonpositive seed, lower-bound failure, incomplete replay, drift, secondary-score failure, and attempted seed/source substitution.
+- [x] Require all three seed deltas, the family point estimate, and the one-sided bound to satisfy their exact rules.
+- [x] Implement exact patient-balanced `T`, `C`, `Q`, class-conditioned scores, counts, and output-failure reporting as descriptive fields only.
+- [x] Prove in tests that no secondary field or sign diagnostic can rescue or block the primary decision.
+- [x] Emit only `confirmation_passed`, `confirmation_failed`, `underpowered`, or `blocked` with deterministic reason ordering.
 
 ### Task 5: Implement readiness and execution-envelope refusal
 

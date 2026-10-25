@@ -208,5 +208,85 @@ class HeldoutConfirmationStatisticsTests(unittest.TestCase):
             )
 
 
+class HeldoutConfirmationDecisionTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.module = importlib.import_module("mmbu_phase1.heldout_confirmation")
+
+    def analysis(self):
+        return {
+            "base": {"context": rational.to_wire(1), "q": rational.to_wire(1), "task": rational.to_wire(1)},
+            "class_diagnostics": {},
+            "lower_bound": rational.to_wire(rational.Fraction(1, 10)),
+            "output_failure_count": 0,
+            "patient_count": 60,
+            "point_delta": rational.to_wire(rational.Fraction(1, 10)),
+            "seed_deltas": {
+                "seed-20261025": rational.to_wire(rational.Fraction(1, 10)),
+                "seed-20261026": rational.to_wire(rational.Fraction(1, 10)),
+                "seed-20261027": rational.to_wire(rational.Fraction(1, 10)),
+            },
+            "seed_mean": {"context": rational.to_wire(0), "q": rational.to_wire(0), "task": rational.to_wire(1)},
+            "sign_randomization_p": rational.to_wire(1),
+        }
+
+    def execution(self):
+        return {
+            "adapted_attempts": {"seed-20261025": 1, "seed-20261026": 1, "seed-20261027": 1},
+            "adapted_reload_match": {"seed-20261025": True, "seed-20261026": True, "seed-20261027": True},
+            "base_attempts": 1,
+            "base_reload_match": True,
+            "identity_drift": False,
+            "mmbu_public_content_used": False,
+            "source_id": "busi-whu-v3",
+            "source_role": "confirmation",
+        }
+
+    def test_primary_pass_ignores_bad_secondary_and_sign_diagnostic(self):
+        result = self.module.confirmation_decision(self.analysis(), self.execution())
+        self.assertEqual(result, {"reasons": [], "status": "confirmation_passed"})
+
+    def test_exact_margin_nonpositive_seed_and_lower_bound_fail(self):
+        changes = (
+            ("point_delta", rational.to_wire(rational.Fraction(1, 20)), "point_delta_not_above_margin"),
+            ("lower_bound", rational.to_wire(rational.Fraction(1, 20)), "lower_bound_not_above_margin"),
+        )
+        for key, value, reason in changes:
+            analysis = self.analysis()
+            analysis[key] = value
+            result = self.module.confirmation_decision(analysis, self.execution())
+            self.assertEqual(result["status"], "confirmation_failed")
+            self.assertIn(reason, result["reasons"])
+        analysis = self.analysis()
+        analysis["seed_deltas"]["seed-20261026"] = rational.to_wire(0)
+        result = self.module.confirmation_decision(analysis, self.execution())
+        self.assertIn("nonpositive_seed_delta:seed-20261026", result["reasons"])
+
+    def test_execution_failures_cannot_be_rescued(self):
+        mutations = (
+            (lambda row: row.__setitem__("base_attempts", 2), "base_attempt_count"),
+            (lambda row: row.__setitem__("base_reload_match", False), "base_reload_mismatch"),
+            (lambda row: row["adapted_attempts"].__setitem__("seed-20261027", 2), "adapted_attempt_count:seed-20261027"),
+            (lambda row: row.__setitem__("identity_drift", True), "identity_drift"),
+        )
+        for mutate, reason in mutations:
+            execution = self.execution()
+            mutate(execution)
+            result = self.module.confirmation_decision(self.analysis(), execution)
+            self.assertEqual(result["status"], "confirmation_failed")
+            self.assertIn(reason, result["reasons"])
+
+    def test_underpowered_and_source_substitution_are_terminal(self):
+        analysis = self.analysis()
+        analysis["patient_count"] = 59
+        self.assertEqual(
+            self.module.confirmation_decision(analysis, self.execution())["status"], "underpowered"
+        )
+        execution = self.execution()
+        execution["source_id"] = "bus-uclm"
+        result = self.module.confirmation_decision(self.analysis(), execution)
+        self.assertEqual(result, {"reasons": ["source_identity_or_role"], "status": "blocked"})
+
+
 if __name__ == "__main__":
     unittest.main()

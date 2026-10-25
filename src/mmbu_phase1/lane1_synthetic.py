@@ -27,6 +27,9 @@ class SyntheticBackend:
         self.candidate_id = None
         self._architecture = None
         self._seed = None
+        self._task_share = Fraction(0)
+        self._context_share = Fraction(0)
+        self._unit_mass = Fraction(0)
         self._state = {"language_adapter": Fraction(0), "projector_adapter": Fraction(0)}
         self._base_state = None
 
@@ -39,6 +42,9 @@ class SyntheticBackend:
         }
         self.candidate_id = arm["candidate_id"]
         self._architecture = arm["architecture_id"]
+        self._task_share = rational.from_wire(arm["task_unit_share"], "backend.arm.task_unit_share")
+        self._context_share = rational.from_wire(arm["context_unit_share"], "backend.arm.context_unit_share")
+        self._unit_mass = rational.from_wire(arm["unit_total_mass"], "backend.arm.unit_total_mass")
         require(self._architecture in _SCOPES, "backend.arm.architecture_id", "unsupported architecture")
         self._seed = seed
         self._base_state = bytes(base_state)
@@ -57,7 +63,9 @@ class SyntheticBackend:
         feature = rational.from_wire(row["feature"], "backend.row.feature")
         task_signal = Fraction(1 if row["task_target"] else -1)
         context_signal = Fraction(1 if row["context_target"] else -1)
-        combined = task_signal if objective_mode == "task" else (task_signal + context_signal) / 2
+        combined = self._unit_mass * (
+            self._task_share * task_signal + self._context_share * context_signal
+        )
         if "language_adapter" in self.trainable_parameter_names():
             self._state["language_adapter"] += learning_rate * combined
         if "projector_adapter" in self.trainable_parameter_names():

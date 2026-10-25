@@ -1,7 +1,11 @@
 """Competition Lane 1 CPU-only synthetic trainer conformance tests."""
 
 from copy import deepcopy
+import ast
 import builtins
+import importlib.util
+import io
+import os
 from pathlib import Path
 import socket
 import subprocess
@@ -19,6 +23,7 @@ from test_package_f_manifest_v2 import (
     B2_DUAL,
     B2_TASK,
     valid_v2_manifest,
+    reseal,
 )
 
 
@@ -132,6 +137,13 @@ class FixtureContractTests(unittest.TestCase):
             with self.subTest(label=label), self.assertRaises(ContractViolation):
                 lane1_trainer.validate_config(value, fixture)
 
+    def test_caller_cannot_self_approve_an_unreviewed_fixture_digest(self):
+        fixture = valid_fixture()
+        fixture["fixture_id"] = "unreviewed-fixture"
+        config = valid_config(fixture)
+        with self.assertRaises(ContractViolation):
+            lane1_trainer.validate_config(config, fixture)
+
 
 class ArmContractTests(unittest.TestCase):
     def test_manifest_resolves_exact_five_arm_order_and_modes(self):
@@ -237,6 +249,19 @@ class MatchedExecutionTests(unittest.TestCase):
                 backend_factory=lambda: calls.append(True),
             )
         self.assertEqual(calls, [])
+
+    def test_dual_updates_obey_manifest_shares(self):
+        original = lane1_trainer.run_lane1(valid_v2_manifest(), valid_fixture(), valid_config())
+        changed_manifest = valid_v2_manifest()
+        dual = next(item for item in changed_manifest["training_contract"]["objective_profiles"]
+                    if item["profile_id"] == "profile::dual")
+        dual["task_unit_share"] = q(1, 2)
+        dual["context_unit_share"] = q(1, 2)
+        reseal(changed_manifest)
+        changed = lane1_trainer.run_lane1(changed_manifest, valid_fixture(), valid_config())
+        original_dual = next(item for item in original["arm_results"] if item["candidate_id"] == B1_DUAL)
+        changed_dual = next(item for item in changed["arm_results"] if item["candidate_id"] == B1_DUAL)
+        self.assertNotEqual(original_dual["final_state_digest"], changed_dual["final_state_digest"])
 
 
 class ResumeReloadAndMetricTests(unittest.TestCase):
@@ -385,13 +410,44 @@ class OfflineBoundaryTests(unittest.TestCase):
 
         with mock.patch("builtins.__import__", side_effect=guarded_import), \
              mock.patch("builtins.open", side_effect=forbidden_file), \
+             mock.patch.object(io, "open", side_effect=forbidden_file), \
+             mock.patch.object(os, "open", side_effect=forbidden_file), \
              mock.patch.object(socket, "socket", side_effect=forbidden_socket):
             result = lane1_trainer.run_lane1(valid_v2_manifest(), valid_fixture(), valid_config())
         self.assertEqual([item["status"] for item in result["arm_results"]], ["passed"] * 5)
         self.assertEqual(attempts, [])
 
+    def test_backend_modules_have_a_standard_library_only_static_dependency_surface(self):
+        allowed_roots = {"__future__", "fractions", "typing", "mmbu_phase1"}
+        for name in ("lane1_trainer.py", "lane1_synthetic.py"):
+            path = Path(__file__).resolve().parents[2] / "src/mmbu_phase1" / name
+            tree = ast.parse(path.read_text())
+            imports = {
+                alias.name.split(".", 1)[0]
+                for node in ast.walk(tree) if isinstance(node, ast.Import)
+                for alias in node.names
+            }
+            imports.update(
+                (node.module or "").split(".", 1)[0]
+                for node in ast.walk(tree) if isinstance(node, ast.ImportFrom)
+            )
+            self.assertLessEqual(imports, allowed_roots)
+
+    def test_public_star_export_resolves_every_declared_symbol(self):
+        namespace = {}
+        exec("from mmbu_phase1.lane1_trainer import *", namespace)
+        self.assertIs(namespace["ContractViolation"], ContractViolation)
+
 
 class Lane1CliTests(unittest.TestCase):
+    @staticmethod
+    def load_cli_module():
+        path = Path(__file__).resolve().parents[2] / "tools/lane1_synthetic.py"
+        spec = importlib.util.spec_from_file_location("lane1_cli_for_test", path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
     def run_cli(self, root, manifest, fixture, config, output):
         manifest_path = root / "manifest.json"
         fixture_path = root / "fixture.json"
@@ -444,6 +500,7 @@ class Lane1CliTests(unittest.TestCase):
             root = Path(tmp)
             output = root / "result.json"
             fixture = valid_fixture()
+            fixture["fixture_id"] = "lane1-runtime-failure-v1"
             # Each component is representable, but the B2 projector update multiplies
             # the denominators and fails when serializing its synthetic state.
             fixture["train_rows"][0]["feature"] = q(1, 9007199254740991)
@@ -455,6 +512,17 @@ class Lane1CliTests(unittest.TestCase):
             value = canonical.loads(output.read_bytes())
             self.assertEqual(len(value["arm_results"]), 5)
             self.assertIn("failed", [item["status"] for item in value["arm_results"]])
+
+    def test_atomic_publication_failure_leaves_no_partial_output(self):
+        cli = self.load_cli_module()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            output = root / "result.json"
+            with mock.patch.object(os, "link", side_effect=OSError("injected publish failure")):
+                with self.assertRaises(OSError):
+                    cli._publish_exclusive(output, b"complete-bytes")
+            self.assertFalse(output.exists())
+            self.assertEqual(list(root.iterdir()), [])
 
 
 if __name__ == "__main__":

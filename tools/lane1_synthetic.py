@@ -4,8 +4,10 @@
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
 import sys
+import tempfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -23,6 +25,24 @@ def parser() -> argparse.ArgumentParser:
     return result
 
 
+def _publish_exclusive(path: Path, payload: bytes) -> None:
+    """Durably stage complete bytes, then atomically link without overwriting."""
+    path = Path(path)
+    descriptor, temporary_name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(payload)
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.link(temporary, path)
+    finally:
+        try:
+            temporary.unlink()
+        except FileNotFoundError:
+            pass
+
+
 def main(argv: list[str] | None = None) -> int:
     args = parser().parse_args(argv)
     if args.output.exists():
@@ -36,9 +56,9 @@ def main(argv: list[str] | None = None) -> int:
     except Exception as exc:
         print(f"Lane 1 preflight failed: {exc}", file=sys.stderr)
         return 2
+    payload = canonical.dumps(result) + b"\n"
     try:
-        with args.output.open("xb") as stream:
-            stream.write(canonical.dumps(result) + b"\n")
+        _publish_exclusive(args.output, payload)
     except FileExistsError:
         print(f"refusing to overwrite existing output: {args.output}", file=sys.stderr)
         return 2

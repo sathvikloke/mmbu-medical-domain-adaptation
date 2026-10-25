@@ -79,9 +79,10 @@ array. B0 must be empty, B1-L nonempty, and B2-P a proper superset. The checkpoi
 zero and `epochs * len(train_rows)`.
 
 The declared negative flags alone do not prove provenance. Before the backend factory is called, the runner computes
-the canonical digest of the complete fixture and requires it to equal `allowed_fixture_digest`. This binds execution to
-the exact independently reviewed synthetic bytes. The claim is therefore limited to validating declared origin and a
-trusted digest, not detecting biomedical meaning from arbitrary text.
+the canonical digest of the complete fixture, requires it to equal `allowed_fixture_digest`, and then requires that
+fixture ID/digest pair to appear in a repository-reviewed code allowlist that the caller cannot extend. This binds
+execution to exact reviewed synthetic bytes. The claim remains limited to those pinned fixtures, not detecting
+biomedical meaning from arbitrary text.
 
 ### Execution and evidence
 

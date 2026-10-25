@@ -12,6 +12,7 @@ from typing import Any
 from mmbu_phase1 import canonical, competition_manifest_v2, rational, track2_score
 from mmbu_phase1 import lane1_synthetic
 from mmbu_phase1.fields import (
+    ContractViolation,
     array,
     boolean,
     closed,
@@ -34,6 +35,10 @@ ARM_IDS = (
     "recipe_arch::B2-P::profile::dual",
 )
 ARCHITECTURES = ("recipe_arch::B0", "recipe_arch::B1-L", "recipe_arch::B2-P")
+TRUSTED_FIXTURE_DIGESTS = {
+    "lane1-fixture-v1": "0a669da9edbfae0c047b326ceead8f70ae1b5ed906f6732c8877b46b7eb37eb2",
+    "lane1-runtime-failure-v1": "235d2af7d2b343df0dc42482c6f6159adefa2667b761485e119834818e240c29",
+}
 FIXTURE_KEYS = (
     "biomedical_content",
     "evaluation_rows",
@@ -115,6 +120,9 @@ def validate_config(value: Any, fixture: Any) -> dict:
     expected_digest = digest(config["allowed_fixture_digest"], "config.allowed_fixture_digest")
     require(expected_digest == canonical.value_digest(fixture), "config.allowed_fixture_digest",
             "does not match the canonical fixture digest")
+    trusted_digest = TRUSTED_FIXTURE_DIGESTS.get(fixture["fixture_id"])
+    require(trusted_digest == expected_digest, "config.allowed_fixture_digest",
+            "fixture is not present in the repository-reviewed synthetic allowlist")
     checkpoint = integer(config["checkpoint_after_updates"], "config.checkpoint_after_updates", minimum=1)
     total_updates = epochs * len(fixture["train_rows"])
     require(checkpoint < total_updates, "config.checkpoint_after_updates",
@@ -133,21 +141,34 @@ def validate_config(value: Any, fixture: Any) -> dict:
     return config
 
 
-def _profile_modes(manifest: dict) -> dict[str, str]:
+def _profile_contracts(manifest: dict) -> dict[str, dict]:
     result = {}
     for index, profile in enumerate(manifest["training_contract"]["objective_profiles"]):
+        task = rational.from_wire(
+            profile["task_unit_share"],
+            f"manifest.training_contract.objective_profiles[{index}].task_unit_share",
+        )
         context = rational.from_wire(
             profile["context_unit_share"],
             f"manifest.training_contract.objective_profiles[{index}].context_unit_share",
         )
-        result[profile["profile_id"]] = "task" if context == 0 else "dual"
+        unit = rational.from_wire(
+            profile["unit_total_mass"],
+            f"manifest.training_contract.objective_profiles[{index}].unit_total_mass",
+        )
+        result[profile["profile_id"]] = {
+            "context_unit_share": rational.to_wire(context),
+            "objective_mode": "task" if context == 0 else "dual",
+            "task_unit_share": rational.to_wire(task),
+            "unit_total_mass": rational.to_wire(unit),
+        }
     return result
 
 
 def resolve_arms(manifest: Any) -> tuple[dict, ...]:
     """Validate and derive the exact authorized five-arm execution universe."""
     competition_manifest_v2.validate_manifest(manifest)
-    profiles = _profile_modes(manifest)
+    profiles = _profile_contracts(manifest)
     enabled = [item for item in manifest["candidate_universe"] if item["enabled"]]
     require(tuple(item["candidate_id"] for item in enabled) == ARM_IDS,
             "manifest.candidate_universe", "must equal the exact Lane 1 five-arm universe in canonical order")
@@ -155,12 +176,20 @@ def resolve_arms(manifest: Any) -> tuple[dict, ...]:
     for item in enabled:
         architecture = item["architecture_id"]
         profile_id = item["objective_profile_id"]
-        mode = "base" if architecture == "recipe_arch::B0" else profiles[profile_id]
+        profile = ({
+            "context_unit_share": rational.to_wire(0),
+            "objective_mode": "base",
+            "task_unit_share": rational.to_wire(1),
+            "unit_total_mass": rational.to_wire(1),
+        } if architecture == "recipe_arch::B0" else profiles[profile_id])
         arms.append({
             "architecture_id": architecture,
             "candidate_id": item["candidate_id"],
-            "objective_mode": mode,
+            "context_unit_share": profile["context_unit_share"],
+            "objective_mode": profile["objective_mode"],
             "objective_profile_id": profile_id,
+            "task_unit_share": profile["task_unit_share"],
+            "unit_total_mass": profile["unit_total_mass"],
         })
     return tuple(arms)
 
@@ -172,6 +201,7 @@ def _empty_arm_result(arm: dict, status: str) -> dict:
         "context_accuracy": None,
         "failure_message": None,
         "failure_stage": None,
+        "final_state_digest": None,
         "objective_profile_id": arm["objective_profile_id"],
         "optimizer_updates": 0,
         "ordered_unit_digest": None,
@@ -278,6 +308,9 @@ def _run_matched_arm(arm: dict, fixture: dict, config: dict, backend_factory) ->
                 )
         else:
             full_predictions = _at("evaluation", lambda: _predictions(backend, fixture))
+            full_state = _at("final_state_dump", backend.dump_state)
+
+        row["final_state_digest"] = canonical.raw_digest(full_state)
 
         exported = _at("export", backend.export)
         reload_backend, _ = _initialize_backend(backend_factory, arm, config)

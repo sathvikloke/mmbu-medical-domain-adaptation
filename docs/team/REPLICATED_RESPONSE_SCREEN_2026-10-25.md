@@ -72,6 +72,34 @@ The three-seed task-only mean was 85.677%, and the dual mean was 86.328%. The co
 
 The three-seed task-only mean was 82.292%, and the dual mean was 81.250%. The context means were 1.552% and 100.000%, respectively. Two seeds satisfy the frozen response rule, exactly meeting the predeclared minimum of two supporting seeds. The failed seed stays part of the evidence.
 
+## Post-output paired uncertainty analysis
+
+Commit `6ef06ab` repaired an implementation gap in the frozen analysis plan: the plan required a group-aware paired uncertainty calculation, but the launch snapshot contained no aggregate implementation. The repair grades the saved raw predictions against the same 256-row development population, pairs every adapted prediction with its unchanged-base prediction, resamples the 128 independent units within each source, balances the two sources equally, and averages the paired delta across the three fixed seeds.
+
+The calculation used 10,000 shared group-resampling draws, bootstrap seed `20261025`, and a two-sided 90% percentile interval. Those literals were selected after model outputs existed because the original design did not freeze them. The intervals are therefore **post-output exploratory evidence**, not a preregistered promotion test.
+
+| Candidate | Profile | Base-relative task delta | Exploratory 90% interval | Interpretation |
+|---|---|---:|---:|---|
+| Qwen3.5-9B | Task-only | +22.786 pp | [+18.099, +27.344] pp | Positive throughout |
+| Qwen3.5-9B | Dual | +23.438 pp | [+18.750, +27.995] pp | Positive throughout |
+| Qwen3.5-4B | Task-only | +1.042 pp | [-3.906, +5.990] pp | Includes zero |
+| Qwen3.5-4B | Dual | 0.000 pp | [-5.078, +4.948] pp | Includes zero |
+
+The canonical analysis artifact is `/storage/scr/npl015/mmbu-response-analysis/2026-10-25-6ef06ab/post-output-bootstrap.json`, SHA-256 `2aeeb194baa2a95af09e14e5b0a96788bf55af7af2f853638f63362cc51a12ef`. It reads the preserved run without changing any receipt, prediction, log, or model artifact.
+
+The 9B result is a large and replicated response on this fixed development population. It makes the 9B Track 2 route the priority for a properly frozen confirmation experiment. It does not retroactively satisfy a binding confidence-bound gate, prove transfer to another source or partition, or authorize checkpoint promotion.
+
+## Predeclared descriptive checks
+
+| Check | Result | Evidence |
+|---|---|---|
+| Track 2 response signal | Direction passes; confidence component remains exploratory | All six adapted 9B task scores exceed the unchanged base. Both post-output 90% lower bounds are above zero. |
+| Dual-objective value | Pass for both candidates | Dual `Q` exceeds matched task-only `Q` by more than 0.01 with at most a 0.01 task loss in three of three 9B seeds and two of three 4B seeds. |
+| Small-route competitiveness | Fail on raw `Q` | The 4B task-only route is within 0.03 of the 9B route in only one seed; the 4B dual route is more than 0.03 lower in all three seeds. No unresolved Track 3 size multiplier was applied. |
+| Instability flag | No 9B direction reversal observed | Every adapted 9B seed has a positive base-relative task delta, and fresh reload matched exactly. |
+
+These checks prioritize the next experiment only. They do not compare separate official leaderboards or choose the final competition track.
+
 ## Preserved predecessor failure
 
 The first array, job `85873` at `/storage/scr/npl015/mmbu-response/2026-10-25-6eca07f`, is preserved unchanged. Conditions 0 through 4 completed their main evaluation but failed at the fresh-process reload stage with exit code 2 because the reload entry point did not add the repository `src` directory before importing `mmbu_phase1`. Once the shared launcher defect was isolated, the remaining work was cancelled rather than consuming more GPUs on the same known failure.
@@ -85,6 +113,7 @@ A regression test reproduced the missing-path failure with `PYTHONPATH` removed.
 - Dual training caused a large, replicated increase in the frozen context score for both models.
 - The 9B dual conditions preserved matched task performance within the frozen tolerance in all three seeds.
 - The 4B dual conditions preserved matched task performance within the frozen tolerance in two of three seeds.
+- On the fixed development population, the exploratory group-aware interval for the 9B base-relative task gain stayed above zero for both adapted profiles, while both 4B intervals included zero.
 
 ## What this does not establish
 
@@ -96,4 +125,4 @@ A regression test reproduced the missing-path failure with `PYTHONPATH` removed.
 
 ## Decision boundary
 
-The response screen passed its narrow purpose. The evidence supports carrying the dual objective into a separately authorized, source-admitted confirmation experiment. It does not support choosing a winner from these development results. The next decision-bearing experiment must freeze source admission, a held-out confirmation population, task and context endpoints, seed-level acceptance rules, and the exact candidate set before any confirmation labels are opened.
+The response screen passed its narrow purpose. The evidence supports carrying Qwen3.5-9B and the dual objective into a separately authorized, source-admitted confirmation experiment. It does not support choosing a winner from these development results. The next decision-bearing experiment must freeze source admission, a held-out confirmation population, task and context endpoints, the complete resampling algorithm and literals, seed-level acceptance rules, and the exact candidate set before any confirmation labels are opened.

@@ -149,6 +149,17 @@ Track 3 stays primary when the best small adjusted score is practically indistin
 
 These rules allocate team effort; they do not compare official scores across separate leaderboards.
 
+### October 25 response-screen update
+
+The completed matched response screen materially changed the evidence, but not yet the binding final-track decision:
+
+- Qwen3.5-9B improved over its unchanged base in all six adapted seed/profile conditions. Its post-output group-aware 90% intervals were [+18.099, +27.344] percentage points for task-only and [+18.750, +27.995] points for dual.
+- Qwen3.5-4B showed no stable base-relative response. Its corresponding intervals crossed zero for both profiles.
+- The 4B route failed the predeclared raw-`Q` competitiveness check. The unresolved official Track 3 parameter treatment still prevents the required adjusted-`Q` comparison.
+- The original design did not freeze the bootstrap draw count or random seed, so the intervals are exploratory and cannot retroactively promote Track 2.
+
+Accordingly, Track 3 remains the provisional administrative primary, but the **next decision-bearing experiment is now the 9B Track 2 confirmation**, not another model search or smoke test. If a fully frozen, source-admitted confirmation again produces an all-seed positive task gain with a lower bound above zero, and the organizer resolves the Track 3 multiplier, this memo can make the final track choice from evidence instead of speculation.
+
 ## Stopping point
 
 Stop after the decision, evaluator repair, frozen manifest, and one-attempt F0 receipts. Do not launch full training, a multi-seed campaign, MMBU public evaluation, upload, or submission. The next decision-bearing experiment requires explicit user approval.

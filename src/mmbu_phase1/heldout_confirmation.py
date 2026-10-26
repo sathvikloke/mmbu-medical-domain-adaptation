@@ -17,7 +17,7 @@ from mmbu_phase1.fields import (
 )
 
 
-SPEC_DIGEST = "a7a074d0acac95da79a6505bc791faf30e48f879218ad0b30027f2b56916c703"
+SPEC_DIGEST = "f73f4b6f088ead82d5045145d829abff90cd4dc259585c68678242693d47c75f"
 SPEC_KEYS = (
     "authorization", "candidate", "confirmation_id", "gates", "prompts", "resources",
     "schema_id", "schema_version", "source", "statistics", "training",
@@ -88,15 +88,28 @@ REVIEW_REPORT_KEYS = (
     "review_evidence_complete", "review_opening_sha256", "reviewed_record_count",
     "reviewer_identity_authenticated", "rights_review_sha256", "schema_id", "schema_version",
     "secondary_review_sha256", "source_admission_authorized", "source_blockers", "training_ready",
-    "unresolved_record_ids",
+    "unresolved_record_ids", "target_map", "target_map_digest", "global_task_manifest_digest",
 )
 SOURCE_MANIFEST_KEYS = (
     "confirmation_task", "duplicate_disposition_digest", "exclusions_digest",
     "mmbu_public_content_used", "model_use_authorized", "patient_count", "patient_ids",
     "patient_to_records", "purpose_authorization_digest", "record_count", "record_digest",
     "record_ids", "review_validation_digest", "schema_id", "schema_version",
-    "source_admission_digest", "source_id", "source_role", "training_allowed",
+    "source_admission_digest", "source_id", "source_version", "source_role", "training_allowed",
+    "target_map", "target_map_digest", "global_task_manifest_digest",
 )
+
+
+def _validate_target_map(value: object, record_ids: list[str], path: str) -> dict[str, str]:
+    require(type(value) is dict and set(value) == set(record_ids), path,
+            "must name every locked record exactly")
+    normalized: dict[str, str] = {}
+    for record_id in record_ids:
+        label = value[record_id]
+        require(type(label) is str and label in ("benign", "malignant"),
+                f"{path}.{record_id}", "must be benign or malignant")
+        normalized[record_id] = label
+    return normalized
 
 
 def _validated_bridge_inputs(
@@ -112,6 +125,8 @@ def _validated_bridge_inputs(
     literal(report["schema_version"], "heldout_confirmation.review_report.schema_version", 1)
     literal(report["review_evidence_complete"],
             "heldout_confirmation.review_report.review_evidence_complete", True)
+    literal(report["reviewer_identity_authenticated"],
+            "heldout_confirmation.review_report.reviewer_identity_authenticated", True)
     literal(report["confirmation_purposes_ready"],
             "heldout_confirmation.review_report.confirmation_purposes_ready", True)
     literal(report["source_blockers"], "heldout_confirmation.review_report.source_blockers", [])
@@ -137,7 +152,8 @@ def _validated_bridge_inputs(
         store, purpose_authorization_digest,
         "heldout_confirmation.purpose_authorization_digest",
     )
-    literal(source["source_id"], "heldout_confirmation.source.source_id", "busi-whu-v3")
+    literal(source["source_id"], "heldout_confirmation.source.source_id", "busi-whu")
+    literal(source["source_version"], "heldout_confirmation.source.source_version", "3")
     literal(source["status"], "heldout_confirmation.source.status", "approved")
     require("confirmation" in source["allowed_purposes"], "heldout_confirmation.source.allowed_purposes",
             "must allow confirmation")
@@ -183,6 +199,13 @@ def build_confirmation_source_manifest(
             "must be unique and sorted")
     require(eligible["record_count"] == len(record_ids),
             "heldout_confirmation.review_report.global_classification.record_count", "count mismatch")
+    target_map = _validate_target_map(
+        report["target_map"], record_ids, "heldout_confirmation.review_report.target_map"
+    )
+    literal(report["target_map_digest"], "heldout_confirmation.review_report.target_map_digest",
+            canonical.value_digest(target_map))
+    digest(report["global_task_manifest_digest"],
+           "heldout_confirmation.review_report.global_task_manifest_digest")
     population = _population_binding(
         patient_ids, eligible["patient_to_records"],
         source_manifest_digest=source_admission_digest,
@@ -192,13 +215,15 @@ def build_confirmation_source_manifest(
             "duplicate_excluded_record_ids": report["duplicate_excluded_record_ids"],
         }),
         duplicate_disposition_digest=canonical.value_digest(report["duplicate_group_constraints"]),
+        target_map=target_map,
+        target_map_digest=report["target_map_digest"],
     )
     require(sorted(record_id for rows in population["patient_to_records"].values() for record_id in rows) == record_ids,
             "heldout_confirmation.review_report.global_classification.patient_to_records",
             "must own every eligible record exactly")
     return canonical.seal({
         "schema_id": "mmbu.confirmation.busi_whu_source_manifest", "schema_version": 1,
-        "source_id": "busi-whu-v3", "source_role": "confirmation",
+        "source_id": "busi-whu", "source_version": "3", "source_role": "confirmation",
         "confirmation_task": "global_classification", "patient_ids": patient_ids,
         "patient_count": len(patient_ids), "record_ids": record_ids, "record_count": len(record_ids),
         "patient_to_records": population["patient_to_records"],
@@ -207,6 +232,8 @@ def build_confirmation_source_manifest(
         "review_validation_digest": report["record_digest"],
         "source_admission_digest": source_admission_digest,
         "purpose_authorization_digest": purpose_authorization_digest,
+        "target_map": target_map, "target_map_digest": report["target_map_digest"],
+        "global_task_manifest_digest": report["global_task_manifest_digest"],
         "training_allowed": False, "model_use_authorized": False,
         "mmbu_public_content_used": False,
     })
@@ -227,7 +254,7 @@ def validate_confirmation_source_manifest(
 
 ARTIFACT_KEYS = (
     "created_at", "index_matrix", "index_matrix_digest", "patient_ids", "population_binding",
-    "population_digest", "sign_matrix", "sign_matrix_digest",
+    "population_digest", "sign_matrix", "sign_matrix_digest", "construction_scope", "target_map_digest",
 )
 RESULT_ROW_KEYS = (
     "condition_id", "output_failed", "patient_id", "post_reload_context_raw_output",
@@ -236,6 +263,7 @@ RESULT_ROW_KEYS = (
 )
 CONFIRMATION_LOCK_KEYS = (
     "artifact_digest", "locked_at", "opening_receipt_digest", "population_digest", "record_digest",
+    "target_map_digest",
 )
 CONDITIONS = ("base", "seed-20261025", "seed-20261026", "seed-20261027")
 SEED_CONDITIONS = CONDITIONS[1:]
@@ -272,10 +300,13 @@ def _population_binding(
     source_manifest_digest: str,
     exclusions_digest: str,
     duplicate_disposition_digest: str,
+    target_map: dict[str, str],
+    target_map_digest: str,
 ) -> dict:
     digest(source_manifest_digest, "heldout_confirmation.population.source_manifest_digest")
     digest(exclusions_digest, "heldout_confirmation.population.exclusions_digest")
     digest(duplicate_disposition_digest, "heldout_confirmation.population.duplicate_disposition_digest")
+    digest(target_map_digest, "heldout_confirmation.population.target_map_digest")
     require(type(patient_to_records) is dict and set(patient_to_records) == set(patient_ids),
             "heldout_confirmation.population.patient_to_records", "must name every locked patient exactly")
     normalized: dict[str, list[str]] = {}
@@ -295,11 +326,17 @@ def _population_binding(
                     f"record {record_id!r} is already assigned to patient {record_owner.get(record_id)!r}")
             record_owner[record_id] = patient_id
         normalized[patient_id] = list(records)
+    all_records = sorted(record_owner, key=lambda item: item.encode("utf-8"))
+    targets = _validate_target_map(target_map, all_records, "heldout_confirmation.population.target_map")
+    literal(target_map_digest, "heldout_confirmation.population.target_map_digest",
+            canonical.value_digest(targets))
     return {
         "duplicate_disposition_digest": duplicate_disposition_digest,
         "exclusions_digest": exclusions_digest,
         "patient_to_records": normalized,
         "source_manifest_digest": source_manifest_digest,
+        "target_map": targets,
+        "target_map_digest": target_map_digest,
     }
 
 
@@ -315,6 +352,7 @@ def build_confirmation_lock(
         "locked_at": locked_at,
         "opening_receipt_digest": opening_receipt_digest,
         "population_digest": artifacts["population_digest"],
+        "target_map_digest": artifacts["target_map_digest"],
         "record_digest": "0" * 64,
     })
 
@@ -332,6 +370,8 @@ def _validate_confirmation_lock(
             canonical.value_digest(artifacts))
     literal(lock["population_digest"], "heldout_confirmation.lock.population_digest",
             artifacts["population_digest"])
+    literal(lock["target_map_digest"], "heldout_confirmation.lock.target_map_digest",
+            artifacts["target_map_digest"])
     created = timestamp(artifacts["created_at"], "heldout_confirmation.artifacts.created_at")
     locked = timestamp(lock["locked_at"], "heldout_confirmation.lock.locked_at")
     first = timestamp(first_output_at, "heldout_confirmation.first_output_at")
@@ -340,13 +380,16 @@ def _validate_confirmation_lock(
     return lock
 
 
-def build_randomization_artifacts(
+def _build_randomization_artifacts(
     patient_ids: list[str],
     *,
     patient_to_records: dict[str, list[str]],
     source_manifest_digest: str,
     exclusions_digest: str,
     duplicate_disposition_digest: str,
+    target_map: dict[str, str],
+    target_map_digest: str,
+    construction_scope: str,
     created_at: str,
 ) -> dict:
     """Build the frozen patient bootstrap and sign matrices before outputs exist."""
@@ -358,6 +401,8 @@ def build_randomization_artifacts(
         source_manifest_digest=source_manifest_digest,
         exclusions_digest=exclusions_digest,
         duplicate_disposition_digest=duplicate_disposition_digest,
+        target_map=target_map,
+        target_map_digest=target_map_digest,
     )
     index_matrix, sign_matrix = _random_matrices(count)
     return {
@@ -367,9 +412,52 @@ def build_randomization_artifacts(
         "patient_ids": patient_ids,
         "population_binding": population,
         "population_digest": canonical.value_digest(population),
+        "construction_scope": construction_scope,
+        "target_map_digest": target_map_digest,
         "sign_matrix": sign_matrix,
         "sign_matrix_digest": canonical.value_digest(sign_matrix),
     }
+
+
+def build_authenticated_randomization_artifacts(
+    review_report: object, confirmation_source_manifest: object, store: RecordStore,
+    source_admission_digest: str, confirmation_purpose_digest: str, created_at: str,
+) -> dict:
+    """Build real artifacts only by re-resolving the admitted review chain."""
+    manifest = validate_confirmation_source_manifest(
+        confirmation_source_manifest, review_report, store, source_admission_digest,
+        confirmation_purpose_digest,
+    )
+    return _build_randomization_artifacts(
+        manifest["patient_ids"], patient_to_records=manifest["patient_to_records"],
+        source_manifest_digest=manifest["record_digest"],
+        exclusions_digest=manifest["exclusions_digest"],
+        duplicate_disposition_digest=manifest["duplicate_disposition_digest"],
+        target_map=manifest["target_map"], target_map_digest=manifest["target_map_digest"],
+        construction_scope="authenticated_real", created_at=created_at,
+    )
+
+
+def build_synthetic_randomization_artifacts(fixture: object, created_at: str) -> dict:
+    """Build mechanics-only artifacts from an explicitly synthetic closed fixture."""
+    row = closed(fixture, "heldout_confirmation.synthetic_artifact_fixture", (
+        "biomedical_content_used", "mmbu_public_content_used", "patient_ids",
+        "patient_to_records", "synthetic_only", "target_map",
+    ))
+    literal(row["synthetic_only"], "heldout_confirmation.synthetic_artifact_fixture.synthetic_only", True)
+    literal(row["biomedical_content_used"],
+            "heldout_confirmation.synthetic_artifact_fixture.biomedical_content_used", False)
+    literal(row["mmbu_public_content_used"],
+            "heldout_confirmation.synthetic_artifact_fixture.mmbu_public_content_used", False)
+    target_digest = canonical.value_digest(row["target_map"])
+    return _build_randomization_artifacts(
+        row["patient_ids"], patient_to_records=row["patient_to_records"],
+        source_manifest_digest=canonical.value_digest({"synthetic_only": True}),
+        exclusions_digest=canonical.value_digest([]),
+        duplicate_disposition_digest=canonical.value_digest([]),
+        target_map=row["target_map"], target_map_digest=target_digest,
+        construction_scope="synthetic_mechanics_only", created_at=created_at,
+    )
 
 
 def _validate_artifacts(value: object, *, first_output_at: str) -> dict:
@@ -382,14 +470,20 @@ def _validate_artifacts(value: object, *, first_output_at: str) -> dict:
     supplied_population = closed(artifact["population_binding"],
                                  "heldout_confirmation.artifacts.population_binding", (
                                      "duplicate_disposition_digest", "exclusions_digest", "patient_to_records",
-                                     "source_manifest_digest",
+                                     "source_manifest_digest", "target_map", "target_map_digest",
                                  ))
     population = _population_binding(
         patient_ids, supplied_population["patient_to_records"],
         source_manifest_digest=supplied_population["source_manifest_digest"],
         exclusions_digest=supplied_population["exclusions_digest"],
         duplicate_disposition_digest=supplied_population["duplicate_disposition_digest"],
+        target_map=supplied_population["target_map"],
+        target_map_digest=supplied_population["target_map_digest"],
     )
+    require(artifact["construction_scope"] in ("authenticated_real", "synthetic_mechanics_only"),
+            "heldout_confirmation.artifacts.construction_scope", "is not a supported closed scope")
+    literal(artifact["target_map_digest"], "heldout_confirmation.artifacts.target_map_digest",
+            population["target_map_digest"])
     literal(artifact["population_digest"], "heldout_confirmation.artifacts.population_digest",
             canonical.value_digest(population))
     count = len(patient_ids)
@@ -502,6 +596,8 @@ def analyze_patient_results(
         condition_records = by_condition[row["condition_id"]].setdefault(row["patient_id"], {})
         require(row["record_id"] not in condition_records, f"heldout_confirmation.rows[{index}].record_id",
                 "duplicates a condition record")
+        literal(row["target_label"], f"heldout_confirmation.rows[{index}].target_label",
+                artifact["population_binding"]["target_map"].get(row["record_id"]))
         condition_records[row["record_id"]] = row
         output_failures += int(row["output_failed"])
 
@@ -672,11 +768,12 @@ ANALYSIS_KEYS = (
     "reload_mismatch_count", "secondary", "seed_deltas", "seed_mean", "sign_randomization_p",
 )
 EXECUTION_KEYS = (
-    "adapted_attempts", "base_attempts", "identity_drift", "mmbu_public_content_used", "source_id", "source_role",
+    "adapted_attempts", "base_attempts", "identity_drift", "mmbu_public_content_used", "source_id",
+    "source_version", "source_role",
 )
 READINESS_KEYS = (
     "attempts_started", "checkpoint_lineages", "chronology", "gate_records", "mmbu_public_content_used",
-    "source_id", "source_role",
+    "source_id", "source_version", "source_role",
 )
 SYNTHETIC_FIXTURE_KEYS = (
     "biomedical_content_used", "expected_status", "fixture_id", "lower_bound", "mmbu_public_content_used",
@@ -695,7 +792,9 @@ def confirmation_decision(analysis: object, execution: object) -> dict:
     result = closed(analysis, "heldout_confirmation.analysis", ANALYSIS_KEYS)
     run = closed(execution, "heldout_confirmation.execution", EXECUTION_KEYS)
     blocked: list[str] = []
-    if run["source_id"] != "busi-whu-v3" or run["source_role"] != "confirmation":
+    if (run["source_id"], run["source_version"], run["source_role"]) != (
+        "busi-whu", "3", "confirmation"
+    ):
         blocked.append("source_identity_or_role")
     if type(run["mmbu_public_content_used"]) is not bool or run["mmbu_public_content_used"]:
         blocked.append("mmbu_public_content_boundary")
@@ -753,7 +852,8 @@ def readiness_status(value: object) -> dict:
             return {"missing": gate, "status": "blocked"}
         digest(reference, f"heldout_confirmation.readiness.gate_records.{gate}")
 
-    literal(record["source_id"], "heldout_confirmation.readiness.source_id", "busi-whu-v3")
+    literal(record["source_id"], "heldout_confirmation.readiness.source_id", "busi-whu")
+    literal(record["source_version"], "heldout_confirmation.readiness.source_version", "3")
     literal(record["source_role"], "heldout_confirmation.readiness.source_role", "confirmation")
     literal(record["mmbu_public_content_used"],
             "heldout_confirmation.readiness.mmbu_public_content_used", False)
@@ -828,7 +928,8 @@ def validate_synthetic_fixture(value: object) -> dict:
         "base_attempts": 1,
         "identity_drift": False,
         "mmbu_public_content_used": False,
-        "source_id": "busi-whu-v3",
+        "source_id": "busi-whu",
+        "source_version": "3",
         "source_role": "confirmation",
     }
     decision = confirmation_decision(analysis, execution)
@@ -845,7 +946,8 @@ def validate_synthetic_fixture(value: object) -> dict:
 
 __all__ = [
     "SPEC_DIGEST", "analyze_patient_results", "build_confirmation_lock",
-    "build_confirmation_source_manifest", "build_randomization_artifacts", "confirmation_decision",
+    "build_authenticated_randomization_artifacts", "build_confirmation_source_manifest",
+    "build_synthetic_randomization_artifacts", "confirmation_decision",
     "load_spec", "readiness_status", "validate_checkpoint_lineage",
     "validate_confirmation_source_manifest", "validate_spec", "validate_synthetic_fixture",
 ]

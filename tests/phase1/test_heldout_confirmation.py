@@ -51,6 +51,8 @@ class HeldoutConfirmationSpecTests(unittest.TestCase):
         self.assertEqual(value["training"]["optimizer_updates"], 1024)
         self.assertEqual(value["training"]["lora_dropout"], 0)
         self.assertEqual(value["source"]["minimum_independent_patients"], 60)
+        self.assertEqual((value["source"]["source_id"], value["source"]["source_version"]),
+                         ("busi-whu", "3"))
         self.assertEqual(value["statistics"]["bootstrap_draws"], 10000)
         self.assertEqual(value["statistics"]["lower_bound_index_zero_based"], 999)
         self.assertEqual(value["statistics"]["decision_margin"], {"denominator": 20, "numerator": 1})
@@ -69,6 +71,7 @@ class HeldoutConfirmationSpecTests(unittest.TestCase):
             lambda value: value["resources"].__setitem__("attempts_per_condition", 2),
             lambda value: value["resources"].__setitem__("automatic_rescue_allowed", True),
             lambda value: value["source"].__setitem__("source_id", "bus-uclm"),
+            lambda value: value["source"].__setitem__("source_version", "v3"),
             lambda value: value["authorization"].__setitem__("mmbu_public_content_allowed", True),
         )
         for index, mutate in enumerate(mutations):
@@ -140,12 +143,18 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
             "patient_ids": patients, "patient_count": count,
             "patient_to_records": dict(zip(patients, ([record] for record in records), strict=True)),
         }
+        target_map = {
+            record: ("benign" if index % 2 == 0 else "malignant")
+            for index, record in enumerate(records)
+        }
         return canonical.seal({
             "schema_id": "mmbu.phase1.busi_whu_review_validation", "schema_version": 1,
             "packet_receipt_digest": "1" * 64, "packet_manifest_digest": "2" * 64,
             "review_opening_sha256": "3" * 64, "primary_review_sha256": "4" * 64,
             "secondary_review_sha256": "5" * 64, "adjudication_review_sha256": "6" * 64,
             "rights_review_sha256": "7" * 64, "reviewed_record_count": count,
+            "target_map": target_map, "target_map_digest": canonical.value_digest(target_map),
+            "global_task_manifest_digest": "8" * 64,
             "independently_reviewed_record_count": count, "adjudicated_record_count": 0,
             "eligible_by_task": {
                 "global_classification": population,
@@ -161,7 +170,7 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
                 "trained_weight_release": "unresolved", "training": "decline",
             },
             "source_blockers": [], "confirmation_purposes_ready": True,
-            "review_evidence_complete": True, "reviewer_identity_authenticated": False,
+            "review_evidence_complete": True, "reviewer_identity_authenticated": True,
             "phase1_admission_still_required": True, "source_admission_authorized": False,
             "training_ready": False, "model_use_authorized": False,
             "mmbu_public_content_used": False,
@@ -169,7 +178,7 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
 
     def admission(self, report):
         world = AdmissionWorld(
-            proposed=["confirmation"], source_id="busi-whu-v3", version="3", family="busi-whu",
+            proposed=["confirmation"], source_id="busi-whu", version="3", family="busi-whu",
             extra_admission_input_digests=[report["record_digest"]],
         )
         world.extra.append(report)
@@ -197,18 +206,24 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
         )
         self.assertEqual(manifest["patient_count"], 60)
         self.assertEqual(len(manifest["patient_to_records"]), 60)
-        artifacts = self.module.build_randomization_artifacts(
-            manifest["patient_ids"], patient_to_records=manifest["patient_to_records"],
-            source_manifest_digest=manifest["record_digest"],
-            exclusions_digest=manifest["exclusions_digest"],
-            duplicate_disposition_digest=manifest["duplicate_disposition_digest"],
+        artifacts = self.module.build_authenticated_randomization_artifacts(
+            report, manifest, store, source_digest, purpose_digest,
             created_at="2026-10-25T12:00:00Z",
         )
         self.assertEqual(artifacts["population_binding"]["source_manifest_digest"], manifest["record_digest"])
+        self.assertEqual(artifacts["target_map_digest"], manifest["target_map_digest"])
+        self.assertFalse(hasattr(self.module, "build_randomization_artifacts"))
 
     def test_unauthenticated_training_leakage_underpowered_and_cross_patient_duplicates_reject(self):
         report = self.report()
         store, source_digest, purpose_digest, world = self.admission(report)
+        unauthenticated = copy.deepcopy(report)
+        unauthenticated["reviewer_identity_authenticated"] = False
+        unauthenticated["record_digest"] = canonical.record_digest(unauthenticated)
+        with self.assertRaises(ContractViolation):
+            self.module.build_confirmation_source_manifest(
+                unauthenticated, store, source_digest, purpose_digest
+            )
         with self.assertRaises(ContractViolation):
             self.module.build_confirmation_source_manifest(
                 report, RecordStore(), source_digest, purpose_digest
@@ -244,6 +259,17 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
             report, store, source_digest, purpose_digest
         )
         manifest["patient_to_records"][manifest["patient_ids"][0]].append("injected")
+        with self.assertRaises(ContractViolation):
+            self.module.validate_confirmation_source_manifest(
+                manifest, report, store, source_digest, purpose_digest
+            )
+        manifest = self.module.build_confirmation_source_manifest(
+            report, store, source_digest, purpose_digest
+        )
+        record_id = manifest["record_ids"][0]
+        manifest["target_map"][record_id] = (
+            "malignant" if manifest["target_map"][record_id] == "benign" else "benign"
+        )
         with self.assertRaises(ContractViolation):
             self.module.validate_confirmation_source_manifest(
                 manifest, report, store, source_digest, purpose_digest
@@ -289,12 +315,20 @@ class HeldoutConfirmationStatisticsTests(unittest.TestCase):
     def artifacts_for(self, patient_ids, patient_to_records=None):
         if patient_to_records is None:
             patient_to_records = {patient_id: [patient_id + "::image-0"] for patient_id in patient_ids}
-        return self.module.build_randomization_artifacts(
-            patient_ids,
-            patient_to_records=patient_to_records,
-            source_manifest_digest="a" * 64,
-            exclusions_digest="b" * 64,
-            duplicate_disposition_digest="c" * 64,
+        fixture = {
+            "synthetic_only": True,
+            "biomedical_content_used": False,
+            "mmbu_public_content_used": False,
+            "patient_ids": patient_ids,
+            "patient_to_records": patient_to_records,
+            "target_map": {
+                record_id: ("benign" if int(patient_id[-3:]) % 2 == 0 else "malignant")
+                for patient_id, record_ids in patient_to_records.items()
+                for record_id in record_ids
+            },
+        }
+        return self.module.build_synthetic_randomization_artifacts(
+            fixture,
             created_at="2026-10-25T12:00:00Z",
         )
 
@@ -361,6 +395,15 @@ class HeldoutConfirmationStatisticsTests(unittest.TestCase):
         with self.assertRaises(ContractViolation):
             self.artifacts_for(self.patients(), mapping)
 
+    def test_consistent_target_flip_across_every_condition_rejects(self):
+        rows = self.rows()
+        record_id = rows[0]["record_id"]
+        for row in rows:
+            if row["record_id"] == record_id:
+                row["target_label"] = "malignant" if row["target_label"] == "benign" else "benign"
+        with self.assertRaises(ContractViolation):
+            self.analyze(rows)
+
     def test_failures_stay_as_exact_zero_and_floats_reject(self):
         rows = self.rows()
         rows[0]["output_failed"] = True
@@ -425,7 +468,8 @@ class HeldoutConfirmationDecisionTests(unittest.TestCase):
             "base_attempts": 1,
             "identity_drift": False,
             "mmbu_public_content_used": False,
-            "source_id": "busi-whu-v3",
+            "source_id": "busi-whu",
+            "source_version": "3",
             "source_role": "confirmation",
         }
 
@@ -504,7 +548,8 @@ class HeldoutConfirmationReadinessTests(unittest.TestCase):
                 "eligible-population-lock", "hermetic-decision-receipt", "opening-and-execution-lock",
             )},
             "mmbu_public_content_used": False,
-            "source_id": "busi-whu-v3",
+            "source_id": "busi-whu",
+            "source_version": "3",
             "source_role": "confirmation",
         }
 

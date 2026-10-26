@@ -49,6 +49,16 @@ Every result was independently reloaded from canonical JSON and revalidated thro
 - The workbook contains one sheet, `Sheet1`, with dimension `A1:M928` and 13 header cells.
 - Header cell coordinates and storage types were recorded, but shared-string values were deliberately not resolved.
 
+## Closed join-rule verification
+
+After the protected run, the observed member-name evidence was passed through new pure, fail-closed join validators. The validators do not reopen source archives or decode payloads.
+
+- BUS-BRA: all 1,875 visible image names form a one-to-one match with 1,875 mask names. Pairing receipt digest: `a6f3e70a8323e611bdfe8e8a4fbf9528439437f7809df81caf6ea03db7ef8476`.
+- BUSI-WHU: all 927 visible image names form a one-to-one match with 927 annotation names. Pairing receipt digest: `262c1a511229e62eec9991392c152e7ea64e94683f470fdea351437acc9d4e4b`.
+- PathMNIST: a closed synthetic validator now requires exactly `split,index,image_id`, train/validation only, contiguous zero-based indices matching the frozen array shapes, and globally unique nonempty image IDs. It rejects test rows, index gaps, duplicate indices, duplicate image IDs, altered schemas, and unknown fields. No real mapping row was opened in this step.
+
+The source-admission test file passes 51 tests, including adversarial join fixtures. Repository link verification and the diff integrity check also pass.
+
 ## Enforced negative claims
 
 All three status receipts and inventories record:
@@ -64,4 +74,4 @@ PathMNIST additionally records `test_member_payload_opened = false`. No GPU, mod
 
 This pass establishes the physical archive/workbook/array structure required to implement exact source-specific inventory logic without guessing. It does **not** establish dataset rights, clinical correctness, patient grouping, annotation completeness, source admission, training fitness, model quality, novelty, or competition readiness.
 
-The next bounded engineering step is to implement the exact BUS-BRA, PathMNIST mapping, and BUSI-WHU join rules against synthetic fixtures using these observed schemas. BUSI-WHU header names remain intentionally unresolved, so a later separately bounded schema-value opening may be needed before its join can be executed against real data.
+The next evidence-producing step is a separately bounded schema-value opening: validate the real PathMNIST train/validation mapping rows through the frozen rule, and resolve only the 13 BUSI-WHU header strings needed to define its metadata contract. That step must remain distinct from label-value opening, image decoding, source admission, or model use.

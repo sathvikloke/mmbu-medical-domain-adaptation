@@ -313,21 +313,64 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
             admission_store = RecordStore([*records, *evidence_records])
         return admission_store, source_digest, world.digest("confirmation_authorization"), world
 
+    def confirmation_external(self, report, source_digest, purpose_digest):
+        subject = self.module.confirmation_authority_subject(
+            report, source_digest, purpose_digest,
+        )
+        return external_authority_for(
+            subject, namespace="mmbu.phase1.busi-whu-confirmation.v1",
+            principal="external-confirmation-board", role="confirmation-authority",
+            signed_at=t("09:45:00"), verified_at=t("09:46:00"),
+        )
+
     def test_authenticated_review_builds_existing_population_inputs(self):
         report, evidence_records, external = self.authenticated_report()
         store, source_digest, purpose_digest, _ = self.admission(report, evidence_records)
+        confirmation_external = self.confirmation_external(report, source_digest, purpose_digest)
         manifest = self.module.build_confirmation_source_manifest(
             report, store, source_digest, purpose_digest, external_authority=external,
+            confirmation_external_authority=confirmation_external,
         )
         self.assertEqual(manifest["patient_count"], 60)
         self.assertEqual(len(manifest["patient_to_records"]), 60)
         artifacts = self.module.build_authenticated_randomization_artifacts(
             report, manifest, store, source_digest, purpose_digest,
             created_at="2026-10-25T12:00:00Z", external_authority=external,
+            confirmation_external_authority=confirmation_external,
         )
         self.assertEqual(artifacts["population_binding"]["source_manifest_digest"], manifest["record_digest"])
         self.assertEqual(artifacts["target_map_digest"], manifest["target_map_digest"])
         self.assertFalse(hasattr(self.module, "build_randomization_artifacts"))
+
+    def test_confirmation_transition_requires_exact_external_authority(self):
+        report, evidence_records, review_external = self.authenticated_report()
+        store, source_digest, purpose_digest, _ = self.admission(report, evidence_records)
+        with self.assertRaises(ContractViolation):
+            self.module.build_confirmation_source_manifest(
+                report, store, source_digest, purpose_digest,
+                external_authority=review_external,
+            )
+        wrong = self.confirmation_external(report, source_digest, "f" * 64)
+        with self.assertRaises(ContractViolation):
+            self.module.build_confirmation_source_manifest(
+                report, store, source_digest, purpose_digest,
+                external_authority=review_external,
+                confirmation_external_authority=wrong,
+            )
+        subject = self.module.confirmation_authority_subject(
+            report, source_digest, purpose_digest,
+        )
+        same_principal = external_authority_for(
+            subject, namespace="mmbu.phase1.busi-whu-confirmation.v1",
+            principal=review_external.principal, role="confirmation-authority",
+            signed_at=t("09:45:00"), verified_at=t("09:46:00"),
+        )
+        with self.assertRaises(ContractViolation):
+            self.module.build_confirmation_source_manifest(
+                report, store, source_digest, purpose_digest,
+                external_authority=review_external,
+                confirmation_external_authority=same_principal,
+            )
 
     def test_admitted_report_with_fabricated_authentication_chain_rejects(self):
         report = self.report()
@@ -389,17 +432,21 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
     def test_post_lock_manifest_mutation_rejects(self):
         report, evidence_records, external = self.authenticated_report()
         store, source_digest, purpose_digest, _ = self.admission(report, evidence_records)
+        confirmation_external = self.confirmation_external(report, source_digest, purpose_digest)
         manifest = self.module.build_confirmation_source_manifest(
             report, store, source_digest, purpose_digest, external_authority=external,
+            confirmation_external_authority=confirmation_external,
         )
         manifest["patient_to_records"][manifest["patient_ids"][0]].append("injected")
         with self.assertRaises(ContractViolation):
             self.module.validate_confirmation_source_manifest(
                 manifest, report, store, source_digest, purpose_digest,
                 external_authority=external,
+                confirmation_external_authority=confirmation_external,
             )
         manifest = self.module.build_confirmation_source_manifest(
             report, store, source_digest, purpose_digest, external_authority=external,
+            confirmation_external_authority=confirmation_external,
         )
         record_id = manifest["record_ids"][0]
         manifest["target_map"][record_id] = (
@@ -409,6 +456,7 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
             self.module.validate_confirmation_source_manifest(
                 manifest, report, store, source_digest, purpose_digest,
                 external_authority=external,
+                confirmation_external_authority=confirmation_external,
             )
 
 

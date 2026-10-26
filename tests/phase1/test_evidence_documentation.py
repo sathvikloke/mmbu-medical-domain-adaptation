@@ -45,8 +45,8 @@ class EvidenceDocumentationTests(unittest.TestCase):
             encoding="utf-8"
         )
 
-        self.assertIn("passed **637 Phase 1 CPU tests**", report)
-        self.assertIn("| Current Phase 1 suite | **637 tests passed", report)
+        self.assertIn("passed **638 Phase 1 CPU tests**", report)
+        self.assertIn("| Current Phase 1 suite | **638 tests passed", report)
         self.assertNotIn("| Phase 1 suite | **623 tests passed", report)
         self.assertIn("**Status snapshot code revision (historical):**", report)
         self.assertNotIn("**Verified code revision:**", report)
@@ -55,7 +55,9 @@ class EvidenceDocumentationTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("verify_external_authority", trust)
-        self.assertIn("Source admission and confirmation authorization are not yet bound", trust)
+        self.assertIn("Source admission is not yet bound", trust)
+        self.assertIn("confirmation-authority", trust)
+        self.assertIn("verification must precede real artifact creation", trust)
         self.assertIn("before any network use", trust)
         self.assertIn("review-board-authority", trust)
         self.assertIn("plain prose and hard-coded names are rejected", trust)

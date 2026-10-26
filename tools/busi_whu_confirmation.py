@@ -41,28 +41,34 @@ def _store(path: Path) -> RecordStore:
     return RecordStore(records)
 
 
-def _add_external_arguments(parser: argparse.ArgumentParser) -> None:
+def _add_external_arguments(parser: argparse.ArgumentParser, prefix: str = "external") -> None:
     for name in ("policy", "public-key", "revocation", "signature", "verifier"):
-        parser.add_argument(f"--external-{name}", type=Path, required=True)
+        parser.add_argument(f"--{prefix}-{name}", type=Path, required=True)
     for name in (
         "policy-pin", "public-key-pin", "revocation-pin", "principal", "signed-at",
         "verified-at", "verifier-pin",
     ):
-        parser.add_argument(f"--external-{name}", required=True)
+        parser.add_argument(f"--{prefix}-{name}", required=True)
 
 
-def _external_authority(args: argparse.Namespace, subject: dict):
+def _external_authority(
+    args: argparse.Namespace, subject: dict, *, prefix: str = "external",
+    namespace: str = "mmbu.phase1.busi-whu-completed-review.v1",
+    role: str = "review-board-authority",
+):
+    def value(name: str):
+        return getattr(args, f"{prefix}_{name.replace('-', '_')}")
+
     return verify_external_authority(
-        policy_bytes=args.external_policy.read_bytes(), policy_pin_sha256=args.external_policy_pin,
-        public_key_bytes=args.external_public_key.read_bytes(),
-        public_key_pin_sha256=args.external_public_key_pin,
-        revocation_bytes=args.external_revocation.read_bytes(),
-        revocation_pin_sha256=args.external_revocation_pin,
-        signature_bytes=args.external_signature.read_bytes(), subject=subject,
-        namespace="mmbu.phase1.busi-whu-completed-review.v1",
-        principal=args.external_principal, role="review-board-authority",
-        signed_at=args.external_signed_at, verified_at=args.external_verified_at,
-        verifier_path=args.external_verifier, verifier_pin_sha256=args.external_verifier_pin,
+        policy_bytes=value("policy").read_bytes(), policy_pin_sha256=value("policy-pin"),
+        public_key_bytes=value("public-key").read_bytes(),
+        public_key_pin_sha256=value("public-key-pin"),
+        revocation_bytes=value("revocation").read_bytes(),
+        revocation_pin_sha256=value("revocation-pin"),
+        signature_bytes=value("signature").read_bytes(), subject=subject,
+        namespace=namespace, principal=value("principal"), role=role,
+        signed_at=value("signed-at"), verified_at=value("verified-at"),
+        verifier_path=value("verifier"), verifier_pin_sha256=value("verifier-pin"),
     )
 
 
@@ -83,6 +89,7 @@ def main(argv: list[str] | None = None) -> int:
     real_artifacts.add_argument("--confirmation-purpose-digest", required=True)
     real_artifacts.add_argument("--created-at", required=True)
     _add_external_arguments(real_artifacts)
+    _add_external_arguments(real_artifacts, "confirmation-external")
     synthetic_artifacts = commands.add_parser("build-synthetic-artifacts")
     synthetic_artifacts.add_argument("--fixture", type=Path, required=True)
     synthetic_artifacts.add_argument("--created-at", required=True)
@@ -104,10 +111,20 @@ def main(argv: list[str] | None = None) -> int:
             external = _external_authority(
                 args, resolve_completed_review_authority_subject(report, store),
             )
+            confirmation_external = _external_authority(
+                args,
+                heldout_confirmation.confirmation_authority_subject(
+                    report, args.source_admission_digest, args.confirmation_purpose_digest,
+                ),
+                prefix="confirmation_external",
+                namespace="mmbu.phase1.busi-whu-confirmation.v1",
+                role="confirmation-authority",
+            )
             result = heldout_confirmation.build_authenticated_randomization_artifacts(
                 report, _load_canonical(args.source_manifest), store,
                 args.source_admission_digest, args.confirmation_purpose_digest,
                 args.created_at, external_authority=external,
+                confirmation_external_authority=confirmation_external,
             )
             _emit(result)
             return 0

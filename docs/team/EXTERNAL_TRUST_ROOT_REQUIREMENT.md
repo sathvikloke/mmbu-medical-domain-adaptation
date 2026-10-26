@@ -34,9 +34,13 @@ Completed-review authentication now requires an externally verified `review-boar
 sealed base report, participant role/identity bindings, four review attestations, both source assessments, opening
 evidence, decisions, blockers, and authentication cutoff. The stable signature binding enters the authenticated
 report, and the real confirmation bridge requires the same externally verified subject again before reconstructing
-that report. Source admission and confirmation authorization are not yet bound to equivalent external
-capabilities. No real policy, key, pin, signature, time authority, or revocation feed has been supplied. Therefore the
-new opening gates are executable but presently unsatisfied, repository records still grant no external authority, and
+that report. The confirmation bridge also requires a separate externally verified `confirmation-authority` signature
+over the exact authenticated report, source admission, purpose authorization, source identity, task, target map,
+global task manifest, frozen confirmation specification, prompt specification, and no-public-content boundary. Its
+stable evidence binding enters the sealed source manifest, and its verification must precede real artifact creation.
+Source admission is not yet bound to an equivalent external capability. No real policy, key, pin, signature, time
+authority, or revocation feed has been supplied. Therefore the executable gates are presently unsatisfied,
+repository records still grant no external authority, and
 no protected opening or decision-bearing action is enabled by this implementation alone.
 
 ## Required external inputs

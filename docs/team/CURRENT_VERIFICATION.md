@@ -11,7 +11,7 @@ cryptographically binds the exact completed-review report plus a purpose binding
 training authority, fewer than 60 independent patients,
 cross-patient duplicate constraints, MMBU content use, and post-lock mutation.
 
-Fresh verification after the independent audit repair passed **637 Phase 1 CPU tests** with two expected skips,
+Fresh verification after the independent audit repair passed **638 Phase 1 CPU tests** with two expected skips,
 maintained Markdown-link verification, Python compilation of `src`, `tools`, and `tests`, working-tree
 `git diff --check`. Historical branch-range whitespace findings remain outside this bounded repair. The audit-triggered
 tests cover exact authority-bound review
@@ -32,7 +32,7 @@ forms, no source has been admitted, and no confirmation/model output has run.
 |---|---|---|
 | Historical preparation suite | **277 tests passed; 44 optional-Pillow image tests skipped** | Re-executes the preserved CPU package without Pillow; it does not replace the image-enabled CI lane or test a model |
 | Root repository/tool suite | **75 tests passed; 13 optional-Pillow image tests skipped** | Covers repository, publication, scope, receipt, and authorization tooling; it is not scientific evidence |
-| Current Phase 1 suite | **637 tests passed; two expected optional-dependency tests skipped** | Covers current fail-closed contracts, manifests, registries, evidence chains, geometry, bundles, synthetic orchestration, external-trust primitives, and evidence-documentation boundaries; native model execution is evidenced separately below |
+| Current Phase 1 suite | **638 tests passed; two expected optional-dependency tests skipped** | Covers current fail-closed contracts, manifests, registries, evidence chains, geometry, bundles, synthetic orchestration, external-trust primitives, and evidence-documentation boundaries; native model execution is evidenced separately below |
 | Offline smoke workflow | **passed** | Replays historical synthetic demonstrations and toy arithmetic only; it reports `model_executed=false` and `official_evaluation=false` |
 | Maintained local Markdown links and anchors | **passed** | External URLs were not fetched by this check |
 | Published v0.3 artifact verification | **passed** for 275 files, ZIP members, fixed transforms, and historical receipts | Establishes byte integrity only, not scientific validity or medical truth |
@@ -79,7 +79,11 @@ authority over the exact source-specific network operation, and structural openi
 externally verified `data-owner` and `independent-reviewer` capabilities over the exact source-specific packet subject;
 plain statements and hard-coded identities reject. Completed-review authentication requires external
 `review-board-authority` verification over the exact report/evidence transition, and the real confirmation bridge
-reverifies that stable signature binding. Source admission and confirmation authorization remain unbound. No real external key, signature, identity proof, or revocation evidence has been
+reverifies that stable signature binding. The bridge separately requires external `confirmation-authority`
+verification over the exact authenticated report, source admission, purpose authorization, task, target-map,
+global-task-manifest, and frozen spec/prompt transition; the sealed source manifest binds that evidence and real
+artifact construction requires verification before creation. Source admission remains externally unbound. No real
+external key, signature, identity proof, or revocation evidence has been
 supplied, so the executable gate is unsatisfied, grants no authority, and the project remains `blocked_external`.
 
 The [machine-local evidence-root manifest](../../config/phase1/machine-local-evidence-roots-2026-10-26.json) records

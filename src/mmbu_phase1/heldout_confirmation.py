@@ -13,6 +13,7 @@ import random
 from mmbu_phase1 import admission, canonical, decisions, rational
 from mmbu_phase1.store import RecordStore
 from mmbu_phase1.busi_whu_review_validation import validate_authenticated_completed_review
+from mmbu_phase1.external_trust import ExternalAuthorityCapability
 from mmbu_phase1.fields import (
     ContractViolation, boolean, closed, digest, fail, integer, literal, require, text, timestamp,
 )
@@ -121,6 +122,7 @@ REVIEW_AUTHENTICATION_KEYS = (
     "external_authority_principal",
 )
 SOURCE_MANIFEST_KEYS = (
+    "confirmation_authority_binding_digest", "confirmation_authority_principal",
     "confirmation_task", "duplicate_disposition_digest", "exclusions_digest",
     "mmbu_public_content_used", "model_use_authorized", "patient_count", "patient_ids",
     "patient_to_records", "purpose_authorization_digest", "record_count", "record_digest",
@@ -128,6 +130,86 @@ SOURCE_MANIFEST_KEYS = (
     "source_admission_digest", "source_id", "source_version", "source_role", "training_allowed",
     "target_map", "target_map_digest", "global_task_manifest_digest",
 )
+
+CONFIRMATION_AUTHORITY_NAMESPACE = "mmbu.phase1.busi-whu-confirmation.v1"
+
+
+def confirmation_authority_subject(
+    review_report: object, source_admission_digest: str, purpose_authorization_digest: str,
+) -> dict:
+    """Return the exact admitted-confirmation transition an external authority must sign."""
+    report = closed(review_report, "heldout_confirmation.confirmation_authority.report", REVIEW_REPORT_KEYS)
+    literal(report["record_digest"], "heldout_confirmation.confirmation_authority.report.record_digest",
+            canonical.record_digest(report))
+    digest(source_admission_digest,
+           "heldout_confirmation.confirmation_authority.source_admission_digest")
+    digest(purpose_authorization_digest,
+           "heldout_confirmation.confirmation_authority.purpose_authorization_digest")
+    digest(report["target_map_digest"],
+           "heldout_confirmation.confirmation_authority.target_map_digest")
+    digest(report["global_task_manifest_digest"],
+           "heldout_confirmation.confirmation_authority.global_task_manifest_digest")
+    return canonical.seal({
+        "schema_id": "mmbu.phase1.busi_whu_confirmation_authority_subject",
+        "schema_version": 1,
+        "review_validation_digest": report["record_digest"],
+        "source_admission_digest": source_admission_digest,
+        "purpose_authorization_digest": purpose_authorization_digest,
+        "source_id": "busi-whu", "source_version": "3",
+        "confirmation_task": "global_classification",
+        "target_map_digest": report["target_map_digest"],
+        "global_task_manifest_digest": report["global_task_manifest_digest"],
+        "confirmation_spec_digest": SPEC_DIGEST,
+        "prompt_spec_digest": PROMPT_SPEC_DIGEST,
+        "mmbu_public_content_used": False,
+    })
+
+
+def _confirmation_authority_binding_digest(authority: ExternalAuthorityCapability) -> str:
+    return canonical.value_digest({
+        "namespace": authority.namespace, "principal": authority.principal,
+        "role": authority.role, "subject_digest": authority.subject_digest,
+        "policy_sha256": authority.policy_sha256,
+        "public_key_sha256": authority.public_key_sha256,
+        "revocation_sha256": authority.revocation_sha256,
+        "signature_sha256": authority.signature_sha256,
+        "signed_at": authority.signed_at,
+        "verifier_sha256": authority.verifier_sha256,
+        "verifier_version": authority.verifier_version,
+    })
+
+
+def _validate_confirmation_external_authority(
+    subject: dict, authority: object, authenticated_at: str, *, created_at: str | None = None,
+) -> ExternalAuthorityCapability:
+    if type(authority) is not ExternalAuthorityCapability:
+        fail("heldout_confirmation.confirmation_external_authority",
+             "requires an externally verified confirmation-authority capability")
+    if authority.namespace != CONFIRMATION_AUTHORITY_NAMESPACE:
+        fail("heldout_confirmation.confirmation_external_authority.namespace", "mismatch")
+    if authority.role != "confirmation-authority":
+        fail("heldout_confirmation.confirmation_external_authority.role", "mismatch")
+    if authority.subject_digest != canonical.value_digest(subject):
+        fail("heldout_confirmation.confirmation_external_authority.subject_digest",
+             "signed another confirmation transition")
+    authenticated = timestamp(authenticated_at,
+                              "heldout_confirmation.confirmation_external_authority.authenticated_at")
+    signed = timestamp(authority.signed_at,
+                       "heldout_confirmation.confirmation_external_authority.signed_at")
+    verified = timestamp(authority.verified_at,
+                         "heldout_confirmation.confirmation_external_authority.verified_at")
+    require(signed > authenticated,
+            "heldout_confirmation.confirmation_external_authority.signed_at",
+            "must follow completed-review authentication")
+    require(verified >= signed,
+            "heldout_confirmation.confirmation_external_authority.verified_at",
+            "must not precede signing")
+    if created_at is not None:
+        created = timestamp(created_at, "heldout_confirmation.artifacts.created_at")
+        require(verified < created,
+                "heldout_confirmation.confirmation_external_authority.verified_at",
+                "must precede real artifact creation")
+    return authority
 
 
 def _validate_target_map(value: object, record_ids: list[str], path: str) -> dict[str, str]:
@@ -238,11 +320,24 @@ def _validated_bridge_inputs(
 def build_confirmation_source_manifest(
     review_report: object, store: RecordStore, source_admission_digest: str,
     purpose_authorization_digest: str, *, external_authority: object = None,
+    confirmation_external_authority: object = None,
 ) -> dict:
     """Bridge authenticated review evidence into the existing confirmation population contract."""
     report, _source, _authorization = _validated_bridge_inputs(
         review_report, store, source_admission_digest, purpose_authorization_digest,
         external_authority,
+    )
+    confirmation_subject = confirmation_authority_subject(
+        report, source_admission_digest, purpose_authorization_digest,
+    )
+    confirmation_capability = _validate_confirmation_external_authority(
+        confirmation_subject, confirmation_external_authority,
+        report["review_authentication"]["authenticated_at"],
+    )
+    require(
+        confirmation_capability.principal != external_authority.principal,
+        "heldout_confirmation.confirmation_external_authority.principal",
+        "must be independent of the completed-review authority",
     )
     eligible = closed(report["eligible_by_task"], "heldout_confirmation.review_report.eligible_by_task", (
         "global_classification", "grounded_classification", "localization", "context_prediction",
@@ -292,6 +387,9 @@ def build_confirmation_source_manifest(
         "exclusions_digest": population["exclusions_digest"],
         "duplicate_disposition_digest": population["duplicate_disposition_digest"],
         "review_validation_digest": report["record_digest"],
+        "confirmation_authority_binding_digest":
+            _confirmation_authority_binding_digest(confirmation_capability),
+        "confirmation_authority_principal": confirmation_capability.principal,
         "source_admission_digest": source_admission_digest,
         "purpose_authorization_digest": purpose_authorization_digest,
         "target_map": target_map, "target_map_digest": report["target_map_digest"],
@@ -304,11 +402,13 @@ def build_confirmation_source_manifest(
 def validate_confirmation_source_manifest(
     value: object, review_report: object, store: RecordStore, source_admission_digest: str,
     purpose_authorization_digest: str, *, external_authority: object = None,
+    confirmation_external_authority: object = None,
 ) -> dict:
     manifest = closed(value, "heldout_confirmation.source_manifest", SOURCE_MANIFEST_KEYS)
     expected = build_confirmation_source_manifest(
         review_report, store, source_admission_digest, purpose_authorization_digest,
         external_authority=external_authority,
+        confirmation_external_authority=confirmation_external_authority,
     )
     require(manifest == expected, "heldout_confirmation.source_manifest",
             "differs from the authenticated review and admission evidence")
@@ -485,12 +585,23 @@ def _build_randomization_artifacts(
 def build_authenticated_randomization_artifacts(
     review_report: object, confirmation_source_manifest: object, store: RecordStore,
     source_admission_digest: str, confirmation_purpose_digest: str, created_at: str,
-    *, external_authority: object = None,
+    *, external_authority: object = None, confirmation_external_authority: object = None,
 ) -> dict:
     """Build real artifacts only by re-resolving the admitted review chain."""
     manifest = validate_confirmation_source_manifest(
         confirmation_source_manifest, review_report, store, source_admission_digest,
         confirmation_purpose_digest, external_authority=external_authority,
+        confirmation_external_authority=confirmation_external_authority,
+    )
+    _validate_confirmation_external_authority(
+        confirmation_authority_subject(
+            review_report, source_admission_digest, confirmation_purpose_digest,
+        ),
+        confirmation_external_authority,
+        closed(
+            review_report, "heldout_confirmation.review_report", REVIEW_REPORT_KEYS,
+        )["review_authentication"]["authenticated_at"],
+        created_at=created_at,
     )
     return _build_randomization_artifacts(
         manifest["patient_ids"], patient_to_records=manifest["patient_to_records"],
@@ -1038,9 +1149,11 @@ def validate_synthetic_fixture(value: object) -> dict:
 
 
 __all__ = [
-    "SPEC_DIGEST", "analyze_patient_results", "build_confirmation_lock",
+    "CONFIRMATION_AUTHORITY_NAMESPACE", "SPEC_DIGEST", "analyze_patient_results",
+    "build_confirmation_lock",
     "build_authenticated_randomization_artifacts", "build_confirmation_source_manifest",
-    "build_synthetic_randomization_artifacts", "confirmation_decision",
+    "build_synthetic_randomization_artifacts", "confirmation_authority_subject",
+    "confirmation_decision",
     "load_spec", "readiness_status", "validate_checkpoint_lineage",
     "validate_confirmation_source_manifest", "validate_spec", "validate_synthetic_fixture",
 ]

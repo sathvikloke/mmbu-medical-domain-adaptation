@@ -131,7 +131,7 @@ class ConfirmationCliTests(unittest.TestCase):
         self.temp.cleanup()
 
     def external_args(self):
-        return [
+        review = [
             "--external-policy", str(self.records), "--external-policy-pin", "1" * 64,
             "--external-public-key", str(self.records), "--external-public-key-pin", "2" * 64,
             "--external-revocation", str(self.records), "--external-revocation-pin", "3" * 64,
@@ -140,6 +140,21 @@ class ConfirmationCliTests(unittest.TestCase):
             "--external-verified-at", "2026-10-26T07:29:00Z",
             "--external-verifier", str(self.records), "--external-verifier-pin", "4" * 64,
         ]
+        confirmation = [
+            "--confirmation-external-policy", str(self.records),
+            "--confirmation-external-policy-pin", "5" * 64,
+            "--confirmation-external-public-key", str(self.records),
+            "--confirmation-external-public-key-pin", "6" * 64,
+            "--confirmation-external-revocation", str(self.records),
+            "--confirmation-external-revocation-pin", "7" * 64,
+            "--confirmation-external-signature", str(self.records),
+            "--confirmation-external-principal", "external-confirmation-board",
+            "--confirmation-external-signed-at", "2026-10-26T07:25:00Z",
+            "--confirmation-external-verified-at", "2026-10-26T07:29:00Z",
+            "--confirmation-external-verifier", str(self.records),
+            "--confirmation-external-verifier-pin", "8" * 64,
+        ]
+        return [*review, *confirmation]
 
     def test_real_route_has_no_arbitrary_patient_map_or_synthetic_fixture(self):
         base = [
@@ -166,7 +181,12 @@ class ConfirmationCliTests(unittest.TestCase):
             ) as synthetic:
                 with mock.patch.object(
                     self.module, "resolve_completed_review_authority_subject", return_value={"subject": True}
-                ), mock.patch.object(self.module, "verify_external_authority", return_value=object()), \
+                ), mock.patch.object(
+                    self.module.heldout_confirmation, "confirmation_authority_subject",
+                    return_value={"confirmation": True},
+                ), mock.patch.object(
+                    self.module, "verify_external_authority", side_effect=[object(), object()],
+                ) as verify, \
                         mock.patch.object(self.module.sys, "stdout", OutputSink()):
                     self.assertEqual(self.module.main([
                         "build-real-artifacts", "--review-report", str(self.report),
@@ -182,6 +202,12 @@ class ConfirmationCliTests(unittest.TestCase):
                     ]), 0)
         self.assertEqual(real.call_count, 1)
         self.assertEqual(synthetic.call_count, 1)
+        self.assertEqual(verify.call_count, 2)
+        self.assertEqual(
+            verify.call_args_list[1].kwargs["namespace"],
+            "mmbu.phase1.busi-whu-confirmation.v1",
+        )
+        self.assertEqual(verify.call_args_list[1].kwargs["role"], "confirmation-authority")
 
     def test_synthetic_route_requires_explicit_fixture_and_rejects_real_inputs(self):
         with self.assertRaises(SystemExit):

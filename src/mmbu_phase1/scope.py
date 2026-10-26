@@ -14,6 +14,7 @@ REQUIRED_PHASE1_TEST_MODULES = (
     "test_busi_whu_cli.py",
     "test_busi_whu_review.py",
     "test_canonical.py",
+    "test_chestmnist_intake.py",
     "test_condition.py",
     "test_condition_matrix.py",
     "test_contract_manifest.py",

@@ -6,10 +6,10 @@
 
 ## Decision
 
-The first B2 decision portfolio should prioritize **BUS-BRA**, **BUS-UCLM v3**, and **PathMNIST-224 / NCT-CRC** if
-PathMNIST passes the parent-group reconstruction and held-out-cohort gates in the
-[semantic-breadth intake decision](SEMANTIC_BREADTH_INTAKE_DECISION.md). **ChestMNIST-224 / NIH** is a noisy-label
-fallback, and **OrganAMNIST-224 / LiTS** is anatomy/context support only. None is admitted. **BBBC039** is limited to
+The first B2 decision portfolio should prioritize **BUS-BRA**, **BUS-UCLM v3**, and **ChestMNIST-224 / NIH** if
+ChestMNIST passes the rebuilt patient-grouped split and positive-label QA gates in the
+[semantic-breadth intake decision](SEMANTIC_BREADTH_INTAKE_DECISION.md). **PathMNIST-224 / NCT-CRC** is blocked on
+authoritative slide/patient lineage, and **OrganAMNIST-224 / LiTS** is anatomy/context support only. None is admitted. **BBBC039** is limited to
 capped non-promotable geometry/count wiring smoke, while **BBBC038 v1** is deferred to post-selection heterogeneous
 stress. For MOSAIC-specific structural intake, the later
 [crossover-source search](CROSSOVER_SOURCE_SEARCH.md) places **SegThy** first because it contains paired MRI/ultrasound
@@ -63,7 +63,7 @@ service; it is not an automatic prohibition.
 |---:|---|---|---|---|
 | 1 | **BUS-BRA 1.0** — ultrasound global, grounded, and localization views | [Zenodo record](https://doi.org/10.5281/zenodo.8231412); [dataset paper](https://doi.org/10.1002/mp.16812) | 1,875 images from 1,064 patients; biopsy/pathology, BI-RADS, lesion masks, and standardized folds; metadata, patient-disjoint outer folds, all decoded pairs, and within-source exact/perceptual triage are now receipted | Adjudicate four dimension errata and the `bus_0845-s` box/mask discrepancy; resolve the one perceptual provenance candidate; audit MMBU/cross-source proximity; obtain medical, purpose, rights, disclosure, and release sign-off |
 | 2 | **BUS-UCLM v3** — independent ultrasound global, grounded, and localization views | [Mendeley v3](https://doi.org/10.17632/7fvgj4jsp7.3); [dataset paper](https://doi.org/10.1038/s41597-025-04562-3) | Exact 683-row image/mask name closure and 38 patient prefixes are now receipted; label totals match the paper; expert RGB masks remain unopened | Resolve CC BY versus CC BY-NC conflict and `Doppler=Y` anomaly; freeze patient-grouped treatment of normal, marked, Doppler, and combined images; inspect pixels/masks and duplicates; review attribution, purpose, weight release, disclosure, and source proximity |
-| 3 | **PathMNIST-224 / NCT-CRC**, with **ChestMNIST-224 / NIH** as fallback and **OrganAMNIST-224 / LiTS** for anatomy/context only | [Exact intake decision](SEMANTIC_BREADTH_INTAKE_DECISION.md); [official repository](https://github.com/MedMNIST/MedMNIST); [MedMNIST+ construction](https://github.com/MedMNIST/MedMNIST/blob/main/on_medmnist_plus.md); [v2 paper](https://doi.org/10.1038/s41597-022-01721-8) | Exact 224-pixel release candidates, source-image mappings, and distinct upstream modalities; PathMNIST adds the strongest first breadth candidate if slide/patient lineage is complete | Reconstruct parent groups; keep CRC-VAL-HE-7K unopened for confirmation; never infer negative chest findings from absent text-mined labels; restrict OrganAMNIST to anatomy/context; verify upstream obligations; never count wrapper subsets or alternate views as independent families |
+| 3 | **ChestMNIST-224 / NIH**, with blocked **PathMNIST-224 / NCT-CRC** and **OrganAMNIST-224 / LiTS** for anatomy/context only | [Exact intake decision](SEMANTIC_BREADTH_INTAKE_DECISION.md); [ChestMNIST mapping audit](CHESTMNIST_MAPPING_AUDIT_2026-10-26.md); [official repository](https://github.com/MedMNIST/MedMNIST); [v2 paper](https://doi.org/10.1038/s41597-022-01721-8) | ChestMNIST's exact public mapping recovers 30,805 patient IDs and adds a distinct modality; PathMNIST remains attractive only if authoritative parent lineage arrives | Rebuild ChestMNIST roles prospectively by patient because three patients cross wrapper splits; never infer negative findings from absent text-mined labels; complete positive-label QA, resize/image, rights, purpose, release, and overlap review; restrict OrganAMNIST to anatomy/context |
 | 4 | **BBBC038 v1** — post-selection heterogeneous localization/count stress only | [Official BBBC038 page](https://bbbc.broadinstitute.org/BBBC038) | 670 heterogeneous nuclei images; instance masks for the training portion; official page declares CC0 | Cannot satisfy the semantic-family minimum; use only after candidate selection, reconcile documented BBBC039 overlap and all upstream contributors, prove instance-set completeness, and retain source/contributor grouping |
 
 **MOSAIC structural priority:** [SegThy](https://www.cs.cit.tum.de/en/camp/publications/segthy-dataset/) is a separate
@@ -101,8 +101,8 @@ stop after metadata/structure inspection if a hard gate fails.
 | BUS-BRA | Candidate | Candidate | Candidate from reviewed mask/box conversion | No | All three candidates must join to the same authoritative patient/image/lesion record |
 | BUS-UCLM | Candidate | Candidate for lesion-bearing images | Candidate from reviewed masks | No | Normal images cannot silently receive synthetic lesion boxes or negative disease labels |
 | BUSI-WHU | Candidate | **Mechanically complete:** 927 records map to 816 patients | **Mechanically paired only:** 927 image/annotation names match; payload validity remains unreviewed | No | Clinical correctness, mask usability, duplicates, purpose authorization, and confirmation eligibility remain unproved |
-| PathMNIST / NCT-CRC | Candidate | No | No | No | Preferred non-ultrasound breadth candidate only if every patch recovers a slide/patient parent |
-| ChestMNIST / NIH | Fallback candidate | No | No | No | Text-mined positives require QA; absent labels are not verified negatives |
+| PathMNIST / NCT-CRC | Blocked candidate | No | No | No | Requires authoritative slide/patient parent lineage for every patch |
+| ChestMNIST / NIH | First executable breadth intake candidate | No | No | No | Patient IDs are recoverable, but three patients cross wrapper roles; rebuild roles by patient and QA text-mined positives; absent labels are not verified negatives |
 | OrganAMNIST / LiTS | Anatomy/context candidate | No | No | No | All planes and 3D variants are one family; not disease evidence |
 | BBBC038 | No meaningful medical class | Not counted as meaningful | Candidate | Candidate only for complete instance sets | “Nucleus” is a trivial object type, not semantic transfer evidence |
 | VinDr-CXR | Candidate | Candidate | Candidate | No | Credentialed-data and release gates precede any technical use |
@@ -122,9 +122,9 @@ The minimum decision-bearing source rule is exact:
 3. **B1-L/B2-P decisions require BUS-BRA plus at least two independently admitted semantic-breadth families**, with
    prospectively assigned development and held-out-family roles. BUS-UCLM remains the preferred independent
    ultrasound replication candidate. The metadata-only
-   [semantic-breadth intake decision](SEMANTIC_BREADTH_INTAKE_DECISION.md) now ranks PathMNIST-224 / NCT-CRC first for
-   non-ultrasound breadth, ChestMNIST-224 / NIH second as a noisy-label fallback, and OrganAMNIST-224 / LiTS only for
-   anatomy/context support. None is a pre-approved satisfier.
+   [semantic-breadth intake decision](SEMANTIC_BREADTH_INTAKE_DECISION.md) now ranks ChestMNIST-224 / NIH first for
+   executable non-ultrasound intake after its patient-mapping audit, keeps PathMNIST-224 / NCT-CRC blocked on parent
+   lineage, and limits OrganAMNIST-224 / LiTS to anatomy/context support. None is a pre-approved satisfier.
 4. **BBBC038 is a post-selection heterogeneous stress source** and cannot satisfy the semantic-family minimum.
 
 BUS-BRA engineering can verify loading, target construction, gradients, loss behavior, throughput, memory,

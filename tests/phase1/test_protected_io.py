@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
 
 from mmbu_phase1.fields import ContractViolation
 from mmbu_phase1.protected_io import open_authorized_artifact
@@ -95,6 +96,28 @@ class ProtectedArtifactTests(unittest.TestCase):
             path.write_bytes(b"first immutable bytes")
             with self.assertRaises(ContractViolation):
                 artifact.read()
+
+    def test_ancestor_swap_during_walk_cannot_redirect_final_open(self):
+        capability, _ = self.capability(payload=b"retained authorized bytes")
+        real_open = os.open
+        raced = False
+
+        def swap_after_directory_open(path, flags, *args, **kwargs):
+            nonlocal raced
+            fd = real_open(path, flags, *args, **kwargs)
+            if path == "busi-whu" and kwargs.get("dir_fd") is not None and not raced:
+                raced = True
+                original = self.root / "busi-whu"
+                preserved = self.root / "preserved-busi-whu"
+                original.rename(preserved)
+                original.mkdir()
+                (original / "archive.zip").write_bytes(b"attacker replacement bytes")
+            return fd
+
+        with mock.patch("mmbu_phase1.protected_io.os.open", side_effect=swap_after_directory_open):
+            with open_authorized_artifact(capability, "busi-whu/archive.zip", "archive") as artifact:
+                self.assertTrue(raced)
+                self.assertEqual(artifact.read(), b"retained authorized bytes")
 
     def test_descriptor_mutation_after_open_rejects(self):
         capability, path = self.capability(payload=b"first immutable bytes")

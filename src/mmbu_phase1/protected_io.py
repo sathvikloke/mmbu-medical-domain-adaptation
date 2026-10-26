@@ -44,23 +44,64 @@ def _proof(value: os.stat_result) -> StatProof:
     )
 
 
-def _require_safe_ancestors(root: Path, target: Path) -> None:
-    current = Path(target.anchor)
-    for component in target.parts[1:-1]:
-        current = current / component
-        info = os.lstat(current)
-        f.require(not stat.S_ISLNK(info.st_mode), "protected_io.path", f"symlink ancestor: {current}")
-        f.require(stat.S_ISDIR(info.st_mode), "protected_io.path", f"ancestor is not a directory: {current}")
-    root_info = os.lstat(root)
-    f.require(not stat.S_ISLNK(root_info.st_mode) and stat.S_ISDIR(root_info.st_mode),
-              "protected_io.input_root", "input root must be a real directory")
+def _directory_flags() -> int:
+    return (
+        os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_DIRECTORY", 0)
+    )
+
+
+def _open_directory(parent_fd: int, component: str, path: str) -> int:
+    try:
+        descriptor = os.open(component, _directory_flags(), dir_fd=parent_fd)
+    except OSError as exc:
+        raise f.ContractViolation("protected_io.path", f"cannot securely open directory {path}: {exc}") from exc
+    try:
+        f.require(stat.S_ISDIR(os.fstat(descriptor).st_mode), "protected_io.path",
+                  f"ancestor is not a directory: {path}")
+        return descriptor
+    except Exception:
+        os.close(descriptor)
+        raise
+
+
+def _open_authorized_parent(root: Path, bound_path: str) -> tuple[int, str]:
+    """Retain every directory by descriptor so ancestor replacement cannot redirect lookup."""
+    try:
+        current_fd = os.open(root.anchor, _directory_flags())
+    except OSError as exc:
+        raise f.ContractViolation("protected_io.input_root", f"cannot securely open filesystem root: {exc}") from exc
+    current_path = root.anchor
+    try:
+        for component in root.parts[1:]:
+            next_path = str(Path(current_path) / component)
+            next_fd = _open_directory(current_fd, component, next_path)
+            os.close(current_fd)
+            current_fd = next_fd
+            current_path = next_path
+        components = Path(bound_path).parts
+        for component in components[:-1]:
+            next_path = str(Path(current_path) / component)
+            next_fd = _open_directory(current_fd, component, next_path)
+            os.close(current_fd)
+            current_fd = next_fd
+            current_path = next_path
+        return current_fd, components[-1]
+    except Exception:
+        os.close(current_fd)
+        raise
 
 
 class ProtectedArtifact:
     """An open authorized descriptor that revalidates identity on every read."""
 
-    def __init__(self, fd: int, path: Path, sha256: str, size: int, pre_stat: StatProof):
+    def __init__(
+        self, fd: int, parent_fd: int, final_name: str, path: Path,
+        sha256: str, size: int, pre_stat: StatProof,
+    ):
         self._fd = fd
+        self._parent_fd = parent_fd
+        self._final_name = final_name
         self._path = path
         self.sha256 = sha256
         self.size = size
@@ -71,7 +112,7 @@ class ProtectedArtifact:
 
     def _path_proof(self) -> StatProof:
         try:
-            value = os.lstat(self._path)
+            value = os.stat(self._final_name, dir_fd=self._parent_fd, follow_symlinks=False)
         except OSError as exc:
             raise f.ContractViolation("protected_io.path", f"authorized path is unavailable: {exc}") from exc
         f.require(not stat.S_ISLNK(value.st_mode), "protected_io.path", "authorized path became a symlink")
@@ -134,6 +175,7 @@ class ProtectedArtifact:
                 self.verify_stable()
         finally:
             os.close(self._fd)
+            os.close(self._parent_fd)
             self._closed = True
 
     def __enter__(self) -> "ProtectedArtifact":
@@ -166,22 +208,24 @@ def open_authorized_artifact(
     root = Path(capability.input_root)
     f.require(root.is_absolute(), "protected_io.input_root", "must be absolute")
     target = root.joinpath(*Path(bound_path).parts)
-    _require_safe_ancestors(root, target)
+    parent_fd, final_name = _open_authorized_parent(root, bound_path)
     flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
     try:
-        fd = os.open(target, flags)
+        fd = os.open(final_name, flags, dir_fd=parent_fd)
     except OSError as exc:
+        os.close(parent_fd)
         raise f.ContractViolation("protected_io.path", f"cannot securely open authorized artifact: {exc}") from exc
     try:
         proof = _proof(os.fstat(fd))
         f.require(stat.S_ISREG(proof.mode), "protected_io.path", "artifact must be a regular file")
         f.require(proof.links == 1, "protected_io.path", "artifact must have exactly one hard link")
         f.require(proof.size == expected_size, "protected_io.size", "artifact size differs from authorization")
-        artifact = ProtectedArtifact(fd, target, expected_hash, expected_size, proof)
+        artifact = ProtectedArtifact(fd, parent_fd, final_name, target, expected_hash, expected_size, proof)
         artifact.verify_stable()
         return artifact
     except Exception:
         os.close(fd)
+        os.close(parent_fd)
         raise
 
 

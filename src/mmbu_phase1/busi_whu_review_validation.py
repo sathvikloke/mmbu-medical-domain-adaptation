@@ -167,7 +167,7 @@ def _negative_authority(value: dict, label: str) -> None:
             raise ValueError(f"{label}.{field} must remain false")
 
 
-def _validate_packet(packet: Path, expected_digest: str) -> tuple[dict, dict, dict, dict]:
+def _validate_packet(packet: Path, expected_digest: str) -> tuple[dict, dict, dict, dict, dict, dict]:
     packet = Path(packet).resolve(strict=True)
     if not packet.is_dir():
         raise ValueError("packet must be a directory")
@@ -205,7 +205,14 @@ def _validate_packet(packet: Path, expected_digest: str) -> tuple[dict, dict, di
     manifest, _ = _load_canonical(packet / "review-manifest.json", "review manifest")
     decode, _ = _load_canonical(packet / "decode-inventory.json", "decode inventory")
     duplicates, _ = _load_canonical(packet / "duplicate-candidates.json", "duplicate inventory")
-    for name, value in (("manifest", manifest), ("decode inventory", decode), ("duplicates", duplicates)):
+    targets, _ = _load_canonical(packet / "target-manifest.json", "target manifest")
+    global_task, _ = _load_canonical(
+        packet / "task-manifest-global_classification.json", "global task manifest"
+    )
+    for name, value in (
+        ("manifest", manifest), ("decode inventory", decode), ("duplicates", duplicates),
+        ("target manifest", targets), ("global task manifest", global_task),
+    ):
         _validate_sealed(value, name)
         _negative_authority(value, name)
     if (
@@ -214,11 +221,28 @@ def _validate_packet(packet: Path, expected_digest: str) -> tuple[dict, dict, di
         or receipt["duplicate_candidates_digest"] != duplicates["record_digest"]
         or manifest["decode_inventory_digest"] != decode["record_digest"]
         or manifest["duplicate_candidates_digest"] != duplicates["record_digest"]
+        or receipt["target_map_digest"] != targets["record_digest"]
+        or manifest["target_map_digest"] != targets["record_digest"]
+        or decode["target_map_digest"] != targets["record_digest"]
+        or manifest["mechanical_task_manifest_digests"]["global_classification"]
+        != global_task["record_digest"]
+        or global_task["target_map_digest"] != targets["record_digest"]
+        or global_task["decode_inventory_digest"] != decode["record_digest"]
     ):
         raise ValueError("packet transitive digest chain mismatch")
     if decode.get("record_count") != 927 or len(decode.get("records", [])) != 927:
         raise ValueError("decode inventory must contain exactly 927 records")
-    return receipt, manifest, decode, duplicates
+    record_targets = targets.get("record_targets")
+    decoded_targets = {row["record_id"]: row["canonical_target"] for row in decode["records"]}
+    if (
+        type(record_targets) is not dict
+        or targets.get("record_count") != len(record_targets)
+        or record_targets != decoded_targets
+        or global_task.get("mechanically_candidate_record_ids") != sorted(record_targets)
+        or global_task.get("mechanically_blocked_record_ids") != []
+    ):
+        raise ValueError("packet target or global-task population mismatch")
+    return receipt, manifest, decode, duplicates, targets, global_task
 
 
 def _read_rows(path: Path, label: str) -> tuple[list[dict[str, str]], bytes]:
@@ -411,7 +435,9 @@ def validate_completed_review(
 ) -> dict:
     """Validate complete evidence and emit task manifests, never admission authority."""
     packet = Path(packet).resolve(strict=True)
-    receipt, manifest, decode, duplicates = _validate_packet(packet, expected_packet_receipt_digest)
+    receipt, manifest, decode, duplicates, targets, global_task = _validate_packet(
+        packet, expected_packet_receipt_digest
+    )
     opening, opening_payload = _load_canonical(review_opening, "review opening")
     if opening.get("packet_receipt_digest") != receipt["record_digest"]:
         raise ValueError("review opening packet digest mismatch")
@@ -595,6 +621,9 @@ def validate_completed_review(
         "reviewed_record_count": len(primary),
         "independently_reviewed_record_count": len(secondary),
         "adjudicated_record_count": len(adjudicated),
+        "target_map": targets["record_targets"],
+        "target_map_digest": canonical.value_digest(targets["record_targets"]),
+        "global_task_manifest_digest": global_task["record_digest"],
         "eligible_by_task": eligible_by_task,
         "excluded_record_ids": excluded,
         "unresolved_record_ids": unresolved,

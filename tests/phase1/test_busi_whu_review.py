@@ -487,6 +487,13 @@ class BusiWhuCompletedReviewTests(unittest.TestCase):
             self.assertEqual(report["independently_reviewed_record_count"], 249)
             self.assertEqual(report["eligible_by_task"]["global_classification"]["record_count"], 927)
             self.assertEqual(report["eligible_by_task"]["global_classification"]["patient_count"], 816)
+            target_manifest = json.loads((fixture["packet"] / "target-manifest.json").read_text())
+            global_manifest = json.loads(
+                (fixture["packet"] / "task-manifest-global_classification.json").read_text()
+            )
+            self.assertEqual(report["target_map"], target_manifest["record_targets"])
+            self.assertEqual(report["target_map_digest"], canonical.value_digest(report["target_map"]))
+            self.assertEqual(report["global_task_manifest_digest"], global_manifest["record_digest"])
             self.assertTrue(report["confirmation_purposes_ready"])
             self.assertEqual(len(report["duplicate_group_constraints"]), 2)
             self.assertFalse(report["source_admission_authorized"])

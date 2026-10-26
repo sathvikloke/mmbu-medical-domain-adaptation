@@ -94,3 +94,16 @@ The one-attempt corrected packet `646c08a7f2cba4320cb7f0d5611f68b95a185f1df955d7
 - The status receipt records false for image decoding, label-value reading, NPZ test-member opening, model use, and MMBU public content use.
 
 The next evidence-producing step is no longer schema discovery. It is source admission: independent rights, grouping, annotation/clinical-validity, and use-purpose decisions must be completed before any source can be granted model use or enter training.
+
+## BUS-BRA protected metadata outcome
+
+The acknowledged one-attempt packet `4d521a114f833d6fc0547622488ca4efaf7205ae84da023c02b3e528297f5130` completed successfully as CPU job `86062` in six seconds. The exact result is retained under `outputs/source-admission-busbra-metadata-2026-10-25/execution-86062/`.
+
+- The embedded license text, `bus_data.csv`, and `5-fold-cv.csv` were read completely and passed their frozen schemas and required-license-phrase checks.
+- The exact 133,917,740-byte archive retained SHA-256 `ba3e6ed19cc37c682d8d39e25435bbf8a555a12cb7e641b5f2117685c95580ff`.
+- After excluding the two unresolved cases `110` and `536`, the inventory contains 1,871 records from 1,062 independent patients.
+- Proposed train folds contain 1,123 records from 636 patients; proposed development contains 365 records from 214 patients; proposed confirmation contains 383 records from 212 patients.
+- The compiler proved patient-disjoint split assignments, exact metadata/fold ID agreement, supported pathology and BI-RADS values, valid declared geometry, and presence of each referenced image member without opening image or mask payloads.
+- Inventory digest: `45345d9fb830734dbfefdc41baa6ce7e6a2e2636b70c2253ae2d9639886d4ab9`; status digest: `8ded14ebf8f73991e603359e0d566c196a384dec5b3514880d1c2c4f20da97de`.
+
+This is a metadata and custody result only. The run granted no source admission or model-use authority, performed no image or mask decoding, and used no MMBU public content. Qualified medical/annotation review, source-proximity review, exact purpose/release decisions, and resolution of the two excluded cases remain blocking.

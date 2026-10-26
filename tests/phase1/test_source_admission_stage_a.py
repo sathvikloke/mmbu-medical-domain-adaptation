@@ -584,7 +584,9 @@ class StageATransportTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory() as folder:
             destination = Path(folder) / "new-source"
-            result = acquire_artifacts_once(self.source(payload), destination, open_url)
+            result = acquire_artifacts_once(
+                self.source(payload), destination, open_url, required_free_bytes=1
+            )
             self.assertEqual((destination / "source.zip").read_bytes(), payload)
             self.assertFalse((destination / "source.zip.partial").exists())
         self.assertEqual(calls, ["https://official.test/source.zip"])
@@ -602,7 +604,12 @@ class StageATransportTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             destination = Path(folder) / "new-source"
             with self.assertRaises(ValueError):
-                acquire_artifacts_once(self.source(payload, checksum="0" * 32), destination, open_url)
+                acquire_artifacts_once(
+                    self.source(payload, checksum="0" * 32),
+                    destination,
+                    open_url,
+                    required_free_bytes=1,
+                )
             self.assertEqual((destination / "source.zip.partial").read_bytes(), payload)
             self.assertFalse((destination / "source.zip").exists())
         self.assertEqual(len(calls), 1)

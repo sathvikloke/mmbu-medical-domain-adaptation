@@ -60,7 +60,10 @@ Paths in this guide are relative to the repository root. The historical layout i
 | [docs/team/RELEASE_REHEARSAL.md](RELEASE_REHEARSAL.md) | Fail-closed candidate freeze, package inspection, clean-load, disclosure, dry-run, human approval, upload, verification, and rollback runbook |
 | [docs/team/MOCS_ACCESS_AUDIT.md](MOCS_ACCESS_AUDIT.md) | Dated local SSH-route observation, failed DNS reachability evidence, non-claims, and smallest safe access gate |
 | [docs/team/ORGANIZER_CLARIFICATIONS.md](ORGANIZER_CLARIFICATIONS.md) | Dated organizer-reply register and stricter local policy |
-| [docs/team/TASK_PROTOCOL_SNAPSHOT.md](TASK_PROTOCOL_SNAPSHOT.md) | Dated visible task prompt/routing/judge snapshot, revision drift, and malformed-output conflict |
+| [docs/team/DISCORD_RULE_AUDIT_2026-10-24.md](DISCORD_RULE_AUDIT_2026-10-24.md) | Authenticated read-only audit of rule-bearing Discord messages, exact locators, dates, authors, and observed pin state |
+| [docs/team/TASK_PROTOCOL_SNAPSHOT.md](TASK_PROTOCOL_SNAPSHOT.md) | Dated visible task prompt/routing/judge snapshot, revision drift, and later malformed-output precedence |
+| [docs/team/BIOMEDICAL_LANE1_SHAKEDOWN_TRACE.md](BIOMEDICAL_LANE1_SHAKEDOWN_TRACE.md) | Hash-bound five-arm external-biomedical shakedown, matched-population metrics, reload checks, and non-promotion interpretation |
+| [docs/team/COMPETITION_DIRECTION_DECISION_2026-10-25.md](COMPETITION_DIRECTION_DECISION_2026-10-25.md) | Amended post-shakedown Track 1/2/3 decision, score arithmetic, dual-track uncertainties, family-diverse model screens, measured resource range, switch evidence, and stopping point |
 | [outputs/MMBU-domain-adaptation-plan-v2.md](../../outputs/MMBU-domain-adaptation-plan-v2.md) | Historical scientific rationale; its provisional model order is superseded by the current [experiment workflow](EXPERIMENT_WORKFLOW.md) |
 | [outputs/MMBU-precompute-v0.3-status.md](../../outputs/MMBU-precompute-v0.3-status.md) | Historical CPU completion status and limitations |
 | [outputs/mmbu-precompute](../../outputs/mmbu-precompute) | Version 0.3 package: source, tests, examples, configs, documentation, tools, and evidence |
@@ -68,6 +71,7 @@ Paths in this guide are relative to the repository root. The historical layout i
 | [work](../../work) | Authored acquisition/analysis/review drivers and reports; original input paths restored by `workspace-data.zip` |
 | [tools/team.py](../../tools/team.py) | Root test, smoke, link, and saved-evidence checks |
 | [tools/protocol_drift.py](../../tools/protocol_drift.py) | Public-repository metadata-only revision guard; no challenge files or rows |
+| [tools/lane1_synthetic.py](../../tools/lane1_synthetic.py) | CPU-only five-arm engineering runner with exact fixture binding, matched exposure, checkpoint/resume, export/reload, and canonical failure evidence; it is not biomedical or competition-performance evidence |
 | [config/mmbu-public-revision-pin.json](../../config/mmbu-public-revision-pin.json) | Exact reviewed dataset identity, revision, access state, observation time, and scope for the drift guard |
 | [THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md) | Attribution and recorded rights constraints; no blanket license grant |
 

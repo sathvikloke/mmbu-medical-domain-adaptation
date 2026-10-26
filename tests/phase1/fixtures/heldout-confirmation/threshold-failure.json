@@ -1,0 +1,15 @@
+{
+  "biomedical_content_used": false,
+  "expected_status": "confirmation_failed",
+  "fixture_id": "synthetic-exact-margin-failure",
+  "lower_bound": {"denominator": 20, "numerator": 1},
+  "mmbu_public_content_used": false,
+  "patient_count": 60,
+  "point_delta": {"denominator": 20, "numerator": 1},
+  "seed_deltas": {
+    "seed-20261025": {"denominator": 20, "numerator": 1},
+    "seed-20261026": {"denominator": 20, "numerator": 1},
+    "seed-20261027": {"denominator": 20, "numerator": 1}
+  },
+  "synthetic_only": true
+}

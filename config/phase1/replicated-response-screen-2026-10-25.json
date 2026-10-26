@@ -1,0 +1,68 @@
+{
+  "authorization": {
+    "biomedical_content_allowed": true,
+    "mmbu_public_content_allowed": false,
+    "prohibited_actions": ["automatic_retry", "confirmation_opening", "model_promotion", "submission", "upload"]
+  },
+  "candidates": [
+    {
+      "candidate_id": "rr-qwen35-9b",
+      "expected_parameter_count": 9409813744,
+      "loader_family": "qwen3_5",
+      "model_id": "Qwen/Qwen3.5-9B",
+      "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+      "snapshot_name": "f0-qwen35-9b",
+      "track_roles": ["track2"]
+    },
+    {
+      "candidate_id": "rr-qwen35-4b",
+      "expected_parameter_count": 4539265536,
+      "loader_family": "qwen3_5",
+      "model_id": "Qwen/Qwen3.5-4B",
+      "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+      "snapshot_name": "f0-qwen35-4b",
+      "track_roles": ["track2", "track3"]
+    }
+  ],
+  "interpretation": {
+    "dual_q_minimum_gain": {"denominator": 100, "numerator": 1},
+    "maximum_dual_task_drop": {"denominator": 100, "numerator": 1},
+    "minimum_supporting_seeds": 2,
+    "promotion_allowed": false,
+    "small_route_q_margin": {"denominator": 100, "numerator": 3},
+    "track3_multiplier_allowed": false
+  },
+  "resources": {
+    "attempts_per_condition": 1,
+    "automatic_rescue_allowed": false,
+    "gpu_model": "NVIDIA A100 80GB PCIe",
+    "gpu_seconds_per_condition": 14400,
+    "gpus_per_condition": 1,
+    "max_concurrent_conditions": 5
+  },
+  "schema_id": "mmbu.biomedical.replicated_response_screen",
+  "schema_version": 1,
+  "screen_id": "mmbu-replicated-response-2026-10-25",
+  "selection": {
+    "allow_confirmation": false,
+    "development_units_per_source": 128,
+    "selection_seed": 1729,
+    "training_units_per_source": 512
+  },
+  "training": {
+    "attention_implementation": "sdpa",
+    "dtype": "bfloat16",
+    "epochs": 1,
+    "gradient_clip_norm": 1,
+    "learning_rate": {"denominator": 10000, "numerator": 1},
+    "lora_alpha": 16,
+    "lora_dropout": 0,
+    "lora_rank": 8,
+    "lora_target_suffixes": ["q_proj", "v_proj"],
+    "max_context_new_tokens": 48,
+    "max_task_new_tokens": 24,
+    "profiles": ["task_only", "dual"],
+    "seeds": [20261025, 20261026, 20261027],
+    "weight_decay": 0
+  }
+}

@@ -57,8 +57,9 @@ The brief's prospective score is `S = (0.8T + 0.2C) × (T − T_base)`. Context 
 example, then across the evaluation population; zero-field behavior remains unresolved. The dated
 [task-protocol snapshot](TASK_PROTOCOL_SNAPSHOT.md) pins the currently visible task suffixes and judge but also records
 malformed-output and multi-label contradictions. Each candidate retains its own untouched base. Preserve raw outputs;
-the local production policy fails malformed committed JSON and never repairs it. Do not label raw-reply fallback or
-multi-label scoring official-equivalent until organizer precedence or an executable harness resolves those branches.
+the local production policy fails malformed committed JSON and never repairs it, consistent with the October 6
+organizer answer that official scoring does not fall back to raw text and the corroborating October 14 email. Do not label multi-label scoring
+official-equivalent until organizer precedence or an executable harness resolves that branch.
 
 Report T, C, task gain, S, output validity, examples/groups/sources, source/task breakdowns, paired uncertainty, seeds, and actual GPU-hours/API charges/wall time/human review time separately. Use paired group resamples that retain base/adapted outputs together and the declared source mixture. A bootstrap interval over the development population is not a guarantee about the hidden leaderboard.
 

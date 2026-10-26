@@ -1,0 +1,15 @@
+{
+  "biomedical_content_used": false,
+  "expected_status": "underpowered",
+  "fixture_id": "synthetic-underpowered-59-patients",
+  "lower_bound": {"denominator": 10, "numerator": 1},
+  "mmbu_public_content_used": false,
+  "patient_count": 59,
+  "point_delta": {"denominator": 10, "numerator": 1},
+  "seed_deltas": {
+    "seed-20261025": {"denominator": 10, "numerator": 1},
+    "seed-20261026": {"denominator": 10, "numerator": 1},
+    "seed-20261027": {"denominator": 10, "numerator": 1}
+  },
+  "synthetic_only": true
+}

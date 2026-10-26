@@ -180,9 +180,9 @@ silently promoted.
 |---|---|---|
 | Candidate | none selected | Frozen development/confirmation decision receipt |
 | Artifact | none trained/exported | Immutable candidate manifest and saved bytes |
-| Loader/runtime | unresolved | Organizer loader plus exact dependencies/hardware/precision contract |
+| Loader/runtime | Organizer intends a simple Hugging Face load of one autoregressive VLM with no loop/tools; no official environment existed in the October 14 answer | Exact loader commands, dependencies, hardware, precision, generation, and limit contract |
 | Form/destination | High-level route confirmed as Google Form plus Hugging Face model upload | Exact schema, destination, ownership/visibility, layout, edits, validation, and receipt behavior |
-| Deadline | December 31, 2026 PST; clock time unknown | Exact displayed timestamp or written clarification |
+| Deadline | Best current written answer: December 31, 2026 at 23:30 PST | Exact final-form displayed timestamp and timezone |
 | Data disclosure | policy designed, no admitted training set | Generated lineage-backed disclosure from admitted sources |
 | Human authority | not recorded | Named rights, medical, release, eligibility, and submitter sign-offs |
 | Upload verification | impossible before a real artifact/destination | Remote revision and clean-reload receipt under final rules |

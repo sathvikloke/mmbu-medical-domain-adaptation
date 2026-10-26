@@ -1,0 +1,488 @@
+"""Closed CPU-only tests for the BUSI-WHU held-out confirmation mechanics."""
+
+from __future__ import annotations
+
+import copy
+import importlib
+import importlib.util
+import json
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+import unittest
+
+from mmbu_phase1 import canonical, rational
+from mmbu_phase1.scope import REQUIRED_PHASE1_TEST_MODULES
+from mmbu_phase1.fields import ContractViolation
+
+
+REPO = Path(__file__).resolve().parents[2]
+SPEC = REPO / "config/phase1/busi-whu-confirmation-spec-2026-10-25.json"
+TOOL = REPO / "tools/busi_whu_confirmation.py"
+FIXTURES = REPO / "tests/phase1/fixtures/heldout-confirmation"
+
+
+class HeldoutConfirmationRegistrationTests(unittest.TestCase):
+    def test_module_spec_and_suite_registration_exist(self):
+        self.assertIsNotNone(importlib.util.find_spec("mmbu_phase1.heldout_confirmation"))
+        self.assertTrue(SPEC.is_file())
+        self.assertIn("test_heldout_confirmation.py", REQUIRED_PHASE1_TEST_MODULES)
+
+
+class HeldoutConfirmationSpecTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.module = importlib.import_module("mmbu_phase1.heldout_confirmation")
+        cls.value = cls.module.load_spec(SPEC)
+
+    def test_exact_frozen_protocol(self):
+        value = self.value
+        self.assertEqual(value["candidate"], {
+            "expected_parameter_count": 9409813744,
+            "model_id": "Qwen/Qwen3.5-9B",
+            "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+            "runtime_gate": "qwen3.5-9b-successor-native-runtime",
+            "track": "track2",
+        })
+        self.assertEqual(value["training"]["seeds"], [20261025, 20261026, 20261027])
+        self.assertEqual(value["training"]["optimizer_updates"], 1024)
+        self.assertEqual(value["training"]["lora_dropout"], 0)
+        self.assertEqual(value["source"]["minimum_independent_patients"], 60)
+        self.assertEqual(value["statistics"]["bootstrap_draws"], 10000)
+        self.assertEqual(value["statistics"]["lower_bound_index_zero_based"], 999)
+        self.assertEqual(value["statistics"]["decision_margin"], {"denominator": 20, "numerator": 1})
+        self.assertFalse(value["authorization"]["mmbu_public_content_allowed"])
+
+    def test_scope_widening_and_protocol_drift_reject(self):
+        mutations = (
+            lambda value: value.__setitem__("unknown", True),
+            lambda value: value["candidate"].__setitem__("model_id", "other/model"),
+            lambda value: value["candidate"].__setitem__("revision", "a" * 40),
+            lambda value: value["training"].__setitem__("lora_dropout", 0.05),
+            lambda value: value["training"].__setitem__("seeds", [20261025]),
+            lambda value: value["training"].__setitem__("optimizer_updates", 1025),
+            lambda value: value["prompts"].__setitem__("parser", "repair-json"),
+            lambda value: value["statistics"].__setitem__("decision_margin", {"denominator": 10, "numerator": 1}),
+            lambda value: value["resources"].__setitem__("attempts_per_condition", 2),
+            lambda value: value["resources"].__setitem__("automatic_rescue_allowed", True),
+            lambda value: value["source"].__setitem__("source_id", "bus-uclm"),
+            lambda value: value["authorization"].__setitem__("mmbu_public_content_allowed", True),
+        )
+        for index, mutate in enumerate(mutations):
+            changed = copy.deepcopy(self.value)
+            mutate(changed)
+            with self.subTest(index=index), self.assertRaises(ContractViolation):
+                self.module.validate_spec(changed)
+
+
+class HeldoutConfirmationLineageTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.module = importlib.import_module("mmbu_phase1.heldout_confirmation")
+
+    def valid_lineage(self):
+        return {
+            "base_model_id": "Qwen/Qwen3.5-9B",
+            "base_revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+            "expected_parameter_count": 9409813744,
+            "legacy_exploratory_adapter_used": False,
+            "lora_alpha": 16,
+            "lora_dropout": 0,
+            "lora_rank": 8,
+            "lora_target_suffixes": ["q_proj", "v_proj"],
+            "mmbu_public_content_used": False,
+            "optimizer_updates": 1024,
+            "post_admission_retraining": True,
+            "profile": "dual",
+            "runtime_gate_id": "qwen3.5-9b-successor-native-runtime",
+            "runtime_gate_passed": True,
+            "source_purposes": {"busbra": "train", "pathmnist": "train"},
+            "training_seed": 20261025,
+        }
+
+    def test_complete_post_admission_lineage_passes(self):
+        self.assertEqual(self.module.validate_checkpoint_lineage(self.valid_lineage())["training_seed"], 20261025)
+
+    def test_ineligible_or_incomplete_lineage_rejects(self):
+        mutations = (
+            lambda row: row.__setitem__("unknown", True),
+            lambda row: row.__setitem__("legacy_exploratory_adapter_used", True),
+            lambda row: row.__setitem__("post_admission_retraining", False),
+            lambda row: row.__setitem__("runtime_gate_passed", False),
+            lambda row: row.__setitem__("runtime_gate_id", "qwen2.5-vl-b1"),
+            lambda row: row.__setitem__("source_purposes", {"busbra": "train"}),
+            lambda row: row.__setitem__("source_purposes", {"busbra": "train", "pathmnist": "eval"}),
+            lambda row: row.__setitem__("lora_dropout", 0.05),
+            lambda row: row.__setitem__("optimizer_updates", 1023),
+            lambda row: row.__setitem__("training_seed", 7),
+            lambda row: row.__setitem__("mmbu_public_content_used", True),
+        )
+        for index, mutate in enumerate(mutations):
+            changed = self.valid_lineage()
+            mutate(changed)
+            with self.subTest(index=index), self.assertRaises(ContractViolation):
+                self.module.validate_checkpoint_lineage(changed)
+
+
+class HeldoutConfirmationStatisticsTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.module = importlib.import_module("mmbu_phase1.heldout_confirmation")
+
+    def patients(self):
+        return [f"patient-{index:03d}" for index in range(60)]
+
+    def rows(self):
+        rows = []
+        prompts = json.loads(SPEC.read_text(encoding="utf-8"))["prompts"]
+        prompt_digest = canonical.value_digest(prompts)
+        context_target = '{"body_part":"breast","medical_domain":"breast imaging","modality":"ultrasound"}'
+        for patient_id in self.patients():
+            for condition in ("base", "seed-20261025", "seed-20261026", "seed-20261027"):
+                adapted = condition != "base"
+                target = "benign" if int(patient_id[-3:]) % 2 == 0 else "malignant"
+                task_raw = target if adapted else ("malignant" if target == "benign" else "benign")
+                context_raw = context_target if adapted else "{}"
+                rows.append({
+                    "condition_id": condition,
+                    "output_failed": False,
+                    "patient_id": patient_id,
+                    "post_reload_context_raw_output": context_raw,
+                    "post_reload_task_raw_output": task_raw,
+                    "pre_reload_context_raw_output": context_raw,
+                    "pre_reload_task_raw_output": task_raw,
+                    "prompt_spec_digest": prompt_digest,
+                    "record_id": patient_id + "::image-0",
+                    "target_label": target,
+                })
+        return rows
+
+    def artifacts(self):
+        return self.artifacts_for(self.patients())
+
+    def artifacts_for(self, patient_ids, patient_to_records=None):
+        if patient_to_records is None:
+            patient_to_records = {patient_id: [patient_id + "::image-0"] for patient_id in patient_ids}
+        return self.module.build_randomization_artifacts(
+            patient_ids,
+            patient_to_records=patient_to_records,
+            source_manifest_digest="a" * 64,
+            exclusions_digest="b" * 64,
+            duplicate_disposition_digest="c" * 64,
+            created_at="2026-10-25T12:00:00Z",
+        )
+
+    def analyze(self, rows, artifacts=None, *, first_output_at="2026-10-25T12:00:01Z"):
+        artifacts = artifacts or self.artifacts()
+        lock = self.module.build_confirmation_lock(
+            artifacts, locked_at="2026-10-25T12:00:00.5Z", opening_receipt_digest="e" * 64
+        )
+        return self.module.analyze_patient_results(
+            rows, artifacts, confirmation_lock=lock, first_output_at=first_output_at
+        )
+
+    def test_exact_patient_analysis_uses_locked_matrices(self):
+        result = self.analyze(self.rows())
+        self.assertEqual(result["patient_count"], 60)
+        self.assertEqual(result["point_delta"], rational.to_wire(1))
+        self.assertEqual(result["lower_bound"], rational.to_wire(1))
+        self.assertEqual(result["seed_deltas"], {
+            "seed-20261025": rational.to_wire(1),
+            "seed-20261026": rational.to_wire(1),
+            "seed-20261027": rational.to_wire(1),
+        })
+        self.assertEqual(result["base"]["task"], rational.to_wire(0))
+        self.assertEqual(result["seed_mean"]["context"], rational.to_wire(1))
+        seed = result["secondary"]["conditions"]["seed-20261025"]
+        self.assertEqual(seed["task"], rational.to_wire(1))
+        self.assertEqual(seed["context"], rational.to_wire(1))
+        self.assertEqual(seed["q"], rational.to_wire(1))
+        self.assertEqual(seed["context_validity"], rational.to_wire(1))
+        self.assertEqual(seed["context_fields"], {
+            "body_part": rational.to_wire(1),
+            "medical_domain": rational.to_wire(1),
+            "modality": rational.to_wire(1),
+        })
+        self.assertEqual(seed["class_balanced_accuracy"], rational.to_wire(1))
+        self.assertEqual(seed["output_failure_rate"], rational.to_wire(0))
+
+    def test_population_and_chronology_drift_reject(self):
+        with self.assertRaises(ContractViolation):
+            self.artifacts_for(self.patients()[:-1])
+        with self.assertRaises(ContractViolation):
+            self.artifacts_for(list(reversed(self.patients())))
+        with self.assertRaises(ContractViolation):
+            self.analyze(self.rows(), first_output_at="2026-10-25T11:59:59Z")
+
+    def test_missing_duplicate_and_matrix_drift_reject(self):
+        rows = self.rows()
+        for changed in (rows[:-1], rows + [copy.deepcopy(rows[0])]):
+            with self.assertRaises(ContractViolation):
+                self.analyze(changed)
+        artifact = self.artifacts()
+        lock = self.module.build_confirmation_lock(
+            artifact, locked_at="2026-10-25T12:00:00.5Z", opening_receipt_digest="e" * 64
+        )
+        artifact["index_matrix"][0][0] = 59
+        artifact["index_matrix_digest"] = canonical.value_digest(artifact["index_matrix"])
+        with self.assertRaises(ContractViolation):
+            self.module.analyze_patient_results(
+                rows, artifact, confirmation_lock=lock, first_output_at="2026-10-25T12:00:01Z"
+            )
+
+        mapping = {patient_id: [patient_id + "::image-0"] for patient_id in self.patients()}
+        mapping["patient-001"] = mapping["patient-000"]
+        with self.assertRaises(ContractViolation):
+            self.artifacts_for(self.patients(), mapping)
+
+    def test_failures_stay_as_exact_zero_and_floats_reject(self):
+        rows = self.rows()
+        rows[0]["output_failed"] = True
+        for key in ("pre_reload_task_raw_output", "pre_reload_context_raw_output",
+                    "post_reload_task_raw_output", "post_reload_context_raw_output"):
+            rows[0][key] = None
+        result = self.analyze(rows)
+        self.assertEqual(result["output_failure_count"], 1)
+        self.assertEqual(result["reload_mismatch_count"], 1)
+
+        rows = self.rows()
+        rows[0]["pre_reload_task_raw_output"] = 0.0
+        with self.assertRaises(ContractViolation):
+            self.analyze(rows)
+
+        rows = self.rows()
+        rows[0]["post_reload_task_raw_output"] = "different"
+        with self.assertRaises(ContractViolation):
+            self.analyze(rows)
+
+    def test_partial_context_scores_fields_individually(self):
+        rows = self.rows()
+        partial = '{"body_part":"breast","medical_domain":"breast imaging","modality":"mri"}'
+        rows[1]["pre_reload_context_raw_output"] = partial
+        rows[1]["post_reload_context_raw_output"] = partial
+        result = self.analyze(rows)
+        self.assertEqual(result["seed_mean"]["context"], rational.to_wire(rational.Fraction(539, 540)))
+        seed = result["secondary"]["conditions"]["seed-20261025"]
+        self.assertEqual(seed["context_validity"], rational.to_wire(1))
+        self.assertEqual(seed["context_fields"]["body_part"], rational.to_wire(1))
+        self.assertEqual(seed["context_fields"]["medical_domain"], rational.to_wire(1))
+        self.assertEqual(seed["context_fields"]["modality"], rational.to_wire(rational.Fraction(59, 60)))
+
+
+class HeldoutConfirmationDecisionTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.module = importlib.import_module("mmbu_phase1.heldout_confirmation")
+
+    def analysis(self):
+        return {
+            "base": {"context": rational.to_wire(1), "q": rational.to_wire(1), "task": rational.to_wire(1)},
+            "class_diagnostics": {},
+            "lower_bound": rational.to_wire(rational.Fraction(1, 10)),
+            "output_failure_count": 0,
+            "patient_count": 60,
+            "point_delta": rational.to_wire(rational.Fraction(1, 10)),
+            "reload_mismatch_count": 0,
+            "secondary": {"conditions": {}, "seed_mean": {}},
+            "seed_deltas": {
+                "seed-20261025": rational.to_wire(rational.Fraction(1, 10)),
+                "seed-20261026": rational.to_wire(rational.Fraction(1, 10)),
+                "seed-20261027": rational.to_wire(rational.Fraction(1, 10)),
+            },
+            "seed_mean": {"context": rational.to_wire(0), "q": rational.to_wire(0), "task": rational.to_wire(1)},
+            "sign_randomization_p": rational.to_wire(1),
+        }
+
+    def execution(self):
+        return {
+            "adapted_attempts": {"seed-20261025": 1, "seed-20261026": 1, "seed-20261027": 1},
+            "base_attempts": 1,
+            "identity_drift": False,
+            "mmbu_public_content_used": False,
+            "source_id": "busi-whu-v3",
+            "source_role": "confirmation",
+        }
+
+    def test_primary_pass_ignores_bad_secondary_and_sign_diagnostic(self):
+        result = self.module.confirmation_decision(self.analysis(), self.execution())
+        self.assertEqual(result, {"reasons": [], "status": "confirmation_passed"})
+
+    def test_exact_margin_nonpositive_seed_and_lower_bound_fail(self):
+        changes = (
+            ("point_delta", rational.to_wire(rational.Fraction(1, 20)), "point_delta_not_above_margin"),
+            ("lower_bound", rational.to_wire(rational.Fraction(1, 20)), "lower_bound_not_above_margin"),
+        )
+        for key, value, reason in changes:
+            analysis = self.analysis()
+            analysis[key] = value
+            result = self.module.confirmation_decision(analysis, self.execution())
+            self.assertEqual(result["status"], "confirmation_failed")
+            self.assertIn(reason, result["reasons"])
+        analysis = self.analysis()
+        analysis["seed_deltas"]["seed-20261026"] = rational.to_wire(0)
+        result = self.module.confirmation_decision(analysis, self.execution())
+        self.assertIn("nonpositive_seed_delta:seed-20261026", result["reasons"])
+
+    def test_execution_failures_cannot_be_rescued(self):
+        mutations = (
+            (lambda row: row.__setitem__("base_attempts", 2), "base_attempt_count"),
+            (lambda row: row["adapted_attempts"].__setitem__("seed-20261027", 2), "adapted_attempt_count:seed-20261027"),
+            (lambda row: row.__setitem__("identity_drift", True), "identity_drift"),
+        )
+        for mutate, reason in mutations:
+            execution = self.execution()
+            mutate(execution)
+            result = self.module.confirmation_decision(self.analysis(), execution)
+            self.assertEqual(result["status"], "confirmation_failed")
+            self.assertIn(reason, result["reasons"])
+
+    def test_underpowered_and_source_substitution_are_terminal(self):
+        analysis = self.analysis()
+        analysis["patient_count"] = 59
+        self.assertEqual(
+            self.module.confirmation_decision(analysis, self.execution())["status"], "underpowered"
+        )
+        execution = self.execution()
+        execution["source_id"] = "bus-uclm"
+        result = self.module.confirmation_decision(self.analysis(), execution)
+        self.assertEqual(result, {"reasons": ["source_identity_or_role"], "status": "blocked"})
+
+
+class HeldoutConfirmationReadinessTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.module = importlib.import_module("mmbu_phase1.heldout_confirmation")
+
+    def lineage(self, seed):
+        row = HeldoutConfirmationLineageTests().valid_lineage()
+        row["training_seed"] = seed
+        return row
+
+    def manifest(self):
+        return {
+            "attempts_started": {
+                "base": 0, "seed-20261025": 0, "seed-20261026": 0, "seed-20261027": 0,
+            },
+            "checkpoint_lineages": [self.lineage(seed) for seed in (20261025, 20261026, 20261027)],
+            "chronology": {
+                "confirmation_lock_at": "2026-10-25T12:00:03Z",
+                "first_output_at": None,
+                "inventory_closed_at": "2026-10-25T12:00:00Z",
+                "qa_opened_at": "2026-10-25T12:00:02Z",
+                "qa_plan_frozen_at": "2026-10-25T12:00:01Z",
+            },
+            "gate_records": {gate: "a" * 64 for gate in (
+                "training-source-admission", "successor-runtime", "checkpoint-retraining-lineage",
+                "confirmation-source-acquisition", "rights-review", "protected-inventory",
+                "qa-lock-and-review", "duplicate-review", "confirmation-purpose-authorization",
+                "eligible-population-lock", "hermetic-decision-receipt", "opening-and-execution-lock",
+            )},
+            "mmbu_public_content_used": False,
+            "source_id": "busi-whu-v3",
+            "source_role": "confirmation",
+        }
+
+    def test_first_missing_gate_is_reported_in_frozen_order(self):
+        manifest = self.manifest()
+        manifest["gate_records"]["successor-runtime"] = None
+        manifest["gate_records"]["training-source-admission"] = None
+        self.assertEqual(self.module.readiness_status(manifest), {
+            "missing": "training-source-admission", "status": "blocked",
+        })
+
+    def test_complete_digest_references_remain_blocked_without_authority_validation(self):
+        self.assertEqual(self.module.readiness_status(self.manifest()), {
+            "missing": "external-record-validation", "status": "blocked",
+        })
+
+    def test_drift_attempts_and_qa_order_reject(self):
+        mutations = (
+            lambda row: row.__setitem__("mmbu_public_content_used", True),
+            lambda row: row.__setitem__("source_id", "bus-uclm"),
+            lambda row: row["attempts_started"].__setitem__("base", 1),
+            lambda row: row["chronology"].__setitem__("qa_plan_frozen_at", "2026-10-25T11:59:59Z"),
+            lambda row: row["chronology"].__setitem__("first_output_at", "2026-10-25T12:00:04Z"),
+            lambda row: row["checkpoint_lineages"][0].__setitem__("legacy_exploratory_adapter_used", True),
+        )
+        for mutate in mutations:
+            manifest = self.manifest()
+            mutate(manifest)
+            with self.assertRaises(ContractViolation):
+                self.module.readiness_status(manifest)
+
+    def test_command_has_only_three_safe_modes_and_no_runtime_imports(self):
+        source = TOOL.read_text(encoding="utf-8")
+        for forbidden in ("subprocess", "socket", "requests", "transformers", "datasets", "torch", "paramiko", "slurm", "sbatch"):
+            self.assertNotIn(forbidden, source)
+        result = subprocess.run(
+            [sys.executable, str(TOOL), "validate-spec", "--spec", str(SPEC)],
+            cwd=REPO, text=True, capture_output=True, check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout)["status"], "valid")
+        result = subprocess.run(
+            [sys.executable, str(TOOL), "not-a-mode"], cwd=REPO, text=True, capture_output=True, check=False,
+        )
+        self.assertNotEqual(result.returncode, 0)
+
+        result = subprocess.run(
+            [sys.executable, str(TOOL), "synthetic-check", "--manifest", str(FIXTURES / "positive.json")],
+            cwd=REPO, text=True, capture_output=True, check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout)["status"], "confirmation_passed")
+
+    def test_readiness_command_reports_missing_without_opening_references(self):
+        manifest = self.manifest()
+        manifest["gate_records"]["rights-review"] = None
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "manifest.json"
+            path.write_text(json.dumps(manifest), encoding="utf-8")
+            result = subprocess.run(
+                [sys.executable, str(TOOL), "readiness", "--manifest", str(path)],
+                cwd=REPO, text=True, capture_output=True, check=False,
+            )
+        self.assertEqual(result.returncode, 2, result.stderr)
+        self.assertEqual(json.loads(result.stdout), {"missing": "rights-review", "status": "blocked"})
+
+
+class HeldoutConfirmationFixtureTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.module = importlib.import_module("mmbu_phase1.heldout_confirmation")
+
+    def test_closed_synthetic_fixtures_have_expected_outcomes(self):
+        expected = {
+            "positive.json": "confirmation_passed",
+            "threshold-failure.json": "confirmation_failed",
+            "underpowered.json": "underpowered",
+        }
+        for name, status in expected.items():
+            path = FIXTURES / name
+            self.assertTrue(path.is_file(), name)
+            fixture = json.loads(path.read_text(encoding="utf-8"))
+            result = self.module.validate_synthetic_fixture(fixture)
+            self.assertEqual(result["status"], status)
+            self.assertEqual(result["evidence_scope"], "synthetic_mechanics_only")
+            self.assertFalse(result["promotion_eligible"])
+            self.assertFalse(result["readiness_evidence"])
+
+    def test_fixture_boundary_and_unknown_fields_reject(self):
+        fixture = json.loads((FIXTURES / "positive.json").read_text(encoding="utf-8"))
+        mutations = (
+            lambda row: row.__setitem__("unknown", True),
+            lambda row: row.__setitem__("synthetic_only", False),
+            lambda row: row.__setitem__("biomedical_content_used", True),
+            lambda row: row.__setitem__("mmbu_public_content_used", True),
+            lambda row: row.__setitem__("expected_status", "ready_for_authorized_execution"),
+        )
+        for mutate in mutations:
+            changed = copy.deepcopy(fixture)
+            mutate(changed)
+            with self.assertRaises(ContractViolation):
+                self.module.validate_synthetic_fixture(changed)
+
+
+if __name__ == "__main__":
+    unittest.main()

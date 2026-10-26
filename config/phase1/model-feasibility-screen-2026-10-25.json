@@ -1,0 +1,133 @@
+{
+  "authorization": {
+    "allowed_actions": [
+      "generated_fixture",
+      "load",
+      "forward",
+      "backward",
+      "one_optimizer_step",
+      "save",
+      "offline_reload"
+    ],
+    "biomedical_content_allowed": false,
+    "mmbu_public_content_allowed": false,
+    "prohibited_actions": [
+      "full_training",
+      "model_selection",
+      "multi_seed_campaign",
+      "submission",
+      "upload"
+    ]
+  },
+  "candidates": [
+    {
+      "candidate_id": "f0-qwen35-9b",
+      "expected_parameter_count": 9409813744,
+      "gated": false,
+      "license_id": "Apache-2.0",
+      "loader_family": "qwen3_5",
+      "model_id": "Qwen/Qwen3.5-9B",
+      "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+      "track_roles": ["track2"],
+      "trust_remote_code": false
+    },
+    {
+      "candidate_id": "f0-qwen3vl-8b",
+      "expected_parameter_count": 8767123696,
+      "gated": false,
+      "license_id": "Apache-2.0",
+      "loader_family": "qwen3_vl",
+      "model_id": "Qwen/Qwen3-VL-8B-Instruct",
+      "revision": "0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+      "track_roles": ["track2"],
+      "trust_remote_code": false
+    },
+    {
+      "candidate_id": "f0-qwen35-4b",
+      "expected_parameter_count": 4539265536,
+      "gated": false,
+      "license_id": "Apache-2.0",
+      "loader_family": "qwen3_5",
+      "model_id": "Qwen/Qwen3.5-4B",
+      "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+      "track_roles": ["track2", "track3"],
+      "trust_remote_code": false
+    },
+    {
+      "candidate_id": "f0-qwen3vl-2b",
+      "expected_parameter_count": 2127532032,
+      "gated": false,
+      "license_id": "Apache-2.0",
+      "loader_family": "qwen3_vl",
+      "model_id": "Qwen/Qwen3-VL-2B-Instruct",
+      "revision": "89644892e4d85e24eaac8bacfd4f463576704203",
+      "track_roles": ["track3"],
+      "trust_remote_code": false
+    },
+    {
+      "candidate_id": "f0-internvl35-2b",
+      "expected_parameter_count": 2348347392,
+      "gated": false,
+      "license_id": "Apache-2.0",
+      "loader_family": "internvl3_5",
+      "model_id": "OpenGVLab/InternVL3_5-2B-HF",
+      "revision": "3f301ffcf3dcbb47893afae6650ea3e78d96fb6d",
+      "track_roles": ["track3"],
+      "trust_remote_code": false
+    }
+  ],
+  "comparison_rules": {
+    "decision_use": "feasibility_only_no_ranking",
+    "pass_requirements": [
+      "exact_snapshot",
+      "offline_load",
+      "finite_forward_loss",
+      "finite_gradients",
+      "one_parameter_update",
+      "adapter_save",
+      "fresh_process_offline_reload",
+      "deterministic_prediction_match",
+      "resource_receipt"
+    ],
+    "quality_outputs_allowed": false,
+    "rerun_policy": "none_automatic"
+  },
+  "fixture": {
+    "channels": 3,
+    "height": 64,
+    "origin": "synthetic_engineering",
+    "prompt": "Name the dominant color in this generated image using one word.",
+    "seed": 20261025,
+    "target": " blue",
+    "width": 64
+  },
+  "lora": {
+    "alpha": 4,
+    "dropout": 0,
+    "learning_rate": 0.0001,
+    "optimizer": "AdamW",
+    "rank": 2,
+    "target_suffixes": ["q_proj", "v_proj"],
+    "update_steps": 1,
+    "weight_decay": 0
+  },
+  "resources": {
+    "attempts_per_candidate": 1,
+    "automatic_rescue_allowed": false,
+    "gpu_model": "NVIDIA A100 80GB PCIe",
+    "gpu_seconds_per_candidate": 3600,
+    "gpus_per_candidate": 1,
+    "max_concurrent_candidates": 5
+  },
+  "runtime": {
+    "attention_implementation": "sdpa",
+    "deterministic_algorithms": true,
+    "local_files_only": true,
+    "network_disabled": true,
+    "seed": 20261025,
+    "torch_dtype": "bfloat16"
+  },
+  "schema_id": "mmbu.phase1.model_feasibility_screen",
+  "schema_version": 1,
+  "screen_id": "mmbu-f0-2026-10-25"
+}

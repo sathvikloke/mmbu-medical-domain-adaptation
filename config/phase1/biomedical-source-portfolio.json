@@ -1,0 +1,65 @@
+{
+  "mmbu_public_content_allowed": false,
+  "schema_id": "mmbu.biomedical.source_portfolio",
+  "schema_version": 1,
+  "sources": [
+    {
+      "archive_bytes": 133917740,
+      "archive_md5": "1f8b2be6476d58fc97bfb5e5a1ea9bab",
+      "archive_sha256": "ba3e6ed19cc37c682d8d39e25435bbf8a555a12cb7e641b5f2117685c95580ff",
+      "citation": "Wilfrido Gomez-Flores, Maria Julia Gregorio-Calas, and Wagner Coelho de Albuquerque Pereira, BUS-BRA: A Breast Ultrasound Dataset for Assessing Computer-aided Diagnosis Systems, Medical Physics, 2024, DOI 10.1002/mp.16812",
+      "excluded_case_ids": ["110", "536"],
+      "fold_member": "BUSBRA/5-fold-cv.csv",
+      "image_member_template": "BUSBRA/Images/{record_id}.png",
+      "license_member": "BUSBRA/LICENSE.txt",
+      "license_required_phrases": [
+        "All documents and papers that uses the Dataset",
+        "Permission is hereby granted, free of charge"
+      ],
+      "metadata_member": "BUSBRA/bus_data.csv",
+      "source_id": "busbra",
+      "source_version": "1.0",
+      "split_by_fold": {
+        "1": "train",
+        "2": "train",
+        "3": "train",
+        "4": "development",
+        "5": "confirmation"
+      }
+    },
+    {
+      "archive_bytes": 12629854322,
+      "archive_md5": "2c51a510bcdc9cf8ddb2af93af1eadec",
+      "citation": "Jiancheng Yang, Rui Shi, and Bingbing Ni, MedMNIST Classification Decathlon: A Lightweight AutoML Benchmark for Medical Image Analysis, ISBI 2021; Zenodo record 10519652",
+      "download_url": "https://zenodo.org/api/records/10519652/files/pathmnist_224.npz/content",
+      "image_shape": [224, 224, 3],
+      "labels": [
+        "adipose",
+        "background",
+        "debris",
+        "lymphocytes",
+        "mucus",
+        "smooth muscle",
+        "normal colon mucosa",
+        "cancer-associated stroma",
+        "colorectal adenocarcinoma epithelium"
+      ],
+      "license_id": "CC-BY-4.0",
+      "sample_counts": {
+        "test": 7180,
+        "train": 89996,
+        "val": 10004
+      },
+      "source_id": "pathmnist",
+      "source_version": "3",
+      "split_roles": {
+        "test": "confirmation",
+        "train": "train",
+        "val": "development"
+      },
+      "status": "acquisition_pending"
+    }
+  ],
+  "use_authorized_by": "Aditya Raut",
+  "use_authorized_scope": "biomedical training, external held-out evaluation, and offline packaging only"
+}

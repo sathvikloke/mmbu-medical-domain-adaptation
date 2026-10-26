@@ -11,7 +11,7 @@ cryptographically binds the exact completed-review report plus a purpose binding
 training authority, fewer than 60 independent patients,
 cross-patient duplicate constraints, MMBU content use, and post-lock mutation.
 
-Fresh verification after the independent audit repair passed **623 Phase 1 CPU tests** with two expected skips,
+Fresh verification after the independent audit repair passed **627 Phase 1 CPU tests** with two expected skips,
 maintained Markdown-link verification, Python compilation of `src`, `tools`, and `tests`, working-tree
 `git diff --check`, and branch-range `git diff --check`. The audit-triggered tests cover exact authority-bound review
 inputs, persistent one-attempt consumption, descriptor-relative ancestor traversal, cross-source duplicate blocking,
@@ -19,9 +19,9 @@ full authentication-chain re-resolution, and reviewer-to-credential identity bin
 evidence only: the real BUSI-WHU pixels have not been opened by this workflow, reviewers have not completed the
 forms, no source has been admitted, and no confirmation/model output has run.
 
-**Observed:** October 26, 2026 05:27 CDT
+**Observed:** October 26, 2026
 **Runtime:** Python 3.14.6
-**Verified code revision:** `b3e8fdb`
+**Status snapshot code revision (historical):** `b3e8fdb`
 **Status authority digest:** `be1f935c954017ab28f9d8a48a5f2dba39beb1befc6057bc52e2d7b555f03730`
 **Scope:** repository integrity plus the bounded synthetic native receipts listed below
 
@@ -31,7 +31,7 @@ forms, no source has been admitted, and no confirmation/model output has run.
 |---|---|---|
 | Historical preparation suite | **277 tests passed; 44 optional-Pillow image tests skipped** | Re-executes the preserved CPU package without Pillow; it does not replace the image-enabled CI lane or test a model |
 | Root repository/tool suite | **75 tests passed; 13 optional-Pillow image tests skipped** | Covers repository, publication, scope, receipt, and authorization tooling; it is not scientific evidence |
-| Phase 1 suite | **623 tests passed; two expected optional-dependency tests skipped** | Covers current fail-closed contracts, manifests, registries, evidence chains, geometry, bundles, and synthetic orchestration; native model execution is evidenced separately below |
+| Current Phase 1 suite | **627 tests passed; two expected optional-dependency tests skipped** | Covers current fail-closed contracts, manifests, registries, evidence chains, geometry, bundles, synthetic orchestration, and evidence-documentation boundaries; native model execution is evidenced separately below |
 | Offline smoke workflow | **passed** | Replays historical synthetic demonstrations and toy arithmetic only; it reports `model_executed=false` and `official_evaluation=false` |
 | Maintained local Markdown links and anchors | **passed** | External URLs were not fetched by this check |
 | Published v0.3 artifact verification | **passed** for 275 files, ZIP members, fixed transforms, and historical receipts | Establishes byte integrity only, not scientific validity or medical truth |

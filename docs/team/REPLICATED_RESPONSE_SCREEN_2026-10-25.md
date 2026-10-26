@@ -6,6 +6,16 @@
 
 **Scientific use:** exploratory response evidence only; this screen does not select or promote a model
 
+**Checkout replay status:** unavailable
+
+**Promotion authority:** none
+
+The primary result receipts, raw predictions, exact execution manifest, and post-output analysis artifact remain on
+the named MOCS scratch roots and are not present in this checkout. Consequently, the numerical claims below are a
+remote-evidence report, not a locally replayable result. They have zero checkpoint-selection, promotion, or readiness
+authority in this checkout. Before they can support any decision-bearing claim, those artifacts must be imported and hash-verified
+against the recorded digests without rewriting the preserved remote evidence.
+
 ## Bottom line
 
 Matched dual-endpoint LoRA training produced near-perfect or perfect context scores in every adapted seed for both frozen Qwen3.5 candidates. Against the matched task-only condition, all three 9B seeds and two of three 4B seeds met the predeclared rule of at least a one-point context gain with no more than a one-point task drop. The remaining 4B seed gained 100 context points but lost 2.734 task points, so the effect isn't uniformly free of a task tradeoff.

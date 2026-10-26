@@ -20,6 +20,7 @@ REQUIRED_PHASE1_TEST_MODULES = (
     "test_dual_objective.py",
     "test_environment.py",
     "test_evidence.py",
+    "test_evidence_documentation.py",
     "test_firewall.py",
     "test_geometry.py",
     "test_heldout_confirmation.py",

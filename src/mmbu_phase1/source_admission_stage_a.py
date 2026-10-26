@@ -1580,6 +1580,7 @@ def read_busi_whu_workbook_rows(
     maximum_rows: int = 2000,
     maximum_shared_strings_bytes: int = 4 * 1024 * 1024,
     maximum_sheet_bytes: int = 64 * 1024 * 1024,
+    include_geometry: bool = False,
 ) -> dict:
     """Read the exact BUSI-WHU patient/image join without opening image payloads."""
     if (
@@ -1591,6 +1592,8 @@ def read_busi_whu_workbook_rows(
         raise ValueError("member_record_ids must be a sorted unique closed identifier list")
     if isinstance(maximum_rows, bool) or not isinstance(maximum_rows, int) or maximum_rows <= 0:
         raise ValueError("maximum_rows must be positive")
+    if type(include_geometry) is not bool:
+        raise ValueError("include_geometry must be boolean")
     if len(member_record_ids) > maximum_rows:
         raise ValueError("member record population exceeds the bounded row ceiling")
 
@@ -1667,13 +1670,22 @@ def read_busi_whu_workbook_rows(
                 for column_index in (3, 5, 6, 7, 8, 9, 10, 11, 12):
                     _finite_decimal(values[column_index], f"row {row_number} column {column_index + 1}")
                 row_value = dict(zip(BUSI_WHU_HEADERS, values))
-                rows.append({
+                parsed_row = {
                     "record_id": record_id,
                     "parent_id": f"busi-whu:patient:{patient}",
                     "label_code": label,
                     "workbook_row": row_number,
                     "row_digest": canonical.value_digest(row_value),
-                })
+                }
+                if include_geometry:
+                    parsed_row["workbook_geometry"] = {
+                        "scale_pixel_per_cm": values[3], "scale_category": values[4],
+                        "gt_area_pixel2": values[5], "image_area_pixel2": values[6],
+                        "gt_cm2": values[7], "gt_all": values[8],
+                        "centroid_x": values[9], "centroid_y": values[10],
+                        "max_diameter": values[11], "min_diameter": values[12],
+                    }
+                rows.append(parsed_row)
                 observed_ids.add(record_id)
                 patients.add(patient)
                 label_counts[label] += 1

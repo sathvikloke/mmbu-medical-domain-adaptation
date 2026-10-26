@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 from contextlib import ExitStack
 import ctypes
+from decimal import Decimal, InvalidOperation
 import errno
 import hashlib
 import os
@@ -21,6 +22,7 @@ from . import canonical
 from .busi_whu_authority import ReviewOpeningCapability
 from .image_fingerprints import build_duplicate_candidates, dhash64
 from .protected_io import open_authorized_artifact
+from .source_admission_stage_a import read_busi_whu_workbook_rows
 
 
 _INVENTORY_KEYS = {
@@ -405,6 +407,47 @@ def _geometry_evidence(workbook: dict, image: dict, annotation: dict) -> tuple[d
     return evidence, "unresolved" if unresolved else "consistent"
 
 
+def _verify_workbook_derivation(inventory: dict, workbook_path: Path) -> None:
+    """Re-derive every inventory field used by protected review from the bound workbook."""
+    source_rows = {row["record_id"]: row for row in inventory["records"]}
+    derived = read_busi_whu_workbook_rows(
+        workbook_path, sorted(source_rows), maximum_rows=927, include_geometry=True,
+    )
+    summary = {
+        "artifact_name": inventory["artifact_name"], "sheet_name": inventory["sheet_name"],
+        "record_count": inventory["record_count"], "patient_count": inventory["patient_count"],
+        "label_counts": inventory["label_counts"],
+        "image_member_join_complete": inventory["image_member_join_complete"],
+        "annotation_member_join_complete": inventory["annotation_member_join_complete"],
+        "label_values_read": inventory["label_values_read"],
+        "image_payload_decoding_used": inventory["image_payload_decoding_used"],
+        "annotation_payload_decoding_used": inventory["annotation_payload_decoding_used"],
+        "model_use_authorized": inventory["model_use_authorized"],
+        "mmbu_public_content_used": inventory["mmbu_public_content_used"],
+    }
+    if any(derived[key] != value for key, value in summary.items()):
+        raise ValueError("metadata inventory differs from workbook-derived inventory")
+    derived_rows = {row["record_id"]: row for row in derived["records"]}
+    if set(derived_rows) != set(source_rows):
+        raise ValueError("metadata inventory differs from workbook-derived inventory")
+    for record_id, source in source_rows.items():
+        observed = derived_rows[record_id]
+        for key in ("record_id", "parent_id", "label_code", "workbook_row", "row_digest"):
+            if source[key] != observed[key]:
+                raise ValueError("metadata inventory differs from workbook-derived inventory")
+        for key, raw in observed["workbook_geometry"].items():
+            supplied = source["workbook_geometry"][key]
+            if key == "scale_category":
+                matches = supplied == raw
+            else:
+                try:
+                    matches = Decimal(str(supplied)) == Decimal(raw)
+                except InvalidOperation:
+                    matches = False
+            if not matches:
+                raise ValueError("metadata inventory differs from workbook-derived inventory")
+
+
 def build_review_packet(
     capability: ReviewOpeningCapability,
     metadata_inventory: dict,
@@ -476,6 +519,14 @@ def build_review_packet(
         workbook_artifact = resources.enter_context(
             open_authorized_artifact(capability, workbook_rows[0][0], "metadata")
         )
+        workbook_stream = resources.enter_context(workbook_artifact.stream())
+        protected_workbook = staging / "Patient_infos_BUSI-WHU.xlsx"
+        with protected_workbook.open("wb") as stream:
+            shutil.copyfileobj(workbook_stream, stream)
+        try:
+            _verify_workbook_derivation(inventory, protected_workbook)
+        finally:
+            protected_workbook.unlink(missing_ok=True)
         archive_stream = resources.enter_context(archive_artifact.stream())
         source_rows = {row["record_id"]: row for row in inventory["records"]}
         decoded_rows = []

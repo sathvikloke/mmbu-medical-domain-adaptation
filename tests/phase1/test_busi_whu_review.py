@@ -13,6 +13,7 @@ import struct
 import tempfile
 import unittest
 from unittest import mock
+from xml.sax.saxutils import escape
 import zipfile
 
 from mmbu_phase1 import canonical
@@ -22,7 +23,21 @@ from mmbu_phase1.busi_whu_review_validation import (
     authenticate_completed_review, validate_completed_review, validate_source_assessments,
 )
 from mmbu_phase1.store import RecordStore
+from mmbu_phase1.source_admission_stage_a import BUSI_WHU_HEADERS
 from tests.phase1.test_busi_whu_authority import ReviewAuthorityWorld, t
+
+
+def _workbook_values(row: dict) -> list[str]:
+    geometry = row["workbook_geometry"]
+    return [
+        row["parent_id"].removeprefix("busi-whu:patient:"), row["label_code"],
+        f'{row["record_id"]}.bmp', str(geometry["scale_pixel_per_cm"]),
+        geometry["scale_category"], str(geometry["gt_area_pixel2"]),
+        str(geometry["image_area_pixel2"]), str(geometry["gt_cm2"]),
+        str(geometry["gt_all"]), str(geometry["centroid_x"]),
+        str(geometry["centroid_y"]), str(geometry["max_diameter"]),
+        str(geometry["min_diameter"]),
+    ]
 
 
 def metadata_inventory() -> dict:
@@ -30,7 +45,7 @@ def metadata_inventory() -> dict:
     for index in range(560):
         records.append({
             "label_code": "0",
-            "parent_id": f"busi-whu:patient:b{index:04d}",
+            "parent_id": f"busi-whu:patient:{index + 1}",
             "record_id": f"b{index:04d}",
             "row_digest": f"{index + 1:064x}",
             "workbook_row": index + 2,
@@ -42,7 +57,7 @@ def metadata_inventory() -> dict:
     for index in range(218):
         records.append({
             "label_code": "1",
-            "parent_id": f"busi-whu:patient:m{index:04d}",
+            "parent_id": f"busi-whu:patient:{index + 561}",
             "record_id": f"m{index:04d}",
             "row_digest": f"{index + 1001:064x}",
             "workbook_row": index + 562,
@@ -52,12 +67,12 @@ def metadata_inventory() -> dict:
                                   "max_diameter": 1, "min_diameter": 1},
         })
     sizes = [2] * 15 + [3] * 4 + [4] * 6 + [5] * 5 + [6] * 2 + [7] * 3 + [8] * 2 + [9]
-    row = 780
+    row = 778
     for patient_index, size in enumerate(sizes):
         for record_index in range(size):
             records.append({
                 "label_code": "1",
-                "parent_id": f"busi-whu:patient:x{patient_index:02d}",
+                "parent_id": f"busi-whu:patient:{patient_index + 779}",
                 "record_id": f"x{patient_index:02d}-{record_index}",
                 "row_digest": f"{row + 2001:064x}",
                 "workbook_row": row + 2,
@@ -68,6 +83,10 @@ def metadata_inventory() -> dict:
             })
             row += 1
     records.sort(key=lambda item: item["record_id"])
+    for record in records:
+        record["row_digest"] = canonical.value_digest(
+            dict(zip(BUSI_WHU_HEADERS, _workbook_values(record)))
+        )
     return canonical.seal({
         "schema_id": "mmbu.phase1.busi_whu_patient_join_inventory",
         "schema_version": 1,
@@ -105,6 +124,44 @@ def bmp(width=2, height=2, rows=None) -> bytes:
     )
 
 
+def _write_workbook(path: Path, inventory: dict) -> None:
+    rows = [list(BUSI_WHU_HEADERS)]
+    rows.extend(
+        _workbook_values(row)
+        for row in sorted(inventory["records"], key=lambda item: item["workbook_row"])
+    )
+    sheet_rows = []
+    for row_number, values in enumerate(rows, start=1):
+        cells = []
+        for column_index, value in enumerate(values):
+            column = chr(ord("A") + column_index)
+            cells.append(
+                f'<c r="{column}{row_number}" t="inlineStr"><is><t>{escape(value)}</t></is></c>'
+            )
+        sheet_rows.append(f'<row r="{row_number}">{"".join(cells)}</row>')
+    with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED) as archive:
+        archive.writestr(
+            "xl/workbook.xml",
+            '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '
+            'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+            '<sheets><sheet name="Sheet1" sheetId="1" r:id="rId1"/></sheets></workbook>',
+        )
+        archive.writestr(
+            "xl/_rels/workbook.xml.rels",
+            '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+            '<Relationship Id="rId1" Target="worksheets/sheet1.xml"/></Relationships>',
+        )
+        archive.writestr(
+            "xl/sharedStrings.xml",
+            '<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"></sst>',
+        )
+        archive.writestr(
+            "xl/worksheets/sheet1.xml",
+            '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+            f'<sheetData>{"".join(sheet_rows)}</sheetData></worksheet>',
+        )
+
+
 def packet_fixture(root: Path, *, changed_image=None, changed_mask=None):
     inventory = metadata_inventory()
     selection = build_review_selection(inventory)
@@ -125,7 +182,7 @@ def packet_fixture(root: Path, *, changed_image=None, changed_mask=None):
                 changed_mask[1] if changed_mask and changed_mask[0] == record_id else mask,
             )
     workbook = root / "Patient_infos_BUSI-WHU.xlsx"
-    workbook.write_bytes(b"synthetic-workbook-identity")
+    _write_workbook(workbook, inventory)
     return archive, workbook, inventory, selection
 
 
@@ -195,13 +252,16 @@ class BusiWhuReviewSelectionTests(unittest.TestCase):
         for patient_id, record_ids in by_patient.items():
             if len(record_ids) > 1:
                 self.assertTrue(set(record_ids).issubset(result["secondary_record_ids"]))
-        for label, prefix in (("0", "b"), ("1", "m")):
-            candidates = [f"busi-whu:patient:{prefix}{index:04d}" for index in range(560 if label == "0" else 218)]
+        for label, patient_numbers in (("0", range(1, 561)), ("1", range(561, 779))):
+            candidates = [f"busi-whu:patient:{index}" for index in patient_numbers]
             expected = sorted(candidates, key=lambda patient_id: (
                 hashlib.sha256(b"busi-whu-review-v1\0" + patient_id.encode("utf-8")).digest(),
                 patient_id.encode("utf-8"),
             ))[:50]
-            selected = [patient_id for patient_id in result["selected_singleton_patient_ids"] if patient_id.startswith(f"busi-whu:patient:{prefix}")]
+            selected = [
+                patient_id for patient_id in result["selected_singleton_patient_ids"]
+                if patient_id in set(candidates)
+            ]
             self.assertEqual(selected, sorted(expected))
 
     def test_selection_ids_are_order_invariant_but_predecessor_binding_changes(self):
@@ -219,7 +279,7 @@ class BusiWhuReviewSelectionTests(unittest.TestCase):
     def test_conflicting_patient_labels_and_population_drift_reject(self):
         source = metadata_inventory()
         conflicting = copy.deepcopy(source)
-        patient_id = "busi-whu:patient:x00"
+        patient_id = "busi-whu:patient:779"
         patient_rows = [row for row in conflicting["records"] if row["parent_id"] == patient_id]
         patient_rows[0]["label_code"] = "0"
         conflicting["record_digest"] = canonical.record_digest(conflicting)
@@ -309,7 +369,7 @@ class BusiWhuReviewPacketTests(unittest.TestCase):
             self.assertFalse(receipt["model_use_authorized"])
             self.assertFalse(receipt["mmbu_public_content_used"])
 
-    def test_workbook_geometry_disagreement_is_unresolved_not_repaired(self):
+    def test_supplied_inventory_must_match_the_bound_workbook(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             archive, workbook, inventory, _ = packet_fixture(root)
@@ -317,15 +377,9 @@ class BusiWhuReviewPacketTests(unittest.TestCase):
             inventory["record_digest"] = canonical.record_digest(inventory)
             selection = build_review_selection(inventory)
             output = root / "packet"
-            authorized_review_packet(archive, workbook, inventory, selection, output)
-            decode = json.loads((output / "decode-inventory.json").read_text())
-            row = next(item for item in decode["records"] if item["record_id"] == inventory["records"][0]["record_id"])
-            self.assertEqual(row["geometry_consistency_disposition"], "unresolved")
-            self.assertEqual(row["geometry_evidence"]["gt_area_pixel2"]["disposition"], "unresolved")
-            grounded = json.loads((output / "task-manifest-grounded_classification.json").read_text())
-            localization = json.loads((output / "task-manifest-localization.json").read_text())
-            self.assertIn(row["record_id"], grounded["mechanically_blocked_record_ids"])
-            self.assertIn(row["record_id"], localization["mechanically_blocked_record_ids"])
+            with self.assertRaisesRegex(ValueError, "workbook-derived inventory"):
+                authorized_review_packet(archive, workbook, inventory, selection, output)
+            self.assertFalse(output.exists())
 
     def test_dimension_mismatch_rejects_without_publishing(self):
         with tempfile.TemporaryDirectory() as folder:

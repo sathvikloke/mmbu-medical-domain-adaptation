@@ -18,7 +18,7 @@ cryptographically binds the exact completed-review report plus a purpose binding
 training authority, fewer than 60 independent patients,
 cross-patient duplicate constraints, MMBU content use, and post-lock mutation.
 
-Fresh verification after the portable-evidence repair passed **645 Phase 1 CPU tests** with two expected skips,
+Fresh verification after the ChestMNIST/NIH split-reconciliation repair passed **654 Phase 1 CPU tests** with two expected skips,
 maintained Markdown-link verification, Python compilation of `src`, `tools`, and `tests`, working-tree
 `git diff --check`. Historical branch-range whitespace findings remain outside this bounded repair. The audit-triggered
 tests cover exact authority-bound review
@@ -39,7 +39,7 @@ forms, no source has been admitted, and no confirmation/model output has run.
 |---|---|---|
 | Historical preparation suite | **277 tests passed; 44 optional-Pillow image tests skipped** | Re-executes the preserved CPU package without Pillow; it does not replace the image-enabled CI lane or test a model |
 | Root repository/tool suite | **75 tests passed; 13 optional-Pillow image tests skipped** | Covers repository, publication, scope, receipt, and authorization tooling; it is not scientific evidence |
-| Current Phase 1 suite | **645 tests passed; two expected optional-dependency tests skipped** | Covers current fail-closed contracts, manifests, registries, evidence chains, geometry, bundles, synthetic orchestration, external-trust primitives, portable response-screen replay, and evidence-documentation boundaries; native model execution is evidenced separately below |
+| Current Phase 1 suite | **654 tests passed; two expected optional-dependency tests skipped** | Covers current fail-closed contracts, manifests, registries, evidence chains, geometry, bundles, synthetic orchestration, external-trust primitives, portable response-screen replay, evidence-documentation boundaries, and exact ChestMNIST-to-NIH split reconciliation; native model execution is evidenced separately below |
 | Offline smoke workflow | **passed** | Replays historical synthetic demonstrations and toy arithmetic only; it reports `model_executed=false` and `official_evaluation=false` |
 | Maintained local Markdown links and anchors | **passed** | External URLs were not fetched by this check |
 | Published v0.3 artifact verification | **passed** for 275 files, ZIP members, fixed transforms, and historical receipts | Establishes byte integrity only, not scientific validity or medical truth |
@@ -124,8 +124,11 @@ historical artifact, not the current project status.
 - No real biomedical source is admitted. BUS-BRA remains structural engineering evidence only, and decision-bearing
   B1-L/B2-P work requires admission of BUS-BRA plus at least two additional independently admitted semantic-breadth
   source families, with prospective development and held-out-family roles. BUS-UCLM is the preferred independent
-  ultrasound replication candidate. PathMNIST-224 / NCT-CRC is the first non-ultrasound breadth candidate only if
-  complete parent grouping can be recovered; ChestMNIST is a noisy-label fallback and OrganAMNIST is context only.
+  ultrasound replication candidate. PathMNIST-224 / NCT-CRC is closed for decision-bearing use after its source
+  author confirmed that no public patch-to-slide/patient mapping is available. ChestMNIST is the first executable
+  non-ultrasound intake candidate, but its MedMNIST wrapper roles place 20,384 official NIH test images in wrapper
+  train/validation; future development must use only the official NIH train/validation population, grouped by patient,
+  with the official NIH test population untouched. Positive-label QA and all remaining admission gates are still open.
 - No MMBU public/private example, label, output, embedding, or derivative has informed model, data, curriculum,
   hyperparameter, stopping, or promotion decisions in the native runs.
 - No full training, official challenge loader, official/hidden evaluation, medically reviewed result, upload, or

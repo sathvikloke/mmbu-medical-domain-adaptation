@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 import hashlib
+import csv
+from datetime import datetime, timezone
 import json
 from pathlib import Path
 import tempfile
 import unittest
 
 from mmbu_phase1.busbra_train_qa import build_train_qa_packet
+from mmbu_phase1.busbra_train_qa_validation import validate_train_qa
 
 
 def canonical_digest(value: dict) -> str:
@@ -142,6 +145,133 @@ class BusbraTrainQaBuildTests(unittest.TestCase):
         output.mkdir()
         with self.assertRaises(FileExistsError):
             build_train_qa_packet(self.predecessor, output)
+
+
+class BusbraTrainQaValidationTests(unittest.TestCase):
+    def setUp(self):
+        BusbraTrainQaBuildTests.setUp(self)
+        self.packet = self.root / "train-qa"
+        self.receipt = build_train_qa_packet(self.predecessor, self.packet)
+        self.visual = self.root / "visual-completed.csv"
+        with (self.packet / "visual-review-template.csv").open(newline="", encoding="utf-8") as stream:
+            reader = csv.DictReader(stream)
+            fieldnames = reader.fieldnames
+            rows = list(reader)
+        for row in rows:
+            row.update({
+                "reviewer_id": "visual-reviewer-1",
+                "reviewed_at": "2026-10-26T13:00:00Z",
+                "asset_match": "yes",
+                "image_interpretable": "yes",
+                "modality_body_part_supported": "yes",
+                "mask_alignment": "yes",
+                "annotation_completeness_concern": "no",
+                "shortcut_artifact": "none",
+                "permitted_training_targets": "mask_context|pathology_classification",
+                "final_disposition": "eligible",
+                "notes": "publisher annotation usable for training-only QA",
+            })
+        with self.visual.open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.DictWriter(stream, fieldnames=fieldnames, lineterminator="\n")
+            writer.writeheader()
+            writer.writerows(rows)
+        self.rights = self.root / "rights-completed.json"
+        rights = json.loads((self.packet / "rights-purpose-template.json").read_text())
+        rights.update({
+            "schema": "mmbu.busbra.train_rights_completed.v1",
+            "reviewer_id": "rights-reviewer-1",
+            "reviewed_at": "2026-10-26T13:05:00Z",
+            "qualification_evidence_locator": "team-role-record:rights-reviewer-1",
+            "conflict_status": "none_declared",
+            "conflict_evidence_locator": "conflict-declaration:rights-reviewer-1",
+            "license_evidence_locator": "zenodo:8231412:cc-by-4.0",
+            "attribution_text": "BUS-BRA 1.0; Gomez-Flores et al.; CC BY 4.0",
+            "challenge_disclosure": "Disclose BUS-BRA training use and exact version.",
+            "retention_policy": "Quarantined source retained on protected scratch only.",
+            "train_decision": "approve",
+            "human_attested": True,
+            "review_complete": True,
+        })
+        self.rights.write_text(json.dumps(rights, sort_keys=True) + "\n", encoding="utf-8")
+        self.opening = self.root / "opening.json"
+        opening = {
+            "schema": "mmbu.busbra.train_qa_opening.v1",
+            "source_id": "busbra",
+            "source_version": "1.0",
+            "packet_receipt_digest": self.receipt["receipt_digest"],
+            "opened_at": "2026-10-26T12:00:00Z",
+            "opened_by": "review-coordinator-1",
+            "authorization_evidence_locator": "user-authorization:2026-10-26",
+            "human_attested": True,
+            "review_opening_authorized": True,
+            "training_ready": False,
+            "model_use_authorized": False,
+        }
+        self.opening.write_text(json.dumps(opening, sort_keys=True) + "\n", encoding="utf-8")
+
+    def tearDown(self):
+        BusbraTrainQaBuildTests.tearDown(self)
+
+    def validate(self):
+        return validate_train_qa(
+            self.packet, self.visual, self.rights, self.opening,
+            self.receipt["receipt_digest"], now=datetime(2026, 10, 26, 14, tzinfo=timezone.utc),
+        )
+
+    def rewrite_visual(self, mutate):
+        with self.visual.open(newline="", encoding="utf-8") as stream:
+            reader = csv.DictReader(stream)
+            fieldnames = reader.fieldnames
+            rows = list(reader)
+        mutate(rows)
+        with self.visual.open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.DictWriter(stream, fieldnames=fieldnames, lineterminator="\n")
+            writer.writeheader()
+            writer.writerows(rows)
+
+    def test_complete_train_only_evidence_is_admission_input_ready_but_non_authoritative(self):
+        report = self.validate()
+        self.assertTrue(report["admission_input_ready"])
+        self.assertEqual(report["routine_critical_failure_count"], 0)
+        self.assertFalse(report["source_admission_authorized"])
+        self.assertFalse(report["training_ready"])
+        self.assertFalse(report["model_use_authorized"])
+
+    def test_routine_critical_failure_blocks_readiness(self):
+        def mutate(rows):
+            row = next(item for item in rows if item["selection_role"] == "routine")
+            row.update({
+                "asset_match": "no", "permitted_training_targets": "",
+                "final_disposition": "exclude", "notes": "asset mismatch",
+            })
+        self.rewrite_visual(mutate)
+        report = self.validate()
+        self.assertFalse(report["admission_input_ready"])
+        self.assertGreaterEqual(report["routine_critical_failure_count"], 1)
+
+    def test_escalated_mandatory_record_blocks_readiness(self):
+        def mutate(rows):
+            row = next(item for item in rows if item["selection_role"] == "mandatory")
+            row.update({"final_disposition": "escalate", "notes": "requires adjudication"})
+        self.rewrite_visual(mutate)
+        self.assertFalse(self.validate()["admission_input_ready"])
+
+    def test_review_before_opening_is_rejected(self):
+        self.rewrite_visual(lambda rows: rows[0].update({"reviewed_at": "2026-10-26T11:59:59Z"}))
+        with self.assertRaisesRegex(ValueError, "after the authorized opening"):
+            self.validate()
+
+    def test_unresolved_rights_blocks_readiness(self):
+        value = json.loads(self.rights.read_text())
+        value["train_decision"] = "unresolved"
+        self.rights.write_text(json.dumps(value) + "\n", encoding="utf-8")
+        self.assertFalse(self.validate()["admission_input_ready"])
+
+    def test_projected_packet_tamper_is_rejected(self):
+        path = self.packet / "assets/bus_0001-l/image.png"
+        path.write_bytes(b"tampered")
+        with self.assertRaisesRegex(ValueError, r"packet member.*digest mismatch"):
+            self.validate()
 
 
 if __name__ == "__main__":

@@ -3,11 +3,19 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
+import tempfile
 import unittest
 from pathlib import Path
 
-from mmbu_phase1.source_admission_stage_a import load_stage_a_config, validate_stage_a_config
+from mmbu_phase1 import canonical
+from mmbu_phase1.source_admission_stage_a import (
+    build_acquisition_packet,
+    load_stage_a_config,
+    validate_acquisition_packet,
+    validate_stage_a_config,
+)
 
 
 REPO = Path(__file__).resolve().parents[2]
@@ -82,6 +90,81 @@ class StageAConfigTests(unittest.TestCase):
                 {"allowed_splits": ["test", "train", "val"]}
             )
         )
+
+
+class StageAPacketTests(unittest.TestCase):
+    def setUp(self):
+        self.config = load_stage_a_config(CONFIG)
+        self.commit = "a" * 40
+        self.launch_id = "20261025T183000Z-123e4567-e89b-42d3-a456-426614174000"
+        self.run_root = f"/storage/scr/npl015/mmbu-admission/{self.launch_id}"
+        self.created_at = "2026-10-25T18:30:00Z"
+        self.packet = build_acquisition_packet(
+            self.config, self.commit, self.launch_id, self.run_root, self.created_at
+        )
+
+    def changed_digest(self, mutate) -> None:
+        candidate = copy.deepcopy(self.packet)
+        mutate(candidate)
+        candidate["record_digest"] = canonical.value_digest(
+            {key: value for key, value in candidate.items() if key != "record_digest"}
+        )
+        self.assertNotEqual(candidate["record_digest"], self.packet["record_digest"])
+
+    def test_packet_is_deterministic_and_binds_exact_launch(self):
+        again = build_acquisition_packet(
+            self.config, self.commit, self.launch_id, self.run_root, self.created_at
+        )
+        self.assertEqual(canonical.dumps(self.packet), canonical.dumps(again))
+        self.assertEqual(self.packet["repository_commit"], self.commit)
+        self.assertEqual(self.packet["launch_id"], self.launch_id)
+        self.assertEqual(self.packet["run_root"], self.run_root)
+        self.assertEqual(self.packet["config_digest"], canonical.value_digest(self.config))
+        self.assertEqual(
+            self.packet["forbidden_operations"],
+            ["gpu_use", "mmbu_public_access", "model_loading", "retry_or_resume", "training", "upload_or_submit"],
+        )
+        validate_acquisition_packet(self.packet, self.config)
+
+    def test_packet_binds_per_source_command_and_identity(self):
+        for source_id, source in self.packet["sources"].items():
+            command = source["retrieval_command"]
+            self.assertEqual(command[0], "/usr/bin/python3")
+            self.assertIn(f"{self.run_root}/repo/tools/source_admission_stage_a.py", command)
+            self.assertEqual(command[-2:], ["--source-id", source_id])
+            self.assertNotIn("--retry", command)
+            self.assertNotIn("--continue-at", command)
+            self.assertEqual(source["maximum_bytes"], self.config["sources"][source_id]["maximum_bytes"])
+            self.assertEqual(
+                [artifact["name"] for artifact in source["artifacts"]],
+                [artifact["name"] for artifact in self.config["sources"][source_id]["artifacts"]],
+            )
+
+    def test_changed_command_rejects(self):
+        self.changed_digest(lambda value: value["sources"]["bus-bra"]["retrieval_command"].append("--retry"))
+
+    def test_changed_root_rejects(self):
+        self.changed_digest(lambda value: value.update({"run_root": self.run_root + "-other"}))
+
+    def test_changed_cap_rejects(self):
+        self.changed_digest(lambda value: value["sources"]["bus-bra"].update({"maximum_bytes": 1}))
+
+    def test_changed_purpose_rejects(self):
+        self.changed_digest(lambda value: value["sources"]["bus-bra"].update({"proposed_purposes": ["train"]}))
+
+    def test_changed_artifact_identity_rejects(self):
+        self.changed_digest(lambda value: value["sources"]["busi-whu"]["artifacts"][0].update({"expected_bytes": 1}))
+
+    def test_changed_repository_commit_rejects(self):
+        self.changed_digest(lambda value: value.update({"repository_commit": "b" * 40}))
+
+    def test_packet_file_has_distinct_full_file_sha256(self):
+        payload = canonical.dumps(self.packet)
+        self.assertEqual(len(hashlib.sha256(payload).hexdigest()), 64)
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "packet.json"
+            path.write_bytes(payload)
+            self.assertEqual(path.read_bytes(), payload)
 
 
 if __name__ == "__main__":

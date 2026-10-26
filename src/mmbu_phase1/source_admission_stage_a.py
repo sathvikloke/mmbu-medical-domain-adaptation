@@ -8,8 +8,12 @@ from __future__ import annotations
 
 import json
 import re
+from copy import deepcopy
+from datetime import datetime
 from pathlib import Path
 from urllib.parse import urlparse
+
+from mmbu_phase1 import canonical
 
 
 TOP_KEYS = {"schema_id", "schema_version", "work_margin_bytes", "duplicate_method", "sources"}
@@ -39,6 +43,18 @@ EXPECTED_PURPOSES = {
 EXPECTED_ROLES = {"bus-bra": "training", "pathmnist-224": "training", "busi-whu": "confirmation"}
 HEX = re.compile(r"[0-9a-f]+")
 GLOB = re.compile(r"[*?\[\]]")
+LAUNCH_ID = re.compile(r"[0-9]{8}T[0-9]{6}Z-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}")
+PACKET_KEYS = {
+    "schema_id", "schema_version", "packet_id", "config_digest", "repository_commit", "launch_id",
+    "run_root", "created_at", "work_margin_bytes", "sources", "forbidden_operations", "record_digest",
+}
+PACKET_SOURCE_KEYS = {
+    "source_id", "source_version", "source_family", "proposed_purposes", "maximum_bytes", "artifacts",
+    "retrieval_method", "retrieval_command", "staging_destination", "inspection_prohibited",
+}
+FORBIDDEN_OPERATIONS = [
+    "gpu_use", "mmbu_public_access", "model_loading", "retry_or_resume", "training", "upload_or_submit",
+]
 
 
 def _closed(value: object, keys: set[str], path: str) -> dict:
@@ -174,4 +190,97 @@ def load_stage_a_config(path: Path) -> dict:
         return validate_stage_a_config(json.load(handle))
 
 
-__all__ = ["load_stage_a_config", "validate_stage_a_config"]
+def _packet_body(
+    config: dict,
+    repository_commit: str,
+    launch_id: str,
+    run_root: str,
+    created_at: str,
+) -> dict:
+    validate_stage_a_config(config)
+    _hex(repository_commit, 40, "repository_commit")
+    if LAUNCH_ID.fullmatch(launch_id) is None:
+        raise ValueError("launch_id must be a UTC timestamp plus a lowercase UUIDv4")
+    expected_root = f"/storage/scr/npl015/mmbu-admission/{launch_id}"
+    if run_root != expected_root:
+        raise ValueError(f"run_root must be exactly {expected_root}")
+    try:
+        parsed_created = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        raise ValueError("created_at must be an RFC 3339 timestamp") from None
+    if parsed_created.tzinfo is None or not created_at.endswith("Z"):
+        raise ValueError("created_at must be UTC with a Z suffix")
+
+    sources = {}
+    for source_id in sorted(config["sources"]):
+        declaration = config["sources"][source_id]
+        command = [
+            "/usr/bin/python3",
+            f"{run_root}/repo/tools/source_admission_stage_a.py",
+            "acquire-source",
+            "--packet",
+            f"{run_root}/records/acquisition-packet.json",
+            "--source-id",
+            source_id,
+        ]
+        sources[source_id] = {
+            "source_id": source_id,
+            "source_version": declaration["source_version"],
+            "source_family": declaration["source_family"],
+            "proposed_purposes": list(declaration["proposed_purposes"]),
+            "maximum_bytes": declaration["maximum_bytes"],
+            "artifacts": deepcopy(declaration["artifacts"]),
+            "retrieval_method": "stage_a_python_o_excl_stream_v1",
+            "retrieval_command": command,
+            "staging_destination": f"{run_root}/staging/{source_id}",
+            "inspection_prohibited": True,
+        }
+    return {
+        "schema_id": "mmbu.phase1.source_admission_stage_a_packet",
+        "schema_version": 1,
+        "packet_id": f"stage-a-{launch_id}",
+        "config_digest": canonical.value_digest(config),
+        "repository_commit": repository_commit,
+        "launch_id": launch_id,
+        "run_root": run_root,
+        "created_at": created_at,
+        "work_margin_bytes": config["work_margin_bytes"],
+        "sources": sources,
+        "forbidden_operations": list(FORBIDDEN_OPERATIONS),
+    }
+
+
+def build_acquisition_packet(
+    config: dict,
+    repository_commit: str,
+    launch_id: str,
+    run_root: str,
+    created_at: str,
+) -> dict:
+    """Return a deterministic sealed packet; it is not an authorization."""
+    return canonical.seal(_packet_body(config, repository_commit, launch_id, run_root, created_at))
+
+
+def validate_acquisition_packet(packet: object, config: dict) -> dict:
+    """Validate a packet against its frozen config and derived command surface."""
+    record = _closed(packet, PACKET_KEYS, "packet")
+    for source_id, source in record.get("sources", {}).items():
+        _closed(source, PACKET_SOURCE_KEYS, f"packet.sources.{source_id}")
+    expected = build_acquisition_packet(
+        config,
+        record["repository_commit"],
+        record["launch_id"],
+        record["run_root"],
+        record["created_at"],
+    )
+    if canonical.dumps(record) != canonical.dumps(expected):
+        raise ValueError("packet differs from the deterministic Stage A declaration")
+    return record
+
+
+__all__ = [
+    "build_acquisition_packet",
+    "load_stage_a_config",
+    "validate_acquisition_packet",
+    "validate_stage_a_config",
+]

@@ -84,24 +84,24 @@ Commit message: `feat: freeze stage a source identities`
 - Produces: `validate_acquisition_packet(packet: object, config: dict) -> dict`.
 - CLI: `python3 tools/source_admission_stage_a.py build-packet --config ... --run-root ... --output ...`.
 
-- [ ] **Step 1: Write failing packet tests**
+- [x] **Step 1: Write failing packet tests**
 
 Test deterministic packet creation, independent timestamp-plus-UUID launch IDs, exact run-root binding, exact repository commit, per-source artifact basenames/byte caps/commands/hosts, global forbidden operations, and rejection after any change to command, root, cap, source purpose, artifact identity, or repository commit.
 
-- [ ] **Step 2: Run the packet tests and verify failure**
+- [x] **Step 2: Run the packet tests and verify failure**
 
 Run: `PYTHONPATH=src python3 -m unittest tests.phase1.test_source_admission_stage_a.StageAPacketTests -v`  
 Expected: FAIL because packet functions are absent.
 
-- [ ] **Step 3: Implement packet construction and CLI**
+- [x] **Step 3: Implement packet construction and CLI**
 
 Seal the packet with RFC 8785 canonical hashing. Commands must use create-new output semantics, no retry/resume flags, one exact URL per artifact, and a staging path inside the sealed root. The CLI writes with exclusive creation and prints both canonical digest and full-file SHA-256.
 
-- [ ] **Step 4: Run packet tests and CLI smoke**
+- [x] **Step 4: Run packet tests and CLI smoke**
 
 Run the packet test class, then build a temporary packet twice with identical inputs and assert byte-for-byte equality; both checks must pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Commit message: `feat: seal stage a acquisition packet`
 

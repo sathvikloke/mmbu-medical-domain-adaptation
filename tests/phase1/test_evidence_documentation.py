@@ -15,7 +15,7 @@ class EvidenceDocumentationTests(unittest.TestCase):
         )
 
         for marker in (
-            "**Current state:** protected BUSI-WHU opening bound; remaining production boundaries and external material blocked",
+            "**Current state:** protected BUSI-WHU and Stage A structural opening bound; remaining boundaries and external material blocked",
             "repository records are not a trust anchor",
             "detached signature",
             "out-of-band pinned public-key fingerprint",
@@ -45,8 +45,8 @@ class EvidenceDocumentationTests(unittest.TestCase):
             encoding="utf-8"
         )
 
-        self.assertIn("passed **635 Phase 1 CPU tests**", report)
-        self.assertIn("| Current Phase 1 suite | **635 tests passed", report)
+        self.assertIn("passed **636 Phase 1 CPU tests**", report)
+        self.assertIn("| Current Phase 1 suite | **636 tests passed", report)
         self.assertNotIn("| Phase 1 suite | **623 tests passed", report)
         self.assertIn("**Status snapshot code revision (historical):**", report)
         self.assertNotIn("**Verified code revision:**", report)
@@ -55,7 +55,8 @@ class EvidenceDocumentationTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("verify_external_authority", trust)
-        self.assertIn("Stage A, completed-review authentication, source admission, and confirmation are not yet bound", trust)
+        self.assertIn("Acquisition authority,\ncompleted-review authentication, source admission, and confirmation are not yet bound", trust)
+        self.assertIn("plain prose and hard-coded names are rejected", trust)
         self.assertIn("no protected opening or decision-bearing action is enabled", trust)
 
         confirmation = (

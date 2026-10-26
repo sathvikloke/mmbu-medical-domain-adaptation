@@ -32,12 +32,14 @@ from mmbu_phase1.source_admission_stage_a import (
     resolve_xlsx_header_strings,
     validate_pathmnist_mapping,
     build_structural_opening_records,
+    stage_a_structural_authority_subject,
     acquisition_command_digest,
     acquisition_method_digest,
     verify_acquisition_authority,
     acquire_artifacts_once,
 )
 from tests.phase1.admission_fixtures import AdmissionWorld
+from tests.phase1.external_trust_fixtures import external_authority_for
 from tests.phase1.test_biomedical_sources import _build_archive as _build_busbra_archive
 from tests.phase1.test_biomedical_sources import _declaration as _busbra_declaration
 
@@ -440,12 +442,21 @@ class StageAStructuralOpeningPacketTests(unittest.TestCase):
             historical["record_digest"],
         )
 
-    def test_bound_human_statements_create_valid_opening_chains(self):
+    def test_externally_verified_humans_create_valid_opening_chains(self):
         packet = self.packet()
-        owner = "owner approved exact packet"
-        reviewer = "independent reviewer approved structural inspection"
         for source_id in sorted(packet["sources"]):
             bundle = self.evidence[source_id]
+            subject = stage_a_structural_authority_subject(packet, source_id)
+            owner = external_authority_for(
+                subject, namespace="mmbu.phase1.stage-a-structural-opening.v1",
+                principal="verified-owner", role="data-owner",
+                signed_at="2026-10-25T20:59:00Z", verified_at="2026-10-25T21:00:00Z",
+            )
+            reviewer = external_authority_for(
+                subject, namespace="mmbu.phase1.stage-a-structural-opening.v1",
+                principal="verified-reviewer", role="independent-reviewer",
+                signed_at="2026-10-25T20:59:30Z", verified_at="2026-10-25T21:00:30Z",
+            )
             records = build_structural_opening_records(
                 packet,
                 source_id,
@@ -458,8 +469,38 @@ class StageAStructuralOpeningPacketTests(unittest.TestCase):
             result = verify_inventory_opening(records, source_id, "2026-10-25T21:01:06Z")
             self.assertEqual(result["source"]["allowed_purposes"], ["quarantine_inspection"])
             self.assertEqual(result["opening"]["opening_kind"], "protected_access")
-            self.assertIn(canonical.raw_digest(owner.encode()), result["authorization"]["decision_basis_digests"])
-            self.assertIn(canonical.raw_digest(reviewer.encode()), result["authorization"]["decision_basis_digests"])
+            self.assertIn(owner.verification_evidence_digest,
+                          result["authorization"]["decision_basis_digests"])
+            self.assertIn(reviewer.verification_evidence_digest,
+                          result["authorization"]["decision_basis_digests"])
+            self.assertEqual(result["authorization"]["reviewer_id"], "verified-reviewer")
+
+    def test_plain_statements_and_substituted_external_subjects_reject(self):
+        packet = self.packet()
+        source_id = "bus-bra"
+        bundle = self.evidence[source_id]
+        with self.assertRaises((TypeError, ValueError)):
+            build_structural_opening_records(
+                packet, source_id, bundle["authority_records"], bundle["execution_receipt"],
+                "Aditya Raut", "Neeraj Movva", "2026-10-25T21:01:00Z",
+            )
+        wrong_owner = external_authority_for(
+            stage_a_structural_authority_subject(packet, "busi-whu"),
+            namespace="mmbu.phase1.stage-a-structural-opening.v1",
+            principal="verified-owner", role="data-owner",
+            signed_at="2026-10-25T20:59:00Z", verified_at="2026-10-25T21:00:00Z",
+        )
+        reviewer = external_authority_for(
+            stage_a_structural_authority_subject(packet, source_id),
+            namespace="mmbu.phase1.stage-a-structural-opening.v1",
+            principal="verified-reviewer", role="independent-reviewer",
+            signed_at="2026-10-25T20:59:30Z", verified_at="2026-10-25T21:00:30Z",
+        )
+        with self.assertRaises((TypeError, ValueError)):
+            build_structural_opening_records(
+                packet, source_id, bundle["authority_records"], bundle["execution_receipt"],
+                wrong_owner, reviewer, "2026-10-25T21:01:00Z",
+            )
 
 class _Response:
     def __init__(self, payload: bytes, url: str):
@@ -577,8 +618,10 @@ class StageALauncherTests(unittest.TestCase):
         self.assertIn("structural-inspect", text)
         self.assertIn("STAGE_A_PACKET_SHA256:?", text)
         self.assertIn('--packet-sha256 "${STAGE_A_PACKET_SHA256}"', text)
-        self.assertIn("owner-statement.txt", text)
-        self.assertIn("reviewer-statement.txt", text)
+        self.assertNotIn("owner-statement.txt", text)
+        self.assertNotIn("reviewer-statement.txt", text)
+        self.assertIn("STAGE_A_OWNER_EXTERNAL_POLICY", text)
+        self.assertIn("STAGE_A_REVIEWER_EXTERNAL_POLICY", text)
 
 
 def _npy_bytes(descr: str, shape: tuple[int, ...], payload: bytes) -> bytes:

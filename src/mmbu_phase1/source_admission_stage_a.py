@@ -22,6 +22,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from mmbu_phase1 import canonical
+from mmbu_phase1.external_trust import ExternalAuthorityCapability
 from mmbu_phase1.store import RecordStore
 
 
@@ -840,10 +841,60 @@ def _at(value: str, seconds: int) -> str:
     return (parsed + timedelta(seconds=seconds)).isoformat(timespec="seconds").replace("+00:00", "Z")
 
 
-def _attestation(record: dict, reviewer: str, verifier: str, statement: str, at: str) -> dict:
+STAGE_A_STRUCTURAL_AUTHORITY_NAMESPACE = "mmbu.phase1.stage-a-structural-opening.v1"
+
+
+def stage_a_structural_authority_subject(packet: dict, source_id: str) -> dict:
+    """Return the exact sealed subject that two external authorities must sign."""
+    if packet.get("record_digest") != canonical.record_digest(packet):
+        raise ValueError("structural opening packet digest is invalid")
+    source = packet.get("sources", {}).get(source_id)
+    if not isinstance(source, dict):
+        raise ValueError("source is absent from the structural opening packet")
+    return canonical.seal({
+        "schema_id": "mmbu.phase1.stage_a_structural_opening_authority_subject",
+        "schema_version": 1,
+        "packet_digest": packet["record_digest"],
+        "source_id": source_id,
+        "source_version": source["source_version"],
+        "permitted_reads": source["permitted_reads"],
+    })
+
+
+def _validate_external_structural_authorities(
+    packet: dict, source_id: str, owner: object, reviewer: object, reviewed_at: str,
+) -> tuple[ExternalAuthorityCapability, ExternalAuthorityCapability]:
+    if type(owner) is not ExternalAuthorityCapability or type(reviewer) is not ExternalAuthorityCapability:
+        raise TypeError("Stage A structural opening requires two externally verified authority capabilities")
+    subject_digest = canonical.value_digest(stage_a_structural_authority_subject(packet, source_id))
+    for capability, role, label in (
+        (owner, "data-owner", "owner"),
+        (reviewer, "independent-reviewer", "reviewer"),
+    ):
+        if capability.namespace != STAGE_A_STRUCTURAL_AUTHORITY_NAMESPACE:
+            raise ValueError(f"Stage A {label} external namespace mismatch")
+        if capability.role != role:
+            raise ValueError(f"Stage A {label} external role mismatch")
+        if capability.subject_digest != subject_digest:
+            raise ValueError(f"Stage A {label} signed another subject")
+        if not capability.principal:
+            raise ValueError(f"Stage A {label} external principal is empty")
+        if datetime.fromisoformat(capability.verified_at.replace("Z", "+00:00")) > datetime.fromisoformat(
+            reviewed_at.replace("Z", "+00:00")
+        ):
+            raise ValueError(f"Stage A {label} external verification follows internal authorization")
+    if owner.principal == reviewer.principal:
+        raise ValueError("Stage A owner and independent reviewer must be different principals")
+    return owner, reviewer
+
+
+def _attestation(
+    record: dict, reviewer: ExternalAuthorityCapability,
+    owner: ExternalAuthorityCapability, at: str,
+) -> dict:
     payload = {
         "statement_version": "mmbu-review-attestation-v1",
-        "reviewer_id": reviewer,
+        "reviewer_id": reviewer.principal,
         "reviewer_role": "purpose_authorization_reviewer",
         "subject_digest": canonical.subject_digest(record, "single_attestation"),
         "purposes": ["quarantine_inspection"],
@@ -852,7 +903,7 @@ def _attestation(record: dict, reviewer: str, verifier: str, statement: str, at:
             b"Structural header/schema inspection only; no model use, labels, image decoding, training, or release."
         ),
         "reviewed_at": at,
-        "declaration_text_digest": canonical.raw_digest(statement.encode("utf-8")),
+        "declaration_text_digest": reviewer.signature_sha256,
     }
     return canonical.seal({
         "schema_id": "mmbu.phase1.reviewer_attestation",
@@ -861,10 +912,10 @@ def _attestation(record: dict, reviewer: str, verifier: str, statement: str, at:
         "payload": payload,
         "payload_digest": canonical.value_digest(payload),
         "verification": {
-            "method": "manual_identity_check",
-            "verifier_id": verifier,
+            "method": "cryptographic_signature",
+            "verifier_id": owner.principal,
             "verified_at": at,
-            "verification_artifact_digest": canonical.raw_digest(statement.encode("utf-8")),
+            "verification_artifact_digest": reviewer.verification_evidence_digest,
         },
     })
 
@@ -874,13 +925,13 @@ def build_structural_opening_records(
     source_id: str,
     acquisition_records: list[dict],
     execution_receipt: dict,
-    owner_statement: str,
-    reviewer_statement: str,
+    owner_authority: ExternalAuthorityCapability,
+    reviewer_authority: ExternalAuthorityCapability,
     reviewed_at: str,
 ) -> list[dict]:
     """Build the exact quarantine-only chain needed for one structural opening.
 
-    The human statements are bound as evidence, but this function creates no
+    Two independently pinned external signatures are bound as evidence, but this function creates no
     rights, grouping, clinical, model-use, training, confirmation, or release
     authority.
     """
@@ -895,8 +946,9 @@ def build_structural_opening_records(
     source = packet.get("sources", {}).get(source_id)
     if not isinstance(source, dict):
         raise ValueError("source is absent from the structural opening packet")
-    if not owner_statement.strip() or not reviewer_statement.strip():
-        raise ValueError("both exact human statements are required")
+    owner_authority, reviewer_authority = _validate_external_structural_authorities(
+        packet, source_id, owner_authority, reviewer_authority, reviewed_at,
+    )
 
     receipt_store = RecordStore([*acquisition_records, execution_receipt])
     authorization = admission.check_acquisition_authorization(
@@ -988,21 +1040,22 @@ def build_structural_opening_records(
         "created_at": _at(reviewed_at, 1),
     })
     basis = sorted({
-        packet["record_digest"], canonical.raw_digest(owner_statement.encode("utf-8")),
-        canonical.raw_digest(reviewer_statement.encode("utf-8")),
+        packet["record_digest"], owner_authority.verification_evidence_digest,
+        reviewer_authority.verification_evidence_digest,
     })
     purpose_body = {
         "schema_id": "mmbu.phase1.purpose_authorization", "schema_version": 1,
         "authorization_id": f"stage-a-structural-{packet['launch_id']}-{source_id}",
         "purpose": "quarantine_inspection", "source_digest": quarantined["record_digest"],
         "split_digests": [split["record_digest"]], "lineage_root_digests": [],
-        "decision": "allowed", "decision_basis_digests": basis, "reviewer_id": "Neeraj Movva",
+        "decision": "allowed", "decision_basis_digests": basis,
+        "reviewer_id": reviewer_authority.principal,
         "reviewer_attestation_digest": None, "released_checkpoint_digest": None,
         "validated_model_lineage_digest": None, "release_rights_receipt_digest": None,
         "release_decision_receipt_digest": None, "no_new_data_access": None,
         "decided_at": _at(reviewed_at, 2), "expires_at": None, "supersedes_digest": None,
     }
-    attestation = _attestation(purpose_body, "Neeraj Movva", "Aditya Raut", reviewer_statement, _at(reviewed_at, 2))
+    attestation = _attestation(purpose_body, reviewer_authority, owner_authority, _at(reviewed_at, 2))
     purpose = canonical.seal({**purpose_body, "reviewer_attestation_digest": attestation["record_digest"]})
 
     prior_registry = max(
@@ -1927,6 +1980,7 @@ __all__ = [
     "build_acquisition_packet",
     "build_structural_opening_packet",
     "build_structural_opening_records",
+    "stage_a_structural_authority_subject",
     "load_stage_a_config",
     "validate_acquisition_packet",
     "validate_structural_opening_packet",

@@ -28,11 +28,13 @@ from mmbu_phase1.source_admission_stage_a import (  # noqa: E402
     inventory_busi_whu_structural,
     inventory_pathmnist_structural,
     load_stage_a_config,
+    stage_a_structural_authority_subject,
     validate_acquisition_packet,
     validate_structural_opening_packet,
     verify_acquisition_authority,
 )
 from mmbu_phase1 import admission  # noqa: E402
+from mmbu_phase1.external_trust import verify_external_authority  # noqa: E402
 from mmbu_phase1.store import RecordStore  # noqa: E402
 
 
@@ -223,8 +225,6 @@ def structural_inspect(args: argparse.Namespace) -> int:
     validate_structural_opening_packet(packet, config, evidence)
     if packet["repository_commit"] != args.repository_commit.read_text(encoding="ascii").strip():
         raise ValueError("staged repository commit differs from the sealed structural packet")
-    owner = args.owner_statement.read_text(encoding="utf-8").strip()
-    reviewer = args.reviewer_statement.read_text(encoding="utf-8").strip()
     source = packet["sources"][args.source_id]
     output = Path(packet["run_root"]) / "results" / args.source_id
     status_path = Path(packet["run_root"]) / "records" / f"{args.source_id}-structural-status.json"
@@ -233,7 +233,14 @@ def structural_inspect(args: argparse.Namespace) -> int:
     output.mkdir(parents=True, mode=0o700)
     try:
         started = datetime.now(timezone.utc).replace(microsecond=0)
-        reviewed_at = (started - timedelta(seconds=5)).isoformat().replace("+00:00", "Z")
+        reviewed_at = started.isoformat().replace("+00:00", "Z")
+        subject = stage_a_structural_authority_subject(packet, args.source_id)
+        owner = _external_structural_authority(
+            args, "owner", subject, "data-owner", reviewed_at,
+        )
+        reviewer = _external_structural_authority(
+            args, "reviewer", subject, "independent-reviewer", reviewed_at,
+        )
         records = build_structural_opening_records(
             packet, args.source_id, evidence[args.source_id]["authority_records"],
             evidence[args.source_id]["execution_receipt"], owner, reviewer, reviewed_at,
@@ -282,6 +289,41 @@ def structural_inspect(args: argparse.Namespace) -> int:
         return 1
 
 
+def _external_structural_authority(
+    args: argparse.Namespace, prefix: str, subject: dict, role: str, verified_at: str,
+):
+    value = lambda name: getattr(args, f"{prefix}_external_{name}")  # noqa: E731
+    return verify_external_authority(
+        policy_bytes=value("policy").read_bytes(),
+        policy_pin_sha256=value("policy_pin"),
+        public_key_bytes=value("public_key").read_bytes(),
+        public_key_pin_sha256=value("public_key_pin"),
+        revocation_bytes=value("revocation").read_bytes(),
+        revocation_pin_sha256=value("revocation_pin"),
+        signature_bytes=value("signature").read_bytes(),
+        subject=subject,
+        namespace="mmbu.phase1.stage-a-structural-opening.v1",
+        principal=value("principal"), role=role,
+        signed_at=value("signed_at"), verified_at=verified_at,
+        verifier_path=value("verifier"), verifier_pin_sha256=value("verifier_pin"),
+    )
+
+
+def _add_external_authority_arguments(parser: argparse.ArgumentParser, prefix: str) -> None:
+    option = f"--{prefix}-external-"
+    parser.add_argument(option + "policy", type=Path, required=True)
+    parser.add_argument(option + "policy-pin", required=True)
+    parser.add_argument(option + "public-key", type=Path, required=True)
+    parser.add_argument(option + "public-key-pin", required=True)
+    parser.add_argument(option + "revocation", type=Path, required=True)
+    parser.add_argument(option + "revocation-pin", required=True)
+    parser.add_argument(option + "signature", type=Path, required=True)
+    parser.add_argument(option + "principal", required=True)
+    parser.add_argument(option + "signed-at", required=True)
+    parser.add_argument(option + "verifier", type=Path, required=True)
+    parser.add_argument(option + "verifier-pin", required=True)
+
+
 def parser() -> argparse.ArgumentParser:
     cli = argparse.ArgumentParser()
     sub = cli.add_subparsers(dest="command", required=True)
@@ -309,8 +351,8 @@ def parser() -> argparse.ArgumentParser:
     inspect.add_argument("--packet-sha256", required=True)
     inspect.add_argument("--evidence-root", type=Path, required=True)
     inspect.add_argument("--repository-commit", type=Path, required=True)
-    inspect.add_argument("--owner-statement", type=Path, required=True)
-    inspect.add_argument("--reviewer-statement", type=Path, required=True)
+    _add_external_authority_arguments(inspect, "owner")
+    _add_external_authority_arguments(inspect, "reviewer")
     inspect.add_argument("--source-id", choices=("bus-bra", "pathmnist-224", "busi-whu"), required=True)
     inspect.set_defaults(func=structural_inspect)
     return cli

@@ -93,6 +93,8 @@ The one-attempt corrected packet `646c08a7f2cba4320cb7f0d5611f68b95a185f1df955d7
 - Status digest: `1d35390e2cc7a7d2e95059452f2e4b97407fde4b18258853496231547c4a7730`.
 - The status receipt records false for image decoding, label-value reading, NPZ test-member opening, model use, and MMBU public content use.
 
+Post-execution review found that the permitted `image_id` strings themselves contain one of nine class-like prefixes. The status claim is therefore narrowed: no NPZ label array was opened, but semantic label proxies were exposed by the mapping metadata. The 100,000 identifiers contain no repeated slide/patient key and cannot reconstruct independent parent groups. See [PathMNIST mapping limitation](PATHMNIST_MAPPING_LIMITATION_2026-10-25.md). The historical receipt remains preserved unchanged.
+
 The next evidence-producing step is no longer schema discovery. It is source admission: independent rights, grouping, annotation/clinical-validity, and use-purpose decisions must be completed before any source can be granted model use or enter training.
 
 ## BUS-BRA protected metadata outcome

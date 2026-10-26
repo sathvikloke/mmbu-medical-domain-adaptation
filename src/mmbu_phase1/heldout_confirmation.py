@@ -18,7 +18,7 @@ from mmbu_phase1.fields import (
 )
 
 
-SPEC_DIGEST = "3e7b40547b1ee82ae4024505d7007f78f89c4846b86a2c283160684d640eedc8"
+SPEC_DIGEST = "4872eceea7164ab81d76d4307105b06529e9c15b4e709eabdb4fe04b9851f0ef"
 SPEC_KEYS = (
     "authorization", "candidate", "confirmation_id", "gates", "prompts", "resources",
     "schema_id", "schema_version", "source", "statistics", "training",
@@ -341,7 +341,7 @@ def _validate_patient_ids(value: object, path: str = "heldout_confirmation.patie
     return value
 
 
-PROMPT_SPEC_DIGEST = "c75d3bc7c0a46083d5636060edef29ced26b1d740118d36b0f6d1dc7bf782f87"
+PROMPT_SPEC_DIGEST = "4bc3c324f31a0ed1117d4a5485603d589667a6c2d233c47e89efde1b051ffa49"
 
 
 def _random_matrices(count: int) -> tuple[list[list[int]], list[list[int]]]:
@@ -847,8 +847,8 @@ GATE_ORDER = (
 )
 
 
-def confirmation_decision(analysis: object, execution: object) -> dict:
-    """Apply the one non-rescuable primary confirmation decision in frozen order."""
+def _confirmation_decision_mechanics(analysis: object, execution: object) -> dict:
+    """Exercise the preserved decision arithmetic without granting scientific authority."""
     result = closed(analysis, "heldout_confirmation.analysis", ANALYSIS_KEYS)
     run = closed(execution, "heldout_confirmation.execution", EXECUTION_KEYS)
     blocked: list[str] = []
@@ -913,6 +913,15 @@ def confirmation_decision(analysis: object, execution: object) -> dict:
     return {"reasons": reasons, "status": "confirmation_failed" if reasons else "confirmation_passed"}
 
 
+def confirmation_decision(analysis: object, execution: object) -> dict:
+    """Validate the mechanics, then reject the scientifically uninformative endpoint."""
+    _confirmation_decision_mechanics(analysis, execution)
+    return {
+        "reasons": ["context_endpoint_uninformative_constant"],
+        "status": "blocked",
+    }
+
+
 def readiness_status(value: object) -> dict:
     """Validate reference-only pre-execution readiness without opening referenced artifacts."""
     record = closed(value, "heldout_confirmation.readiness", READINESS_KEYS)
@@ -967,7 +976,7 @@ def readiness_status(value: object) -> dict:
     require(inventory < qa_plan < qa_opened < lock, "heldout_confirmation.readiness.chronology",
             "must satisfy inventory close < QA plan freeze < QA opening < confirmation lock")
     literal(chronology["first_output_at"], "heldout_confirmation.readiness.chronology.first_output_at", None)
-    return {"missing": "candidate-freeze-authority", "status": "blocked"}
+    return {"missing": "context-endpoint-authority", "status": "blocked"}
 
 
 def validate_synthetic_fixture(value: object) -> dict:
@@ -1012,7 +1021,7 @@ def validate_synthetic_fixture(value: object) -> dict:
         "source_version": "3",
         "source_role": "confirmation",
     }
-    decision = confirmation_decision(analysis, execution)
+    decision = _confirmation_decision_mechanics(analysis, execution)
     literal(decision["status"], "heldout_confirmation.synthetic_fixture.expected_status",
             fixture["expected_status"])
     return {

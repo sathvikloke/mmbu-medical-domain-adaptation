@@ -65,6 +65,16 @@ class HeldoutConfirmationSpecTests(unittest.TestCase):
         self.assertEqual(value["statistics"]["lower_bound_index_zero_based"], 999)
         self.assertEqual(value["statistics"]["decision_margin"], {"denominator": 20, "numerator": 1})
         self.assertFalse(value["authorization"]["mmbu_public_content_allowed"])
+        self.assertEqual(value["prompts"]["context_endpoint"], {
+            "promotion_authority": "none",
+            "replacement_requirements": [
+                "image-dependent-target",
+                "per-record-targets",
+                "at-least-two-distinct-target-vectors",
+                "independent-review-authority",
+            ],
+            "status": "blocked_uninformative_constant",
+        })
 
     def test_scope_widening_and_protocol_drift_reject(self):
         mutations = (
@@ -588,20 +598,27 @@ class HeldoutConfirmationDecisionTests(unittest.TestCase):
             "source_role": "confirmation",
         }
 
-    def test_primary_pass_ignores_only_secondary_and_sign_diagnostic(self):
-        result = self.module.confirmation_decision(self.analysis(), self.execution())
+    def test_primary_mechanics_pass_ignores_only_secondary_and_sign_diagnostic(self):
+        result = self.module._confirmation_decision_mechanics(self.analysis(), self.execution())
         self.assertEqual(result, {"reasons": [], "status": "confirmation_passed"})
+
+    def test_production_decision_is_blocked_by_uninformative_constant_context_endpoint(self):
+        result = self.module.confirmation_decision(self.analysis(), self.execution())
+        self.assertEqual(result, {
+            "reasons": ["context_endpoint_uninformative_constant"],
+            "status": "blocked",
+        })
 
     def test_context_and_competition_proxy_are_conjunctive_gates(self):
         analysis = self.analysis()
         analysis["seed_mean"]["context"] = rational.to_wire(rational.Fraction(19, 20))
-        result = self.module.confirmation_decision(analysis, self.execution())
+        result = self.module._confirmation_decision_mechanics(analysis, self.execution())
         self.assertEqual(result["status"], "confirmation_failed")
         self.assertIn("context_below_base", result["reasons"])
 
         analysis = self.analysis()
         analysis["seed_mean"]["q"] = analysis["base"]["q"]
-        result = self.module.confirmation_decision(analysis, self.execution())
+        result = self.module._confirmation_decision_mechanics(analysis, self.execution())
         self.assertEqual(result["status"], "confirmation_failed")
         self.assertIn("competition_proxy_not_improved", result["reasons"])
 
@@ -613,12 +630,12 @@ class HeldoutConfirmationDecisionTests(unittest.TestCase):
         for key, value, reason in changes:
             analysis = self.analysis()
             analysis[key] = value
-            result = self.module.confirmation_decision(analysis, self.execution())
+            result = self.module._confirmation_decision_mechanics(analysis, self.execution())
             self.assertEqual(result["status"], "confirmation_failed")
             self.assertIn(reason, result["reasons"])
         analysis = self.analysis()
         analysis["seed_deltas"]["seed-20261026"] = rational.to_wire(0)
-        result = self.module.confirmation_decision(analysis, self.execution())
+        result = self.module._confirmation_decision_mechanics(analysis, self.execution())
         self.assertIn("nonpositive_seed_delta:seed-20261026", result["reasons"])
 
     def test_execution_failures_cannot_be_rescued(self):
@@ -630,7 +647,7 @@ class HeldoutConfirmationDecisionTests(unittest.TestCase):
         for mutate, reason in mutations:
             execution = self.execution()
             mutate(execution)
-            result = self.module.confirmation_decision(self.analysis(), execution)
+            result = self.module._confirmation_decision_mechanics(self.analysis(), execution)
             self.assertEqual(result["status"], "confirmation_failed")
             self.assertIn(reason, result["reasons"])
 
@@ -638,11 +655,11 @@ class HeldoutConfirmationDecisionTests(unittest.TestCase):
         analysis = self.analysis()
         analysis["patient_count"] = 59
         self.assertEqual(
-            self.module.confirmation_decision(analysis, self.execution())["status"], "underpowered"
+            self.module._confirmation_decision_mechanics(analysis, self.execution())["status"], "underpowered"
         )
         execution = self.execution()
         execution["source_id"] = "bus-uclm"
-        result = self.module.confirmation_decision(self.analysis(), execution)
+        result = self.module._confirmation_decision_mechanics(self.analysis(), execution)
         self.assertEqual(result, {"reasons": ["source_identity_or_role"], "status": "blocked"})
 
 
@@ -691,7 +708,7 @@ class HeldoutConfirmationReadinessTests(unittest.TestCase):
 
     def test_complete_digest_references_remain_blocked_without_authority_validation(self):
         self.assertEqual(self.module.readiness_status(self.manifest()), {
-            "missing": "candidate-freeze-authority", "status": "blocked",
+            "missing": "context-endpoint-authority", "status": "blocked",
         })
 
     def test_drift_attempts_and_qa_order_reject(self):

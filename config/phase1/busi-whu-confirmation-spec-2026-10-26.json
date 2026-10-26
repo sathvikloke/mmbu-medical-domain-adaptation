@@ -32,6 +32,16 @@
   ],
   "prompts": {
     "context": "Return one raw JSON object with exactly these keys in this order: body_part, medical_domain, modality. Use lowercase strings and no other text.",
+    "context_endpoint": {
+      "promotion_authority": "none",
+      "replacement_requirements": [
+        "image-dependent-target",
+        "per-record-targets",
+        "at-least-two-distinct-target-vectors",
+        "independent-review-authority"
+      ],
+      "status": "blocked_uninformative_constant"
+    },
     "context_target": {
       "body_part": "breast",
       "medical_domain": "breast imaging",

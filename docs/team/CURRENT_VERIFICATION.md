@@ -11,7 +11,7 @@ cryptographically binds the exact completed-review report plus a purpose binding
 training authority, fewer than 60 independent patients,
 cross-patient duplicate constraints, MMBU content use, and post-lock mutation.
 
-Fresh verification after the independent audit repair passed **634 Phase 1 CPU tests** with two expected skips,
+Fresh verification after the independent audit repair passed **635 Phase 1 CPU tests** with two expected skips,
 maintained Markdown-link verification, Python compilation of `src`, `tools`, and `tests`, working-tree
 `git diff --check`. Historical branch-range whitespace findings remain outside this bounded repair. The audit-triggered
 tests cover exact authority-bound review
@@ -32,7 +32,7 @@ forms, no source has been admitted, and no confirmation/model output has run.
 |---|---|---|
 | Historical preparation suite | **277 tests passed; 44 optional-Pillow image tests skipped** | Re-executes the preserved CPU package without Pillow; it does not replace the image-enabled CI lane or test a model |
 | Root repository/tool suite | **75 tests passed; 13 optional-Pillow image tests skipped** | Covers repository, publication, scope, receipt, and authorization tooling; it is not scientific evidence |
-| Current Phase 1 suite | **634 tests passed; two expected optional-dependency tests skipped** | Covers current fail-closed contracts, manifests, registries, evidence chains, geometry, bundles, synthetic orchestration, external-trust primitives, and evidence-documentation boundaries; native model execution is evidenced separately below |
+| Current Phase 1 suite | **635 tests passed; two expected optional-dependency tests skipped** | Covers current fail-closed contracts, manifests, registries, evidence chains, geometry, bundles, synthetic orchestration, external-trust primitives, and evidence-documentation boundaries; native model execution is evidenced separately below |
 | Offline smoke workflow | **passed** | Replays historical synthetic demonstrations and toy arithmetic only; it reports `model_executed=false` and `official_evaluation=false` |
 | Maintained local Markdown links and anchors | **passed** | External URLs were not fetched by this check |
 | Published v0.3 artifact verification | **passed** for 275 files, ZIP members, fixed transforms, and historical receipts | Establishes byte integrity only, not scientific validity or medical truth |
@@ -87,7 +87,11 @@ authority; the manifest is an inventory and drift detector only, not a checkout-
 The active BUSI-WHU confirmation specification now carries no model or track selection: candidate identity, revision,
 parameter count, runtime gate, and track are null, with `selection_authority=none`. The preserved provisional Qwen
 lineage remains mechanics-only and the production lineage boundary rejects it until an independently justified
-candidate-freeze authority exists.
+candidate-freeze authority exists. The specification also marks its source-wide body-part/domain/modality context
+target `blocked_uninformative_constant`: because that target can be produced without inspecting an image, the public
+confirmation decision now always blocks, while the preserved arithmetic remains available only for synthetic
+mechanics tests. A future image-dependent, per-record, nonconstant endpoint needs independent review authority before
+it can support promotion.
 
 The historical offline smoke package retains its older Einstein-only status text. That output is a preserved
 historical artifact, not the current project status.

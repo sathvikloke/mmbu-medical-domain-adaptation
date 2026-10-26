@@ -15,7 +15,7 @@ The preserved mechanics provide:
   resampling rule, decision margin, and one-attempt policy without naming an executable candidate;
 - a preserved provisional-lineage mechanics validator, while the public checkpoint-lineage boundary rejects every
   candidate until an independently justified successor freeze exists;
-- exact patient-balanced task, context, `Q`, class, bootstrap, and sign-randomization calculations using reduced rational arithmetic;
+- exact patient-balanced task, context, `Q`, class, bootstrap, and sign-randomization calculations using reduced rational arithmetic, retained as mechanics-only tests;
 - a non-rescuable primary decision requiring every seed delta, the family point estimate, and the one-sided lower bound to clear the frozen rule;
 - a reference checker that reports the first missing gate in a fixed order, but intentionally stays blocked even when every field contains a digest because digest syntax is not proof that a real validated record exists;
 - 60-patient positive, underpowered, and exact-threshold synthetic fixtures that are permanently barred from promotion and readiness claims.
@@ -42,14 +42,17 @@ No real confirmation run is authorized or ready. These records still need to exi
    split manifests and record-level lineage. The actual portfolio remains undecided and blocked.
 2. An independently justified and frozen candidate identity, revision, parameter count, track, and runtime gate. The
    remote-only response screen has zero authority to fill these fields.
-3. Three new checkpoints trained after source admission. The October 25 exploratory adapters cannot be reused.
-4. BUSI-WHU v3 acquisition authorization and immutable archive checksums.
-5. Rights review for acquisition, confirmation use, challenge use, disclosure, and trained-weight release.
-6. Protected inventory and the complete image-to-patient and image-to-label joins.
-7. An eligible-population manifest with at least 60 independent patients. Fewer patients produce an `underpowered` exploratory outcome, not a replacement-source search.
-8. A QA plan derived only after inventory closes, followed by a separate QA lock and opening.
-9. Exact and perceptual cross-source duplicate review.
-10. Confirmation-purpose authorization, population lock, hermetic decision receipt, resampling artifacts, execution lock, and opening receipt.
+3. A replacement context endpoint that is image-dependent, has per-record targets with at least two distinct target
+   vectors, and is frozen by independent review authority. The current BUSI-WHU-wide body-part/domain/modality target
+   is constant, can be answered without viewing an image, and therefore has no promotion authority.
+4. Three new checkpoints trained after source admission. The October 25 exploratory adapters cannot be reused.
+5. BUSI-WHU v3 acquisition authorization and immutable archive checksums.
+6. Rights review for acquisition, confirmation use, challenge use, disclosure, and trained-weight release.
+7. Protected inventory and the complete image-to-patient and image-to-label joins.
+8. An eligible-population manifest with at least 60 independent patients. Fewer patients produce an `underpowered` exploratory outcome, not a replacement-source search.
+9. A QA plan derived only after inventory closes, followed by a separate QA lock and opening.
+10. Exact and perceptual cross-source duplicate review.
+11. Confirmation-purpose authorization, population lock, hermetic decision receipt, resampling artifacts, execution lock, and opening receipt.
 
 Any missing item keeps the package blocked. Synthetic values or prose cannot substitute for a record.
 
@@ -57,9 +60,11 @@ Any missing item keeps the package blocked. Synthetic values or prose cannot sub
 
 This work improves the honesty and reproducibility of a future experiment. It does not raise the project's measured
 novelty, competition readiness, or biomedical performance score. No model or track is currently selected for
-confirmation. A future candidate must be justified by independently admissible evidence and frozen before any
-confirmation lineage can become executable.
+confirmation. The public decision boundary is also blocked by the uninformative constant context endpoint; the old
+arithmetic remains reachable only through synthetic mechanics checks and cannot emit a production confirmation pass.
+A future candidate and replacement context endpoint must each be justified by independently admissible evidence and
+frozen before any confirmation lineage can become executable.
 
-The next larger action needs a separate user decision: complete real source admission and a candidate-freeze decision
-that does not rely on the remote-only response screen. No data acquisition, model loading, HPC work, or training
-follows automatically from this package.
+The next larger action needs separate independent evidence: complete real source admission, freeze a scientifically
+informative context endpoint, and make a candidate-freeze decision that does not rely on the remote-only response
+screen. No data acquisition, model loading, HPC work, or training follows automatically from this package.

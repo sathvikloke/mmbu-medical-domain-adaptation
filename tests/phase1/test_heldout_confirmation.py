@@ -12,7 +12,7 @@ import sys
 import tempfile
 import unittest
 
-from mmbu_phase1 import canonical, rational
+from mmbu_phase1 import admission, canonical, rational
 from mmbu_phase1.store import RecordStore
 from mmbu_phase1.scope import REQUIRED_PHASE1_TEST_MODULES
 from mmbu_phase1.fields import ContractViolation
@@ -313,9 +313,17 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
             admission_store = RecordStore([*records, *evidence_records])
         return admission_store, source_digest, world.digest("confirmation_authorization"), world
 
-    def confirmation_external(self, report, source_digest, purpose_digest):
+    def source_external(self, store, source_digest):
+        subject = admission.source_admission_authority_subject(store, source_digest)
+        return external_authority_for(
+            subject, namespace="mmbu.phase1.source-admission.v1",
+            principal="external-source-board", role="source-admission-authority",
+            signed_at=t("09:42:00"), verified_at=t("09:43:00"),
+        )
+
+    def confirmation_external(self, report, source_digest, purpose_digest, source_external):
         subject = self.module.confirmation_authority_subject(
-            report, source_digest, purpose_digest,
+            report, source_digest, purpose_digest, source_external,
         )
         return external_authority_for(
             subject, namespace="mmbu.phase1.busi-whu-confirmation.v1",
@@ -326,9 +334,13 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
     def test_authenticated_review_builds_existing_population_inputs(self):
         report, evidence_records, external = self.authenticated_report()
         store, source_digest, purpose_digest, _ = self.admission(report, evidence_records)
-        confirmation_external = self.confirmation_external(report, source_digest, purpose_digest)
+        source_external = self.source_external(store, source_digest)
+        confirmation_external = self.confirmation_external(
+            report, source_digest, purpose_digest, source_external,
+        )
         manifest = self.module.build_confirmation_source_manifest(
             report, store, source_digest, purpose_digest, external_authority=external,
+            source_external_authority=source_external,
             confirmation_external_authority=confirmation_external,
         )
         self.assertEqual(manifest["patient_count"], 60)
@@ -336,6 +348,7 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
         artifacts = self.module.build_authenticated_randomization_artifacts(
             report, manifest, store, source_digest, purpose_digest,
             created_at="2026-10-25T12:00:00Z", external_authority=external,
+            source_external_authority=source_external,
             confirmation_external_authority=confirmation_external,
         )
         self.assertEqual(artifacts["population_binding"]["source_manifest_digest"], manifest["record_digest"])
@@ -350,15 +363,25 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
                 report, store, source_digest, purpose_digest,
                 external_authority=review_external,
             )
-        wrong = self.confirmation_external(report, source_digest, "f" * 64)
+        source_external = self.source_external(store, source_digest)
         with self.assertRaises(ContractViolation):
             self.module.build_confirmation_source_manifest(
                 report, store, source_digest, purpose_digest,
                 external_authority=review_external,
+                confirmation_external_authority=object(),
+            )
+        wrong = self.confirmation_external(
+            report, source_digest, "f" * 64, source_external,
+        )
+        with self.assertRaises(ContractViolation):
+            self.module.build_confirmation_source_manifest(
+                report, store, source_digest, purpose_digest,
+                external_authority=review_external,
+                source_external_authority=source_external,
                 confirmation_external_authority=wrong,
             )
         subject = self.module.confirmation_authority_subject(
-            report, source_digest, purpose_digest,
+            report, source_digest, purpose_digest, source_external,
         )
         same_principal = external_authority_for(
             subject, namespace="mmbu.phase1.busi-whu-confirmation.v1",
@@ -369,6 +392,7 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
             self.module.build_confirmation_source_manifest(
                 report, store, source_digest, purpose_digest,
                 external_authority=review_external,
+                source_external_authority=source_external,
                 confirmation_external_authority=same_principal,
             )
 
@@ -432,9 +456,13 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
     def test_post_lock_manifest_mutation_rejects(self):
         report, evidence_records, external = self.authenticated_report()
         store, source_digest, purpose_digest, _ = self.admission(report, evidence_records)
-        confirmation_external = self.confirmation_external(report, source_digest, purpose_digest)
+        source_external = self.source_external(store, source_digest)
+        confirmation_external = self.confirmation_external(
+            report, source_digest, purpose_digest, source_external,
+        )
         manifest = self.module.build_confirmation_source_manifest(
             report, store, source_digest, purpose_digest, external_authority=external,
+            source_external_authority=source_external,
             confirmation_external_authority=confirmation_external,
         )
         manifest["patient_to_records"][manifest["patient_ids"][0]].append("injected")
@@ -442,10 +470,12 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
             self.module.validate_confirmation_source_manifest(
                 manifest, report, store, source_digest, purpose_digest,
                 external_authority=external,
+                source_external_authority=source_external,
                 confirmation_external_authority=confirmation_external,
             )
         manifest = self.module.build_confirmation_source_manifest(
             report, store, source_digest, purpose_digest, external_authority=external,
+            source_external_authority=source_external,
             confirmation_external_authority=confirmation_external,
         )
         record_id = manifest["record_ids"][0]
@@ -456,6 +486,7 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
             self.module.validate_confirmation_source_manifest(
                 manifest, report, store, source_digest, purpose_digest,
                 external_authority=external,
+                source_external_authority=source_external,
                 confirmation_external_authority=confirmation_external,
             )
 

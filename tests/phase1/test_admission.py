@@ -5,6 +5,7 @@ import unittest
 
 from mmbu_phase1 import admission, canonical, registries
 from mmbu_phase1.fields import ContractViolation
+from tests.phase1.external_trust_fixtures import external_authority_for
 
 import admission_fixtures as fx
 from admission_fixtures import AdmissionWorld, d, t
@@ -42,6 +43,34 @@ class CompleteChainTests(AdmissionTestCase):
                                       admission.ts(t("09:00:00"), "at"), "x")
         admission.require_active_leaf(store, registry, world.digest("engineering_authorization"), "authorization",
                                       admission.ts(t("09:00:00"), "at"), "x")
+
+    def test_real_source_admission_requires_exact_external_authority(self):
+        world = AdmissionWorld()
+        store = world.store()
+        source_digest = world.digest("source_approved")
+        subject = admission.source_admission_authority_subject(store, source_digest)
+        authority = external_authority_for(
+            subject, namespace="mmbu.phase1.source-admission.v1",
+            principal="external-source-board", role="source-admission-authority",
+            signed_at=t("08:45:00"), verified_at=t("08:46:00"),
+        )
+        source = admission.check_externally_authorized_source(
+            store, source_digest, authority, not_after=t("09:00:00"),
+        )
+        self.assertEqual(source["record_digest"], source_digest)
+        with self.assertRaises(ContractViolation):
+            admission.check_externally_authorized_source(store, source_digest, None)
+        other = AdmissionWorld(source_id="different-source")
+        wrong = external_authority_for(
+            admission.source_admission_authority_subject(
+                other.store(), other.digest("source_approved"),
+            ),
+            namespace="mmbu.phase1.source-admission.v1",
+            principal="external-source-board", role="source-admission-authority",
+            signed_at=t("08:45:00"), verified_at=t("08:46:00"),
+        )
+        with self.assertRaises(ContractViolation):
+            admission.check_externally_authorized_source(store, source_digest, wrong)
 
     def test_every_admission_record_is_closed(self):
         world = AdmissionWorld()

@@ -11,7 +11,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from mmbu_phase1 import canonical, heldout_confirmation
+from mmbu_phase1 import admission, canonical, heldout_confirmation
 from mmbu_phase1.busi_whu_review_validation import resolve_completed_review_authority_subject
 from mmbu_phase1.external_trust import verify_external_authority
 from mmbu_phase1.fields import ContractViolation
@@ -89,6 +89,7 @@ def main(argv: list[str] | None = None) -> int:
     real_artifacts.add_argument("--confirmation-purpose-digest", required=True)
     real_artifacts.add_argument("--created-at", required=True)
     _add_external_arguments(real_artifacts)
+    _add_external_arguments(real_artifacts, "source-external")
     _add_external_arguments(real_artifacts, "confirmation-external")
     synthetic_artifacts = commands.add_parser("build-synthetic-artifacts")
     synthetic_artifacts.add_argument("--fixture", type=Path, required=True)
@@ -111,10 +112,20 @@ def main(argv: list[str] | None = None) -> int:
             external = _external_authority(
                 args, resolve_completed_review_authority_subject(report, store),
             )
+            source_external = _external_authority(
+                args,
+                admission.source_admission_authority_subject(
+                    store, args.source_admission_digest,
+                ),
+                prefix="source_external",
+                namespace="mmbu.phase1.source-admission.v1",
+                role="source-admission-authority",
+            )
             confirmation_external = _external_authority(
                 args,
                 heldout_confirmation.confirmation_authority_subject(
                     report, args.source_admission_digest, args.confirmation_purpose_digest,
+                    source_external,
                 ),
                 prefix="confirmation_external",
                 namespace="mmbu.phase1.busi-whu-confirmation.v1",
@@ -124,6 +135,7 @@ def main(argv: list[str] | None = None) -> int:
                 report, _load_canonical(args.source_manifest), store,
                 args.source_admission_digest, args.confirmation_purpose_digest,
                 args.created_at, external_authority=external,
+                source_external_authority=source_external,
                 confirmation_external_authority=confirmation_external,
             )
             _emit(result)

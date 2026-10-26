@@ -1,13 +1,13 @@
 # External trust-root requirement
 
-**Current state:** protected BUSI-WHU opening/review plus Stage A acquisition/structural opening bound; remaining boundaries and external material blocked
+**Current state:** every named production boundary is executable and fail-closed; real external material remains absent
 
 This contract defines the missing authority boundary for Stage A and BUSI-WHU. It does not supply a signer, public key,
 signature, approval, or identity; repository records are not a trust anchor. An actor who can manufacture a credential,
 registry, authorization, or attestation can also manufacture its content digest. Hash chaining establishes internal byte
 integrity only.
 
-## Executable primitive and remaining boundary
+## Executable primitive and bound boundaries
 
 `mmbu_phase1.external_trust.verify_external_authority` now implements the cryptographic core without a repository
 default: exact canonical policy and revocation records, independently supplied SHA-256 pins for policy/key/revocation
@@ -38,8 +38,12 @@ that report. The confirmation bridge also requires a separate externally verifie
 over the exact authenticated report, source admission, purpose authorization, source identity, task, target map,
 global task manifest, frozen confirmation specification, prompt specification, and no-public-content boundary. Its
 stable evidence binding enters the sealed source manifest, and its verification must precede real artifact creation.
-Source admission is not yet bound to an equivalent external capability. No real policy, key, pin, signature, time
-authority, or revocation feed has been supplied. Therefore the executable gates are presently unsatisfied,
+Source admission now separately requires an externally verified `source-admission-authority` signature over the exact
+approved source record, artifact/rights/grouping/QA evidence, admission decision receipt/plan/payload, approval
+attestation, permitted purposes, reviewer, and review cutoff. The confirmation bridge revalidates that capability,
+requires a principal distinct from the review and confirmation authorities, binds its stable evidence into both the
+confirmation-authority subject and source manifest, and requires verification before real artifact creation.
+No real policy, key, pin, signature, time authority, or revocation feed has been supplied. Therefore the executable gates are presently unsatisfied,
 repository records still grant no external authority, and
 no protected opening or decision-bearing action is enabled by this implementation alone.
 
@@ -109,8 +113,8 @@ revocation state must fail before payload access and consume no authority.
 
 ## Promotion boundary
 
-Until real external keys, roles, policies, signatures, timestamps, and revocation evidence are independently provided,
-and equivalent verified capabilities are bound and reverified at every remaining production decision boundary, the
+Until real external keys, roles, policies, signatures, timestamps, and revocation evidence are independently provided
+and their capabilities pass every bound production decision boundary, the
 historical Stage A and BUSI-WHU identity claims remain non-authoritative repository evidence. The protected BUSI-WHU
 opening/completed-review and Stage A acquisition/structural-opening implementations now fail before their governed
 action without their external capabilities,

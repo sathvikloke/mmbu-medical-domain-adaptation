@@ -154,7 +154,21 @@ class ConfirmationCliTests(unittest.TestCase):
             "--confirmation-external-verifier", str(self.records),
             "--confirmation-external-verifier-pin", "8" * 64,
         ]
-        return [*review, *confirmation]
+        source = [
+            "--source-external-policy", str(self.records),
+            "--source-external-policy-pin", "9" * 64,
+            "--source-external-public-key", str(self.records),
+            "--source-external-public-key-pin", "a" * 64,
+            "--source-external-revocation", str(self.records),
+            "--source-external-revocation-pin", "b" * 64,
+            "--source-external-signature", str(self.records),
+            "--source-external-principal", "external-source-board",
+            "--source-external-signed-at", "2026-10-26T07:23:00Z",
+            "--source-external-verified-at", "2026-10-26T07:24:00Z",
+            "--source-external-verifier", str(self.records),
+            "--source-external-verifier-pin", "c" * 64,
+        ]
+        return [*review, *source, *confirmation]
 
     def test_real_route_has_no_arbitrary_patient_map_or_synthetic_fixture(self):
         base = [
@@ -182,10 +196,14 @@ class ConfirmationCliTests(unittest.TestCase):
                 with mock.patch.object(
                     self.module, "resolve_completed_review_authority_subject", return_value={"subject": True}
                 ), mock.patch.object(
+                    self.module.admission, "source_admission_authority_subject",
+                    return_value={"source": True},
+                ), mock.patch.object(
                     self.module.heldout_confirmation, "confirmation_authority_subject",
                     return_value={"confirmation": True},
                 ), mock.patch.object(
-                    self.module, "verify_external_authority", side_effect=[object(), object()],
+                    self.module, "verify_external_authority",
+                    side_effect=[object(), object(), object()],
                 ) as verify, \
                         mock.patch.object(self.module.sys, "stdout", OutputSink()):
                     self.assertEqual(self.module.main([
@@ -202,12 +220,17 @@ class ConfirmationCliTests(unittest.TestCase):
                     ]), 0)
         self.assertEqual(real.call_count, 1)
         self.assertEqual(synthetic.call_count, 1)
-        self.assertEqual(verify.call_count, 2)
+        self.assertEqual(verify.call_count, 3)
         self.assertEqual(
             verify.call_args_list[1].kwargs["namespace"],
+            "mmbu.phase1.source-admission.v1",
+        )
+        self.assertEqual(verify.call_args_list[1].kwargs["role"], "source-admission-authority")
+        self.assertEqual(
+            verify.call_args_list[2].kwargs["namespace"],
             "mmbu.phase1.busi-whu-confirmation.v1",
         )
-        self.assertEqual(verify.call_args_list[1].kwargs["role"], "confirmation-authority")
+        self.assertEqual(verify.call_args_list[2].kwargs["role"], "confirmation-authority")
 
     def test_synthetic_route_requires_explicit_fixture_and_rejects_real_inputs(self):
         with self.assertRaises(SystemExit):

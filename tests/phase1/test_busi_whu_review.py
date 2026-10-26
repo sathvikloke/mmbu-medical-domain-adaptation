@@ -17,7 +17,9 @@ from xml.sax.saxutils import escape
 import zipfile
 
 from mmbu_phase1 import canonical
-from mmbu_phase1.busi_whu_authority import validate_busi_whu_review_opening
+from mmbu_phase1.busi_whu_authority import (
+    bind_external_review_opening, validate_busi_whu_review_opening,
+)
 from mmbu_phase1.busi_whu_review import build_review_packet, build_review_selection
 from mmbu_phase1.busi_whu_review_validation import (
     authenticate_completed_review, validate_completed_review, validate_source_assessments,
@@ -25,6 +27,7 @@ from mmbu_phase1.busi_whu_review_validation import (
 from mmbu_phase1.store import RecordStore
 from mmbu_phase1.source_admission_stage_a import BUSI_WHU_HEADERS
 from tests.phase1.test_busi_whu_authority import ReviewAuthorityWorld, t
+from tests.phase1.external_trust_fixtures import external_authority_for
 
 
 def _workbook_values(row: dict) -> list[str]:
@@ -223,6 +226,16 @@ def authorized_review_packet(
         world.store(), world.authorization["record_digest"],
         world.world.digest("review_opening"), t("09:10:02"),
     )
+    capability = bind_external_review_opening(
+        capability,
+        external_authority_for(
+            world.authorization,
+            namespace="mmbu.phase1.busi-whu-opening.v1",
+            principal="team-rights-authority", role="data-rights-authority",
+            signed_at=t("09:04:30"), verified_at=t("09:04:31"),
+        ),
+        world.authorization,
+    )
     receipt = build_review_packet(capability, inventory, selection, fingerprint_closure)
     return (receipt, world) if return_world else receipt
 
@@ -323,6 +336,16 @@ class BusiWhuReviewPacketTests(unittest.TestCase):
             capability = validate_busi_whu_review_opening(
                 world.store(), world.authorization["record_digest"],
                 world.world.digest("review_opening"), t("09:10:02"),
+            )
+            capability = bind_external_review_opening(
+                capability,
+                external_authority_for(
+                    world.authorization,
+                    namespace="mmbu.phase1.busi-whu-opening.v1",
+                    principal="synthetic-rights-authority", role="data-rights-authority",
+                    signed_at=t("09:04:30"), verified_at=t("09:04:31"),
+                ),
+                world.authorization,
             )
             closure = {
                 "eligible_sources": [{"source_id": "bus-bra", "source_version": "1"}],
@@ -427,6 +450,16 @@ class BusiWhuReviewPacketTests(unittest.TestCase):
             capability = validate_busi_whu_review_opening(
                 world.store(), world.authorization["record_digest"],
                 world.world.digest("review_opening"), t("09:10:02"),
+            )
+            capability = bind_external_review_opening(
+                capability,
+                external_authority_for(
+                    world.authorization,
+                    namespace="mmbu.phase1.busi-whu-opening.v1",
+                    principal="synthetic-rights-authority", role="data-rights-authority",
+                    signed_at=t("09:04:30"), verified_at=t("09:04:31"),
+                ),
+                world.authorization,
             )
             real_fsync = os.fsync
             synced_modes = []

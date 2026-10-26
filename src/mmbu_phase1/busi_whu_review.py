@@ -471,6 +471,8 @@ def build_review_packet(
         raise ValueError("fingerprint inventory closure differs from the opening authorization")
     if type(capability) is not ReviewOpeningCapability:
         raise ValueError("a validated BUSI-WHU review-opening capability is required")
+    if capability.external_authority_evidence_digest is None:
+        raise ValueError("independently verified external opening authority is required")
     output = Path(capability.output_root)
     if output.exists():
         raise FileExistsError(str(output))

@@ -102,6 +102,7 @@ class ExternalTrustTests(unittest.TestCase):
         self.assertEqual(capability.subject_digest, canonical.value_digest(self.subject))
         self.assertEqual(capability.principal, self.principal)
         self.assertEqual(capability.role, self.role)
+        self.assertEqual(capability.signed_at, "2026-10-26T13:30:00Z")
         self.assertTrue(capability.verifier_version.startswith("OpenSSL "))
 
     def test_self_created_replacement_replay_and_revocation_fail_closed(self):

@@ -1,6 +1,6 @@
 # External trust-root requirement
 
-**Current state:** executable primitive implemented; production binding and external material remain blocked
+**Current state:** protected BUSI-WHU opening bound; remaining production boundaries and external material blocked
 
 This contract defines the missing authority boundary for Stage A and BUSI-WHU. It does not supply a signer, public key,
 signature, approval, or identity; repository records are not a trust anchor. An actor who can manufacture a credential,
@@ -15,10 +15,17 @@ and verifier bytes, Ed25519 detached-signature verification through that pinned 
 signing-time binding, active-revocation checks, verifier stability revalidation, and a private immutable capability.
 Negative tests reject key replacement, namespace replay, and revoked keys.
 
-This primitive is not yet wired into Stage A, BUSI-WHU opening/review, source admission, or confirmation. No real
-policy, key, pin, signature, time authority, or revocation feed has been supplied. Therefore existing repository
-records still grant no external authority, and no protected opening or decision-bearing action is enabled by this
-implementation alone.
+The protected BUSI-WHU artifact-opening boundary now requires a successfully verified external capability over the
+exact sealed opening authorization. The production review CLI requires every external policy, key, revocation,
+signature, namespace, principal, role, timestamp, verifier, and out-of-band pin input; the protected descriptor layer
+rejects the internally consistent repository capability when that external binding is absent. The signature must be
+created before the internal authorization, verified before descriptor access, and cannot be replayed across
+namespaces, roles, or subjects.
+
+Stage A, completed-review authentication, source admission, and confirmation are not yet bound to equivalent external
+capabilities. No real policy, key, pin, signature, time authority, or revocation feed has been supplied. Therefore the
+new BUSI-WHU gate is executable but presently unsatisfied, repository records still grant no external authority, and
+no protected opening or decision-bearing action is enabled by this implementation alone.
 
 ## Required external inputs
 
@@ -86,8 +93,9 @@ revocation state must fail before payload access and consume no authority.
 
 ## Promotion boundary
 
-Until real external keys, roles, policies, signatures, timestamps, and revocation evidence are independently provided
-and the verified capability is bound and reverified at every production decision boundary, all existing Stage A and
-BUSI-WHU identity claims remain self-authenticated repository evidence. They may support engineering traceability but
-cannot grant biomedical payload opening, source admission, model use, training, checkpoint promotion, release, upload,
-or submission authority.
+Until real external keys, roles, policies, signatures, timestamps, and revocation evidence are independently provided,
+and equivalent verified capabilities are bound and reverified at every remaining production decision boundary, all
+existing Stage A and BUSI-WHU identity claims remain self-authenticated repository evidence. The protected BUSI-WHU
+opening implementation now fails before descriptor access without the external capability, but no real capability
+exists. Existing records may support engineering traceability but cannot grant biomedical payload opening, source
+admission, model use, training, checkpoint promotion, release, upload, or submission authority.

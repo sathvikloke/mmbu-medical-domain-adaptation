@@ -50,14 +50,15 @@ class ExternalAuthorityCapability:
     __slots__ = (
         "namespace", "principal", "role", "subject_digest", "policy_sha256",
         "public_key_sha256", "revocation_sha256", "signature_sha256",
-        "verifier_sha256", "verifier_version", "verified_at", "verification_evidence_digest",
+        "signed_at", "verifier_sha256", "verifier_version", "verified_at",
+        "verification_evidence_digest",
     )
 
     def __init__(
         self, token: object, *, namespace: str, principal: str, role: str,
         subject_digest: str, policy_sha256: str, public_key_sha256: str,
         revocation_sha256: str, signature_sha256: str, verifier_sha256: str,
-        verifier_version: str, verified_at: str,
+        verifier_version: str, signed_at: str, verified_at: str,
     ) -> None:
         if token is not _CAPABILITY_TOKEN:
             raise TypeError("ExternalAuthorityCapability has no public constructor")
@@ -72,6 +73,7 @@ class ExternalAuthorityCapability:
             "revocation_sha256": revocation_sha256,
             "role": role,
             "signature_sha256": signature_sha256,
+            "signed_at": signed_at,
             "subject_digest": subject_digest,
             "verified_at": verified_at,
             "verifier_sha256": verifier_sha256,
@@ -228,6 +230,7 @@ def verify_external_authority(
         public_key_sha256=public_key_pin_sha256,
         revocation_sha256=revocation_pin_sha256,
         signature_sha256=_sha256(signature_bytes),
+        signed_at=signed_at,
         verifier_sha256=verifier_pin_sha256,
         verifier_version=verifier_version,
         verified_at=verified_at,

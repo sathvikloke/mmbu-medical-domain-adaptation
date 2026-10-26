@@ -48,6 +48,11 @@ class ReviewCliTests(unittest.TestCase):
         self.inventory = write(self.root / "inventory.json", {"inventory": True})
         self.selection = write(self.root / "selection.json", {"selection": True})
         self.fingerprints = write(self.root / "fingerprints.json", {"inventories": []})
+        self.policy = self.root / "policy.json"; self.policy.write_bytes(b"policy")
+        self.public_key = self.root / "public.pem"; self.public_key.write_bytes(b"key")
+        self.revocation = self.root / "revocation.json"; self.revocation.write_bytes(b"revocation")
+        self.signature = self.root / "signature.bin"; self.signature.write_bytes(b"signature")
+        self.verifier = self.root / "verifier"; self.verifier.write_bytes(b"verifier")
 
     def tearDown(self):
         self.temp.cleanup()
@@ -61,6 +66,14 @@ class ReviewCliTests(unittest.TestCase):
             "--metadata-inventory", str(self.inventory),
             "--selection", str(self.selection),
             "--source-fingerprint-inventories", str(self.fingerprints),
+            "--external-policy", str(self.policy), "--external-policy-pin", "c" * 64,
+            "--external-public-key", str(self.public_key), "--external-public-key-pin", "d" * 64,
+            "--external-revocation", str(self.revocation), "--external-revocation-pin", "e" * 64,
+            "--external-signature", str(self.signature),
+            "--external-namespace", "mmbu.phase1.busi-whu-opening.v1",
+            "--external-principal", "rights-authority", "--external-role", "data-rights-authority",
+            "--external-signed-at", "2026-10-26T07:29:00Z",
+            "--external-verifier", str(self.verifier), "--external-verifier-pin", "f" * 64,
         ]
 
     def test_missing_authority_and_raw_path_bypass_reject_at_parser(self):
@@ -75,20 +88,33 @@ class ReviewCliTests(unittest.TestCase):
             self.module.main([*self.argv(), "--archive", str(self.root / "payload.zip")])
 
     def test_real_review_passes_only_validated_capability_and_consumes_one_attempt(self):
+        mechanics = object()
+        external = object()
         capability = object()
+        authorization = {"record_digest": "a" * 64}
+        store = mock.Mock()
+        store.get.return_value = authorization
         receipt = {"status": "built"}
-        with mock.patch.object(self.module, "validate_busi_whu_review_opening", return_value=capability) as validate:
-            with mock.patch.object(self.module, "build_review_packet", side_effect=[receipt, FileExistsError("used")]) as build:
-                with mock.patch.object(self.module.sys, "stdout", OutputSink()):
-                    self.assertEqual(self.module.main(self.argv()), 0)
-                with mock.patch.object(self.module.sys, "stderr", OutputSink()):
-                    self.assertEqual(self.module.main(self.argv()), 2)
+        with mock.patch.object(self.module, "_load_records", return_value=store):
+            with mock.patch.object(self.module, "verify_external_authority", return_value=external) as verify:
+                with mock.patch.object(self.module, "validate_busi_whu_review_opening", return_value=mechanics) as validate:
+                    with mock.patch.object(self.module, "bind_external_review_opening", return_value=capability) as bind:
+                        with mock.patch.object(self.module, "build_review_packet", side_effect=[receipt, FileExistsError("used")]) as build:
+                            with mock.patch.object(self.module.sys, "stdout", OutputSink()):
+                                self.assertEqual(self.module.main(self.argv()), 0)
+                            with mock.patch.object(self.module.sys, "stderr", OutputSink()):
+                                self.assertEqual(self.module.main(self.argv()), 2)
         validate.assert_has_calls([
             mock.call(mock.ANY, "a" * 64, "b" * 64, "2026-10-26T07:30:00Z"),
             mock.call(mock.ANY, "a" * 64, "b" * 64, "2026-10-26T07:30:00Z"),
         ])
         self.assertIs(build.call_args_list[0].args[0], capability)
         self.assertEqual(build.call_count, 2)
+        self.assertEqual(verify.call_count, 2)
+        self.assertEqual(bind.call_count, 2)
+        self.assertIs(bind.call_args_list[0].args[0], mechanics)
+        self.assertIs(bind.call_args_list[0].args[1], external)
+        self.assertIs(bind.call_args_list[0].args[2], authorization)
 
 
 class ConfirmationCliTests(unittest.TestCase):

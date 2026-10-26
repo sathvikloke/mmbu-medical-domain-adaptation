@@ -205,6 +205,12 @@ def open_authorized_artifact(
     """Open, hash, and retain exactly one capability-bound regular file."""
     f.require(type(capability) is ReviewOpeningCapability, "protected_io.capability",
               "requires a validated BUSI-WHU review capability")
+    f.require(capability.external_authority_evidence_digest is not None,
+              "protected_io.capability", "requires independently verified external opening authority")
+    f.digest(capability.external_authority_evidence_digest,
+             "protected_io.capability.external_authority_evidence_digest")
+    f.text(capability.external_authority_principal,
+           "protected_io.capability.external_authority_principal")
     paths.relative_path(logical_path, "protected_io.logical_path")
     f.text(role, "protected_io.role")
     matches = [row for row in capability.artifact_bindings if row[0] == logical_path]

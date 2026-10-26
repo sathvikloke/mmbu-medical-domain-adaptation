@@ -8,6 +8,7 @@ from unittest import mock
 from mmbu_phase1.fields import ContractViolation
 from mmbu_phase1.protected_io import open_authorized_artifact
 from tests.phase1.test_busi_whu_authority import ReviewAuthorityWorld, t
+from tests.phase1.external_trust_fixtures import external_authority_for
 
 
 class ProtectedArtifactTests(unittest.TestCase):
@@ -30,14 +31,62 @@ class ProtectedArtifactTests(unittest.TestCase):
         }]
         world = ReviewAuthorityWorld(input_root=str(self.root), artifacts=artifacts)
         capability = world.store(), world
-        return (
-            __import__("mmbu_phase1.busi_whu_authority", fromlist=["validate_busi_whu_review_opening"])
-            .validate_busi_whu_review_opening(
-                capability[0], world.authorization["record_digest"],
-                world.world.digest("review_opening"), t("09:10:02"),
-            ),
-            path,
+        authority_module = __import__(
+            "mmbu_phase1.busi_whu_authority",
+            fromlist=["bind_external_review_opening", "validate_busi_whu_review_opening"],
         )
+        mechanics = authority_module.validate_busi_whu_review_opening(
+            capability[0], world.authorization["record_digest"],
+            world.world.digest("review_opening"), t("09:10:02"),
+        )
+        external = external_authority_for(
+            world.authorization,
+            namespace="mmbu.phase1.busi-whu-opening.v1",
+            principal="team-rights-authority", role="data-rights-authority",
+            signed_at=t("09:04:30"), verified_at=t("09:04:31"),
+        )
+        return authority_module.bind_external_review_opening(
+            mechanics, external, world.authorization,
+        ), path
+
+    def test_internally_consistent_opening_without_external_authority_rejects(self):
+        path = self.root / "busi-whu/archive.zip"
+        path.write_bytes(b"authorized artifact")
+        world = ReviewAuthorityWorld(input_root=str(self.root), artifacts=[{
+            "logical_path": "busi-whu/archive.zip", "bytes": path.stat().st_size,
+            "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        }])
+        from mmbu_phase1.busi_whu_authority import validate_busi_whu_review_opening
+        mechanics = validate_busi_whu_review_opening(
+            world.store(), world.authorization["record_digest"],
+            world.world.digest("review_opening"), t("09:10:02"),
+        )
+        with self.assertRaises(ContractViolation):
+            open_authorized_artifact(mechanics, "busi-whu/archive.zip", "archive")
+
+    def test_external_signature_created_after_internal_authorization_rejects(self):
+        path = self.root / "busi-whu/archive.zip"
+        path.write_bytes(b"authorized artifact")
+        world = ReviewAuthorityWorld(input_root=str(self.root), artifacts=[{
+            "logical_path": "busi-whu/archive.zip", "bytes": path.stat().st_size,
+            "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+        }])
+        authority_module = __import__(
+            "mmbu_phase1.busi_whu_authority",
+            fromlist=["bind_external_review_opening", "validate_busi_whu_review_opening"],
+        )
+        mechanics = authority_module.validate_busi_whu_review_opening(
+            world.store(), world.authorization["record_digest"],
+            world.world.digest("review_opening"), t("09:10:02"),
+        )
+        late = external_authority_for(
+            world.authorization,
+            namespace="mmbu.phase1.busi-whu-opening.v1",
+            principal="team-rights-authority", role="data-rights-authority",
+            signed_at=t("09:05:01"), verified_at=t("09:10:01"),
+        )
+        with self.assertRaises(ContractViolation):
+            authority_module.bind_external_review_opening(mechanics, late, world.authorization)
 
     def test_reads_and_hashes_the_retained_descriptor(self):
         capability, path = self.capability(payload=b"same descriptor bytes")

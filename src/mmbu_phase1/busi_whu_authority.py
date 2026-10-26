@@ -11,6 +11,8 @@ from dataclasses import dataclass
 from typing import Any
 
 from mmbu_phase1 import admission, fields as f, locks, registries
+from mmbu_phase1 import canonical
+from mmbu_phase1.external_trust import ExternalAuthorityCapability
 from mmbu_phase1.store import RecordStore
 
 
@@ -224,6 +226,8 @@ class ReviewOpeningCapability:
     artifact_bindings: tuple[tuple[str, str, int, str], ...]
     credential_verification_digests: tuple[str, ...]
     fingerprint_inventory_digests: tuple[str, ...]
+    external_authority_evidence_digest: str | None
+    external_authority_principal: str | None
 
     def __init__(self, token: object, **values: Any):
         if token is not _CAPABILITY_TOKEN:
@@ -347,12 +351,52 @@ def validate_busi_whu_review_opening(
         "fingerprint_inventory_digests": tuple(
             row["inventory_digest"] for row in authorization["fingerprint_inventories"]
         ),
+        "external_authority_evidence_digest": None,
+        "external_authority_principal": None,
     }
+    return ReviewOpeningCapability(_CAPABILITY_TOKEN, **values)
+
+
+def bind_external_review_opening(
+    capability: ReviewOpeningCapability,
+    external_authority: ExternalAuthorityCapability,
+    authorization: object,
+) -> ReviewOpeningCapability:
+    """Bind independently verified authority before any protected artifact access."""
+    f.require(type(capability) is ReviewOpeningCapability, "external_opening.capability",
+              "requires validated internal opening mechanics")
+    f.require(capability.external_authority_evidence_digest is None,
+              "external_opening.capability", "external authority is already bound")
+    f.require(type(external_authority) is ExternalAuthorityCapability,
+              "external_opening.authority", "requires an externally verified authority capability")
+    authorization = validate_review_opening_authorization(authorization, "external_opening.authorization")
+    f.literal(authorization["record_digest"], "external_opening.authorization.record_digest",
+              capability.authorization_digest)
+    f.literal(external_authority.namespace, "external_opening.authority.namespace",
+              "mmbu.phase1.busi-whu-opening.v1")
+    f.literal(external_authority.role, "external_opening.authority.role", "data-rights-authority")
+    f.literal(external_authority.subject_digest, "external_opening.authority.subject_digest",
+              canonical.value_digest(authorization))
+    f.require(
+        f.timestamp(external_authority.signed_at, "external_opening.authority.signed_at")
+        <= f.timestamp(authorization["authorized_at"], "external_opening.authorization.authorized_at"),
+        "external_opening.authority.signed_at",
+        "external authority must be signed before the internal opening authorization",
+    )
+    values = {
+        name: getattr(capability, name)
+        for name in ReviewOpeningCapability.__dataclass_fields__
+    }
+    values.update({
+        "external_authority_evidence_digest": external_authority.verification_evidence_digest,
+        "external_authority_principal": external_authority.principal,
+    })
     return ReviewOpeningCapability(_CAPABILITY_TOKEN, **values)
 
 
 __all__ = [
     "ReviewOpeningCapability",
+    "bind_external_review_opening",
     "validate_busi_whu_review_opening",
     "validate_credential_verification",
     "validate_review_attestation",

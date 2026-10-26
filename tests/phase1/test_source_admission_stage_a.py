@@ -27,6 +27,7 @@ from mmbu_phase1.source_admission_stage_a import (
     inventory_xlsx_schema,
     pair_busbra_members,
     pair_busi_whu_members,
+    read_busi_whu_workbook_rows,
     read_pathmnist_mapping,
     resolve_xlsx_header_strings,
     validate_pathmnist_mapping,
@@ -698,6 +699,76 @@ class StageAInventoryTests(unittest.TestCase):
 
 
 class StageASyntheticJoinRuleTests(unittest.TestCase):
+    def _busi_workbook(self, path: Path, rows: list[list[str]]) -> None:
+        headers = [
+            "patient_index", "Benign(0)\nmalignant(1)", "img_names", "scale(pixel/cm)",
+            "scale_category", "gt_area(pixel2)", "Image_area(pixel2)", "gt(cm2)", "gt/all",
+            "centroid_x(pixel)", "centroid_y(pixel)", "max_diameter(pixel)", "min_diameter(pixel)",
+        ]
+        strings = headers + sorted({row[2] for row in rows} | {row[4] for row in rows})
+        index = {value: position for position, value in enumerate(strings)}
+        cells = []
+        for column, value in zip("ABCDEFGHIJKLM", headers):
+            cells.append(f'<c r="{column}1" t="s"><v>{index[value]}</v></c>')
+        sheet_rows = [f'<row r="1">{"".join(cells)}</row>']
+        for row_number, values in enumerate(rows, start=2):
+            encoded = []
+            for column, value in zip("ABCDEFGHIJKLM", values):
+                if column in {"C", "E"}:
+                    encoded.append(f'<c r="{column}{row_number}" t="s"><v>{index[value]}</v></c>')
+                else:
+                    encoded.append(f'<c r="{column}{row_number}"><v>{value}</v></c>')
+            sheet_rows.append(f'<row r="{row_number}">{"".join(encoded)}</row>')
+        with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_STORED) as archive:
+            archive.writestr("xl/workbook.xml", (
+                b'<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '
+                b'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+                b'<sheets><sheet name="Sheet1" sheetId="1" r:id="rId1"/></sheets></workbook>'
+            ))
+            archive.writestr("xl/_rels/workbook.xml.rels", (
+                b'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+                b'<Relationship Id="rId1" Target="worksheets/sheet1.xml"/></Relationships>'
+            ))
+            archive.writestr("xl/sharedStrings.xml", (
+                '<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">' +
+                ''.join(f'<si><t>{value}</t></si>' for value in strings) + '</sst>'
+            ).encode("utf-8"))
+            archive.writestr("xl/worksheets/sheet1.xml", (
+                '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+                f'<sheetData>{"".join(sheet_rows)}</sheetData></worksheet>'
+            ).encode("utf-8"))
+
+    def test_busi_workbook_rows_validate_patient_image_label_join(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "Patient_infos_BUSI-WHU.xlsx"
+            self._busi_workbook(path, [
+                ["1", "0", "00001.bmp", "10.5", "known", "50", "1000", "0.5", "0.05", "20", "30", "12", "5"],
+                ["1", "1", "00002.bmp", "10.5", "known", "60", "1000", "0.6", "0.06", "21", "31", "13", "6"],
+            ])
+            result = read_busi_whu_workbook_rows(path, ["00001", "00002"], maximum_rows=10)
+        self.assertEqual(result["record_count"], 2)
+        self.assertEqual(result["patient_count"], 1)
+        self.assertEqual(result["label_counts"], {"0": 1, "1": 1})
+        self.assertEqual([row["record_id"] for row in result["records"]], ["00001", "00002"])
+        self.assertFalse(result["model_use_authorized"])
+
+    def test_busi_workbook_rows_reject_orphans_duplicates_and_bad_labels(self):
+        cases = [
+            (["00001", "missing"], [["1", "0", "00001.bmp", "1", "x", "1", "2", "1", "1", "1", "1", "1", "1"]]),
+            (["00001", "00002"], [
+                ["1", "0", "00001.bmp", "1", "x", "1", "2", "1", "1", "1", "1", "1", "1"],
+                ["2", "1", "00001.bmp", "1", "x", "1", "2", "1", "1", "1", "1", "1", "1"],
+            ]),
+            (["00001"], [["1", "2", "00001.bmp", "1", "x", "1", "2", "1", "1", "1", "1", "1", "1"]]),
+        ]
+        for member_ids, rows in cases:
+            with self.subTest(member_ids=member_ids, rows=rows):
+                with tempfile.TemporaryDirectory() as folder:
+                    path = Path(folder) / "Patient_infos_BUSI-WHU.xlsx"
+                    self._busi_workbook(path, rows)
+                    with self.assertRaises(ValueError):
+                        read_busi_whu_workbook_rows(path, member_ids, maximum_rows=10)
+
     def test_bounded_pathmnist_reader_feeds_closed_validator(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "mapping.csv"

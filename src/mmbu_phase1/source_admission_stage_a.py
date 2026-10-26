@@ -17,6 +17,7 @@ import io
 import xml.etree.ElementTree as ET
 from copy import deepcopy
 from datetime import datetime, timedelta
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -175,6 +176,11 @@ STRUCTURAL_OPENING_FORBIDDEN = [
     "image_payload_decoding", "label_value_reading", "mmbu_public_access", "model_loading",
     "test_member_opening", "training", "upload_or_submit",
 ]
+BUSI_WHU_HEADERS = (
+    "patient_index", "Benign(0)\nmalignant(1)", "img_names", "scale(pixel/cm)",
+    "scale_category", "gt_area(pixel2)", "Image_area(pixel2)", "gt(cm2)", "gt/all",
+    "centroid_x(pixel)", "centroid_y(pixel)", "max_diameter(pixel)", "min_diameter(pixel)",
+)
 
 
 def _closed(value: object, keys: set[str], path: str) -> dict:
@@ -1500,6 +1506,192 @@ def resolve_xlsx_header_strings(
     })
 
 
+def _xlsx_shared_strings(archive: zipfile.ZipFile, main_ns: str, maximum_bytes: int) -> list[str]:
+    try:
+        info = archive.getinfo("xl/sharedStrings.xml")
+    except KeyError:
+        raise ValueError("XLSX is missing sharedStrings.xml") from None
+    if info.file_size > maximum_bytes:
+        raise ValueError("XLSX shared-string table exceeds its bounded byte ceiling")
+    values = []
+    with archive.open(info) as stream:
+        for _event, element in ET.iterparse(stream, events=("end",)):
+            if element.tag != f"{{{main_ns}}}si":
+                continue
+            value = "".join(node.text or "" for node in element.iter(f"{{{main_ns}}}t"))
+            if not value:
+                raise ValueError("XLSX shared strings must be nonempty")
+            values.append(value)
+            element.clear()
+    return values
+
+
+def _xlsx_cell_value(cell: ET.Element, main_ns: str, shared: list[str]) -> str:
+    if cell.find(f"{{{main_ns}}}f") is not None:
+        raise ValueError("XLSX formulas are forbidden in the protected metadata join")
+    kind = cell.attrib.get("t")
+    if kind == "inlineStr":
+        value = "".join(node.text or "" for node in cell.iter(f"{{{main_ns}}}t"))
+    else:
+        node = cell.find(f"{{{main_ns}}}v")
+        value = node.text if node is not None else None
+        if value is None:
+            raise ValueError("XLSX data cells must contain a value")
+        if kind == "s":
+            if re.fullmatch(r"0|[1-9][0-9]*", value) is None:
+                raise ValueError("XLSX shared-string index is invalid")
+            index = int(value)
+            if index >= len(shared):
+                raise ValueError("XLSX shared-string index is out of range")
+            value = shared[index]
+        elif kind not in {None, "n", "str"}:
+            raise ValueError(f"unsupported XLSX cell type: {kind!r}")
+    if not value or value.strip() != value:
+        raise ValueError("XLSX cell value is empty or not canonical")
+    return value
+
+
+def _integral_decimal(value: str, path: str, *, minimum: int = 0, maximum: int | None = None) -> int:
+    try:
+        parsed = Decimal(value)
+    except InvalidOperation:
+        raise ValueError(f"{path} must be numeric") from None
+    if not parsed.is_finite() or parsed != parsed.to_integral_value():
+        raise ValueError(f"{path} must be a finite integer")
+    result = int(parsed)
+    if result < minimum or (maximum is not None and result > maximum):
+        raise ValueError(f"{path} is outside the allowed range")
+    return result
+
+
+def _finite_decimal(value: str, path: str) -> None:
+    try:
+        parsed = Decimal(value)
+    except InvalidOperation:
+        raise ValueError(f"{path} must be numeric") from None
+    if not parsed.is_finite():
+        raise ValueError(f"{path} must be finite")
+
+
+def read_busi_whu_workbook_rows(
+    path: Path,
+    member_record_ids: list[str],
+    *,
+    maximum_rows: int = 2000,
+    maximum_shared_strings_bytes: int = 4 * 1024 * 1024,
+    maximum_sheet_bytes: int = 64 * 1024 * 1024,
+) -> dict:
+    """Read the exact BUSI-WHU patient/image join without opening image payloads."""
+    if (
+        not isinstance(member_record_ids, list)
+        or not member_record_ids
+        or member_record_ids != sorted(set(member_record_ids))
+        or any(re.fullmatch(r"[A-Za-z0-9_-]+", value) is None for value in member_record_ids)
+    ):
+        raise ValueError("member_record_ids must be a sorted unique closed identifier list")
+    if isinstance(maximum_rows, bool) or not isinstance(maximum_rows, int) or maximum_rows <= 0:
+        raise ValueError("maximum_rows must be positive")
+    if len(member_record_ids) > maximum_rows:
+        raise ValueError("member record population exceeds the bounded row ceiling")
+
+    path = Path(path)
+    main_ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+    rel_ns = "http://schemas.openxmlformats.org/package/2006/relationships"
+    office_rel = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id"
+    try:
+        archive = zipfile.ZipFile(path)
+    except zipfile.BadZipFile:
+        raise ValueError(f"{path.name} is not a valid XLSX/ZIP archive") from None
+    with archive:
+        workbook = ET.fromstring(_safe_xml_member(archive, "xl/workbook.xml"))
+        rels = ET.fromstring(_safe_xml_member(archive, "xl/_rels/workbook.xml.rels"))
+        sheets = workbook.findall(f".//{{{main_ns}}}sheet")
+        if len(sheets) != 1 or sheets[0].attrib.get("name") != "Sheet1":
+            raise ValueError("BUSI-WHU workbook must contain exactly Sheet1")
+        targets = {
+            row.attrib["Id"]: row.attrib["Target"]
+            for row in rels.findall(f"{{{rel_ns}}}Relationship")
+            if "Id" in row.attrib and "Target" in row.attrib
+        }
+        target = targets.get(sheets[0].attrib.get(office_rel, ""))
+        if target is None or target.startswith("/") or ".." in Path(target).parts:
+            raise ValueError("BUSI-WHU worksheet relationship is missing or unsafe")
+        sheet_member = str(Path("xl") / target)
+        try:
+            sheet_info = archive.getinfo(sheet_member)
+        except KeyError:
+            raise ValueError("BUSI-WHU worksheet member is missing") from None
+        if sheet_info.file_size > maximum_sheet_bytes:
+            raise ValueError("BUSI-WHU worksheet exceeds its bounded byte ceiling")
+        shared = _xlsx_shared_strings(archive, main_ns, maximum_shared_strings_bytes)
+        expected_columns = list("ABCDEFGHIJKLM")
+        rows: list[dict] = []
+        observed_ids: set[str] = set()
+        patients: set[str] = set()
+        label_counts = {"0": 0, "1": 0}
+        expected_row_number = 1
+        with archive.open(sheet_info) as stream:
+            for _event, element in ET.iterparse(stream, events=("end",)):
+                if element.tag != f"{{{main_ns}}}row":
+                    continue
+                raw_row_number = element.attrib.get("r", "")
+                if re.fullmatch(r"[1-9][0-9]*", raw_row_number) is None:
+                    raise ValueError("BUSI-WHU workbook row number is invalid")
+                row_number = int(raw_row_number)
+                if row_number != expected_row_number:
+                    raise ValueError("BUSI-WHU workbook rows must be contiguous")
+                expected_row_number += 1
+                if row_number > maximum_rows + 1:
+                    raise ValueError("BUSI-WHU workbook exceeds the bounded row ceiling")
+                cells = element.findall(f"{{{main_ns}}}c")
+                references = [cell.attrib.get("r", "") for cell in cells]
+                expected_references = [f"{column}{row_number}" for column in expected_columns]
+                if references != expected_references:
+                    raise ValueError("BUSI-WHU workbook row differs from the closed 13-column schema")
+                values = [_xlsx_cell_value(cell, main_ns, shared) for cell in cells]
+                if row_number == 1:
+                    if tuple(values) != BUSI_WHU_HEADERS:
+                        raise ValueError("BUSI-WHU workbook headers differ from the frozen contract")
+                    element.clear()
+                    continue
+
+                patient = str(_integral_decimal(values[0], f"row {row_number} patient_index", minimum=1))
+                label = str(_integral_decimal(values[1], f"row {row_number} label", maximum=1))
+                raw_image = values[2]
+                image_name = Path(raw_image).name
+                if raw_image != image_name or image_name.lower().endswith(".bmp") is False:
+                    raise ValueError("BUSI-WHU img_names must be exact BMP basenames")
+                record_id = image_name[:-4]
+                if re.fullmatch(r"[A-Za-z0-9_-]+", record_id) is None or record_id in observed_ids:
+                    raise ValueError("BUSI-WHU image identifiers must be safe and unique")
+                for column_index in (3, 5, 6, 7, 8, 9, 10, 11, 12):
+                    _finite_decimal(values[column_index], f"row {row_number} column {column_index + 1}")
+                row_value = dict(zip(BUSI_WHU_HEADERS, values))
+                rows.append({
+                    "record_id": record_id,
+                    "parent_id": f"busi-whu:patient:{patient}",
+                    "label_code": label,
+                    "workbook_row": row_number,
+                    "row_digest": canonical.value_digest(row_value),
+                })
+                observed_ids.add(record_id)
+                patients.add(patient)
+                label_counts[label] += 1
+                element.clear()
+        if len(rows) != len(member_record_ids) or observed_ids != set(member_record_ids):
+            raise ValueError("BUSI-WHU workbook and image/mask member identifiers do not form a bijection")
+    rows.sort(key=lambda row: row["record_id"])
+    return canonical.seal({
+        "schema_id": "mmbu.phase1.busi_whu_patient_join_inventory", "schema_version": 1,
+        "artifact_name": path.name, "sheet_name": "Sheet1", "records": rows,
+        "record_count": len(rows), "patient_count": len(patients), "label_counts": label_counts,
+        "image_member_join_complete": True, "annotation_member_join_complete": True,
+        "label_values_read": True, "image_payload_decoding_used": False,
+        "annotation_payload_decoding_used": False, "model_use_authorized": False,
+        "mmbu_public_content_used": False,
+    })
+
+
 def _closed_member_names(member_names: list[str], directories: set[str]) -> list[str]:
     if not isinstance(member_names, list) or any(not isinstance(name, str) or not name for name in member_names):
         raise ValueError("archive member names must be a nonempty string list")
@@ -1739,6 +1931,7 @@ __all__ = [
     "pair_busi_whu_members",
     "read_pathmnist_mapping",
     "resolve_xlsx_header_strings",
+    "read_busi_whu_workbook_rows",
     "validate_pathmnist_mapping",
     "verify_acquisition_authority",
 ]

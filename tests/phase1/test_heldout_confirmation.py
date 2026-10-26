@@ -541,7 +541,11 @@ class HeldoutConfirmationDecisionTests(unittest.TestCase):
 
     def analysis(self):
         return {
-            "base": {"context": rational.to_wire(1), "q": rational.to_wire(1), "task": rational.to_wire(1)},
+            "base": {
+                "context": rational.to_wire(1),
+                "q": rational.to_wire(rational.Fraction(1, 5)),
+                "task": rational.to_wire(0),
+            },
             "class_diagnostics": {},
             "lower_bound": rational.to_wire(rational.Fraction(1, 10)),
             "output_failure_count": 0,
@@ -554,7 +558,7 @@ class HeldoutConfirmationDecisionTests(unittest.TestCase):
                 "seed-20261026": rational.to_wire(rational.Fraction(1, 10)),
                 "seed-20261027": rational.to_wire(rational.Fraction(1, 10)),
             },
-            "seed_mean": {"context": rational.to_wire(0), "q": rational.to_wire(0), "task": rational.to_wire(1)},
+            "seed_mean": {"context": rational.to_wire(1), "q": rational.to_wire(1), "task": rational.to_wire(1)},
             "sign_randomization_p": rational.to_wire(1),
         }
 
@@ -569,9 +573,22 @@ class HeldoutConfirmationDecisionTests(unittest.TestCase):
             "source_role": "confirmation",
         }
 
-    def test_primary_pass_ignores_bad_secondary_and_sign_diagnostic(self):
+    def test_primary_pass_ignores_only_secondary_and_sign_diagnostic(self):
         result = self.module.confirmation_decision(self.analysis(), self.execution())
         self.assertEqual(result, {"reasons": [], "status": "confirmation_passed"})
+
+    def test_context_and_competition_proxy_are_conjunctive_gates(self):
+        analysis = self.analysis()
+        analysis["seed_mean"]["context"] = rational.to_wire(rational.Fraction(19, 20))
+        result = self.module.confirmation_decision(analysis, self.execution())
+        self.assertEqual(result["status"], "confirmation_failed")
+        self.assertIn("context_below_base", result["reasons"])
+
+        analysis = self.analysis()
+        analysis["seed_mean"]["q"] = analysis["base"]["q"]
+        result = self.module.confirmation_decision(analysis, self.execution())
+        self.assertEqual(result["status"], "confirmation_failed")
+        self.assertIn("competition_proxy_not_improved", result["reasons"])
 
     def test_exact_margin_nonpositive_seed_and_lower_bound_fail(self):
         changes = (

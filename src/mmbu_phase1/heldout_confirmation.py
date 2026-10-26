@@ -866,12 +866,23 @@ def confirmation_decision(analysis: object, execution: object) -> dict:
     if rational.from_wire(result["lower_bound"], "heldout_confirmation.analysis.lower_bound") <= margin:
         reasons.append("lower_bound_not_above_margin")
 
-    # Validate descriptive exact values but never let them rescue or block the primary claim.
-    rational.from_wire(result["sign_randomization_p"], "heldout_confirmation.analysis.sign_randomization_p")
+    # Context is co-primary: absent an authorized nonzero tolerance, any loss
+    # fails closed.  The official-style score proxy must improve strictly.
+    parsed_scores: dict[str, dict[str, Fraction]] = {}
     for name in ("base", "seed_mean"):
         scores = closed(result[name], f"heldout_confirmation.analysis.{name}", ("context", "q", "task"))
-        for key in ("context", "q", "task"):
-            rational.from_wire(scores[key], f"heldout_confirmation.analysis.{name}.{key}")
+        parsed_scores[name] = {
+            key: rational.from_wire(scores[key], f"heldout_confirmation.analysis.{name}.{key}")
+            for key in ("context", "q", "task")
+        }
+    if parsed_scores["seed_mean"]["context"] < parsed_scores["base"]["context"]:
+        reasons.append("context_below_base")
+    if parsed_scores["seed_mean"]["q"] <= parsed_scores["base"]["q"]:
+        reasons.append("competition_proxy_not_improved")
+
+    # Validate remaining descriptive exact values without letting them rescue
+    # or block the primary claim.
+    rational.from_wire(result["sign_randomization_p"], "heldout_confirmation.analysis.sign_randomization_p")
     integer(result["output_failure_count"], "heldout_confirmation.analysis.output_failure_count", minimum=0)
     require(type(result["class_diagnostics"]) is dict, "heldout_confirmation.analysis.class_diagnostics",
             "must be an object")
@@ -958,7 +969,7 @@ def validate_synthetic_fixture(value: object) -> dict:
         "reload_mismatch_count": 0,
         "secondary": {"conditions": {}, "seed_mean": {}},
         "seed_deltas": seed_deltas,
-        "seed_mean": {"context": rational.to_wire(0), "q": rational.to_wire(0), "task": rational.to_wire(0)},
+        "seed_mean": {"context": rational.to_wire(0), "q": rational.to_wire(1), "task": rational.to_wire(0)},
         "sign_randomization_p": rational.to_wire(1),
     }
     execution = {

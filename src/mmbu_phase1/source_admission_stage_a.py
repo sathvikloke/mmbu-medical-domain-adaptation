@@ -14,6 +14,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from mmbu_phase1 import canonical
+from mmbu_phase1.store import RecordStore
 
 
 TOP_KEYS = {"schema_id", "schema_version", "python_executable", "work_margin_bytes", "duplicate_method", "sources"}
@@ -280,9 +281,111 @@ def validate_acquisition_packet(packet: object, config: dict) -> dict:
     return record
 
 
+def verify_inventory_opening(records: list[dict], source_id: str, now: str) -> dict:
+    """Resolve the active quarantine and protected-opening graph for one source.
+
+    This function is the only gate inventory code may call.  It creates no
+    authority and returns only records already validated by the Phase 1
+    contracts.
+    """
+    from mmbu_phase1 import admission, fields, locks, registries
+
+    _text(source_id, "source_id")
+    now_ns = fields.timestamp(now, "now")
+    store = RecordStore(records)
+    authorization_registries = store.records("authorization_registry")
+    opening_registries = store.records("opening_receipt_registry")
+    if not authorization_registries or not opening_registries:
+        raise ValueError("both authorization and opening registry chains are required")
+    authorization_registry = None
+    source_digest = None
+    for candidate in sorted(authorization_registries, key=lambda row: row["generation"], reverse=True):
+        candidate_source = candidate["source_heads"].get(source_id)
+        candidate_authorization = candidate["authorization_heads"].get(f"{source_id}|quarantine_inspection")
+        if candidate_source is None or candidate_authorization is None:
+            continue
+        candidate_record = store.get(candidate_source, "source", "inventory.source_candidate")
+        if candidate_record["status"] == "quarantined":
+            authorization_registry = registries.check_authorization_registry_chain(
+                store, candidate["record_digest"], "inventory.authorization_registry"
+            )
+            source_digest = candidate_source
+            break
+    if authorization_registry is None or source_digest is None:
+        raise ValueError(f"source {source_id!r} has no quarantine-inspection registry generation")
+    source = admission.check_source(store, source_digest, "inventory.source")
+    if source["status"] != "quarantined" or source["allowed_purposes"] != ["quarantine_inspection"]:
+        raise ValueError("inventory requires the active quarantined source with quarantine-only authority")
+    manifest = admission.check_source_artifact_manifest(
+        store, source["artifact_manifest_digest"], "inventory.manifest"
+    )
+    acquisition = admission.check_acquisition_authorization(
+        store, manifest["acquisition_authorization_digest"], "inventory.acquisition"
+    )
+    if now_ns >= fields.timestamp(acquisition["expires_at"], "inventory.acquisition.expires_at"):
+        raise ValueError("acquisition authorization has expired")
+
+    authorization_digest = authorization_registry["authorization_heads"].get(
+        f"{source_id}|quarantine_inspection"
+    )
+    if authorization_digest is None:
+        raise ValueError("active quarantine-inspection authorization is missing")
+    authorization = admission.check_purpose_authorization(
+        store, authorization_digest, "inventory.authorization"
+    )
+    if authorization["decision"] != "allowed" or authorization["source_digest"] != source_digest:
+        raise ValueError("quarantine-inspection authorization does not allow the active source")
+    if len(authorization["split_digests"]) != 1:
+        raise ValueError("quarantine inspection requires exactly one container split")
+    split = admission.check_split(store, authorization["split_digests"][0], "inventory.split")
+
+    inventory_locks = []
+    for lock in store.records("prospective_lock"):
+        if (
+            lock.get("scope", {}).get("phase") == "custody_inventory"
+            and lock.get("scope", {}).get("purpose") == "quarantine_inspection"
+            and lock.get("candidate_ids") == [source_id]
+            and source_digest in lock.get("input_artifact_digests", [])
+            and manifest["record_digest"] in lock.get("input_artifact_digests", [])
+        ):
+            inventory_locks.append(lock)
+    if len(inventory_locks) != 1:
+        raise ValueError("exactly one matching custody-inventory lock is required")
+    lock = locks.validate_prospective_lock(inventory_locks[0], "inventory.lock")
+
+    opening_registry = max(opening_registries, key=lambda row: row["generation"])
+    opening_registry = registries.check_opening_receipt_registry_chain(
+        store, opening_registry["record_digest"], "inventory.opening_registry"
+    )
+    heads = [head for head in opening_registry["heads"] if head["lock_digest"] == lock["record_digest"]]
+    if len(heads) != 1:
+        raise ValueError("inventory lock lacks one active opening-receipt head")
+    opening = locks.require_registered_head(
+        store,
+        opening_registry["record_digest"],
+        heads[0]["head_receipt_digest"],
+        "inventory.opening_registry",
+    )
+    if opening["opening_kind"] != "protected_access" or opening["manifest_digests"] != [manifest["record_digest"]]:
+        raise ValueError("protected opening does not bind the exact source manifest")
+    if fields.timestamp(opening["first_access_at"], "inventory.opening.first_access_at") > now_ns:
+        raise ValueError("inventory opening is later than the requested verification time")
+    return {
+        "source": source,
+        "manifest": manifest,
+        "split": split,
+        "authorization": authorization,
+        "lock": lock,
+        "opening": opening,
+        "authorization_registry": authorization_registry,
+        "opening_registry": opening_registry,
+    }
+
+
 __all__ = [
     "build_acquisition_packet",
     "load_stage_a_config",
     "validate_acquisition_packet",
     "validate_stage_a_config",
+    "verify_inventory_opening",
 ]

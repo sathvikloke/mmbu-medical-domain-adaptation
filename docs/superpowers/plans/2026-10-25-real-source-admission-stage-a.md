@@ -113,29 +113,28 @@ Commit message: `feat: seal stage a acquisition packet`
 - Modify: `tests/phase1/test_source_admission_stage_a.py`
 
 **Interfaces:**
-- Produces: `build_preopening_records(packet: dict, acknowledgment: dict, acquisition_attestations: list[dict]) -> list[dict]`.
 - Produces: `verify_inventory_opening(records: list[dict], source_id: str, now: str) -> dict` returning the validated active opening only.
 - CLI: `verify-opening --records ... --source-id ... --now ...`.
 
-- [ ] **Step 1: Write failing custody-chain tests**
+- [x] **Step 1: Write failing custody-chain tests**
 
 Use synthetic artifacts to require the exact chain: acquisition attestation, acquisition authorization, registry head, execution receipt, source artifact manifest, candidate/quarantined source, quarantine split, quarantine-purpose authorization, successor registry, inventory lock, opening receipt, and opening-registry head. Add negatives for missing, stale, superseded, late, wrong-purpose, wrong-source, and post-lock record changes.
 
-- [ ] **Step 2: Run tests and verify failure**
+- [x] **Step 2: Run tests and verify failure**
 
 Run: `PYTHONPATH=src python3 -m unittest tests.phase1.test_source_admission_stage_a.StageACustodyTests -v`  
 Expected: FAIL because custody composition is absent.
 
-- [ ] **Step 3: Implement composition using existing Phase 1 validators**
+- [x] **Step 3: Implement verification using existing Phase 1 validators**
 
-Do not duplicate admission validation rules. Construct records with existing canonical helpers and validate them through `mmbu_phase1.admission`, `mmbu_phase1.locks`, and `RecordStore`. The project-owner acknowledgment is evidence of scope only; acquisition attestations must independently satisfy the existing role and verification contract.
+Do not duplicate admission validation rules. Validate records through `mmbu_phase1.admission`, `mmbu_phase1.locks`, registry-chain checks, and `RecordStore`. Record construction occurs in Task 5 because execution receipts and observed artifact hashes do not exist before transport. The project-owner acknowledgment is evidence of scope only; acquisition attestations must independently satisfy the existing role and verification contract.
 
-- [ ] **Step 4: Run custody and existing admission suites**
+- [x] **Step 4: Run custody and existing admission suites**
 
 Run: `PYTHONPATH=src python3 -m unittest tests.phase1.test_source_admission_stage_a.StageACustodyTests tests.phase1.test_admission -v`  
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Commit message: `feat: enforce stage a custody opening chain`
 

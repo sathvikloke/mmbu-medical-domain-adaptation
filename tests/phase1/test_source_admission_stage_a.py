@@ -15,7 +15,9 @@ from mmbu_phase1.source_admission_stage_a import (
     load_stage_a_config,
     validate_acquisition_packet,
     validate_stage_a_config,
+    verify_inventory_opening,
 )
+from tests.phase1.admission_fixtures import AdmissionWorld
 
 
 REPO = Path(__file__).resolve().parents[2]
@@ -175,6 +177,38 @@ class StageAPacketTests(unittest.TestCase):
             path = Path(folder) / "packet.json"
             path.write_bytes(payload)
             self.assertEqual(path.read_bytes(), payload)
+
+
+class StageACustodyTests(unittest.TestCase):
+    def setUp(self):
+        self.world = AdmissionWorld()
+        self.records = list(self.world.records.values())
+
+    def test_complete_chain_allows_only_inventory_opening(self):
+        result = verify_inventory_opening(self.records, "syn-src", "2026-10-16T08:10:30Z")
+        self.assertEqual(result["source"]["status"], "quarantined")
+        self.assertEqual(result["split"]["role"], "quarantine")
+        self.assertEqual(result["authorization"]["purpose"], "quarantine_inspection")
+        self.assertEqual(result["opening"]["opening_kind"], "protected_access")
+        self.assertEqual(result["manifest"]["source_id"], "syn-src")
+
+    def test_missing_manifest_rejects(self):
+        records = [row for row in self.records if row["schema_id"] != "mmbu.phase1.source_artifact_manifest"]
+        with self.assertRaises(ValueError):
+            verify_inventory_opening(records, "syn-src", "2026-10-16T08:10:30Z")
+
+    def test_stale_opening_registry_rejects(self):
+        records = [row for row in self.records if row.get("generation") != 1 or row["schema_id"] != "mmbu.phase1.opening_receipt_registry"]
+        with self.assertRaises(ValueError):
+            verify_inventory_opening(records, "syn-src", "2026-10-16T08:10:30Z")
+
+    def test_wrong_source_rejects(self):
+        with self.assertRaises(ValueError):
+            verify_inventory_opening(self.records, "other-source", "2026-10-16T08:10:30Z")
+
+    def test_opening_after_authorization_expiry_rejects(self):
+        with self.assertRaises(ValueError):
+            verify_inventory_opening(self.records, "syn-src", "2028-10-16T08:10:30Z")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,35 @@
+{
+  "schema_id": "mmbu.source_clarification_reply",
+  "schema_version": 1,
+  "received_at": "2026-10-26T20:41:09Z",
+  "sender": "Jakob Kather <Jakob.Kather@med.uni-heidelberg.de>",
+  "recipient": "Aditya Raut <aditya.sraut09@gmail.com>",
+  "subject": "AW: NCT-CRC patch-to-slide/patient lineage question",
+  "gmail_message_id": "1a179f213cbb6ab6",
+  "gmail_thread_id": "1a179efa3c999283",
+  "rfc_message_id": "<299e93300c4b451cb23f1f47734bf42a@med.uni-heidelberg.de>",
+  "authentication": {
+    "dkim": "pass",
+    "dmarc": "pass",
+    "spf": "pass"
+  },
+  "quoted_question": "Is there a public mapping from each NCT-CRC-HE-100K patch filename to its source slide or patient? We also wanted to confirm whether the 86 source slides represent 86 distinct patients, and whether the CRC-VAL-HE-7K filenames retain the patient or slide identity needed to keep its 50-patient cohort untouched for confirmation. If the mapping isn't public, even a description of which filename fields encode the parent unit would help us determine whether the dataset is suitable.",
+  "response_text": "unfortuantley no...\n\nbest wishes\n\nJakob",
+  "direct_claims": [
+    "No public mapping or filename-field description answering the bounded patch-to-slide/patient lineage question is available from the original source lead."
+  ],
+  "not_supplied": [
+    "a slide identifier for each patch",
+    "a patient identifier for each patch",
+    "confirmation that the 86 slides represent 86 distinct patients",
+    "a usable parent identity for CRC-VAL-HE-7K filenames",
+    "competition-use or trained-weight-release authority"
+  ],
+  "decision_projection": {
+    "public_parent_mapping_available": false,
+    "patient_disjoint_development_supported": false,
+    "pathmnist_decision_use_closed": true,
+    "source_admitted": false
+  },
+  "handling_note": "The terse response answers the bounded availability question negatively. It does not establish that no private record exists, prohibit training-only use, grant source authority, or admit PathMNIST."
+}

@@ -1,7 +1,7 @@
 # Source clarification and reviewer outreach
 
 **Sent:** October 23, 2026, before 23:40 CDT
-**Status:** one substantive reply received; four source/reviewer questions remain unanswered and one reviewer sent an automatic absence notice
+**Status:** two substantive source replies received; three source/reviewer questions remain unanswered and one reviewer sent an automatic absence notice
 **Evidence class:** communication dispatch and retained reply record; no admission or review authority
 
 Six targeted messages were sent from the team Gmail account. This record preserves who was contacted and the exact
@@ -24,7 +24,7 @@ diagnose a patient, certify a model, decide rights, or approve clinical use.
 | Source | Recipient | Exact clarification requested | Current state |
 | --- | --- | --- | --- |
 | BUS-BRA 1.0 | [Dr. Wilfrido Gómez-Flores](https://aapm.onlinelibrary.wiley.com/doi/10.1002/mp.16812), corresponding author | Whether cases 110 and 536 are distinct acquisitions, share patient/acquisition lineage, must be co-assigned, or should be excluded; request the resolving source record if available | Sent; the existing provenance blocker remains unchanged |
-| NCT-CRC-HE-100K / CRC-VAL-HE-7K | [Dr. Jakob Nikolas Kather](https://doi.org/10.1016/j.ccell.2026.05.014), source lead | Whether every patch maps to a source slide or patient, whether the 86 source slides represent 86 distinct patients, and whether the 50-patient confirmation cohort retains usable parent identity | The original mailbox auto-replied that it was unmonitored and supplied a corrected author address; the unchanged bounded question was resent to the corrected author address on October 26. No substantive answer exists, so PathMNIST remains ineligible for decision-bearing use until complete parent grouping is evidenced |
+| NCT-CRC-HE-100K / CRC-VAL-HE-7K | [Dr. Jakob Nikolas Kather](https://doi.org/10.1016/j.ccell.2026.05.014), source lead | Whether every patch maps to a source slide or patient, whether the 86 source slides represent 86 distinct patients, and whether the 50-patient confirmation cohort retains usable parent identity | Original source lead reply received October 26, 2026: no public patch-to-slide/patient mapping is available in response to the bounded question. Retained in `outputs/source-clarification-replies/nct-crc-author-2026-10-26.json`; PathMNIST decision-bearing use is closed unless genuinely new authoritative parent-lineage evidence appears |
 | PathMNIST-224 | [Dr. Jiancheng Yang](https://jiancheng-yang.com/), MedMNIST lead | Whether the published source-image mapping preserves enough information to recover the NCT-CRC slide/patient parent for every patch and whether an additional grouping field or mapping is recommended | Reply received October 26, 2026: the CSV maps samples to original patch IDs, but the response does not supply slide/patient IDs and refers that question to the original NCT-CRC-HE-100K authors. Retained in `outputs/source-clarification-replies/pathmnist-medmnist-2026-10-26.json`; PathMNIST remains blocked for decision-bearing development use |
 | BUS-UCLM v3 | [Dr. Noelia Vállez](https://www.nature.com/articles/s41597-025-04562-3), corresponding author | Which of the conflicting CC BY 4.0 and CC BY-NC 4.0 statements governs v3 and trained-adapter release; whether four-letter prefixes are patient IDs covering every derived view; whether `Doppler=Y` means `Yes` | Sent; license and schema clearance remain failed |
 

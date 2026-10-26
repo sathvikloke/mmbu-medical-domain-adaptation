@@ -46,7 +46,23 @@ class EvidenceDocumentationTests(unittest.TestCase):
         self.assertEqual(route["corrected_recipient"], "jakob.kather@med.uni-heidelberg.de")
         self.assertEqual(route["corrected_send_message_id"], "1a179efa3c999283")
         self.assertFalse(route["decision_projection"]["source_author_answer_received"])
-        self.assertIn("corrected author address on October 26", outreach)
+
+        source_reply = json.loads(
+            (
+                REPO
+                / "outputs/source-clarification-replies/nct-crc-author-2026-10-26.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(source_reply["gmail_message_id"], "1a179f213cbb6ab6")
+        self.assertEqual(source_reply["authentication"], {"dkim": "pass", "dmarc": "pass", "spf": "pass"})
+        self.assertEqual(source_reply["response_text"], "unfortuantley no...\n\nbest wishes\n\nJakob")
+        self.assertFalse(source_reply["decision_projection"]["public_parent_mapping_available"])
+        self.assertTrue(source_reply["decision_projection"]["pathmnist_decision_use_closed"])
+        self.assertFalse(source_reply["decision_projection"]["source_admitted"])
+        self.assertIn("Original source lead reply received October 26, 2026", outreach)
+        self.assertIn("no public patch-to-slide/patient mapping is available", outreach)
+        self.assertIn("original source lead", limitation)
+        self.assertIn("closed negatively", limitation)
 
     def test_external_trust_root_requirement_is_explicit_and_non_self_authorizing(self):
         requirement = (

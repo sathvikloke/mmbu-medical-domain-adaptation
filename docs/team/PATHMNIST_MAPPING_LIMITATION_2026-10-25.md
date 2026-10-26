@@ -3,7 +3,7 @@
 **Reviewed:** 2026-10-26 UTC
 **Evidence:** corrected mapping inventory from CPU job `86061`
 **Decision:** PathMNIST remains ineligible for decision-bearing development or confirmation use
-**Author evidence:** authenticated reply received from the MedMNIST lead on October 26, 2026
+**Author evidence:** authenticated replies received from the MedMNIST lead and original source lead on October 26, 2026
 
 ## Material finding
 
@@ -16,6 +16,13 @@ PathMNIST sample to its original patch ID, while slide/patient identifiers must 
 NCT-CRC-HE-100K authors. The response supplies no slide key, patient key, or complete parent mapping. The retained
 communication record is
 [`pathmnist-medmnist-2026-10-26.json`](../../outputs/source-clarification-replies/pathmnist-medmnist-2026-10-26.json).
+
+The original source lead then answered the exact public patch-to-slide/patient mapping question negatively. The terse
+reply supplied no parent map, filename encoding, or confirmation that the 86 slides represent 86 distinct patients.
+It is retained with passing Gmail DKIM, DMARC, and SPF observations in
+[`nct-crc-author-2026-10-26.json`](../../outputs/source-clarification-replies/nct-crc-author-2026-10-26.json).
+This closes the current public-lineage route negatively; it does not prove that no private source record exists or
+grant any authority for training-only use.
 
 ## Boundary correction
 
@@ -38,4 +45,7 @@ No class target is inferred or granted authority from this finding. It is a cust
 
 ## Portfolio effect
 
-This finding lowers PathMNIST's near-term value relative to BUS-BRA and BUSI-WHU. It does not invalidate PathMNIST as a source of histology training examples, but it prevents the wrapper split from serving as clean decision evidence. The next executable data step should therefore prioritize a source with complete independent-unit lineage. The MedMNIST-wrapper question is closed negatively; only authoritative evidence from the original NCT-CRC-HE-100K authors or records could reopen PathMNIST for decision-bearing use.
+This finding lowers PathMNIST's near-term value relative to BUS-BRA, BUS-UCLM, and ChestMNIST. It does not invalidate
+PathMNIST as a possible source of histology training examples, but it prevents the wrapper split from serving as clean
+decision evidence. The public mapping and original-author routes are closed negatively; only genuinely new
+authoritative parent records could reopen PathMNIST for decision-bearing use.

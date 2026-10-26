@@ -7,6 +7,7 @@ does not open a biomedical payload, and performs no network access.
 from __future__ import annotations
 
 import json
+import hashlib
 import re
 import zipfile
 from copy import deepcopy
@@ -43,6 +44,99 @@ EXPECTED_PURPOSES = {
     "busi-whu": ["confirmation", "release"],
 }
 EXPECTED_ROLES = {"bus-bra": "training", "pathmnist-224": "training", "busi-whu": "confirmation"}
+FROZEN_SOURCE_IDENTITIES = {
+    "bus-bra": {
+        "source_version": "1.0",
+        "source_family": "bus-bra",
+        "doi": "10.5281/zenodo.8231412",
+        "canonical_locators": ["https://zenodo.org/records/8231412"],
+        "maximum_bytes": 134217728,
+    },
+    "pathmnist-224": {
+        "source_version": "3.0",
+        "source_family": "nct-crc",
+        "doi": "10.5281/zenodo.10519652",
+        "canonical_locators": [
+            "https://github.com/MedMNIST/MedMNIST",
+            "https://zenodo.org/records/10519652",
+        ],
+        "maximum_bytes": 12633243648,
+    },
+    "busi-whu": {
+        "source_version": "3",
+        "source_family": "busi-whu",
+        "doi": "10.17632/k6cpmwybk3.3",
+        "canonical_locators": ["https://data.mendeley.com/datasets/k6cpmwybk3/3"],
+        "maximum_bytes": 129000000,
+    },
+}
+FROZEN_ARTIFACT_IDENTITIES = {
+    "bus-bra": [{
+        "name": "BUSBRA.zip",
+        "url": "https://zenodo.org/api/records/8231412/files/BUSBRA.zip/content",
+        "expected_bytes": 133917740,
+        "sha256": None,
+        "upstream_checksum": {"algorithm": "md5", "value": "1f8b2be6476d58fc97bfb5e5a1ea9bab"},
+        "media_type": "application/zip",
+        "role": "archive",
+        "official_file_id": "BUSBRA.zip",
+        "allowed_hosts": ["zenodo.org"],
+    }],
+    "pathmnist-224": [
+        {
+            "name": "pathmnist_224.npz",
+            "url": "https://zenodo.org/api/records/10519652/files/pathmnist_224.npz/content",
+            "expected_bytes": 12629854322,
+            "sha256": None,
+            "upstream_checksum": {"algorithm": "md5", "value": "2c51a510bcdc9cf8ddb2af93af1eadec"},
+            "media_type": "application/zip",
+            "role": "archive",
+            "official_file_id": "pathmnist_224.npz",
+            "allowed_hosts": ["zenodo.org"],
+        },
+        {
+            "name": "pathmnist_split_info.csv",
+            "url": "https://drive.usercontent.google.com/download?id=1uxZpSW3O02TIYVzNgKBsbN2nQb-ZrzZW&export=download",
+            "expected_bytes": 55465,
+            "sha256": None,
+            "upstream_checksum": None,
+            "media_type": "text/csv",
+            "role": "mapping",
+            "official_file_id": "1uxZpSW3O02TIYVzNgKBsbN2nQb-ZrzZW",
+            "allowed_hosts": ["drive.usercontent.google.com"],
+        },
+    ],
+    "busi-whu": [
+        {
+            "name": "BUSI-WHU.zip",
+            "url": "https://data.mendeley.com/public-files/datasets/k6cpmwybk3/files/5aa18322-e19e-4779-8392-e621ec660f79/file_downloaded",
+            "expected_bytes": 128106790,
+            "sha256": "5d10c0bb931666e9cff48db9161febc0ec0c74e4b611c2edcbb9726f6d9d74cc",
+            "upstream_checksum": {"algorithm": "sha256", "value": "5d10c0bb931666e9cff48db9161febc0ec0c74e4b611c2edcbb9726f6d9d74cc"},
+            "media_type": "application/zip",
+            "role": "archive",
+            "official_file_id": "5aa18322-e19e-4779-8392-e621ec660f79",
+            "allowed_hosts": [
+                "data.mendeley.com",
+                "prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com",
+            ],
+        },
+        {
+            "name": "Patient_infos_BUSI-WHU.xlsx",
+            "url": "https://data.mendeley.com/public-files/datasets/k6cpmwybk3/files/6f13c484-94e1-4378-bc73-293a68671948/file_downloaded",
+            "expected_bytes": 92017,
+            "sha256": "14f6bb5332036218e4c59d119d12ea67281b0a4d1373668d35530763f9121d44",
+            "upstream_checksum": {"algorithm": "sha256", "value": "14f6bb5332036218e4c59d119d12ea67281b0a4d1373668d35530763f9121d44"},
+            "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "role": "patient_mapping",
+            "official_file_id": "6f13c484-94e1-4378-bc73-293a68671948",
+            "allowed_hosts": [
+                "data.mendeley.com",
+                "prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com",
+            ],
+        },
+    ],
+}
 HEX = re.compile(r"[0-9a-f]+")
 GLOB = re.compile(r"[*?\[\]]")
 LAUNCH_ID = re.compile(r"[0-9]{8}T[0-9]{6}Z-[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}")
@@ -139,6 +233,10 @@ def validate_stage_a_config(config: object) -> dict:
         if purposes != EXPECTED_PURPOSES[source_id]:
             raise ValueError(f"sources.{source_id}.proposed_purposes differs from the frozen review request")
         maximum = _positive_int(source["maximum_bytes"], f"sources.{source_id}.maximum_bytes")
+        identity = FROZEN_SOURCE_IDENTITIES[source_id]
+        for key, expected in identity.items():
+            if source[key] != expected:
+                raise ValueError(f"sources.{source_id}.{key} differs from the frozen official identity")
 
         artifacts = source["artifacts"]
         if not isinstance(artifacts, list) or not artifacts:
@@ -170,6 +268,8 @@ def validate_stage_a_config(config: object) -> dict:
                 _text(artifact[key], f"{path}.{key}")
         if len(names) != len(set(names)):
             raise ValueError(f"sources.{source_id}.artifacts contains duplicate basenames")
+        if artifacts != FROZEN_ARTIFACT_IDENTITIES[source_id]:
+            raise ValueError(f"sources.{source_id}.artifacts differ from the frozen official identities")
         if expected_total > maximum:
             raise ValueError(f"sources.{source_id}.maximum_bytes is below expected artifact bytes")
 
@@ -383,7 +483,12 @@ def verify_inventory_opening(records: list[dict], source_id: str, now: str) -> d
     }
 
 
-def inventory_pathmnist_headers(archive_path: Path, opening_evidence: dict, declaration: dict) -> dict:
+def inventory_pathmnist_headers(
+    archive_path: Path,
+    records: list[dict],
+    now: str,
+    declaration: dict,
+) -> dict:
     """Inspect only allowlisted PathMNIST train/val NPY headers.
 
     ZIP central-directory names are visible, but forbidden test members are
@@ -401,18 +506,12 @@ def inventory_pathmnist_headers(archive_path: Path, opening_evidence: dict, decl
         or declaration["population"]["forbidden_member_prefixes"] != ["test_"]
     ):
         raise ValueError("PathMNIST declaration differs from the protected train/val contract")
-    opening = opening_evidence.get("opening", {})
-    manifest = opening_evidence.get("manifest", {})
-    source = opening_evidence.get("source", {})
-    if (
-        source.get("status") != "quarantined"
-        or opening.get("opening_kind") != "protected_access"
-        or opening.get("manifest_digests") != [manifest.get("record_digest")]
-    ):
-        raise ValueError("a verified exact protected opening is required before PathMNIST header access")
+    opening_evidence = verify_inventory_opening(records, "pathmnist-224", now)
+    _require_protected_opening(opening_evidence, "pathmnist-224")
     path = Path(archive_path)
     if not path.is_file() or path.name != "pathmnist_224.npz":
         raise ValueError("PathMNIST archive must be the exact declared basename")
+    _require_manifest_artifact(path, opening_evidence)
     expected = {f"{split}_{kind}.npy" for split in ("train", "val", "test") for kind in ("images", "labels")}
     allowed = {f"{split}_{kind}.npy" for split in ("train", "val") for kind in ("images", "labels")}
     try:
@@ -440,6 +539,82 @@ def inventory_pathmnist_headers(archive_path: Path, opening_evidence: dict, decl
         "model_use_authorized": False,
         "mmbu_public_content_used": False,
     }
+
+
+def _require_protected_opening(opening_evidence: dict, source_id: str) -> None:
+    opening = opening_evidence.get("opening", {})
+    manifest = opening_evidence.get("manifest", {})
+    source = opening_evidence.get("source", {})
+    if (
+        source.get("source_id") != source_id
+        or manifest.get("source_id") != source_id
+        or source.get("status") != "quarantined"
+        or opening.get("opening_kind") != "protected_access"
+        or opening.get("manifest_digests") != [manifest.get("record_digest")]
+    ):
+        raise ValueError("a verified exact protected opening is required before source access")
+
+
+def _require_manifest_artifact(path: Path, opening_evidence: dict) -> dict:
+    """Bind the exact local bytes to the protected manifest before opening them."""
+    matches = [
+        row for row in opening_evidence["manifest"]["artifacts"]
+        if Path(row["logical_path"]).name == path.name
+    ]
+    if len(matches) != 1:
+        raise ValueError("protected manifest must contain exactly one matching artifact basename")
+    artifact = matches[0]
+    digest = hashlib.sha256()
+    observed_bytes = 0
+    with path.open("rb") as stream:
+        while chunk := stream.read(1024 * 1024):
+            observed_bytes += len(chunk)
+            digest.update(chunk)
+    if observed_bytes != artifact["bytes"] or digest.hexdigest() != artifact["sha256"]:
+        raise ValueError("local artifact bytes differ from the protected manifest")
+    return artifact
+
+
+def inventory_busbra(
+    archive_path: Path,
+    records: list[dict],
+    now: str,
+    declaration: dict,
+) -> dict:
+    """Compile BUS-BRA structurally, but admit only the frozen training population."""
+    from mmbu_phase1.biomedical_sources import ContractViolation, compile_busbra
+
+    opening_evidence = verify_inventory_opening(records, "bus-bra", now)
+    _require_protected_opening(opening_evidence, "bus-bra")
+    _require_manifest_artifact(Path(archive_path), opening_evidence)
+    try:
+        compiled = compile_busbra(archive_path, declaration)
+    except ContractViolation as exc:
+        raise ValueError(str(exc)) from None
+    records = []
+    eligible_parents = set()
+    for row in compiled["rows"]:
+        eligible = row["split"] == "train"
+        if eligible:
+            eligible_parents.add(row["independent_unit_id"])
+        records.append({
+            "record_id": row["row_id"],
+            "parent_id": row["independent_unit_id"],
+            "source_split": row["split"],
+            "disposition": "eligible" if eligible else "excluded",
+            "exclusion_reason_code": None if eligible else "outside_frozen_training_population",
+            "row_digest": canonical.value_digest(row),
+        })
+    return canonical.seal({
+        "schema_id": "mmbu.phase1.busbra_structural_inventory",
+        "schema_version": 1,
+        "source_receipt_digest": canonical.value_digest(compiled["receipt"]),
+        "records": records,
+        "eligible_record_count": sum(row["disposition"] == "eligible" for row in records),
+        "eligible_parent_count": len(eligible_parents),
+        "model_use_authorized": False,
+        "mmbu_public_content_used": False,
+    })
 __all__ = [
     "build_acquisition_packet",
     "load_stage_a_config",
@@ -447,4 +622,5 @@ __all__ = [
     "validate_stage_a_config",
     "verify_inventory_opening",
     "inventory_pathmnist_headers",
+    "inventory_busbra",
 ]

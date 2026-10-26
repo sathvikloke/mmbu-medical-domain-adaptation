@@ -19,8 +19,11 @@ from mmbu_phase1.source_admission_stage_a import (
     validate_stage_a_config,
     verify_inventory_opening,
     inventory_pathmnist_headers,
+    inventory_busbra,
 )
 from tests.phase1.admission_fixtures import AdmissionWorld
+from tests.phase1.test_biomedical_sources import _build_archive as _build_busbra_archive
+from tests.phase1.test_biomedical_sources import _declaration as _busbra_declaration
 
 
 REPO = Path(__file__).resolve().parents[2]
@@ -102,6 +105,18 @@ class StageAConfigTests(unittest.TestCase):
                 {"allowed_splits": ["test", "train", "val"]}
             )
         )
+
+    def test_mutated_frozen_artifact_identity_rejects(self):
+        mutations = (
+            lambda value: value["sources"]["bus-bra"]["artifacts"][0]["upstream_checksum"].update({"value": "0" * 32}),
+            lambda value: value["sources"]["pathmnist-224"]["artifacts"][0].update({"expected_bytes": 1}),
+            lambda value: value["sources"]["pathmnist-224"]["artifacts"][1].update({"official_file_id": "other"}),
+            lambda value: value["sources"]["busi-whu"]["artifacts"][0].update({"sha256": "0" * 64}),
+            lambda value: value["sources"]["busi-whu"]["artifacts"][1].update({"expected_bytes": 1}),
+        )
+        for mutate in mutations:
+            with self.subTest(mutation=repr(mutate)):
+                self.rejects(mutate)
 
 
 class StageAPacketTests(unittest.TestCase):
@@ -225,11 +240,20 @@ def _npy_bytes(descr: str, shape: tuple[int, ...], payload: bytes) -> bytes:
 class StageAInventoryTests(unittest.TestCase):
     def setUp(self):
         self.declaration = load_stage_a_config(CONFIG)["sources"]["pathmnist-224"]
-        world = AdmissionWorld()
-        opening = verify_inventory_opening(list(world.records.values()), "syn-src", "2026-10-16T08:10:30Z")
-        opening["source"] = {**opening["source"], "source_id": "pathmnist-224"}
-        opening["manifest"] = {**opening["manifest"], "source_id": "pathmnist-224"}
-        self.opening = opening
+
+    def _records(self, path: Path, source_id: str, version: str, family: str) -> list[dict]:
+        payload = path.read_bytes()
+        world = AdmissionWorld(
+            source_id=source_id,
+            version=version,
+            family=family,
+            artifacts=[{
+                "logical_path": path.name,
+                "bytes": len(payload),
+                "sha256": hashlib.sha256(payload).hexdigest(),
+            }],
+        )
+        return list(world.records.values())
 
     def _archive(self, folder: str) -> Path:
         path = Path(folder) / "pathmnist_224.npz"
@@ -243,7 +267,9 @@ class StageAInventoryTests(unittest.TestCase):
 
     def test_pathmnist_headers_open_only_train_and_val(self):
         with tempfile.TemporaryDirectory() as folder:
-            result = inventory_pathmnist_headers(self._archive(folder), self.opening, self.declaration)
+            path = self._archive(folder)
+            records = self._records(path, "pathmnist-224", "3.0", "nct-crc")
+            result = inventory_pathmnist_headers(path, records, "2026-10-16T08:10:30Z", self.declaration)
         self.assertEqual(
             [row["member"] for row in result["opened_members"]],
             ["train_images.npy", "train_labels.npy", "val_images.npy", "val_labels.npy"],
@@ -254,18 +280,50 @@ class StageAInventoryTests(unittest.TestCase):
     def test_missing_or_extra_member_rejects(self):
         with tempfile.TemporaryDirectory() as folder:
             path = self._archive(folder)
+            records = self._records(path, "pathmnist-224", "3.0", "nct-crc")
             with zipfile.ZipFile(path, "a") as archive:
                 archive.writestr("surprise.npy", b"x")
             with self.assertRaises(ValueError):
-                inventory_pathmnist_headers(path, self.opening, self.declaration)
+                inventory_pathmnist_headers(path, records, "2026-10-16T08:10:30Z", self.declaration)
 
-    def test_mismatched_opening_rejects_before_archive_access(self):
+    def test_mismatched_custody_records_reject_before_archive_access(self):
         with tempfile.TemporaryDirectory() as folder:
             path = self._archive(folder)
-            bad = copy.deepcopy(self.opening)
-            bad["opening"]["opening_kind"] = "first_output"
+            bad = self._records(path, "other-source", "3.0", "nct-crc")
             with self.assertRaises(ValueError):
-                inventory_pathmnist_headers(path, bad, self.declaration)
+                inventory_pathmnist_headers(path, bad, "2026-10-16T08:10:30Z", self.declaration)
+
+    def test_changed_payload_rejects_before_archive_access(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = self._archive(folder)
+            records = self._records(path, "pathmnist-224", "3.0", "nct-crc")
+            path.write_bytes(path.read_bytes() + b"changed")
+            with self.assertRaises(ValueError):
+                inventory_pathmnist_headers(path, records, "2026-10-16T08:10:30Z", self.declaration)
+
+    def test_busbra_inventory_keeps_only_frozen_training_population_eligible(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "BUSBRA.zip"
+            _build_busbra_archive(path)
+            records = self._records(path, "bus-bra", "1.0", "bus-bra")
+            result = inventory_busbra(
+                path, records, "2026-10-16T08:10:30Z", _busbra_declaration(path)
+            )
+        dispositions = {row["record_id"]: row["disposition"] for row in result["records"]}
+        self.assertEqual(dispositions["bus_0001-l"], "eligible")
+        self.assertEqual(dispositions["bus_0001-r"], "eligible")
+        self.assertEqual(dispositions["bus_0002-s"], "excluded")
+        self.assertEqual(result["eligible_parent_count"], 1)
+        self.assertFalse(result["model_use_authorized"])
+        self.assertFalse(result["mmbu_public_content_used"])
+
+    def test_busbra_inventory_requires_protected_opening(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "BUSBRA.zip"
+            _build_busbra_archive(path)
+            bad = self._records(path, "other-source", "1.0", "bus-bra")
+            with self.assertRaises(ValueError):
+                inventory_busbra(path, bad, "2026-10-16T08:10:30Z", _busbra_declaration(path))
 
 
 if __name__ == "__main__":

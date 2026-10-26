@@ -234,6 +234,40 @@ class SourceTransitionTests(AdmissionTestCase):
 
 
 class ReviewEvidenceTests(AdmissionTestCase):
+    @staticmethod
+    def qa_store_with_roles(purposes, roles):
+        world = AdmissionWorld(proposed=purposes)
+        receipt = copy.deepcopy(world.get("qa_receipt"))
+        receipt.pop("record_digest")
+        receipt["reviewer_attestation_digests"] = sorted(
+            world.digest(f"qa_receipt_{role}") for role in roles
+        )
+        receipt = canonical.seal(receipt)
+        return world, receipt, world.store(receipt, without=("qa_receipt",))
+
+    def test_training_only_qa_requires_visual_but_not_clinical(self):
+        _, receipt, store = self.qa_store_with_roles(["train"], ["visual"])
+        admission.check_qa_receipt(store, receipt["record_digest"])
+
+        _, missing_visual, missing_visual_store = self.qa_store_with_roles(["train"], ["clinical"])
+        self.assertRejects(
+            "required QA reviewer roles",
+            admission.check_qa_receipt,
+            missing_visual_store,
+            missing_visual["record_digest"],
+        )
+
+    def test_decision_bearing_qa_requires_clinical_and_visual(self):
+        for purposes in (["adaptive_dev"], ["confirmation"], ["confirmation", "train"]):
+            with self.subTest(purposes=purposes):
+                _, receipt, store = self.qa_store_with_roles(purposes, ["visual"])
+                self.assertRejects(
+                    "required QA reviewer roles",
+                    admission.check_qa_receipt,
+                    store,
+                    receipt["record_digest"],
+                )
+
     def test_review_of_different_bytes_rejects(self):
         self.world_rejects("reviewed different bytes",
                            {"rights_attestation": lambda r, w: r["payload"].update(subject_digest=d("other-bytes"))},
@@ -350,7 +384,7 @@ class PopulationAndQaTests(AdmissionTestCase):
             ("sample digests must equal the frozen plan", {"qa_receipt": {"sample_ids_digest": d("other-sample")}}),
             ("must follow the QA opening", {"qa_receipt": {"reviewed_at": t("08:22:50")}}),
             ("every planned shortcut rule", {"qa_receipt": lambda r, w: r["shortcut_results"][0].update(probe_kind="label_only")}),
-            ("distinct clinical and visual", {"qa_receipt_visual": lambda r, w: r["payload"].update(reviewer_role="clinical_qa_reviewer")}),
+            ("required QA reviewer roles", {"qa_receipt_visual": lambda r, w: r["payload"].update(reviewer_role="clinical_qa_reviewer")}),
         )
         for fragment, overrides in cases:
             with self.subTest(fragment=fragment):

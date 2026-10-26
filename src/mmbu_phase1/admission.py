@@ -18,6 +18,7 @@ from mmbu_phase1.store import RecordStore
 from mmbu_phase1.vocab import PURPOSES
 
 PROPOSABLE_PURPOSES = ("engineering", "train", "adaptive_dev", "confirmation", "release")
+DECISION_BEARING_QA_PURPOSES = frozenset({"adaptive_dev", "confirmation"})
 REVIEWER_ROLES = (
     "acquisition_reviewer",
     "rights_reviewer",
@@ -35,6 +36,14 @@ CANONICAL_PATH_PROJECTION_RULE = {"rule": "mmbu.phase1.canonical_path_projection
 CHECKSUM_LENGTHS = {"md5": 32, "sha1": 40, "sha256": 64, "sha512": 128}
 _GLOB = re.compile(r"[*?\[\]]")
 _HEX = re.compile(r"[0-9a-f]+")
+
+
+def required_qa_reviewer_roles(purposes: Iterable[str]) -> frozenset[str]:
+    """Return the QA roles required for the proposed source purposes."""
+    required = {"visual_qa_reviewer"}
+    if set(purposes) & DECISION_BEARING_QA_PURPOSES:
+        required.add("clinical_qa_reviewer")
+    return frozenset(required)
 
 ATTESTATION_KEYS = ("schema_id", "schema_version", "attestation_id", "payload", "payload_digest", "verification",
                     "record_digest")
@@ -1008,8 +1017,9 @@ def check_qa_receipt(store: RecordStore, digest: Any, path: str = "qa_receipt") 
                                           subject=subject, roles=roles, purposes=record["purposes"],
                                           approved=record["disposition"] == "approved")
         reviewers.add(attestation["payload"]["reviewer_role"])
-    f.require({"clinical_qa_reviewer", "visual_qa_reviewer"} <= reviewers, f"{path}.reviewer_attestation_digests",
-              "distinct clinical and visual QA attestations are required")
+    required_roles = required_qa_reviewer_roles(record["purposes"])
+    f.require(required_roles <= reviewers, f"{path}.reviewer_attestation_digests",
+              f"required QA reviewer roles are {sorted(required_roles)}")
     if record["adjudication"]["disagreement_count"]:
         f.require(record["adjudication"]["adjudicator_attestation_digest"] in record["reviewer_attestation_digests"],
                   f"{path}.adjudication", "a distinct adjudicator attestation is required when reviewers disagree")

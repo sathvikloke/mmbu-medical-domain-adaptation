@@ -140,6 +140,19 @@ class BusbraTrainQaBuildTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "symbolic link"):
             build_train_qa_packet(self.predecessor, self.root / "train-qa")
 
+    def test_rejects_manifest_asset_not_bound_by_predecessor_receipt(self):
+        receipt_path = self.predecessor / "packet-receipt.json"
+        receipt = json.loads(receipt_path.read_text())
+        receipt["members"] = [
+            row for row in receipt["members"]
+            if row["path"] != "assets/bus_0001-l/image.png"
+        ]
+        receipt.pop("receipt_digest")
+        receipt["receipt_digest"] = canonical_digest(receipt)
+        receipt_path.write_text(json.dumps(receipt) + "\n", encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "not bound by the predecessor receipt"):
+            build_train_qa_packet(self.predecessor, self.root / "train-qa")
+
     def test_refuses_to_overwrite_output(self):
         output = self.root / "train-qa"
         output.mkdir()

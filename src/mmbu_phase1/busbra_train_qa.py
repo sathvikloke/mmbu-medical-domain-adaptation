@@ -129,9 +129,18 @@ def verify_predecessor_packet(packet_dir: Path) -> tuple[dict, dict]:
     records = manifest.get("records")
     if not isinstance(records, list) or manifest.get("record_count") != len(records):
         raise ValueError("predecessor record count mismatch")
+    if receipt.get("record_count") != len(records):
+        raise ValueError("predecessor receipt record count mismatch")
     ids = [row.get("record_id") for row in records if isinstance(row, dict)]
     if len(ids) != len(records) or len(ids) != len(set(ids)):
         raise ValueError("predecessor record IDs must be unique")
+    for row in records:
+        for key in ("image_path", "mask_path"):
+            relative = _safe_relative(row.get(key), f"record {row['record_id']}.{key}").as_posix()
+            if relative not in seen:
+                raise ValueError(
+                    f"record {row['record_id']} {key} is not bound by the predecessor receipt"
+                )
     return receipt, manifest
 
 

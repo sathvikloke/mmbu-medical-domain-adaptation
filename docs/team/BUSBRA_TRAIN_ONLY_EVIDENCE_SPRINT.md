@@ -1,6 +1,6 @@
 # BUS-BRA train-only evidence sprint
 
-**Status:** executable preparation path; no real source is admitted and no training or model use is authorized  
+**Status:** executable preparation path; no real source is admitted and no training or model use is authorized
 **Purpose:** reduce the next genuine evidence gate without weakening the clinical/confirmation gate
 
 ## What changed
@@ -54,6 +54,14 @@ Review timestamps must be strictly after `opened_at`. The visual reviewer must c
 closed vocabularies already present in the header. Targets are sorted and pipe-delimited from
 `birads_classification`, `mask_context`, and `pathology_classification`. An excluded row has no targets. Every adverse,
 uncertain, excluded, or escalated decision needs a nonblank note.
+
+| Field | Allowed values |
+| --- | --- |
+| `asset_match`, `image_interpretable` | `yes`, `no` |
+| `modality_body_part_supported`, `mask_alignment`, `annotation_completeness_concern` | `yes`, `no`, `uncertain` |
+| `shortcut_artifact` | `none`, `overlay`, `caliper`, `crop`, `text`, `panel`, `other` |
+| `permitted_training_targets` | sorted unique pipe-delimited subset of `birads_classification`, `mask_context`, `pathology_classification` |
+| `final_disposition` | `eligible`, `exclude`, `escalate` |
 
 The rights reviewer completes only the exact BUS-BRA 1.0 `train` decision. Public-weight release, adaptive development,
 confirmation, upload, and submission remain false. A `narrow` decision must name its exact scope.

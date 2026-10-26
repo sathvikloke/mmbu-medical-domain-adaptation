@@ -1,6 +1,6 @@
 # BUS-BRA train-only evidence sprint design
 
-**Date:** 2026-10-26  
+**Date:** 2026-10-26
 **Status:** accepted for native implementation under the user's standing instruction to choose the safest highest-value path
 
 ## Objective

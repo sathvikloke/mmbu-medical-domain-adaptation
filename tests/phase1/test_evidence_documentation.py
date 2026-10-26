@@ -15,7 +15,7 @@ class EvidenceDocumentationTests(unittest.TestCase):
         )
 
         for marker in (
-            "**Current state:** protected BUSI-WHU plus Stage A acquisition/structural opening bound; remaining boundaries and external material blocked",
+            "**Current state:** protected BUSI-WHU opening/review plus Stage A acquisition/structural opening bound; remaining boundaries and external material blocked",
             "repository records are not a trust anchor",
             "detached signature",
             "out-of-band pinned public-key fingerprint",
@@ -55,8 +55,9 @@ class EvidenceDocumentationTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn("verify_external_authority", trust)
-        self.assertIn("Completed-review\nauthentication, source admission, and confirmation are not yet bound", trust)
+        self.assertIn("Source admission and confirmation authorization are not yet bound", trust)
         self.assertIn("before any network use", trust)
+        self.assertIn("review-board-authority", trust)
         self.assertIn("plain prose and hard-coded names are rejected", trust)
         self.assertIn("no protected opening or decision-bearing action is enabled", trust)
 

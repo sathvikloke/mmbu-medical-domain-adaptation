@@ -117,7 +117,8 @@ REVIEW_REPORT_KEYS = (
 REVIEW_AUTHENTICATION_KEYS = (
     "authenticated_at", "base_review_report_digest", "clinical_assessment_digest",
     "custodian_assessment_digest", "opening_authorization_digest", "opening_receipt_digest",
-    "review_attestation_digests",
+    "review_attestation_digests", "external_authority_binding_digest",
+    "external_authority_principal",
 )
 SOURCE_MANIFEST_KEYS = (
     "confirmation_task", "duplicate_disposition_digest", "exclusions_digest",
@@ -143,11 +144,11 @@ def _validate_target_map(value: object, record_ids: list[str], path: str) -> dic
 
 def _validated_bridge_inputs(
     review_report: object, store: RecordStore, source_admission_digest: str,
-    purpose_authorization_digest: str,
+    purpose_authorization_digest: str, external_authority: object,
 ) -> tuple[dict, dict, dict]:
     report = closed(review_report, "heldout_confirmation.review_report", REVIEW_REPORT_KEYS)
     try:
-        validate_authenticated_completed_review(report, store)
+        validate_authenticated_completed_review(report, store, external_authority)
     except (ContractViolation, ValueError) as exc:
         fail("heldout_confirmation.review_report.review_authentication", str(exc))
     digest(report["record_digest"], "heldout_confirmation.review_report.record_digest")
@@ -166,7 +167,7 @@ def _validated_bridge_inputs(
     )
     for name in (
         "base_review_report_digest", "clinical_assessment_digest", "custodian_assessment_digest",
-        "opening_authorization_digest", "opening_receipt_digest",
+        "opening_authorization_digest", "opening_receipt_digest", "external_authority_binding_digest",
     ):
         digest(authentication[name], f"heldout_confirmation.review_report.review_authentication.{name}")
     timestamp(authentication["authenticated_at"],
@@ -236,11 +237,12 @@ def _validated_bridge_inputs(
 
 def build_confirmation_source_manifest(
     review_report: object, store: RecordStore, source_admission_digest: str,
-    purpose_authorization_digest: str,
+    purpose_authorization_digest: str, *, external_authority: object = None,
 ) -> dict:
     """Bridge authenticated review evidence into the existing confirmation population contract."""
     report, _source, _authorization = _validated_bridge_inputs(
-        review_report, store, source_admission_digest, purpose_authorization_digest
+        review_report, store, source_admission_digest, purpose_authorization_digest,
+        external_authority,
     )
     eligible = closed(report["eligible_by_task"], "heldout_confirmation.review_report.eligible_by_task", (
         "global_classification", "grounded_classification", "localization", "context_prediction",
@@ -301,11 +303,12 @@ def build_confirmation_source_manifest(
 
 def validate_confirmation_source_manifest(
     value: object, review_report: object, store: RecordStore, source_admission_digest: str,
-    purpose_authorization_digest: str,
+    purpose_authorization_digest: str, *, external_authority: object = None,
 ) -> dict:
     manifest = closed(value, "heldout_confirmation.source_manifest", SOURCE_MANIFEST_KEYS)
     expected = build_confirmation_source_manifest(
-        review_report, store, source_admission_digest, purpose_authorization_digest
+        review_report, store, source_admission_digest, purpose_authorization_digest,
+        external_authority=external_authority,
     )
     require(manifest == expected, "heldout_confirmation.source_manifest",
             "differs from the authenticated review and admission evidence")
@@ -482,11 +485,12 @@ def _build_randomization_artifacts(
 def build_authenticated_randomization_artifacts(
     review_report: object, confirmation_source_manifest: object, store: RecordStore,
     source_admission_digest: str, confirmation_purpose_digest: str, created_at: str,
+    *, external_authority: object = None,
 ) -> dict:
     """Build real artifacts only by re-resolving the admitted review chain."""
     manifest = validate_confirmation_source_manifest(
         confirmation_source_manifest, review_report, store, source_admission_digest,
-        confirmation_purpose_digest,
+        confirmation_purpose_digest, external_authority=external_authority,
     )
     return _build_randomization_artifacts(
         manifest["patient_ids"], patient_to_records=manifest["patient_to_records"],

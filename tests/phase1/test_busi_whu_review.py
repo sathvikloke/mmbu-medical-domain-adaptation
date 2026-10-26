@@ -22,7 +22,8 @@ from mmbu_phase1.busi_whu_authority import (
 )
 from mmbu_phase1.busi_whu_review import build_review_packet, build_review_selection
 from mmbu_phase1.busi_whu_review_validation import (
-    authenticate_completed_review, validate_completed_review, validate_source_assessments,
+    authenticate_completed_review, completed_review_authority_subject,
+    validate_completed_review, validate_source_assessments,
 )
 from mmbu_phase1.store import RecordStore
 from mmbu_phase1.source_admission_stage_a import BUSI_WHU_HEADERS
@@ -761,10 +762,20 @@ class BusiWhuCompletedReviewTests(unittest.TestCase):
                 })
                 store.add(assessment)
                 assessments[role] = assessment["record_digest"]
+            authority_subject = completed_review_authority_subject(
+                report, attestations, assessments["clinical_adjudicator"],
+                assessments["data_rights_authority"], report_created_at=created_at,
+                authenticated_at=t("09:40:00"),
+            )
+            external = external_authority_for(
+                authority_subject, namespace="mmbu.phase1.busi-whu-completed-review.v1",
+                principal="external-review-board", role="review-board-authority",
+                signed_at=t("09:35:00"), verified_at=t("09:39:00"),
+            )
             authenticated = authenticate_completed_review(
                 report, store, world.authorization["record_digest"], world.world.digest("review_opening"),
                 attestations, assessments["clinical_adjudicator"], assessments["data_rights_authority"],
-                report_created_at=created_at, now=t("09:40:00"),
+                report_created_at=created_at, now=t("09:40:00"), external_authority=external,
             )
             self.assertTrue(authenticated["reviewer_identity_authenticated"])
             self.assertTrue(authenticated["confirmation_purposes_ready"])
@@ -775,7 +786,14 @@ class BusiWhuCompletedReviewTests(unittest.TestCase):
                     report, store, world.authorization["record_digest"],
                     world.world.digest("review_opening"), attestations[:-1],
                     assessments["clinical_adjudicator"], assessments["data_rights_authority"],
-                    report_created_at=created_at, now=t("09:40:00"),
+                    report_created_at=created_at, now=t("09:40:00"), external_authority=external,
+                )
+            with self.assertRaises((TypeError, ValueError)):
+                authenticate_completed_review(
+                    report, store, world.authorization["record_digest"],
+                    world.world.digest("review_opening"), attestations,
+                    assessments["clinical_adjudicator"], assessments["data_rights_authority"],
+                    report_created_at=created_at, now=t("09:40:00"), external_authority=None,
                 )
 
             future_attestations = []
@@ -810,7 +828,7 @@ class BusiWhuCompletedReviewTests(unittest.TestCase):
                     world.world.digest("review_opening"), future_attestations,
                     future_assessments["clinical_adjudicator"],
                     future_assessments["data_rights_authority"],
-                    report_created_at=created_at, now=t("09:40:00"),
+                    report_created_at=created_at, now=t("09:40:00"), external_authority=external,
                 )
 
     def test_primary_and_frozen_secondary_coverage_are_exact(self):

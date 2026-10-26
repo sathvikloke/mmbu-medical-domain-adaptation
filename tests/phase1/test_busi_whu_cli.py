@@ -130,6 +130,17 @@ class ConfirmationCliTests(unittest.TestCase):
     def tearDown(self):
         self.temp.cleanup()
 
+    def external_args(self):
+        return [
+            "--external-policy", str(self.records), "--external-policy-pin", "1" * 64,
+            "--external-public-key", str(self.records), "--external-public-key-pin", "2" * 64,
+            "--external-revocation", str(self.records), "--external-revocation-pin", "3" * 64,
+            "--external-signature", str(self.records), "--external-principal", "external-review-board",
+            "--external-signed-at", "2026-10-26T07:20:00Z",
+            "--external-verified-at", "2026-10-26T07:29:00Z",
+            "--external-verifier", str(self.records), "--external-verifier-pin", "4" * 64,
+        ]
+
     def test_real_route_has_no_arbitrary_patient_map_or_synthetic_fixture(self):
         base = [
             "build-real-artifacts", "--review-report", str(self.report),
@@ -137,6 +148,7 @@ class ConfirmationCliTests(unittest.TestCase):
             "--source-admission-digest", "a" * 64,
             "--confirmation-purpose-digest", "b" * 64,
             "--created-at", "2026-10-26T07:30:00Z",
+            *self.external_args(),
         ]
         with self.assertRaises(SystemExit):
             self.module.main([*base, "--patient-map", str(self.root / "patients.json")])
@@ -152,13 +164,17 @@ class ConfirmationCliTests(unittest.TestCase):
                 self.module.heldout_confirmation, "build_synthetic_randomization_artifacts",
                 return_value={"construction_scope": "synthetic_mechanics_only"},
             ) as synthetic:
-                with mock.patch.object(self.module.sys, "stdout", OutputSink()):
+                with mock.patch.object(
+                    self.module, "resolve_completed_review_authority_subject", return_value={"subject": True}
+                ), mock.patch.object(self.module, "verify_external_authority", return_value=object()), \
+                        mock.patch.object(self.module.sys, "stdout", OutputSink()):
                     self.assertEqual(self.module.main([
                         "build-real-artifacts", "--review-report", str(self.report),
                         "--source-manifest", str(self.manifest), "--records", str(self.records),
                         "--source-admission-digest", "a" * 64,
                         "--confirmation-purpose-digest", "b" * 64,
                         "--created-at", "2026-10-26T07:30:00Z",
+                        *self.external_args(),
                     ]), 0)
                     self.assertEqual(self.module.main([
                         "build-synthetic-artifacts", "--fixture", str(self.fixture),
@@ -209,6 +225,12 @@ class ReviewValidationCliTests(unittest.TestCase):
             "--custodian-assessment-digest", "9" * 64,
             "--report-created-at", "2026-10-26T07:29:00Z",
             "--now", "2026-10-26T07:30:00Z",
+            "--external-policy", str(self.records), "--external-policy-pin", "1" * 64,
+            "--external-public-key", str(self.records), "--external-public-key-pin", "2" * 64,
+            "--external-revocation", str(self.records), "--external-revocation-pin", "3" * 64,
+            "--external-signature", str(self.records), "--external-principal", "external-review-board",
+            "--external-signed-at", "2026-10-26T07:25:00Z",
+            "--external-verifier", str(self.records), "--external-verifier-pin", "4" * 64,
         ]
 
     def test_authentication_chain_is_required_and_base_report_is_never_emitted(self):
@@ -217,7 +239,9 @@ class ReviewValidationCliTests(unittest.TestCase):
         base = {"record_digest": "a" * 64}
         authenticated = {"reviewer_identity_authenticated": True}
         with mock.patch.object(self.module, "validate_completed_review", return_value=base) as validate:
-            with mock.patch.object(self.module, "authenticate_completed_review", return_value=authenticated) as authenticate:
+            with mock.patch.object(self.module, "completed_review_authority_subject", return_value={"subject": True}), \
+                    mock.patch.object(self.module, "verify_external_authority", return_value=object()), \
+                    mock.patch.object(self.module, "authenticate_completed_review", return_value=authenticated) as authenticate:
                 with mock.patch.object(self.module.sys, "stdout", OutputSink()):
                     self.assertEqual(self.module.main(self.argv()), 0)
         self.assertEqual(validate.call_count, 1)

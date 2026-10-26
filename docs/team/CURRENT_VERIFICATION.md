@@ -77,8 +77,9 @@ requires the full external envelope and independently supplied pins, and descrip
 repository capability when that binding is absent. Stage A acquisition now requires externally verified `data-owner`
 authority over the exact source-specific network operation, and structural opening requires distinct,
 externally verified `data-owner` and `independent-reviewer` capabilities over the exact source-specific packet subject;
-plain statements and hard-coded identities reject. Completed-review authentication,
-source admission, and confirmation remain unbound. No real external key, signature, identity proof, or revocation evidence has been
+plain statements and hard-coded identities reject. Completed-review authentication requires external
+`review-board-authority` verification over the exact report/evidence transition, and the real confirmation bridge
+reverifies that stable signature binding. Source admission and confirmation authorization remain unbound. No real external key, signature, identity proof, or revocation evidence has been
 supplied, so the executable gate is unsatisfied, grants no authority, and the project remains `blocked_external`.
 
 The [machine-local evidence-root manifest](../../config/phase1/machine-local-evidence-roots-2026-10-26.json) records

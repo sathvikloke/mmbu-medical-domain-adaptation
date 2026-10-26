@@ -15,6 +15,7 @@ from .busi_whu_authority import (
     validate_review_attestation,
 )
 from .busi_whu_review import _REVIEW_FIELDS
+from .external_trust import ExternalAuthorityCapability
 from .store import RecordStore
 
 
@@ -186,10 +187,88 @@ def validate_source_assessments(
     }
 
 
+COMPLETED_REVIEW_AUTHORITY_NAMESPACE = "mmbu.phase1.busi-whu-completed-review.v1"
+
+
+def completed_review_authority_subject(
+    report: object, review_attestation_digests: list[str],
+    clinical_assessment_digest: str, custodian_assessment_digest: str,
+    *, report_created_at: str, authenticated_at: str,
+) -> dict:
+    """Return the exact completed-review transition an external board must sign."""
+    report = _closed(report, COMPLETED_REPORT_KEYS, "completed review authority report")
+    if canonical.record_digest(report) != report.get("record_digest"):
+        raise ValueError("completed review authority report must be sealed")
+    if type(review_attestation_digests) is not list or len(review_attestation_digests) != len(ROLES):
+        raise ValueError("completed review authority requires exactly four review attestations")
+    if len(review_attestation_digests) != len(set(review_attestation_digests)):
+        raise ValueError("completed review authority attestation digests must be unique")
+    for digest in [*review_attestation_digests, clinical_assessment_digest, custodian_assessment_digest]:
+        if not isinstance(digest, str) or re.fullmatch(r"[0-9a-f]{64}", digest) is None:
+            raise ValueError("completed review authority evidence digest is invalid")
+    _time(report_created_at, "completed review authority report_created_at")
+    _time(authenticated_at, "completed review authority authenticated_at")
+    return canonical.seal({
+        "schema_id": "mmbu.phase1.busi_whu_completed_review_authority_subject",
+        "schema_version": 1,
+        "base_review_report_digest": report["record_digest"],
+        "reviewer_role_ids": report["reviewer_role_ids"],
+        "review_attestation_digests": sorted(review_attestation_digests),
+        "clinical_assessment_digest": clinical_assessment_digest,
+        "custodian_assessment_digest": custodian_assessment_digest,
+        "opening_authorization_digest": report["opening_authorization_digest"],
+        "opening_receipt_digest": report["opening_receipt_digest"],
+        "confirmation_purposes_ready": report["confirmation_purposes_ready"],
+        "source_blockers": report["source_blockers"],
+        "purpose_decisions": report["purpose_decisions"],
+        "report_created_at": report_created_at,
+        "authenticated_at": authenticated_at,
+    })
+
+
+def _validate_completed_review_external_authority(
+    subject: dict, authority: object, report_created_at: str, authenticated_at: str,
+    *, reverification: bool = False,
+) -> ExternalAuthorityCapability:
+    if type(authority) is not ExternalAuthorityCapability:
+        raise TypeError("completed review requires externally verified review-board authority")
+    if authority.namespace != COMPLETED_REVIEW_AUTHORITY_NAMESPACE:
+        raise ValueError("completed review external namespace mismatch")
+    if authority.role != "review-board-authority":
+        raise ValueError("completed review external role mismatch")
+    if authority.subject_digest != canonical.value_digest(subject):
+        raise ValueError("completed review external authority signed another subject")
+    signed = _time(authority.signed_at, "completed review external signed_at")
+    verified = _time(authority.verified_at, "completed review external verified_at")
+    created = _time(report_created_at, "completed review external report_created_at")
+    cutoff = _time(authenticated_at, "completed review external authenticated_at")
+    if signed <= created or signed > cutoff:
+        raise ValueError("completed review external signature must follow the report and not follow authentication")
+    if verified < signed or (not reverification and verified > cutoff):
+        raise ValueError("completed review external verification chronology is invalid")
+    return authority
+
+
+def _external_authority_binding_digest(authority: ExternalAuthorityCapability) -> str:
+    """Bind stable signature evidence while permitting later reverification times."""
+    return canonical.value_digest({
+        "namespace": authority.namespace, "principal": authority.principal,
+        "role": authority.role, "subject_digest": authority.subject_digest,
+        "policy_sha256": authority.policy_sha256,
+        "public_key_sha256": authority.public_key_sha256,
+        "revocation_sha256": authority.revocation_sha256,
+        "signature_sha256": authority.signature_sha256,
+        "signed_at": authority.signed_at,
+        "verifier_sha256": authority.verifier_sha256,
+        "verifier_version": authority.verifier_version,
+    })
+
+
 def authenticate_completed_review(
     report: object, store: RecordStore, authorization_digest: str, opening_receipt_digest: str,
     review_attestation_digests: list[str], clinical_assessment_digest: str,
     custodian_assessment_digest: str, *, report_created_at: str, now: str,
+    external_authority: object, _external_reverification: bool = False,
 ) -> dict:
     """Promote a validated report only through the full pre/post human authority chain."""
     report = _closed(report, COMPLETED_REPORT_KEYS, "completed review report")
@@ -256,6 +335,15 @@ def authenticate_completed_review(
         subject_digest=report["record_digest"], subject_created_at=report_created_at,
         authenticated_at=now,
     )
+    authority_subject = completed_review_authority_subject(
+        report, sorted(review_attestation_digests), clinical_assessment_digest,
+        custodian_assessment_digest, report_created_at=report_created_at,
+        authenticated_at=now,
+    )
+    external_authority = _validate_completed_review_external_authority(
+        authority_subject, external_authority, report_created_at, now,
+        reverification=_external_reverification,
+    )
     blockers = sorted(set(report["source_blockers"]) | set(source_assessments["blockers"]))
     result = dict(report)
     result.pop("record_digest")
@@ -269,12 +357,16 @@ def authenticate_completed_review(
         "review_attestation_digests": sorted(review_attestation_digests),
         "clinical_assessment_digest": source_assessments["clinical_assessment_digest"],
         "custodian_assessment_digest": source_assessments["custodian_assessment_digest"],
+        "external_authority_binding_digest": _external_authority_binding_digest(external_authority),
+        "external_authority_principal": external_authority.principal,
         "authenticated_at": now,
     }
     return canonical.seal(result)
 
 
-def validate_authenticated_completed_review(report: object, store: RecordStore) -> dict:
+def validate_authenticated_completed_review(
+    report: object, store: RecordStore, external_authority: object,
+) -> dict:
     """Re-resolve and reproduce an authenticated report from its sealed evidence chain."""
     report = _closed(report, COMPLETED_REPORT_KEYS, "authenticated completed review report")
     if canonical.record_digest(report) != report.get("record_digest"):
@@ -310,10 +402,44 @@ def validate_authenticated_completed_review(report: object, store: RecordStore) 
         authentication.get("custodian_assessment_digest"),
         report_created_at=subject_times.pop(),
         now=authentication.get("authenticated_at"),
+        external_authority=external_authority,
+        _external_reverification=True,
     )
     if reproduced != report:
         raise ValueError("authenticated completed review differs from its resolved evidence chain")
     return report
+
+
+def resolve_completed_review_authority_subject(report: object, store: RecordStore) -> dict:
+    """Reconstruct the externally signed subject from an authenticated report and store."""
+    report = _closed(report, COMPLETED_REPORT_KEYS, "authenticated completed review report")
+    if canonical.record_digest(report) != report.get("record_digest"):
+        raise ValueError("authenticated completed review report must be one sealed record")
+    authentication = report.get("review_authentication")
+    if type(authentication) is not dict:
+        raise ValueError("completed review authentication is missing")
+    base = store.get(
+        authentication.get("base_review_report_digest"), "busi_whu_review_validation",
+        "completed review base report",
+    )
+    attestation_digests = authentication.get("review_attestation_digests")
+    if type(attestation_digests) is not list or not attestation_digests:
+        raise ValueError("completed review attestations are missing")
+    subject_times = {
+        validate_review_attestation(
+            store.get(digest, "busi_whu_review_attestation", "completed review attestation"),
+            "completed review attestation",
+        )["subject_created_at"]
+        for digest in attestation_digests
+    }
+    if len(subject_times) != 1:
+        raise ValueError("completed review attestations disagree on subject chronology")
+    return completed_review_authority_subject(
+        base, attestation_digests, authentication.get("clinical_assessment_digest"),
+        authentication.get("custodian_assessment_digest"),
+        report_created_at=subject_times.pop(),
+        authenticated_at=authentication.get("authenticated_at"),
+    )
 
 
 def _negative_authority(value: dict, label: str) -> None:
@@ -810,6 +936,8 @@ def validate_completed_review(
 
 
 __all__ = [
-    "authenticate_completed_review", "validate_authenticated_completed_review",
+    "authenticate_completed_review", "completed_review_authority_subject",
+    "resolve_completed_review_authority_subject",
+    "validate_authenticated_completed_review",
     "validate_completed_review", "validate_source_assessments",
 ]

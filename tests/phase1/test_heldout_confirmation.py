@@ -16,9 +16,12 @@ from mmbu_phase1 import canonical, rational
 from mmbu_phase1.store import RecordStore
 from mmbu_phase1.scope import REQUIRED_PHASE1_TEST_MODULES
 from mmbu_phase1.fields import ContractViolation
-from mmbu_phase1.busi_whu_review_validation import authenticate_completed_review
+from mmbu_phase1.busi_whu_review_validation import (
+    authenticate_completed_review, completed_review_authority_subject,
+)
 from tests.phase1.admission_fixtures import AdmissionWorld, t
 from tests.phase1.test_busi_whu_authority import ReviewAuthorityWorld
+from tests.phase1.external_trust_fixtures import external_authority_for
 
 
 REPO = Path(__file__).resolve().parents[2]
@@ -264,12 +267,22 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
             })
             store.add(assessment)
             assessments[role] = assessment["record_digest"]
+        subject = completed_review_authority_subject(
+            base, attestations, assessments["clinical_adjudicator"],
+            assessments["data_rights_authority"], report_created_at=t("09:20:00"),
+            authenticated_at=t("09:40:00"),
+        )
+        external = external_authority_for(
+            subject, namespace="mmbu.phase1.busi-whu-completed-review.v1",
+            principal="external-review-board", role="review-board-authority",
+            signed_at=t("09:35:00"), verified_at=t("09:39:00"),
+        )
         report = authenticate_completed_review(
             base, store, authority.authorization["record_digest"], authority.world.digest("review_opening"),
             attestations, assessments["clinical_adjudicator"], assessments["data_rights_authority"],
-            report_created_at=t("09:20:00"), now=t("09:40:00"),
+            report_created_at=t("09:20:00"), now=t("09:40:00"), external_authority=external,
         )
-        return report, store.records()
+        return report, store.records(), external
 
     def admission(self, report, evidence_records=()):
         world = AdmissionWorld(
@@ -301,16 +314,16 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
         return admission_store, source_digest, world.digest("confirmation_authorization"), world
 
     def test_authenticated_review_builds_existing_population_inputs(self):
-        report, evidence_records = self.authenticated_report()
+        report, evidence_records, external = self.authenticated_report()
         store, source_digest, purpose_digest, _ = self.admission(report, evidence_records)
         manifest = self.module.build_confirmation_source_manifest(
-            report, store, source_digest, purpose_digest
+            report, store, source_digest, purpose_digest, external_authority=external,
         )
         self.assertEqual(manifest["patient_count"], 60)
         self.assertEqual(len(manifest["patient_to_records"]), 60)
         artifacts = self.module.build_authenticated_randomization_artifacts(
             report, manifest, store, source_digest, purpose_digest,
-            created_at="2026-10-25T12:00:00Z",
+            created_at="2026-10-25T12:00:00Z", external_authority=external,
         )
         self.assertEqual(artifacts["population_binding"]["source_manifest_digest"], manifest["record_digest"])
         self.assertEqual(artifacts["target_map_digest"], manifest["target_map_digest"])
@@ -325,14 +338,14 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
             )
 
     def test_authenticated_report_cannot_substitute_review_participant_identities(self):
-        report, evidence_records = self.authenticated_report()
+        report, evidence_records, external = self.authenticated_report()
         forged = copy.deepcopy(report)
         forged["reviewer_role_ids"]["primary_breast_ultrasound_reviewer"] = "different-person"
         forged["record_digest"] = canonical.record_digest(forged)
         store, source_digest, purpose_digest, _ = self.admission(forged, evidence_records)
         with self.assertRaises(ContractViolation):
             self.module.build_confirmation_source_manifest(
-                forged, store, source_digest, purpose_digest
+                forged, store, source_digest, purpose_digest, external_authority=external,
             )
 
     def test_unauthenticated_training_leakage_underpowered_and_cross_patient_duplicates_reject(self):
@@ -374,18 +387,19 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
             self.module.build_confirmation_source_manifest(duplicate, store, source_digest, purpose_digest)
 
     def test_post_lock_manifest_mutation_rejects(self):
-        report, evidence_records = self.authenticated_report()
+        report, evidence_records, external = self.authenticated_report()
         store, source_digest, purpose_digest, _ = self.admission(report, evidence_records)
         manifest = self.module.build_confirmation_source_manifest(
-            report, store, source_digest, purpose_digest
+            report, store, source_digest, purpose_digest, external_authority=external,
         )
         manifest["patient_to_records"][manifest["patient_ids"][0]].append("injected")
         with self.assertRaises(ContractViolation):
             self.module.validate_confirmation_source_manifest(
-                manifest, report, store, source_digest, purpose_digest
+                manifest, report, store, source_digest, purpose_digest,
+                external_authority=external,
             )
         manifest = self.module.build_confirmation_source_manifest(
-            report, store, source_digest, purpose_digest
+            report, store, source_digest, purpose_digest, external_authority=external,
         )
         record_id = manifest["record_ids"][0]
         manifest["target_map"][record_id] = (
@@ -393,7 +407,8 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
         )
         with self.assertRaises(ContractViolation):
             self.module.validate_confirmation_source_manifest(
-                manifest, report, store, source_digest, purpose_digest
+                manifest, report, store, source_digest, purpose_digest,
+                external_authority=external,
             )
 
 

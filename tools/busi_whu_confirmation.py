@@ -12,6 +12,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from mmbu_phase1 import canonical, heldout_confirmation
+from mmbu_phase1.busi_whu_review_validation import resolve_completed_review_authority_subject
+from mmbu_phase1.external_trust import verify_external_authority
 from mmbu_phase1.fields import ContractViolation
 from mmbu_phase1.store import RecordStore
 
@@ -39,6 +41,31 @@ def _store(path: Path) -> RecordStore:
     return RecordStore(records)
 
 
+def _add_external_arguments(parser: argparse.ArgumentParser) -> None:
+    for name in ("policy", "public-key", "revocation", "signature", "verifier"):
+        parser.add_argument(f"--external-{name}", type=Path, required=True)
+    for name in (
+        "policy-pin", "public-key-pin", "revocation-pin", "principal", "signed-at",
+        "verified-at", "verifier-pin",
+    ):
+        parser.add_argument(f"--external-{name}", required=True)
+
+
+def _external_authority(args: argparse.Namespace, subject: dict):
+    return verify_external_authority(
+        policy_bytes=args.external_policy.read_bytes(), policy_pin_sha256=args.external_policy_pin,
+        public_key_bytes=args.external_public_key.read_bytes(),
+        public_key_pin_sha256=args.external_public_key_pin,
+        revocation_bytes=args.external_revocation.read_bytes(),
+        revocation_pin_sha256=args.external_revocation_pin,
+        signature_bytes=args.external_signature.read_bytes(), subject=subject,
+        namespace="mmbu.phase1.busi-whu-completed-review.v1",
+        principal=args.external_principal, role="review-board-authority",
+        signed_at=args.external_signed_at, verified_at=args.external_verified_at,
+        verifier_path=args.external_verifier, verifier_pin_sha256=args.external_verifier_pin,
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     commands = parser.add_subparsers(dest="command", required=True)
@@ -55,6 +82,7 @@ def main(argv: list[str] | None = None) -> int:
     real_artifacts.add_argument("--source-admission-digest", required=True)
     real_artifacts.add_argument("--confirmation-purpose-digest", required=True)
     real_artifacts.add_argument("--created-at", required=True)
+    _add_external_arguments(real_artifacts)
     synthetic_artifacts = commands.add_parser("build-synthetic-artifacts")
     synthetic_artifacts.add_argument("--fixture", type=Path, required=True)
     synthetic_artifacts.add_argument("--created-at", required=True)
@@ -71,11 +99,15 @@ def main(argv: list[str] | None = None) -> int:
             _emit(result)
             return 0
         if args.command == "build-real-artifacts":
+            report = _load_canonical(args.review_report)
+            store = _store(args.records)
+            external = _external_authority(
+                args, resolve_completed_review_authority_subject(report, store),
+            )
             result = heldout_confirmation.build_authenticated_randomization_artifacts(
-                _load_canonical(args.review_report), _load_canonical(args.source_manifest),
-                _store(args.records),
+                report, _load_canonical(args.source_manifest), store,
                 args.source_admission_digest, args.confirmation_purpose_digest,
-                args.created_at,
+                args.created_at, external_authority=external,
             )
             _emit(result)
             return 0

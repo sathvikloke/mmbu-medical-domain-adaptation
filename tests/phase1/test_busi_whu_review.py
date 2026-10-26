@@ -15,7 +15,10 @@ import zipfile
 from mmbu_phase1 import canonical
 from mmbu_phase1.busi_whu_authority import validate_busi_whu_review_opening
 from mmbu_phase1.busi_whu_review import build_review_packet, build_review_selection
-from mmbu_phase1.busi_whu_review_validation import validate_completed_review
+from mmbu_phase1.busi_whu_review_validation import (
+    validate_completed_review, validate_source_assessments,
+)
+from mmbu_phase1.store import RecordStore
 from tests.phase1.test_busi_whu_authority import ReviewAuthorityWorld, t
 
 
@@ -638,6 +641,90 @@ class BusiWhuCompletedReviewTests(unittest.TestCase):
             self.rewrite_json(fixture["rights"], fixture["rights_value"])
             with self.assertRaisesRegex(ValueError, "training.*decline"):
                 self.validate(fixture)
+
+
+class BusiWhuSourceAssessmentTests(unittest.TestCase):
+    FINDINGS = {
+        "image_annotation_join_issue": "absent",
+        "lesion_completeness_issue": "absent",
+        "patient_identity_issue": "absent",
+        "target_semantics_issue": "absent",
+    }
+
+    def assessment(self, role, assessor, credential, findings=None):
+        return canonical.seal({
+            "schema_id": "mmbu.phase1.busi_whu_source_assessment", "schema_version": 1,
+            "assessment_id": f"assessment-{role}", "role": role, "assessor_id": assessor,
+            "credential_verification_digest": credential, "subject_digest": "a" * 64,
+            "subject_created_at": "2026-10-25T05:00:00Z",
+            "findings": findings or self.FINDINGS,
+            "assessed_at": "2026-10-25T05:10:00Z",
+        })
+
+    def credential(self, role, reviewer):
+        qualifications = {
+            "clinical_adjudicator": "board_certified_radiologist",
+            "data_rights_authority": "institutional_data_rights_authority",
+        }
+        return canonical.seal({
+            "schema_id": "mmbu.phase1.reviewer_credential_verification", "schema_version": 1,
+            "credential_id": f"credential-{role}", "reviewer_id": reviewer, "role": role,
+            "qualification_class": qualifications[role], "qualification_evidence_digest": "b" * 64,
+            "verifier_id": f"verifier-{role}", "verification_artifact_digest": "c" * 64,
+            "permitted_purposes": ["busi_whu_clinical_review"],
+            "verified_at": "2026-10-25T04:00:00Z", "expires_at": "2026-10-26T04:00:00Z",
+            "supersedes_digest": None,
+        })
+
+    def test_independent_agreeing_assessments_pass_and_any_finding_blocks(self):
+        clinical_credential = self.credential("clinical_adjudicator", "clinical-person")
+        custodian_credential = self.credential("data_rights_authority", "custodian-person")
+        clinical = self.assessment("clinical_adjudicator", "clinical-person",
+                                   clinical_credential["record_digest"])
+        custodian = self.assessment("data_rights_authority", "custodian-person",
+                                    custodian_credential["record_digest"])
+        store = RecordStore([clinical_credential, custodian_credential, clinical, custodian])
+        result = validate_source_assessments(
+            store, clinical["record_digest"], custodian["record_digest"],
+            subject_digest="a" * 64, subject_created_at="2026-10-25T05:00:00Z",
+        )
+        self.assertEqual(result["blockers"], [])
+        findings = dict(self.FINDINGS)
+        findings["lesion_completeness_issue"] = "present"
+        clinical = self.assessment("clinical_adjudicator", "clinical-person",
+                                   clinical_credential["record_digest"], findings)
+        custodian = self.assessment("data_rights_authority", "custodian-person",
+                                    custodian_credential["record_digest"], findings)
+        store = RecordStore([clinical_credential, custodian_credential, clinical, custodian])
+        result = validate_source_assessments(
+            store, clinical["record_digest"], custodian["record_digest"],
+            subject_digest="a" * 64, subject_created_at="2026-10-25T05:00:00Z",
+        )
+        self.assertEqual(result["blockers"], ["source_finding:lesion_completeness_issue:present"])
+
+    def test_disagreement_or_reused_assessor_blocks(self):
+        clinical_credential = self.credential("clinical_adjudicator", "clinical-person")
+        custodian_credential = self.credential("data_rights_authority", "custodian-person")
+        clinical = self.assessment("clinical_adjudicator", "clinical-person",
+                                   clinical_credential["record_digest"])
+        changed = dict(self.FINDINGS)
+        changed["target_semantics_issue"] = "unresolved"
+        custodian = self.assessment("data_rights_authority", "custodian-person",
+                                    custodian_credential["record_digest"], changed)
+        store = RecordStore([clinical_credential, custodian_credential, clinical, custodian])
+        result = validate_source_assessments(
+            store, clinical["record_digest"], custodian["record_digest"],
+            subject_digest="a" * 64, subject_created_at="2026-10-25T05:00:00Z",
+        )
+        self.assertEqual(result["blockers"], ["source_assessor_disagreement:target_semantics_issue"])
+        custodian["assessor_id"] = "clinical-person"
+        custodian["record_digest"] = canonical.record_digest(custodian)
+        store = RecordStore([clinical_credential, custodian_credential, clinical, custodian])
+        with self.assertRaises(ValueError):
+            validate_source_assessments(
+                store, clinical["record_digest"], custodian["record_digest"],
+                subject_digest="a" * 64, subject_created_at="2026-10-25T05:00:00Z",
+            )
 
 
 if __name__ == "__main__":

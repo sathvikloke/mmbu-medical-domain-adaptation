@@ -10,7 +10,9 @@ import re
 import stat
 
 from . import canonical
+from .busi_whu_authority import validate_credential_verification
 from .busi_whu_review import _REVIEW_FIELDS
+from .store import RecordStore
 
 
 TASKS = (
@@ -38,6 +40,15 @@ AUTHORITY_FIELDS = (
     "mmbu_public_content_used",
 )
 TIMESTAMP = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z")
+SOURCE_FINDINGS = {
+    "image_annotation_join_issue", "lesion_completeness_issue",
+    "patient_identity_issue", "target_semantics_issue",
+}
+SOURCE_ASSESSMENT_KEYS = {
+    "schema_id", "schema_version", "assessment_id", "role", "assessor_id",
+    "credential_verification_digest", "subject_digest", "subject_created_at",
+    "findings", "assessed_at", "record_digest",
+}
 
 
 def _closed(value: object, keys: set[str], label: str) -> dict:
@@ -77,6 +88,77 @@ def _validate_sealed(value: dict, label: str) -> dict:
     if canonical.record_digest(value) != value.get("record_digest"):
         raise ValueError(f"{label} digest mismatch")
     return value
+
+
+def _source_assessment(
+    store: RecordStore, assessment_digest: str, expected_role: str,
+    subject_digest: str, subject_created_at: str, label: str,
+) -> dict:
+    value = store.get(assessment_digest, "busi_whu_source_assessment", label)
+    _closed(value, SOURCE_ASSESSMENT_KEYS, label)
+    _validate_sealed(value, label)
+    if value["schema_id"] != "mmbu.phase1.busi_whu_source_assessment" or value["schema_version"] != 1:
+        raise ValueError(f"{label} identity mismatch")
+    if value["role"] != expected_role:
+        raise ValueError(f"{label} role mismatch")
+    for field in ("assessment_id", "assessor_id"):
+        _text(value[field], f"{label}.{field}")
+    if value["subject_digest"] != subject_digest or value["subject_created_at"] != subject_created_at:
+        raise ValueError(f"{label} subject binding mismatch")
+    created = _time(value["subject_created_at"], f"{label}.subject_created_at")
+    if _time(value["assessed_at"], f"{label}.assessed_at") <= created:
+        raise ValueError(f"{label} must follow immutable subject creation")
+    findings = _closed(value["findings"], SOURCE_FINDINGS, f"{label}.findings")
+    if any(status not in {"absent", "present", "unresolved"} for status in findings.values()):
+        raise ValueError(f"{label}.findings contains an unknown status")
+    credential = validate_credential_verification(
+        store.get(value["credential_verification_digest"], "reviewer_credential_verification",
+                  f"{label}.credential"),
+        f"{label}.credential",
+    )
+    if (
+        credential["record_digest"] != value["credential_verification_digest"]
+        or credential["role"] != expected_role
+        or credential["reviewer_id"] != value["assessor_id"]
+    ):
+        raise ValueError(f"{label} credential binding mismatch")
+    return value
+
+
+def validate_source_assessments(
+    store: RecordStore, clinical_assessment_digest: str, custodian_assessment_digest: str,
+    *, subject_digest: str, subject_created_at: str,
+) -> dict:
+    """Resolve two independent source assessments and return fail-closed blockers."""
+    if not isinstance(store, RecordStore):
+        raise ValueError("source assessment store must be a Phase 1 record store")
+    if not re.fullmatch(r"[0-9a-f]{64}", subject_digest):
+        raise ValueError("source assessment subject digest is invalid")
+    _time(subject_created_at, "source assessment subject_created_at")
+    clinical = _source_assessment(
+        store, clinical_assessment_digest, "clinical_adjudicator", subject_digest,
+        subject_created_at, "clinical source assessment",
+    )
+    custodian = _source_assessment(
+        store, custodian_assessment_digest, "data_rights_authority", subject_digest,
+        subject_created_at, "custodian source assessment",
+    )
+    if clinical["assessor_id"] == custodian["assessor_id"]:
+        raise ValueError("source assessments require distinct people")
+    blockers = []
+    for finding in sorted(SOURCE_FINDINGS):
+        left = clinical["findings"][finding]
+        right = custodian["findings"][finding]
+        if left != right:
+            blockers.append(f"source_assessor_disagreement:{finding}")
+        elif left != "absent":
+            blockers.append(f"source_finding:{finding}:{left}")
+    return {
+        "authenticated": True,
+        "blockers": blockers,
+        "clinical_assessment_digest": clinical["record_digest"],
+        "custodian_assessment_digest": custodian["record_digest"],
+    }
 
 
 def _negative_authority(value: dict, label: str) -> None:
@@ -532,4 +614,4 @@ def validate_completed_review(
     return report
 
 
-__all__ = ["validate_completed_review"]
+__all__ = ["validate_completed_review", "validate_source_assessments"]

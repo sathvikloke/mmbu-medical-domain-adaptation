@@ -18,7 +18,7 @@ from mmbu_phase1.fields import (
 )
 
 
-SPEC_DIGEST = "f73f4b6f088ead82d5045145d829abff90cd4dc259585c68678242693d47c75f"
+SPEC_DIGEST = "121d20c04fdb6ef38823d6483bcc04ca2349ae6937eae578a3972319c1cf3e4a"
 SPEC_KEYS = (
     "authorization", "candidate", "confirmation_id", "gates", "prompts", "resources",
     "schema_id", "schema_version", "source", "statistics", "training",
@@ -71,10 +71,24 @@ def validate_checkpoint_lineage(value: object, path: str = "heldout_confirmation
         "profile": "dual",
         "runtime_gate_id": "qwen3.5-9b-successor-native-runtime",
         "runtime_gate_passed": True,
-        "source_purposes": {"busbra": "train", "pathmnist": "train"},
     }
     for key, expected_value in expected.items():
         literal(row[key], f"{path}.{key}", expected_value)
+    sources = row["source_purposes"]
+    require(type(sources) is dict and len(sources) >= 3, f"{path}.source_purposes",
+            "must contain BUS-BRA plus at least two semantic-breadth families")
+    require(sources.get("busbra") == "train", f"{path}.source_purposes.busbra",
+            "must bind BUS-BRA to the train purpose")
+    source_id_characters = set("abcdefghijklmnopqrstuvwxyz0123456789-_")
+    for source_id, purpose in sources.items():
+        require(
+            type(source_id) is str and source_id and source_id[0] in "abcdefghijklmnopqrstuvwxyz0123456789"
+            and all(character in source_id_characters for character in source_id),
+            f"{path}.source_purposes", "source IDs must be canonical lowercase identifiers",
+        )
+        require(source_id != "mmbu-public", f"{path}.source_purposes.{source_id}",
+                "MMBU public content is forbidden")
+        literal(purpose, f"{path}.source_purposes.{source_id}", "train")
     require(type(row["training_seed"]) is int and row["training_seed"] in (20261025, 20261026, 20261027),
             f"{path}.training_seed", "must be one of the three frozen non-boolean integer seeds")
     return row
@@ -911,12 +925,21 @@ def readiness_status(value: object) -> dict:
     require(type(lineages) is list and len(lineages) == 3,
             "heldout_confirmation.readiness.checkpoint_lineages", "must contain exactly three checkpoints")
     expected_seeds = (20261025, 20261026, 20261027)
+    source_portfolio = None
     for index, (lineage, seed) in enumerate(zip(lineages, expected_seeds)):
         validated = validate_checkpoint_lineage(
             lineage, f"heldout_confirmation.readiness.checkpoint_lineages[{index}]"
         )
         literal(validated["training_seed"],
                 f"heldout_confirmation.readiness.checkpoint_lineages[{index}].training_seed", seed)
+        if source_portfolio is None:
+            source_portfolio = validated["source_purposes"]
+        else:
+            literal(
+                validated["source_purposes"],
+                f"heldout_confirmation.readiness.checkpoint_lineages[{index}].source_purposes",
+                source_portfolio,
+            )
 
     attempts = closed(record["attempts_started"], "heldout_confirmation.readiness.attempts_started", CONDITIONS)
     for condition in CONDITIONS:

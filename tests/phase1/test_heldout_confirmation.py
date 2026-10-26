@@ -22,7 +22,7 @@ from tests.phase1.test_busi_whu_authority import ReviewAuthorityWorld
 
 
 REPO = Path(__file__).resolve().parents[2]
-SPEC = REPO / "config/phase1/busi-whu-confirmation-spec-2026-10-25.json"
+SPEC = REPO / "config/phase1/busi-whu-confirmation-spec-2026-10-26.json"
 TOOL = REPO / "tools/busi_whu_confirmation.py"
 FIXTURES = REPO / "tests/phase1/fixtures/heldout-confirmation"
 
@@ -52,6 +52,10 @@ class HeldoutConfirmationSpecTests(unittest.TestCase):
         self.assertEqual(value["training"]["seeds"], [20261025, 20261026, 20261027])
         self.assertEqual(value["training"]["optimizer_updates"], 1024)
         self.assertEqual(value["training"]["lora_dropout"], 0)
+        self.assertEqual(value["training"]["required_training_sources"], ["busbra"])
+        self.assertEqual(value["training"]["minimum_training_source_families"], 3)
+        self.assertTrue(value["training"]["source_portfolio_frozen_in_pre_execution_manifest"])
+        self.assertNotIn("training_sources", value["training"])
         self.assertEqual(value["source"]["minimum_independent_patients"], 60)
         self.assertEqual((value["source"]["source_id"], value["source"]["source_version"]),
                          ("busi-whu", "3"))
@@ -104,7 +108,9 @@ class HeldoutConfirmationLineageTests(unittest.TestCase):
             "profile": "dual",
             "runtime_gate_id": "qwen3.5-9b-successor-native-runtime",
             "runtime_gate_passed": True,
-            "source_purposes": {"busbra": "train", "pathmnist": "train"},
+            "source_purposes": {
+                "busbra": "train", "semantic-family-a": "train", "semantic-family-b": "train",
+            },
             "training_seed": 20261025,
         }
 
@@ -118,8 +124,14 @@ class HeldoutConfirmationLineageTests(unittest.TestCase):
             lambda row: row.__setitem__("post_admission_retraining", False),
             lambda row: row.__setitem__("runtime_gate_passed", False),
             lambda row: row.__setitem__("runtime_gate_id", "qwen2.5-vl-b1"),
-            lambda row: row.__setitem__("source_purposes", {"busbra": "train"}),
-            lambda row: row.__setitem__("source_purposes", {"busbra": "train", "pathmnist": "eval"}),
+            lambda row: row.__setitem__("source_purposes", {
+                "busbra": "train", "semantic-family-a": "train",
+            }),
+            lambda row: row.__setitem__("source_purposes", {
+                "semantic-family-a": "train", "semantic-family-b": "train", "semantic-family-c": "train",
+            }),
+            lambda row: row["source_purposes"].__setitem__("semantic-family-b", "eval"),
+            lambda row: row["source_purposes"].__setitem__("sémantic-family-c", "train"),
             lambda row: row.__setitem__("lora_dropout", 0.05),
             lambda row: row.__setitem__("optimizer_updates", 1023),
             lambda row: row.__setitem__("training_seed", 7),
@@ -693,6 +705,14 @@ class HeldoutConfirmationReadinessTests(unittest.TestCase):
             mutate(manifest)
             with self.assertRaises(ContractViolation):
                 self.module.readiness_status(manifest)
+
+    def test_all_seed_lineages_share_one_prospective_source_portfolio(self):
+        manifest = self.manifest()
+        manifest["checkpoint_lineages"][2]["source_purposes"] = {
+            "busbra": "train", "semantic-family-a": "train", "semantic-family-c": "train",
+        }
+        with self.assertRaises(ContractViolation):
+            self.module.readiness_status(manifest)
 
     def test_command_has_only_three_safe_modes_and_no_runtime_imports(self):
         source = TOOL.read_text(encoding="utf-8")

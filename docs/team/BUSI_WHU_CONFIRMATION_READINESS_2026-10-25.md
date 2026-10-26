@@ -19,8 +19,13 @@ The command is intentionally narrow:
 
 ```sh
 python3 tools/busi_whu_confirmation.py validate-spec \
-  --spec config/phase1/busi-whu-confirmation-spec-2026-10-25.json
+  --spec config/phase1/busi-whu-confirmation-spec-2026-10-26.json
 ```
+
+The October 25 protocol remains preserved as historical evidence but is superseded before execution: its exact
+two-source lineage contradicted the binding semantic-breadth minimum. The October 26 successor requires BUS-BRA plus
+at least two additional admitted source families and freezes one identical exact portfolio across all three seed
+lineages before any attempt starts. It does not choose or admit those additional families.
 
 Its other modes check a reference manifest or validate a synthetic fixture. The reference mode cannot authorize execution until it is connected to an authority-backed record resolver. The command has no acquisition, network, scheduler, model, training, GPU, or upload path.
 
@@ -28,7 +33,8 @@ Its other modes check a reference manifest or validate a synthetic fixture. The 
 
 No real confirmation run is authorized or ready. These records still need to exist and validate:
 
-1. BUS-BRA and PathMNIST admission for the `train` purpose, including exact split manifests and record-level lineage.
+1. BUS-BRA plus at least two independent semantic-breadth families admitted for the `train` purpose, including exact
+   split manifests and record-level lineage. The actual portfolio remains undecided and blocked.
 2. A reviewed Qwen3.5-9B successor runtime gate covering native load, one real training path, save, fresh offline reload, and equality.
 3. Three new checkpoints trained after source admission. The October 25 exploratory adapters cannot be reused.
 4. BUSI-WHU v3 acquisition authorization and immutable archive checksums.

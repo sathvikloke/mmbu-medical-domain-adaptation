@@ -1,5 +1,10 @@
 # Current clone verification
 
+> The latest cold, independent evidence-state review is the
+> [post-repair audit](INDEPENDENT_PROJECT_AUDIT_2026-10-26_POST_REPAIR.md). Its 45/100 score does not negate the
+> engineering results below; it reflects the absence of an admitted scientific study, executable competition
+> candidate, official-equivalent harness, and portable empirical evidence.
+
 ## October 25 BUSI-WHU confirmation-admission addendum
 
 The current source-admission branch adds a synthetic-tested, fail-closed BUSI-WHU review path: deterministic

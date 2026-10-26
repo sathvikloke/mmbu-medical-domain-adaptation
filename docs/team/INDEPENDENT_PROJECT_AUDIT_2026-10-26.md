@@ -1,9 +1,10 @@
 # Independent MMBU project audit — October 26, 2026
 
-> **Historical snapshot, superseded for current decisions.** This report predates the later 52/100 independent audit,
-> the checkout-replay boundary, and withdrawal of remote-only candidate authority. Its Qwen3.5-9B observations and
-> recommended confirmation sequence have zero current model-selection or promotion authority. Use
-> [current clone verification](CURRENT_VERIFICATION.md) and the active confirmation specification instead.
+> **Historical snapshot, superseded for current decisions.** This report predates the later checkout-replay boundary,
+> withdrawal of remote-only candidate authority, external-authority repairs, and the cold post-repair audit. Its
+> Qwen3.5-9B observations and recommended confirmation sequence have **zero current model-selection or promotion authority**.
+> Use the [cold post-repair audit](INDEPENDENT_PROJECT_AUDIT_2026-10-26_POST_REPAIR.md),
+> [current clone verification](CURRENT_VERIFICATION.md), and the active confirmation specification instead.
 
 ## Verdict
 

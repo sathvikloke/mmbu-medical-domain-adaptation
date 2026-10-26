@@ -109,3 +109,18 @@ The acknowledged one-attempt packet `4d521a114f833d6fc0547622488ca4efaf7205ae84d
 - Inventory digest: `45345d9fb830734dbfefdc41baa6ce7e6a2e2636b70c2253ae2d9639886d4ab9`; status digest: `8ded14ebf8f73991e603359e0d566c196a384dec5b3514880d1c2c4f20da97de`.
 
 This is a metadata and custody result only. The run granted no source admission or model-use authority, performed no image or mask decoding, and used no MMBU public content. Qualified medical/annotation review, source-proximity review, exact purpose/release decisions, and resolution of the two excluded cases remain blocking.
+
+## BUSI-WHU protected metadata outcome
+
+The acknowledged one-attempt packet `e4d8c2cec3357305902e7d795df857a0934218a0fccb9adca1adc2fd39aa0608` completed successfully as CPU job `86066` in four seconds. The exact result is retained under `outputs/source-admission-busi-whu-metadata-2026-10-25/execution-86066/`.
+
+- All 927 workbook data rows formed an exact bijection with the 927 previously validated image/annotation pairs.
+- The records resolve to 816 patient groups, so later confirmation splits can be patient-disjoint rather than image-random.
+- The bounded pathology codes contain 560 benign records and 367 malignant records.
+- Workbook row identities, patient group identities, pathology codes, and row digests were emitted; raw geometry values were not emitted.
+- Inventory digest: `8df0b10e95b2cee3dcb3bd55754c42633a56b6f63fe2cf21b7105f5f3532f6f5`; status digest: `b6c8767fbe93f3560bae0a6d1154d3e678e7f450c515ab017cf4309edc170888`.
+- Inventory file SHA-256: `7393693e0476014bf356f32fdfea7dca1772d0e54dcc55dafc09048df7bba833`; status file SHA-256: `2ad33898a92f049be383c8198690ed7c9c07223f9ddefb84a625d2979031b47f`.
+
+No image or annotation payload was decoded, no source was admitted, and no model, GPU, training, MMBU public content, upload, or submission was used. This resolves the mechanical patient/image/annotation/label join blocker. It does not establish clinical correctness, annotation quality, confirmation validity, dataset-purpose authorization, trained-weight release rights, or competition readiness.
+
+The next evidence-producing work is a prospectively frozen, patient-grouped clinical/annotation review and an independent purpose/release decision. The honest admitted-source count remains **zero** until those gates pass.

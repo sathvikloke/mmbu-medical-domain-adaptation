@@ -97,7 +97,10 @@ The calculation used 10,000 shared group-resampling draws, bootstrap seed `20261
 
 The canonical analysis artifact is `/storage/scr/npl015/mmbu-response-analysis/2026-10-25-6ef06ab/post-output-bootstrap.json`, SHA-256 `2aeeb194baa2a95af09e14e5b0a96788bf55af7af2f853638f63362cc51a12ef`. It reads the preserved run without changing any receipt, prediction, log, or model artifact.
 
-The 9B result is a large and replicated response on this fixed development population. It makes the 9B Track 2 route the priority for a properly frozen confirmation experiment. It does not retroactively satisfy a binding confidence-bound gate, prove transfer to another source or partition, or authorize checkpoint promotion.
+The reported 9B result is a large and replicated response on this fixed development population. Because the primary
+artifacts are unavailable in this checkout, it cannot establish candidate priority or authorize a confirmation
+candidate. It does not retroactively satisfy a binding confidence-bound gate, prove transfer to another source or
+partition, or authorize checkpoint promotion.
 
 ## Predeclared descriptive checks
 
@@ -108,7 +111,8 @@ The 9B result is a large and replicated response on this fixed development popul
 | Small-route competitiveness | Fail on raw `Q` | The 4B task-only route is within 0.03 of the 9B route in only one seed; the 4B dual route is more than 0.03 lower in all three seeds. No unresolved Track 3 size multiplier was applied. |
 | Instability flag | No 9B direction reversal observed | Every adapted 9B seed has a positive base-relative task delta, and fresh reload matched exactly. |
 
-These checks prioritize the next experiment only. They do not compare separate official leaderboards or choose the final competition track.
+These checks describe the historical screen only. They cannot prioritize a candidate, compare separate official
+leaderboards, or choose the final competition track.
 
 ## Preserved predecessor failure
 
@@ -135,4 +139,8 @@ A regression test reproduced the missing-path failure with `PYTHONPATH` removed.
 
 ## Decision boundary
 
-The response screen passed its narrow purpose. The evidence supports carrying Qwen3.5-9B and the dual objective into a separately authorized, source-admitted confirmation experiment. It does not support choosing a winner from these development results. The next decision-bearing experiment must freeze source admission, a held-out confirmation population, task and context endpoints, the complete resampling algorithm and literals, seed-level acceptance rules, and the exact candidate set before any confirmation labels are opened.
+The response screen completed its historical narrow purpose, but the checkout cannot independently establish that it
+passed. It does not support choosing a winner, candidate, objective, or track from these development results. A future
+decision-bearing experiment must independently justify and freeze the candidate set, source admission, held-out
+confirmation population, task and context endpoints, complete resampling algorithm and literals, and seed-level
+acceptance rules before any confirmation labels are opened.

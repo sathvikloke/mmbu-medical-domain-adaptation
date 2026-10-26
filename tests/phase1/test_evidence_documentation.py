@@ -36,6 +36,9 @@ class EvidenceDocumentationTests(unittest.TestCase):
         self.assertIn("raw predictions", report)
         self.assertIn("result receipts", report)
         self.assertIn("must be imported and hash-verified", report)
+        self.assertIn("cannot establish candidate priority", report)
+        self.assertNotIn("makes the 9B Track 2 route the priority", report)
+        self.assertNotIn("supports carrying Qwen3.5-9B", report)
 
     def test_current_verification_separates_current_and_historical_counts(self):
         report = (REPO / "docs/team/CURRENT_VERIFICATION.md").read_text(

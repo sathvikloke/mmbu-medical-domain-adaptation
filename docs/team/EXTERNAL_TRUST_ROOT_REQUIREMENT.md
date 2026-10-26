@@ -77,4 +77,3 @@ Until real external keys, roles, policies, signatures, timestamps, and revocatio
 and the verifier above is implemented and tested, all existing Stage A and BUSI-WHU identity claims remain
 self-authenticated repository evidence. They may support engineering traceability but cannot grant biomedical payload
 opening, source admission, model use, training, checkpoint promotion, release, upload, or submission authority.
-

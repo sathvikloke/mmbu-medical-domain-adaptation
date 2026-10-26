@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 import unittest
 
 
@@ -6,6 +7,47 @@ REPO = Path(__file__).resolve().parents[2]
 
 
 class EvidenceDocumentationTests(unittest.TestCase):
+    def test_pathmnist_author_reply_is_retained_without_overclaiming(self):
+        receipt_path = (
+            REPO
+            / "outputs/source-clarification-replies/pathmnist-medmnist-2026-10-26.json"
+        )
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        outreach = (REPO / "docs/team/SOURCE_CLARIFICATION_OUTREACH.md").read_text(
+            encoding="utf-8"
+        )
+        limitation = (
+            REPO / "docs/team/PATHMNIST_MAPPING_LIMITATION_2026-10-25.md"
+        ).read_text(encoding="utf-8")
+        decisions = (REPO / "docs/team/DECISIONS.md").read_text(encoding="utf-8")
+
+        self.assertEqual(receipt["gmail_message_id"], "1a179e583ff85cd4")
+        self.assertEqual(receipt["sender"], "Jiancheng Yang <jiancheng.yang@aalto.fi>")
+        self.assertEqual(receipt["authentication"]["dkim"], "pass")
+        self.assertEqual(receipt["authentication"]["dmarc"], "pass")
+        self.assertIn("original patch ID", receipt["response_text"])
+        self.assertIn("contact the original NCT-CRC-HE-100K authors", receipt["response_text"])
+        self.assertFalse(receipt["decision_projection"]["slide_or_patient_mapping_supplied"])
+        self.assertFalse(receipt["decision_projection"]["source_admitted"])
+
+        self.assertIn("Reply received October 26, 2026", outreach)
+        self.assertIn("does not supply slide/patient IDs", outreach)
+        self.assertIn("author reply", limitation)
+        self.assertIn("PathMNIST remains blocked", decisions)
+        self.assertNotIn("PathMNIST/NCT-CRC questions were sent on October 23 and remain pending", decisions)
+
+        route = json.loads(
+            (
+                REPO
+                / "outputs/source-clarification-replies/nct-crc-corrected-route-2026-10-26.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(route["automatic_reply_message_id"], "1a16c3494ae67966")
+        self.assertEqual(route["corrected_recipient"], "jakob.kather@med.uni-heidelberg.de")
+        self.assertEqual(route["corrected_send_message_id"], "1a179efa3c999283")
+        self.assertFalse(route["decision_projection"]["source_author_answer_received"])
+        self.assertIn("corrected author address on October 26", outreach)
+
     def test_external_trust_root_requirement_is_explicit_and_non_self_authorizing(self):
         requirement = (
             REPO / "docs/team/EXTERNAL_TRUST_ROOT_REQUIREMENT.md"

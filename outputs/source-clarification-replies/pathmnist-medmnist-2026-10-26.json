@@ -1,0 +1,37 @@
+{
+  "schema_id": "mmbu.source_clarification_reply",
+  "schema_version": 1,
+  "received_at": "2026-10-26T20:26:56Z",
+  "sender": "Jiancheng Yang <jiancheng.yang@aalto.fi>",
+  "recipient": "Aditya Raut <aditya.sraut09@gmail.com>",
+  "subject": "Re: PathMNIST source-parent mapping question",
+  "gmail_message_id": "1a179e583ff85cd4",
+  "gmail_thread_id": "1a16c34864d3265d",
+  "rfc_message_id": "<AM7P192MB06287D0A8D51EF36149F207CF8612@AM7P192MB0628.EURP192.PROD.OUTLOOK.COM>",
+  "authentication": {
+    "dkim": "pass",
+    "dmarc": "pass",
+    "spf": "pass"
+  },
+  "quoted_question": "Does the published PathMNIST source-image mapping preserve enough information to reconstruct the NCT-CRC-HE-100K slide or patient parent for every patch? If there is a recommended mapping file or grouping field beyond the source-image CSV in the MedMNIST repository, could you point me to it?",
+  "response_text": "Hi Aditya,\n\nThanks for reaching out!\n\nWe provide a mapping CSV that links each PathMNIST sample to its original patch ID:\nhttps://github.com/MedMNIST/MedMNIST/issues/49\n\nWe followed the original dataset's train/test separation, so we do not expect leakage into the independent test set. You can find more details in our paper.\n\nFor the corresponding slide/patient IDs, you may want to contact the original NCT-CRC-HE-100K authors to check whether this information is available.\n\nBest,\nJiancheng (JC)",
+  "direct_claims": [
+    "The published CSV links each PathMNIST sample to its original patch ID.",
+    "MedMNIST followed the original dataset's train/test separation.",
+    "The original NCT-CRC-HE-100K authors are the suggested contact for slide or patient IDs."
+  ],
+  "not_supplied": [
+    "a slide identifier for each patch",
+    "a patient identifier for each patch",
+    "a complete parent mapping for the PathMNIST train and validation populations",
+    "competition-use or trained-weight-release authority"
+  ],
+  "decision_projection": {
+    "patch_identity_mapping_confirmed": true,
+    "slide_or_patient_mapping_supplied": false,
+    "patient_disjoint_development_supported": false,
+    "source_admitted": false,
+    "next_contact": "original NCT-CRC-HE-100K authors"
+  },
+  "handling_note": "This retained reply is candidate provenance evidence. It does not directly edit an authority registry, grant model-use purpose, or admit PathMNIST."
+}

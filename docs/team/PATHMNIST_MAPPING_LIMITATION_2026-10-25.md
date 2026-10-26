@@ -3,12 +3,19 @@
 **Reviewed:** 2026-10-26 UTC
 **Evidence:** corrected mapping inventory from CPU job `86061`
 **Decision:** PathMNIST remains ineligible for decision-bearing development or confirmation use
+**Author evidence:** authenticated reply received from the MedMNIST lead on October 26, 2026
 
 ## Material finding
 
 The official 100,000-row train/validation mapping does not contain a slide or patient key. Every emitted `image_id` has exactly the form `PREFIX-XXXXXXXX`: one of nine uppercase prefixes followed by a globally unique eight-letter token. There are 100,000 unique IDs and 100,000 unique suffixes. No identifier repeats across patches in a way that can reconstruct the 86 upstream source slides or their patients.
 
 The mapping therefore proves wrapper-to-source-image identity only. It cannot prove independent-unit grouping, cannot detect train/validation patches originating from the same slide or patient, and cannot support a patient-disjoint development claim. The [official MedMNIST repository](https://github.com/MedMNIST/MedMNIST) describes the CSV as a mapping to source image names, while the published PathMNIST description says the 100,000-patch NCT-CRC source was divided 9:1 into train and validation. Neither statement supplies the missing parent key.
+
+The October 26 author reply confirms this interpretation rather than repairing it: the published CSV links each
+PathMNIST sample to its original patch ID, while slide/patient identifiers must be sought from the original
+NCT-CRC-HE-100K authors. The response supplies no slide key, patient key, or complete parent mapping. The retained
+communication record is
+[`pathmnist-medmnist-2026-10-26.json`](../../outputs/source-clarification-replies/pathmnist-medmnist-2026-10-26.json).
 
 ## Boundary correction
 
@@ -31,4 +38,4 @@ No class target is inferred or granted authority from this finding. It is a cust
 
 ## Portfolio effect
 
-This finding lowers PathMNIST's near-term value relative to BUS-BRA and BUSI-WHU. It does not invalidate PathMNIST as a source of histology training examples, but it prevents the wrapper split from serving as clean decision evidence. The next executable data step should therefore be the BUSI-WHU patient/image/mask join, while the existing PathMNIST source-author question remains open.
+This finding lowers PathMNIST's near-term value relative to BUS-BRA and BUSI-WHU. It does not invalidate PathMNIST as a source of histology training examples, but it prevents the wrapper split from serving as clean decision evidence. The next executable data step should therefore prioritize a source with complete independent-unit lineage. The MedMNIST-wrapper question is closed negatively; only authoritative evidence from the original NCT-CRC-HE-100K authors or records could reopen PathMNIST for decision-bearing use.

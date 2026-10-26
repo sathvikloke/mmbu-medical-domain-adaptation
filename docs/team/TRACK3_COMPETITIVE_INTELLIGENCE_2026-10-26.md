@@ -64,10 +64,14 @@ data proportions, tiling policy, checkpoint choice, or stopping rule.
    patient grouping, held-out-family design, and immutable receipts matter only if paired with positive biomedical
    results; process prose alone earns no score increase.
 
-## Next matched external experiment
+## Prospective Track 3 matched external experiment
 
-After real source admission and protocol freeze, run one matched external experiment across the already frozen
-2B-class candidates:
+This branch does not replace the binding 9B Track 2 confirmation sequence in the competition-direction decision.
+It is the smallest future experiment that can resolve the newly documented Track 3 threat after the binding sequence
+is completed, superseded through a separately reviewed decision, or rendered inapplicable by an organizer answer.
+
+After real source admission and a separate protocol freeze, the Track 3 branch would run one matched external
+experiment across the already frozen 2B-class candidates:
 
 - `Qwen/Qwen3-VL-2B-Instruct`;
 - `OpenGVLab/InternVL3_5-2B-HF`.

@@ -27,6 +27,7 @@ class EvidenceDocumentationTests(unittest.TestCase):
             "does not promote InternVL",
             "general-capability regressions",
             "matched external experiment",
+            "does not replace the binding 9B Track 2 confirmation sequence",
         ):
             self.assertIn(marker, intelligence)
         self.assertIn("OpenGVLab/InternVL3_5-2B-HF", feasibility)

@@ -41,6 +41,7 @@ _REVIEW_FIELDS = (
     "decoded_width", "decoded_height", "annotation_bbox_xywh", "reviewer_id", "reviewed_at",
     "image_interpretable", "ultrasound_modality_supported", "breast_anatomy_supported",
     "annotation_usable", "label_plausible", "shortcut_artifact", "disposition", "notes",
+    "permitted_tasks",
 )
 
 

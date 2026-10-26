@@ -1,0 +1,503 @@
+"""Validate BUSI-WHU human-review evidence without granting authority."""
+
+from __future__ import annotations
+
+import csv
+from datetime import datetime, timezone
+import hashlib
+from pathlib import Path, PurePosixPath
+import re
+import stat
+
+from . import canonical
+from .busi_whu_review import _REVIEW_FIELDS
+
+
+TASKS = (
+    "global_classification", "grounded_classification", "localization", "context_prediction",
+)
+ANSWERS = {"yes", "no", "uncertain"}
+DISPOSITIONS = {"eligible", "narrow", "excluded", "unresolved"}
+PURPOSE_DECISIONS = {"approve", "narrow", "decline", "unresolved"}
+PURPOSES = {
+    "confirmation_evaluation", "challenge_reporting", "publication",
+    "source_artifact_redistribution", "trained_weight_release", "training",
+}
+IMMUTABLE_FIELDS = (
+    "record_id", "parent_id", "label_code", "workbook_row", "image_path", "annotation_path",
+    "decoded_width", "decoded_height", "annotation_bbox_xywh",
+)
+DECISION_FIELDS = (
+    "image_interpretable", "ultrasound_modality_supported", "breast_anatomy_supported",
+    "annotation_usable", "label_plausible", "shortcut_artifact", "permitted_tasks", "disposition",
+)
+AUTHORITY_FIELDS = (
+    "source_admission_authorized", "training_ready", "model_use_authorized",
+    "mmbu_public_content_used",
+)
+TIMESTAMP = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z")
+
+
+def _closed(value: object, keys: set[str], label: str) -> dict:
+    if type(value) is not dict or set(value) != keys:
+        raise ValueError(f"{label} must be a closed object")
+    return value
+
+
+def _text(value: object, label: str) -> str:
+    if not isinstance(value, str) or not value or value != value.strip():
+        raise ValueError(f"{label} must be nonblank trimmed text")
+    return value
+
+
+def _time(value: object, label: str) -> datetime:
+    text = _text(value, label)
+    if TIMESTAMP.fullmatch(text) is None:
+        raise ValueError(f"{label} must be a UTC second timestamp")
+    try:
+        parsed = datetime.strptime(text, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+    except ValueError as exc:
+        raise ValueError(f"{label} must be a real UTC second timestamp") from exc
+    if parsed > datetime.now(timezone.utc):
+        raise ValueError(f"{label} may not be in the future")
+    return parsed
+
+
+def _load_canonical(path: Path, label: str) -> tuple[dict, bytes]:
+    payload = Path(path).read_bytes()
+    value = canonical.loads(payload)
+    if type(value) is not dict or canonical.dumps(value) != payload:
+        raise ValueError(f"{label} must be one canonical JSON object")
+    return value, payload
+
+
+def _validate_sealed(value: dict, label: str) -> dict:
+    if canonical.record_digest(value) != value.get("record_digest"):
+        raise ValueError(f"{label} digest mismatch")
+    return value
+
+
+def _negative_authority(value: dict, label: str) -> None:
+    for field in AUTHORITY_FIELDS:
+        if value.get(field) is not False:
+            raise ValueError(f"{label}.{field} must remain false")
+
+
+def _validate_packet(packet: Path, expected_digest: str) -> tuple[dict, dict, dict, dict]:
+    packet = Path(packet).resolve(strict=True)
+    if not packet.is_dir():
+        raise ValueError("packet must be a directory")
+    receipt, receipt_payload = _load_canonical(packet / "packet-receipt.json", "packet receipt")
+    _validate_sealed(receipt, "packet receipt")
+    if receipt["record_digest"] != expected_digest:
+        raise ValueError("packet differs from the expected frozen receipt")
+    _negative_authority(receipt, "packet receipt")
+    seen = set()
+    for member in receipt.get("members", []):
+        member = _closed(member, {"path", "bytes", "sha256"}, "packet member")
+        name = member["path"]
+        pure = PurePosixPath(name) if isinstance(name, str) else None
+        if (
+            pure is None or pure.is_absolute() or pure.as_posix() != name or ".." in pure.parts
+            or name in seen or type(member["bytes"]) is not int or member["bytes"] < 0
+            or not isinstance(member["sha256"], str)
+            or re.fullmatch(r"[0-9a-f]{64}", member["sha256"]) is None
+        ):
+            raise ValueError("packet receipt contains an invalid member")
+        seen.add(name)
+        target = packet / name
+        info = target.lstat()
+        if not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+            raise ValueError("packet member must be a regular unaliased file")
+        payload = target.read_bytes()
+        if len(payload) != member["bytes"] or hashlib.sha256(payload).hexdigest() != member["sha256"]:
+            raise ValueError("packet member digest mismatch")
+    actual = {
+        path.relative_to(packet).as_posix() for path in packet.rglob("*")
+        if path.is_file() and path.name != "packet-receipt.json"
+    }
+    if seen != actual:
+        raise ValueError("packet filesystem differs from its receipt")
+    manifest, _ = _load_canonical(packet / "review-manifest.json", "review manifest")
+    decode, _ = _load_canonical(packet / "decode-inventory.json", "decode inventory")
+    duplicates, _ = _load_canonical(packet / "duplicate-candidates.json", "duplicate inventory")
+    for name, value in (("manifest", manifest), ("decode inventory", decode), ("duplicates", duplicates)):
+        _validate_sealed(value, name)
+        _negative_authority(value, name)
+    if (
+        receipt["manifest_digest"] != manifest["record_digest"]
+        or receipt["decode_inventory_digest"] != decode["record_digest"]
+        or receipt["duplicate_candidates_digest"] != duplicates["record_digest"]
+        or manifest["decode_inventory_digest"] != decode["record_digest"]
+        or manifest["duplicate_candidates_digest"] != duplicates["record_digest"]
+    ):
+        raise ValueError("packet transitive digest chain mismatch")
+    if decode.get("record_count") != 927 or len(decode.get("records", [])) != 927:
+        raise ValueError("decode inventory must contain exactly 927 records")
+    return receipt, manifest, decode, duplicates
+
+
+def _read_rows(path: Path, label: str) -> tuple[list[dict[str, str]], bytes]:
+    payload = Path(path).read_bytes()
+    try:
+        text = payload.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise ValueError(f"{label} must be UTF-8") from exc
+    reader = csv.DictReader(text.splitlines(keepends=True))
+    if reader.fieldnames != list(_REVIEW_FIELDS):
+        raise ValueError(f"{label} columns differ from the frozen template")
+    rows = list(reader)
+    if any(None in row or any(value is None for value in row.values()) for row in rows):
+        raise ValueError(f"{label} contains malformed cells")
+    return rows, payload
+
+
+def _template_rows(packet: Path, name: str) -> list[dict[str, str]]:
+    rows, _ = _read_rows(packet / name, name)
+    return rows
+
+
+def _profile_map(opening: dict) -> tuple[dict[str, dict], datetime]:
+    keys = {
+        "schema_id", "schema_version", "packet_receipt_digest", "opened_at", "opened_by",
+        "authorization_evidence_locator", "review_opening_authorized", "reviewers", *AUTHORITY_FIELDS,
+    }
+    _closed(opening, keys, "review opening")
+    if opening["schema_id"] != "mmbu.phase1.busi_whu_review_opening" or opening["schema_version"] != 1:
+        raise ValueError("review opening identity mismatch")
+    if opening["review_opening_authorized"] is not True:
+        raise ValueError("review opening is not authorized")
+    _negative_authority(opening, "review opening")
+    _text(opening["opened_by"], "review opening.opened_by")
+    _text(opening["authorization_evidence_locator"], "review opening.authorization_evidence_locator")
+    opened_at = _time(opening["opened_at"], "review opening.opened_at")
+    profiles = {}
+    profile_keys = {
+        "role", "reviewer_id", "qualification", "qualification_evidence_locator",
+        "conflict_status", "human_attested",
+    }
+    allowed = {
+        "primary": {"breast_ultrasound_clinician", "breast_imaging_clinician",
+                    "breast_imaging_researcher_with_clinical_review_qualification"},
+        "secondary": {"breast_ultrasound_clinician", "breast_imaging_clinician",
+                      "breast_imaging_researcher_with_clinical_review_qualification"},
+        "adjudicator": {"breast_ultrasound_clinician", "breast_imaging_clinician"},
+    }
+    if not isinstance(opening["reviewers"], list) or len(opening["reviewers"]) != 3:
+        raise ValueError("review opening must assign three qualified reviewer roles")
+    for raw in opening["reviewers"]:
+        profile = _closed(raw, profile_keys, "reviewer profile")
+        role = profile["role"]
+        if role not in allowed or role in profiles:
+            raise ValueError("reviewer profile role is invalid or duplicated")
+        if profile["qualification"] not in allowed[role]:
+            raise ValueError(f"{role} reviewer qualification is not allowed")
+        _text(profile["reviewer_id"], f"{role}.reviewer_id")
+        _text(profile["qualification_evidence_locator"], f"{role}.qualification_evidence_locator")
+        if profile["conflict_status"] not in {"none_declared", "declared_managed"}:
+            raise ValueError(f"{role} conflict disclosure is unresolved")
+        if profile["human_attested"] is not True:
+            raise ValueError(f"{role} reviewer must be human-attested")
+        profiles[role] = profile
+    identities = [value["reviewer_id"] for value in profiles.values()]
+    if len(identities) != len(set(identities)):
+        raise ValueError("primary, secondary, and adjudicator identities must be distinct")
+    return profiles, opened_at
+
+
+def _tasks(value: str, label: str) -> list[str]:
+    if value == "":
+        return []
+    result = value.split("|")
+    if len(result) != len(set(result)) or any(task not in TASKS for task in result):
+        raise ValueError(f"{label} contains unknown or duplicate tasks")
+    return result
+
+
+def _decision(row: dict[str, str], label: str) -> dict:
+    for field in (
+        "image_interpretable", "ultrasound_modality_supported", "breast_anatomy_supported",
+        "annotation_usable", "label_plausible",
+    ):
+        if row[field] not in ANSWERS:
+            raise ValueError(f"{label}.{field} has an unknown answer")
+    if row["shortcut_artifact"] not in {"no", "present", "uncertain"}:
+        raise ValueError(f"{label}.shortcut_artifact has an unknown answer")
+    if row["disposition"] not in DISPOSITIONS:
+        raise ValueError(f"{label}.disposition is unknown")
+    tasks = _tasks(row["permitted_tasks"], f"{label}.permitted_tasks")
+    disposition = row["disposition"]
+    if disposition in {"eligible", "narrow"} and not tasks:
+        raise ValueError(f"{label} eligible or narrowed review must name tasks")
+    if disposition in {"excluded", "unresolved"} and tasks:
+        raise ValueError(f"{label} excluded or unresolved review cannot name tasks")
+    if disposition == "eligible" and set(tasks) != set(TASKS):
+        raise ValueError(f"{label} eligible review must permit the full task set")
+    if disposition == "narrow" and set(tasks) == set(TASKS):
+        raise ValueError(f"{label} narrow review must remove at least one task")
+    for task in tasks:
+        for field in ("image_interpretable", "ultrasound_modality_supported", "breast_anatomy_supported"):
+            if row[field] != "yes":
+                raise ValueError(f"{label}.{task} requires {field}=yes")
+        if task in {"global_classification", "grounded_classification"} and row["label_plausible"] != "yes":
+            raise ValueError(f"{label}.{task} requires label_plausible=yes")
+        if task in {"grounded_classification", "localization"} and row["annotation_usable"] != "yes":
+            raise ValueError(f"{label}.{task} requires annotation_usable=yes")
+        if row["shortcut_artifact"] != "no":
+            raise ValueError(f"{label}.{task} requires shortcut_artifact=no")
+    _text(row["notes"], f"{label}.notes")
+    return {field: row[field] for field in DECISION_FIELDS}
+
+
+def _validate_rows(
+    rows: list[dict[str, str]], template: list[dict[str, str]], reviewer_id: str,
+    opened_at: datetime, label: str, *, allowed_extra: dict[str, dict[str, str]] | None = None,
+) -> dict[str, dict]:
+    frozen = {row["record_id"]: row for row in template}
+    if allowed_extra:
+        frozen.update(allowed_extra)
+    expected_ids = list(frozen)
+    if [row["record_id"] for row in rows] != expected_ids:
+        raise ValueError(f"{label} review must contain the exact assigned population in order")
+    result = {}
+    for index, row in enumerate(rows, 2):
+        expected = frozen[row["record_id"]]
+        if any(row[field] != expected[field] for field in IMMUTABLE_FIELDS):
+            raise ValueError(f"{label} row {index} differs from frozen packet metadata")
+        if row["reviewer_id"] != reviewer_id:
+            raise ValueError(f"{label} row {index} reviewer identity mismatch")
+        if _time(row["reviewed_at"], f"{label} row {index}.reviewed_at") <= opened_at:
+            raise ValueError(f"{label} review must occur after the authorized opening")
+        result[row["record_id"]] = _decision(row, f"{label} row {index}")
+    return result
+
+
+def _validate_rights(value: dict, receipt_digest: str, opened_at: datetime) -> tuple[dict, list[str]]:
+    keys = {
+        "schema_id", "schema_version", "packet_receipt_digest", "reviewer_id", "reviewed_at",
+        "qualification", "qualification_evidence_locator", "conflict_status", "human_attested",
+        "license_identity", "attribution_text", "decisions", *AUTHORITY_FIELDS,
+    }
+    _closed(value, keys, "rights review")
+    if value["schema_id"] != "mmbu.phase1.busi_whu_rights_purpose_review" or value["schema_version"] != 1:
+        raise ValueError("rights review identity mismatch")
+    if value["packet_receipt_digest"] != receipt_digest:
+        raise ValueError("rights review packet digest mismatch")
+    _negative_authority(value, "rights review")
+    for field in ("reviewer_id", "qualification_evidence_locator", "license_identity", "attribution_text"):
+        _text(value[field], f"rights review.{field}")
+    if value["qualification"] != "team_rights_authority" or value["human_attested"] is not True:
+        raise ValueError("rights review requires an attested team rights authority")
+    if value["conflict_status"] not in {"none_declared", "declared_managed"}:
+        raise ValueError("rights reviewer conflict is unresolved")
+    if _time(value["reviewed_at"], "rights review.reviewed_at") <= opened_at:
+        raise ValueError("rights review must occur after the authorized opening")
+    decisions = _closed(value["decisions"], PURPOSES, "rights review.decisions")
+    if any(decision not in PURPOSE_DECISIONS for decision in decisions.values()):
+        raise ValueError("rights review contains an unknown purpose decision")
+    if decisions["training"] != "decline":
+        raise ValueError("BUSI-WHU training purpose must remain decline")
+    blockers = [
+        f"{purpose}_{decisions[purpose]}" for purpose in ("confirmation_evaluation", "challenge_reporting")
+        if decisions[purpose] != "approve"
+    ]
+    return decisions, blockers
+
+
+def validate_completed_review(
+    packet: Path,
+    primary_review: Path,
+    secondary_review: Path,
+    adjudication_review: Path,
+    rights_review: Path,
+    review_opening: Path,
+    *,
+    expected_packet_receipt_digest: str,
+) -> dict:
+    """Validate complete evidence and emit task manifests, never admission authority."""
+    packet = Path(packet).resolve(strict=True)
+    receipt, manifest, decode, duplicates = _validate_packet(packet, expected_packet_receipt_digest)
+    opening, opening_payload = _load_canonical(review_opening, "review opening")
+    if opening.get("packet_receipt_digest") != receipt["record_digest"]:
+        raise ValueError("review opening packet digest mismatch")
+    profiles, opened_at = _profile_map(opening)
+    primary_rows, primary_payload = _read_rows(primary_review, "primary")
+    secondary_rows, secondary_payload = _read_rows(secondary_review, "secondary")
+    primary_template = _template_rows(packet, "primary-review.csv")
+    secondary_template = _template_rows(packet, "secondary-review.csv")
+    primary = _validate_rows(
+        primary_rows, primary_template, profiles["primary"]["reviewer_id"], opened_at, "primary"
+    )
+    primary_by_id = {row["record_id"]: row for row in primary_rows}
+    frozen_secondary_ids = [row["record_id"] for row in secondary_template]
+    flagged = [
+        record_id for record_id, decision in primary.items()
+        if record_id not in set(frozen_secondary_ids) and (
+            decision["disposition"] != "eligible"
+            or any(decision[field] != "yes" for field in (
+                "image_interpretable", "ultrasound_modality_supported", "breast_anatomy_supported",
+                "annotation_usable", "label_plausible",
+            ))
+            or decision["shortcut_artifact"] != "no"
+        )
+    ]
+    extra = {record_id: primary_by_id[record_id] for record_id in flagged}
+    expected_secondary = secondary_template + [extra[record_id] for record_id in sorted(extra)]
+    secondary = _validate_rows(
+        secondary_rows, expected_secondary, profiles["secondary"]["reviewer_id"], opened_at,
+        "secondary",
+    )
+
+    adjudication, adjudication_payload = _load_canonical(adjudication_review, "adjudication")
+    adj_keys = {
+        "schema_id", "schema_version", "packet_receipt_digest", "adjudications",
+        "duplicate_dispositions", *AUTHORITY_FIELDS,
+    }
+    _closed(adjudication, adj_keys, "adjudication")
+    if (
+        adjudication["schema_id"] != "mmbu.phase1.busi_whu_completed_adjudication"
+        or adjudication["schema_version"] != 1
+        or adjudication["packet_receipt_digest"] != receipt["record_digest"]
+    ):
+        raise ValueError("adjudication identity or packet binding mismatch")
+    _negative_authority(adjudication, "adjudication")
+    disagreements = {
+        record_id for record_id in secondary if secondary[record_id] != primary[record_id]
+    }
+    entries = adjudication["adjudications"]
+    if not isinstance(entries, list) or {row.get("record_id") for row in entries if isinstance(row, dict)} != disagreements:
+        raise ValueError("adjudication must exactly cover every independent-review disagreement")
+    adjudicated = {}
+    entry_keys = {
+        "record_id", "adjudicator_id", "adjudicated_at", *DECISION_FIELDS, "notes",
+    }
+    secondary_times = {row["record_id"]: _time(row["reviewed_at"], "secondary reviewed_at") for row in secondary_rows}
+    for entry in entries:
+        _closed(entry, entry_keys, "adjudication entry")
+        record_id = entry["record_id"]
+        if entry["adjudicator_id"] != profiles["adjudicator"]["reviewer_id"]:
+            raise ValueError("adjudication requires the distinct assigned adjudicator")
+        when = _time(entry["adjudicated_at"], "adjudication.adjudicated_at")
+        if when <= secondary_times[record_id] or when <= opened_at:
+            raise ValueError("adjudication must occur after both independent reviews")
+        adjudicated[record_id] = _decision(entry, f"adjudication {record_id}")
+
+    expected_duplicate_groups = {}
+    for group_type, digest_field, group_rows in (
+        ("exact", "decoded_image_sha256", duplicates["exact_image_groups"]),
+        ("perceptual", "perceptual_hash", duplicates["perceptual_image_groups"]),
+    ):
+        for group in group_rows:
+            expected_duplicate_groups[(group_type, group[digest_field])] = group
+    duplicate_rows = adjudication["duplicate_dispositions"]
+    if not isinstance(duplicate_rows, list):
+        raise ValueError("duplicate dispositions must be a list")
+    duplicate_keys = {
+        "group_type", "digest", "record_ids", "primary_reviewer_id", "primary_decision",
+        "secondary_reviewer_id", "secondary_decision", "adjudicator_id", "adjudicated_at",
+        "final_decision", "rationale",
+    }
+    observed_duplicate_keys = set()
+    duplicate_constraints = []
+    duplicate_excluded = set()
+    duplicate_blockers = []
+    duplicate_decisions = {"distinct", "coassign", "exclude", "unresolved"}
+    for index, raw in enumerate(duplicate_rows):
+        row = _closed(raw, duplicate_keys, f"duplicate disposition {index}")
+        key = (row["group_type"], row["digest"])
+        if key in observed_duplicate_keys or key not in expected_duplicate_groups:
+            raise ValueError("duplicate disposition identifies an unknown or repeated group")
+        observed_duplicate_keys.add(key)
+        expected_group = expected_duplicate_groups[key]
+        if row["record_ids"] != expected_group["record_ids"]:
+            raise ValueError("duplicate disposition record population differs from the packet")
+        if (
+            row["primary_reviewer_id"] != profiles["primary"]["reviewer_id"]
+            or row["secondary_reviewer_id"] != profiles["secondary"]["reviewer_id"]
+        ):
+            raise ValueError("duplicate disposition requires both assigned independent reviewers")
+        if row["primary_decision"] not in duplicate_decisions or row["secondary_decision"] not in duplicate_decisions:
+            raise ValueError("duplicate disposition contains an unknown decision")
+        final_decision = row["final_decision"]
+        if row["primary_decision"] == row["secondary_decision"]:
+            if row["adjudicator_id"] or row["adjudicated_at"]:
+                raise ValueError("duplicate agreement cannot claim adjudication")
+            if final_decision != row["primary_decision"]:
+                raise ValueError("duplicate final decision differs from independent agreement")
+        else:
+            if row["adjudicator_id"] != profiles["adjudicator"]["reviewer_id"]:
+                raise ValueError("duplicate disagreement requires the distinct assigned adjudicator")
+            if _time(row["adjudicated_at"], "duplicate adjudicated_at") <= opened_at:
+                raise ValueError("duplicate adjudication must occur after the authorized opening")
+            if final_decision not in duplicate_decisions:
+                raise ValueError("duplicate adjudication final decision is unknown")
+        _text(row["rationale"], "duplicate disposition.rationale")
+        if final_decision == "coassign":
+            duplicate_constraints.append({
+                "group_type": row["group_type"], "digest": row["digest"],
+                "record_ids": row["record_ids"], "patient_ids": expected_group["patient_ids"],
+            })
+        elif final_decision == "exclude":
+            duplicate_excluded.update(row["record_ids"])
+        elif final_decision == "unresolved" and expected_group["cross_patient"]:
+            duplicate_blockers.append(f"unresolved_cross_patient_{row['group_type']}_duplicate")
+    if observed_duplicate_keys != set(expected_duplicate_groups):
+        raise ValueError("duplicate dispositions must exactly cover every packet candidate group")
+
+    rights, rights_payload = _load_canonical(rights_review, "rights review")
+    decisions, blockers = _validate_rights(rights, receipt["record_digest"], opened_at)
+    blockers.extend(duplicate_blockers)
+    final = dict(primary)
+    final.update(secondary)
+    final.update(adjudicated)
+    records = {row["record_id"]: row for row in decode["records"]}
+    eligible_by_task = {}
+    for task in TASKS:
+        record_ids = sorted(record_id for record_id, decision in final.items() if record_id not in duplicate_excluded and task in _tasks(
+            decision["permitted_tasks"], f"final {record_id}.permitted_tasks"
+        ))
+        patient_ids = sorted({records[record_id]["parent_id"] for record_id in record_ids})
+        eligible_by_task[task] = {
+            "record_ids": record_ids, "record_count": len(record_ids),
+            "patient_ids": patient_ids, "patient_count": len(patient_ids),
+        }
+    unresolved = sorted(record_id for record_id, decision in final.items() if decision["disposition"] == "unresolved")
+    excluded = sorted({
+        record_id for record_id, decision in final.items()
+        if decision["disposition"] in {"excluded", "unresolved"}
+    } | duplicate_excluded)
+    if eligible_by_task["global_classification"]["patient_count"] < 60:
+        blockers.append("fewer_than_60_global_classification_patients")
+    report = canonical.seal({
+        "schema_id": "mmbu.phase1.busi_whu_review_validation",
+        "schema_version": 1,
+        "packet_receipt_digest": receipt["record_digest"],
+        "packet_manifest_digest": manifest["record_digest"],
+        "review_opening_sha256": hashlib.sha256(opening_payload).hexdigest(),
+        "primary_review_sha256": hashlib.sha256(primary_payload).hexdigest(),
+        "secondary_review_sha256": hashlib.sha256(secondary_payload).hexdigest(),
+        "adjudication_review_sha256": hashlib.sha256(adjudication_payload).hexdigest(),
+        "rights_review_sha256": hashlib.sha256(rights_payload).hexdigest(),
+        "reviewed_record_count": len(primary),
+        "independently_reviewed_record_count": len(secondary),
+        "adjudicated_record_count": len(adjudicated),
+        "eligible_by_task": eligible_by_task,
+        "excluded_record_ids": excluded,
+        "unresolved_record_ids": unresolved,
+        "duplicate_group_constraints": duplicate_constraints,
+        "duplicate_excluded_record_ids": sorted(duplicate_excluded),
+        "purpose_decisions": decisions,
+        "source_blockers": sorted(blockers),
+        "confirmation_purposes_ready": not blockers,
+        "review_evidence_complete": True,
+        "reviewer_identity_authenticated": False,
+        "phase1_admission_still_required": True,
+        "source_admission_authorized": False,
+        "training_ready": False,
+        "model_use_authorized": False,
+        "mmbu_public_content_used": False,
+    })
+    return report
+
+
+__all__ = ["validate_completed_review"]

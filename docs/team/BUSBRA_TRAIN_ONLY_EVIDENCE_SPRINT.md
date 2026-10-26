@@ -1,7 +1,9 @@
 # BUS-BRA train-only evidence sprint
 
-**Status:** executable preparation path; no real source is admitted and no training or model use is authorized
+**Status:** real immutable reviewer packet built and independently validated; human review remains incomplete, so no real source is admitted and no training or model use is authorized
 **Purpose:** reduce the next genuine evidence gate without weakening the clinical/confirmation gate
+
+**Execution evidence:** [`BUSBRA_REAL_REVIEW_PACKET_2026-10-26.md`](BUSBRA_REAL_REVIEW_PACKET_2026-10-26.md)
 
 ## What changed
 
@@ -29,6 +31,11 @@ PYTHONPATH=src python3 tools/busbra_train_qa.py build \
 The output operation is atomic and refuses to overwrite. Preserve the printed `receipt_digest` before any reviewer
 opens an asset. Do not edit files inside the emitted packet. Copy `visual-review-template.csv` and
 `rights-purpose-template.json` to separate writable locations.
+
+MOCS home and scratch are GPFS and reject Linux `RENAME_NOREPLACE`. The executed production packet was therefore
+built and atomically finalized on node-local storage, archived, and then published to a new scratch root as a single
+no-overwrite hard-linked tar artifact. Do not point the directory builder directly at GPFS or replace this procedure
+with a check-then-rename fallback, which would weaken the no-overwrite guarantee.
 
 ## Opening record
 

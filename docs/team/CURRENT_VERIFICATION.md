@@ -116,6 +116,11 @@ historical artifact, not the current project status.
 
 ## Current evidence boundary
 
+- Purpose-tiered QA is now executable: source use limited to `engineering`, `train`, or `release` always requires
+  visual/annotation review but does not require a clinician to certify publisher-provided annotations as clinical
+  truth. `adaptive_dev` and `confirmation` continue to require distinct visual and clinical QA. This changes the
+  evidence needed for future purposes only: no real source is admitted, no training is authorized, and the external
+  rights, grouping, custody, admission, and purpose-authorization gates remain open.
 - The source-specific semantic-breadth intake decision is merged at
   `4a9ada5a239d2e2b69bc63f1fc968895f442c598`. Its four required remote CI
   jobs passed on Python 3.11, 3.12, 3.14, and the image-enabled Python 3.12 lane.

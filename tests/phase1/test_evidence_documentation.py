@@ -7,6 +7,26 @@ REPO = Path(__file__).resolve().parents[2]
 
 
 class EvidenceDocumentationTests(unittest.TestCase):
+    def test_purpose_tiered_admission_boundary_is_maintained(self):
+        design = (
+            REPO
+            / "docs/superpowers/specs/2026-10-26-purpose-tiered-source-admission-design.md"
+        ).read_text(encoding="utf-8")
+        decisions = (REPO / "docs/team/DECISIONS.md").read_text(encoding="utf-8")
+        current = (REPO / "docs/team/CURRENT_VERIFICATION.md").read_text(encoding="utf-8")
+        repository_map = (REPO / "docs/team/REPOSITORY_MAP.md").read_text(encoding="utf-8")
+
+        for marker in (
+            "publisher-provided annotations",
+            "does not establish clinical validity",
+            "adaptive_dev",
+            "confirmation",
+        ):
+            self.assertIn(marker, design)
+            self.assertIn(marker, decisions)
+        self.assertIn("no real source is admitted", current)
+        self.assertIn("purpose-tiered-source-admission-design.md", repository_map)
+
     def test_track3_competitor_evidence_cannot_select_our_model(self):
         intelligence = (
             REPO / "docs/team/TRACK3_COMPETITIVE_INTELLIGENCE_2026-10-26.md"

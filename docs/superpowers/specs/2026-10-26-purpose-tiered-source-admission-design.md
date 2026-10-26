@@ -19,6 +19,7 @@ Admission remains fail-closed, but reviewer requirements become purpose-sensitiv
 | Decision-bearing biomedical evidence | `adaptive_dev`, `confirmation` | distinct visual and clinical QA; adjudicator when disagreements exist | Performance on the reviewed biomedical endpoint within the frozen scope |
 
 The project does not claim that publisher labels are clinically correct merely because they are usable for training.
+Use of publisher-provided annotations for training does not establish clinical validity.
 Every training-facing report and model card must call them source annotations and retain the QA limitations digest.
 Clinical/human-impact claims still require the existing qualified clinical review path.
 

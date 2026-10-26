@@ -31,6 +31,7 @@ REQUIRED_PHASE1_TEST_MODULES = (
     "test_primitives.py",
     "test_replicated_response.py",
     "test_root_orchestration.py",
+    "test_source_admission_stage_a.py",
     "test_task_change.py",
 )
 

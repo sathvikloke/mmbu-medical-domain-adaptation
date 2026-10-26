@@ -569,7 +569,8 @@ class StageALauncherTests(unittest.TestCase):
         self.assertNotIn("--retry", text)
         self.assertNotIn("while ", text)
         self.assertIn("structural-inspect", text)
-        self.assertIn("eb8dba78a2de705b84b0120153a21fcc82b156137d6a81ff8c52512ea16952c1", text)
+        self.assertIn("STAGE_A_PACKET_SHA256:?", text)
+        self.assertIn('--packet-sha256 "${STAGE_A_PACKET_SHA256}"', text)
         self.assertIn("owner-statement.txt", text)
         self.assertIn("reviewer-statement.txt", text)
 

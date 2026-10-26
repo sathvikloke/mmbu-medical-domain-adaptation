@@ -148,10 +148,81 @@ class CurrentStatusTests(unittest.TestCase):
         with self.assertRaises(ContractViolation):
             check_status(reseal(record, schema_id="mmbu.phase1.current_status_overlay"))
 
+    def test_blocked_successor_preserves_predecessor_and_classifies_repair_evidence(self):
+        predecessor = canonical.loads_canonical(
+            (REPO / authority.STATUS_SUCCESSOR_EVIDENCE_REPOSITORY_PATHS[
+                "status_successor_predecessor"
+            ]).read_bytes()
+        )
+        successor = status.build_status_successor(
+            predecessor,
+            predecessor_raw_sha256="a" * 64,
+            repaired_revision="1" * 40,
+            repair_evidence_digest="b" * 64,
+            audit_blockers=[
+                "authenticated clinical review has not occurred",
+                "real confirmation has not run",
+            ],
+            updated_at="2026-10-26T08:00:00Z",
+        )
+        status.validate_status_transition(predecessor, successor)
+        facts = {row["fact_id"]: row for row in successor["facts"]}
+        self.assertEqual(successor["phase"], "phase1_returned_blocked")
+        self.assertEqual(
+            facts["authority.current_status_predecessor"]["value"],
+            predecessor["record_digest"],
+        )
+        self.assertEqual(
+            facts["repair.busi_whu_decision_integrity"]["value"], "1" * 40,
+        )
+        self.assertEqual(
+            facts["research.busi_whu_evidence_classification"]["value"],
+            "exploratory_only",
+        )
+        self.assertEqual(facts["audit.busi_whu_decision_integrity"]["status"], "blocked_external")
+
+    def test_status_successor_rejects_rollback_in_place_and_historical_mutation(self):
+        predecessor = canonical.loads_canonical(
+            (REPO / authority.STATUS_SUCCESSOR_EVIDENCE_REPOSITORY_PATHS[
+                "status_successor_predecessor"
+            ]).read_bytes()
+        )
+
+        def built(**changes):
+            values = {
+                "predecessor_raw_sha256": "a" * 64,
+                "repaired_revision": "1" * 40,
+                "repair_evidence_digest": "b" * 64,
+                "audit_blockers": ["real confirmation has not run"],
+                "updated_at": "2026-10-26T08:00:00Z",
+            }
+            values.update(changes)
+            return status.build_status_successor(predecessor, **values)
+
+        with self.assertRaises(ContractViolation):
+            status.validate_status_transition(predecessor, predecessor)
+        with self.assertRaises(ContractViolation):
+            built(updated_at=predecessor["updated_at"])
+        successor = built()
+        historical = next(
+            row for row in successor["facts"] if row["fact_id"] == "runtime.b1_native_admission"
+        )
+        mutated_facts = [
+            {**row, "limitation": "rewritten history"} if row is historical else row
+            for row in successor["facts"]
+        ]
+        with self.assertRaises(ContractViolation):
+            status.validate_status_transition(predecessor, reseal(successor, facts=mutated_facts))
+        with self.assertRaises(ContractViolation):
+            status.validate_status_transition(
+                predecessor,
+                reseal(successor, phase="design_only"),
+            )
+
     def test_repository_status_reconciles_only_bounded_native_runtime_evidence(self):
         record = authority.load_authority(REPO)[authority.STATUS_PATH]
         facts = {row["fact_id"]: row for row in record["facts"]}
-        self.assertEqual(record["phase"], "design_only")
+        self.assertEqual(record["phase"], "phase1_returned_blocked")
         for fact_id in ("account.gpu_allocation", "account.mocs_account", "account.mocs_allocation"):
             self.assertEqual(facts[fact_id]["status"], "unknown")
             self.assertIsNone(facts[fact_id]["value"])
@@ -443,7 +514,7 @@ class BootstrapCommandTests(unittest.TestCase):
 
     def test_repository_authority_files_validate(self):
         loaded = authority.load_authority(REPO)
-        self.assertEqual(loaded[authority.STATUS_PATH]["phase"], "design_only")
+        self.assertEqual(loaded[authority.STATUS_PATH]["phase"], "phase1_returned_blocked")
         self.assertEqual(loaded[authority.AUTHORIZATION_REGISTRY_PATH]["generation"], 0)
         self.assertEqual(loaded[authority.OPENING_RECEIPT_REGISTRY_PATH]["heads"], [])
 

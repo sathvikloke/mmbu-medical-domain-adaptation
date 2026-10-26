@@ -147,4 +147,3 @@
 - [ ] Run focused tests, then `PYTHONPATH=src python3 -m unittest discover -s tests/phase1 -v`, `python3 tools/team.py verify-links`, `python3 -m compileall -q src tools tests`, `git diff --check`, and `git diff --check $(git merge-base origin/main HEAD)..HEAD`; expect all green except documented expected skips.
 - [ ] Commit with `docs: record BUSI-WHU decision-integrity repair`.
 - [ ] Request one fresh whole-branch correctness/security/competition review; fix only demonstrated Critical/Important findings with RED-to-GREEN tests, then rerun the full verification set.
-

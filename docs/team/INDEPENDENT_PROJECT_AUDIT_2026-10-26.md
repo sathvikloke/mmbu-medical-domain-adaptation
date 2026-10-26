@@ -2,8 +2,8 @@
 
 ## Verdict
 
-**Current evidence-backed score: 62/100.**  
-**Prospective ceiling after the next three real gates: approximately 82/100.**  
+**Current evidence-backed score: 62/100.**
+**Prospective ceiling after the next three real gates: approximately 82/100.**
 **Decision: keep the project, but pivot the claim rather than claiming a novel learner. Do not merge the current
 source-admission branch or open real BUSI-WHU pixels until the release-blocking findings below are repaired.**
 

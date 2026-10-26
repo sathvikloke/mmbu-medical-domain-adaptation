@@ -1,8 +1,8 @@
 # BUSI-WHU decision-integrity repair design
 
 **Status:** prospective repair design; no real biomedical opening, reviewer authentication, admission, confirmation,
-training, MMBU evaluation, upload, or submission is authorized by this document  
-**Audit basis:** `docs/team/INDEPENDENT_PROJECT_AUDIT_2026-10-26.md`  
+training, MMBU evaluation, upload, or submission is authorized by this document
+**Audit basis:** `docs/team/INDEPENDENT_PROJECT_AUDIT_2026-10-26.md`
 **Intent:** make the BUSI-WHU path incapable of opening protected pixels or producing decision-bearing confirmation
 evidence unless every authority, identity, target, population, and duplicate boundary is transitively frozen.
 

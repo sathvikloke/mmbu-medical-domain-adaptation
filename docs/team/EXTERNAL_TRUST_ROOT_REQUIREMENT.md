@@ -1,6 +1,6 @@
 # External trust-root requirement
 
-**Current state:** protected BUSI-WHU and Stage A structural opening bound; remaining boundaries and external material blocked
+**Current state:** protected BUSI-WHU plus Stage A acquisition/structural opening bound; remaining boundaries and external material blocked
 
 This contract defines the missing authority boundary for Stage A and BUSI-WHU. It does not supply a signer, public key,
 signature, approval, or identity; repository records are not a trust anchor. An actor who can manufacture a credential,
@@ -22,11 +22,14 @@ rejects the internally consistent repository capability when that external bindi
 created before the internal authorization, verified before descriptor access, and cannot be replayed across
 namespaces, roles, or subjects.
 
-The Stage A structural-opening builder and launcher now require two distinct externally verified capabilities over an
+The Stage A acquisition launcher now requires externally verified `data-owner` authority over the exact sealed
+source acquisition subject before any network use. That subject binds the packet, source identity/version/family,
+artifact names, hosts, byte cap, retrieval method and command, destination, purpose, and no-inspection restriction;
+missing or substituted authority rejects. The Stage A structural-opening builder and launcher require two distinct externally verified capabilities over an
 exact source-specific subject: a `data-owner` and an `independent-reviewer`. The subject binds the sealed packet,
 source identity/version, and permitted reads; plain prose and hard-coded names are rejected. Both external evidence
-digests enter the purpose decision and the independent reviewer's cryptographic attestation. Acquisition authority,
-completed-review authentication, source admission, and confirmation are not yet bound to equivalent external
+digests enter the purpose decision and the independent reviewer's cryptographic attestation. Completed-review
+authentication, source admission, and confirmation are not yet bound to equivalent external
 capabilities. No real policy, key, pin, signature, time authority, or revocation feed has been supplied. Therefore the
 new opening gates are executable but presently unsatisfied, repository records still grant no external authority, and
 no protected opening or decision-bearing action is enabled by this implementation alone.
@@ -100,6 +103,6 @@ revocation state must fail before payload access and consume no authority.
 Until real external keys, roles, policies, signatures, timestamps, and revocation evidence are independently provided,
 and equivalent verified capabilities are bound and reverified at every remaining production decision boundary, the
 historical Stage A and BUSI-WHU identity claims remain non-authoritative repository evidence. The protected BUSI-WHU
-and Stage A structural-opening implementations now fail before payload access without their external capabilities,
+and Stage A acquisition/structural-opening implementations now fail before network or payload access without their external capabilities,
 but no real capability exists. Existing records may support engineering traceability but cannot grant biomedical payload opening, source
 admission, model use, training, checkpoint promotion, release, upload, or submission authority.

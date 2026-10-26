@@ -579,16 +579,72 @@ def acquisition_command_digest(packet_source: dict) -> str:
     })
 
 
+STAGE_A_ACQUISITION_AUTHORITY_NAMESPACE = "mmbu.phase1.stage-a-acquisition.v1"
+
+
+def stage_a_acquisition_authority_subject(packet: dict, source_id: str) -> dict:
+    """Return the exact source acquisition operation an external owner must sign."""
+    if packet.get("record_digest") != canonical.record_digest(packet):
+        raise ValueError("acquisition packet digest is invalid")
+    source = packet.get("sources", {}).get(source_id)
+    if not isinstance(source, dict):
+        raise ValueError("source is absent from the acquisition packet")
+    return canonical.seal({
+        "schema_id": "mmbu.phase1.stage_a_acquisition_authority_subject",
+        "schema_version": 1,
+        "packet_digest": packet["record_digest"],
+        "source_id": source_id,
+        "source_version": source["source_version"],
+        "source_family": source["source_family"],
+        "artifact_names": sorted(row["name"] for row in source["artifacts"]),
+        "network_host_allowlist": sorted({
+            host for artifact in source["artifacts"] for host in artifact["allowed_hosts"]
+        }),
+        "maximum_bytes": source["maximum_bytes"],
+        "retrieval_method_digest": acquisition_method_digest(source),
+        "retrieval_command_digest": acquisition_command_digest(source),
+        "staging_destination": source["staging_destination"],
+        "permitted_purpose": "quarantine_inspection",
+        "inspection_prohibited": True,
+    })
+
+
 def verify_acquisition_authority(
     records: list[dict],
     packet: dict,
     config: dict,
     source_id: str,
     now: str,
+    external_authority: object,
 ) -> dict:
     """Require an independently attested active acquisition head before network use."""
     validate_acquisition_packet(packet, config)
-    return _verify_acquisition_authority_records(records, packet, source_id, now)
+    result = _verify_acquisition_authority_records(records, packet, source_id, now)
+    if type(external_authority) is not ExternalAuthorityCapability:
+        raise TypeError("Stage A acquisition requires externally verified data-owner authority")
+    if external_authority.namespace != STAGE_A_ACQUISITION_AUTHORITY_NAMESPACE:
+        raise ValueError("Stage A acquisition external namespace mismatch")
+    if external_authority.role != "data-owner":
+        raise ValueError("Stage A acquisition external role mismatch")
+    subject_digest = canonical.value_digest(
+        stage_a_acquisition_authority_subject(packet, source_id)
+    )
+    if external_authority.subject_digest != subject_digest:
+        raise ValueError("Stage A acquisition authority signed another subject")
+    signed_at = datetime.fromisoformat(external_authority.signed_at.replace("Z", "+00:00"))
+    if signed_at < datetime.fromisoformat(packet["created_at"].replace("Z", "+00:00")):
+        raise ValueError("Stage A acquisition external signature predates its sealed packet")
+    if signed_at > datetime.fromisoformat(now.replace("Z", "+00:00")):
+        raise ValueError("Stage A acquisition external signature follows the authority check")
+    if datetime.fromisoformat(external_authority.verified_at.replace("Z", "+00:00")) > datetime.fromisoformat(
+        now.replace("Z", "+00:00")
+    ):
+        raise ValueError("Stage A acquisition external verification follows the authority check")
+    return {
+        **result,
+        "external_authority_evidence_digest": external_authority.verification_evidence_digest,
+        "external_authority_principal": external_authority.principal,
+    }
 
 
 def _verify_acquisition_authority_records(
@@ -1980,6 +2036,7 @@ __all__ = [
     "build_acquisition_packet",
     "build_structural_opening_packet",
     "build_structural_opening_records",
+    "stage_a_acquisition_authority_subject",
     "stage_a_structural_authority_subject",
     "load_stage_a_config",
     "validate_acquisition_packet",

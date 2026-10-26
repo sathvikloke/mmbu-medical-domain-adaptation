@@ -32,6 +32,7 @@ from mmbu_phase1.source_admission_stage_a import (
     resolve_xlsx_header_strings,
     validate_pathmnist_mapping,
     build_structural_opening_records,
+    stage_a_acquisition_authority_subject,
     stage_a_structural_authority_subject,
     acquisition_command_digest,
     acquisition_method_digest,
@@ -281,13 +282,41 @@ class StageAAcquisitionAuthorityTests(unittest.TestCase):
             family="bus-bra",
         )
         self.records = list(world.records.values())
+        self.authorization = world.get("acquisition")
+
+    def authority(self, *, packet=None, authorization=None):
+        packet = packet or self.packet
+        return external_authority_for(
+            stage_a_acquisition_authority_subject(packet, "bus-bra"),
+            namespace="mmbu.phase1.stage-a-acquisition.v1",
+            principal="verified-source-owner", role="data-owner",
+            signed_at="2026-10-25T18:30:10Z", verified_at="2026-10-25T18:30:30Z",
+        )
 
     def test_exact_active_authority_passes(self):
         result = verify_acquisition_authority(
-            self.records, self.packet, self.config, "bus-bra", "2026-10-25T18:31:00Z"
+            self.records, self.packet, self.config, "bus-bra", "2026-10-25T18:31:00Z",
+            self.authority(),
         )
         self.assertEqual(result["authorization"]["operator_id"], "stage-a-operator")
         self.assertEqual(result["source"]["retrieval_command"], self.packet["sources"]["bus-bra"]["retrieval_command"])
+        self.assertEqual(result["external_authority_principal"], "verified-source-owner")
+
+    def test_missing_or_substituted_external_acquisition_authority_rejects(self):
+        with self.assertRaises((TypeError, ValueError)):
+            verify_acquisition_authority(
+                self.records, self.packet, self.config, "bus-bra", "2026-10-25T18:31:00Z", None,
+            )
+        wrong = external_authority_for(
+            canonical.seal({"schema_id": "wrong-subject", "schema_version": 1}),
+            namespace="mmbu.phase1.stage-a-acquisition.v1",
+            principal="verified-source-owner", role="data-owner",
+            signed_at="2026-10-25T18:30:10Z", verified_at="2026-10-25T18:30:30Z",
+        )
+        with self.assertRaises((TypeError, ValueError)):
+            verify_acquisition_authority(
+                self.records, self.packet, self.config, "bus-bra", "2026-10-25T18:31:00Z", wrong,
+            )
 
     def test_command_or_registry_substitution_rejects(self):
         changed = copy.deepcopy(self.packet)
@@ -297,14 +326,16 @@ class StageAAcquisitionAuthorityTests(unittest.TestCase):
         )
         with self.assertRaises(ValueError):
             verify_acquisition_authority(
-                self.records, changed, self.config, "bus-bra", "2026-10-25T18:31:00Z"
+                self.records, changed, self.config, "bus-bra", "2026-10-25T18:31:00Z",
+                self.authority(),
             )
         without_registry = [
             row for row in self.records if row["schema_id"] != "mmbu.phase1.authorization_registry"
         ]
         with self.assertRaises(ValueError):
             verify_acquisition_authority(
-                without_registry, self.packet, self.config, "bus-bra", "2026-10-25T18:31:00Z"
+                without_registry, self.packet, self.config, "bus-bra", "2026-10-25T18:31:00Z",
+                self.authority(),
             )
 
 
@@ -605,6 +636,8 @@ class StageALauncherTests(unittest.TestCase):
         self.assertIn("acquisition-packet.json", text)
         self.assertIn("acquisition-authority.json", text)
         self.assertIn("exec \"${STAGE_A_PYTHON}\"", text)
+        self.assertIn("STAGE_A_ACQUISITION_EXTERNAL_POLICY", text)
+        self.assertIn("STAGE_A_ACQUISITION_EXTERNAL_SIGNATURE", text)
 
     def test_structural_launcher_is_cpu_only_and_binds_final_packet(self):
         text = (REPO / "tools/source_admission_stage_a_structural.sbatch").read_text(encoding="utf-8")

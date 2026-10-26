@@ -11,7 +11,7 @@ cryptographically binds the exact completed-review report plus a purpose binding
 training authority, fewer than 60 independent patients,
 cross-patient duplicate constraints, MMBU content use, and post-lock mutation.
 
-Fresh verification after the independent audit repair passed **636 Phase 1 CPU tests** with two expected skips,
+Fresh verification after the independent audit repair passed **637 Phase 1 CPU tests** with two expected skips,
 maintained Markdown-link verification, Python compilation of `src`, `tools`, and `tests`, working-tree
 `git diff --check`. Historical branch-range whitespace findings remain outside this bounded repair. The audit-triggered
 tests cover exact authority-bound review
@@ -32,7 +32,7 @@ forms, no source has been admitted, and no confirmation/model output has run.
 |---|---|---|
 | Historical preparation suite | **277 tests passed; 44 optional-Pillow image tests skipped** | Re-executes the preserved CPU package without Pillow; it does not replace the image-enabled CI lane or test a model |
 | Root repository/tool suite | **75 tests passed; 13 optional-Pillow image tests skipped** | Covers repository, publication, scope, receipt, and authorization tooling; it is not scientific evidence |
-| Current Phase 1 suite | **636 tests passed; two expected optional-dependency tests skipped** | Covers current fail-closed contracts, manifests, registries, evidence chains, geometry, bundles, synthetic orchestration, external-trust primitives, and evidence-documentation boundaries; native model execution is evidenced separately below |
+| Current Phase 1 suite | **637 tests passed; two expected optional-dependency tests skipped** | Covers current fail-closed contracts, manifests, registries, evidence chains, geometry, bundles, synthetic orchestration, external-trust primitives, and evidence-documentation boundaries; native model execution is evidenced separately below |
 | Offline smoke workflow | **passed** | Replays historical synthetic demonstrations and toy arithmetic only; it reports `model_executed=false` and `official_evaluation=false` |
 | Maintained local Markdown links and anchors | **passed** | External URLs were not fetched by this check |
 | Published v0.3 artifact verification | **passed** for 275 files, ZIP members, fixed transforms, and historical receipts | Establishes byte integrity only, not scientific validity or medical truth |
@@ -74,9 +74,10 @@ The [external trust-root requirement](EXTERNAL_TRUST_ROOT_REQUIREMENT.md) specif
 fail-closed verification order needed to replace self-authenticated names and digest-shaped claims in Stage A and
 BUSI-WHU. Its pinned Ed25519 primitive is now bound to protected BUSI-WHU artifact opening: the production review CLI
 requires the full external envelope and independently supplied pins, and descriptor access rejects an otherwise valid
-repository capability when that binding is absent. Stage A structural opening now likewise requires distinct,
+repository capability when that binding is absent. Stage A acquisition now requires externally verified `data-owner`
+authority over the exact source-specific network operation, and structural opening requires distinct,
 externally verified `data-owner` and `independent-reviewer` capabilities over the exact source-specific packet subject;
-plain statements and hard-coded identities reject. Stage A acquisition authority, completed-review authentication,
+plain statements and hard-coded identities reject. Completed-review authentication,
 source admission, and confirmation remain unbound. No real external key, signature, identity proof, or revocation evidence has been
 supplied, so the executable gate is unsatisfied, grants no authority, and the project remains `blocked_external`.
 

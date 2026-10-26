@@ -28,6 +28,7 @@ from mmbu_phase1.source_admission_stage_a import (  # noqa: E402
     inventory_busi_whu_structural,
     inventory_pathmnist_structural,
     load_stage_a_config,
+    stage_a_acquisition_authority_subject,
     stage_a_structural_authority_subject,
     validate_acquisition_packet,
     validate_structural_opening_packet,
@@ -131,8 +132,12 @@ def acquire_source(args: argparse.Namespace) -> int:
     if not isinstance(records, list):
         raise ValueError("acquisition authority file must be a canonical JSON array")
     started_at = _utc_now()
+    external = _external_authority(
+        args, "acquisition", stage_a_acquisition_authority_subject(packet, args.source_id),
+        "mmbu.phase1.stage-a-acquisition.v1", "data-owner", started_at,
+    )
     authority = verify_acquisition_authority(
-        records, packet, config, args.source_id, started_at
+        records, packet, config, args.source_id, started_at, external,
     )
     source = authority["source"]
     status_path = Path(packet["run_root"]) / "records" / f"{args.source_id}-transport-status.json"
@@ -235,11 +240,13 @@ def structural_inspect(args: argparse.Namespace) -> int:
         started = datetime.now(timezone.utc).replace(microsecond=0)
         reviewed_at = started.isoformat().replace("+00:00", "Z")
         subject = stage_a_structural_authority_subject(packet, args.source_id)
-        owner = _external_structural_authority(
-            args, "owner", subject, "data-owner", reviewed_at,
+        owner = _external_authority(
+            args, "owner", subject, "mmbu.phase1.stage-a-structural-opening.v1",
+            "data-owner", reviewed_at,
         )
-        reviewer = _external_structural_authority(
-            args, "reviewer", subject, "independent-reviewer", reviewed_at,
+        reviewer = _external_authority(
+            args, "reviewer", subject, "mmbu.phase1.stage-a-structural-opening.v1",
+            "independent-reviewer", reviewed_at,
         )
         records = build_structural_opening_records(
             packet, args.source_id, evidence[args.source_id]["authority_records"],
@@ -289,8 +296,9 @@ def structural_inspect(args: argparse.Namespace) -> int:
         return 1
 
 
-def _external_structural_authority(
-    args: argparse.Namespace, prefix: str, subject: dict, role: str, verified_at: str,
+def _external_authority(
+    args: argparse.Namespace, prefix: str, subject: dict, namespace: str,
+    role: str, verified_at: str,
 ):
     value = lambda name: getattr(args, f"{prefix}_external_{name}")  # noqa: E731
     return verify_external_authority(
@@ -302,7 +310,7 @@ def _external_structural_authority(
         revocation_pin_sha256=value("revocation_pin"),
         signature_bytes=value("signature").read_bytes(),
         subject=subject,
-        namespace="mmbu.phase1.stage-a-structural-opening.v1",
+        namespace=namespace,
         principal=value("principal"), role=role,
         signed_at=value("signed_at"), verified_at=verified_at,
         verifier_path=value("verifier"), verifier_pin_sha256=value("verifier_pin"),
@@ -344,6 +352,7 @@ def parser() -> argparse.ArgumentParser:
     acquire.add_argument("--packet", type=Path, required=True)
     acquire.add_argument("--records", type=Path, required=True)
     acquire.add_argument("--source-id", required=True)
+    _add_external_authority_arguments(acquire, "acquisition")
     acquire.set_defaults(func=acquire_source)
     inspect = sub.add_parser("structural-inspect")
     inspect.add_argument("--config", type=Path, default=REPO / "config/phase1/source-admission-stage-a.json")

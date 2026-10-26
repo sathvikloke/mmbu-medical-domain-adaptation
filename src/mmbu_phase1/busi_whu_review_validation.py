@@ -62,6 +62,7 @@ COMPLETED_REPORT_KEYS = {
     "unresolved_record_ids", "duplicate_group_constraints", "duplicate_excluded_record_ids",
     "purpose_decisions", "source_blockers", "confirmation_purposes_ready",
     "review_evidence_complete", "reviewer_identity_authenticated", "review_authentication",
+    "reviewer_role_ids",
     "phase1_admission_still_required", "source_admission_authorized", "training_ready",
     "model_use_authorized", "mmbu_public_content_used", "record_digest",
 }
@@ -211,6 +212,11 @@ def authenticate_completed_review(
             "review credential",
         )
         credentials[credential["role"]] = credential
+    credential_reviewer_ids = {
+        role: credential["reviewer_id"] for role, credential in sorted(credentials.items())
+    }
+    if report.get("reviewer_role_ids") != credential_reviewer_ids:
+        raise ValueError("completed review participant identities differ from verified credentials")
     attestations = {}
     for index, attestation_digest in enumerate(review_attestation_digests):
         attestation = validate_review_attestation(
@@ -773,6 +779,12 @@ def validate_completed_review(
         "source_blockers": sorted(blockers),
         "confirmation_purposes_ready": not blockers,
         "review_evidence_complete": True,
+        "reviewer_role_ids": {
+            "clinical_adjudicator": profiles["adjudicator"]["reviewer_id"],
+            "data_rights_authority": rights["reviewer_id"],
+            "primary_breast_ultrasound_reviewer": profiles["primary"]["reviewer_id"],
+            "secondary_breast_ultrasound_reviewer": profiles["secondary"]["reviewer_id"],
+        },
         "reviewer_identity_authenticated": False,
         "review_authentication": None,
         "phase1_admission_still_required": True,

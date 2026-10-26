@@ -174,6 +174,12 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
             },
             "source_blockers": [], "confirmation_purposes_ready": True,
             "review_evidence_complete": True, "reviewer_identity_authenticated": True,
+            "reviewer_role_ids": {
+                "clinical_adjudicator": "reviewer-0",
+                "data_rights_authority": "reviewer-1",
+                "primary_breast_ultrasound_reviewer": "reviewer-2",
+                "secondary_breast_ultrasound_reviewer": "reviewer-3",
+            },
             "review_authentication": {
                 "authenticated_at": "2026-10-25T06:00:00Z",
                 "base_review_report_digest": "b" * 64,
@@ -291,6 +297,17 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
         with self.assertRaises(ContractViolation):
             self.module.build_confirmation_source_manifest(
                 report, store, source_digest, purpose_digest
+            )
+
+    def test_authenticated_report_cannot_substitute_review_participant_identities(self):
+        report, evidence_records = self.authenticated_report()
+        forged = copy.deepcopy(report)
+        forged["reviewer_role_ids"]["primary_breast_ultrasound_reviewer"] = "different-person"
+        forged["record_digest"] = canonical.record_digest(forged)
+        store, source_digest, purpose_digest, _ = self.admission(forged, evidence_records)
+        with self.assertRaises(ContractViolation):
+            self.module.build_confirmation_source_manifest(
+                forged, store, source_digest, purpose_digest
             )
 
     def test_unauthenticated_training_leakage_underpowered_and_cross_patient_duplicates_reject(self):

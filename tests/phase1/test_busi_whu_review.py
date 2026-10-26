@@ -152,6 +152,12 @@ def authorized_review_packet(
                                   "inventory_digest": fingerprint_inventory["inventory_digest"]}],
         metadata_inventory_digest=inventory["record_digest"],
         review_selection_digest=selection["record_digest"],
+        reviewer_ids={
+            "clinical_adjudicator": "adjudicator-clinician",
+            "data_rights_authority": "team-rights-authority",
+            "primary_breast_ultrasound_reviewer": "primary-clinician",
+            "secondary_breast_ultrasound_reviewer": "secondary-clinician",
+        },
     )
     capability = validate_busi_whu_review_opening(
         world.store(), world.authorization["record_digest"],
@@ -593,6 +599,12 @@ class BusiWhuCompletedReviewTests(unittest.TestCase):
             self.assertEqual(report["target_map"], target_manifest["record_targets"])
             self.assertEqual(report["target_map_digest"], canonical.value_digest(report["target_map"]))
             self.assertEqual(report["global_task_manifest_digest"], global_manifest["record_digest"])
+            self.assertEqual(report["reviewer_role_ids"], {
+                "clinical_adjudicator": "adjudicator-clinician",
+                "data_rights_authority": "team-rights-authority",
+                "primary_breast_ultrasound_reviewer": "primary-clinician",
+                "secondary_breast_ultrasound_reviewer": "secondary-clinician",
+            })
             self.assertTrue(report["confirmation_purposes_ready"])
             self.assertEqual(len(report["duplicate_group_constraints"]), 2)
             self.assertFalse(report["source_admission_authorized"])

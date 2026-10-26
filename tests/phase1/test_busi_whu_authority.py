@@ -34,12 +34,14 @@ class ReviewAuthorityWorld:
         self, mutate=None, *, input_root="/storage/scr/npl015/mmbu/quarantine",
         output_root="/storage/scr/npl015/mmbu/review-1", artifacts=None, artifact_roles=None,
         fingerprint_inventories=None, metadata_inventory_digest=None, review_selection_digest=None,
+        reviewer_ids=None,
     ):
         self.input_root = input_root
         self.output_root = output_root
         self.artifact_roles = artifact_roles or {}
         self.metadata_inventory_digest = metadata_inventory_digest or d("busi-metadata")
         self.review_selection_digest = review_selection_digest or d("review-selection")
+        self.reviewer_ids = reviewer_ids or {}
         self.fingerprint_inventories = fingerprint_inventories or [
             {"source_id": "bus-bra", "source_version": "1", "inventory_digest": d("busbra-fingerprints")},
         ]
@@ -69,7 +71,7 @@ class ReviewAuthorityWorld:
                 "schema_id": P + "reviewer_credential_verification",
                 "schema_version": 1,
                 "credential_id": f"credential-{index}",
-                "reviewer_id": f"reviewer-{index}",
+                "reviewer_id": self.reviewer_ids.get(role, f"reviewer-{index}"),
                 "role": role,
                 "qualification_class": qualification,
                 "qualification_evidence_digest": d(f"qualification-{index}"),

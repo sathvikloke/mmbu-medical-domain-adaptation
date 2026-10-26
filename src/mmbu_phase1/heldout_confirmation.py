@@ -88,7 +88,7 @@ REVIEW_REPORT_KEYS = (
     "opening_authorization_digest", "opening_receipt_digest", "review_authentication",
     "phase1_admission_still_required", "primary_review_sha256", "purpose_decisions", "record_digest",
     "review_evidence_complete", "review_opening_sha256", "reviewed_record_count",
-    "reviewer_identity_authenticated", "rights_review_sha256", "schema_id", "schema_version",
+    "reviewer_identity_authenticated", "reviewer_role_ids", "rights_review_sha256", "schema_id", "schema_version",
     "secondary_review_sha256", "source_admission_authorized", "source_blockers", "training_ready",
     "unresolved_record_ids", "target_map", "target_map_digest", "global_task_manifest_digest",
 )

@@ -58,6 +58,19 @@ class EvidenceDocumentationTests(unittest.TestCase):
         self.assertIn("not yet wired into Stage A", trust)
         self.assertIn("no protected opening or decision-bearing action is enabled", trust)
 
+        confirmation = (
+            REPO / "docs/team/BUSI_WHU_CONFIRMATION_READINESS_2026-10-25.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("selection_authority=none", confirmation)
+        self.assertIn("No model or track is currently selected", confirmation)
+        self.assertNotIn("development evidence still supports Qwen3.5-9B", confirmation)
+
+        historical_audit = (
+            REPO / "docs/team/INDEPENDENT_PROJECT_AUDIT_2026-10-26.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("Historical snapshot, superseded for current decisions", historical_audit)
+        self.assertIn("zero current model-selection or promotion authority", historical_audit)
+
 
 if __name__ == "__main__":
     unittest.main()

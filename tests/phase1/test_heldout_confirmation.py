@@ -43,11 +43,13 @@ class HeldoutConfirmationSpecTests(unittest.TestCase):
     def test_exact_frozen_protocol(self):
         value = self.value
         self.assertEqual(value["candidate"], {
-            "expected_parameter_count": 9409813744,
-            "model_id": "Qwen/Qwen3.5-9B",
-            "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
-            "runtime_gate": "qwen3.5-9b-successor-native-runtime",
-            "track": "track2",
+            "expected_parameter_count": None,
+            "model_id": None,
+            "revision": None,
+            "runtime_gate": None,
+            "selection_authority": "none",
+            "status": "blocked_unjustified",
+            "track": None,
         })
         self.assertEqual(value["training"]["seeds"], [20261025, 20261026, 20261027])
         self.assertEqual(value["training"]["optimizer_updates"], 1024)
@@ -68,7 +70,7 @@ class HeldoutConfirmationSpecTests(unittest.TestCase):
         mutations = (
             lambda value: value.__setitem__("unknown", True),
             lambda value: value["candidate"].__setitem__("model_id", "other/model"),
-            lambda value: value["candidate"].__setitem__("revision", "a" * 40),
+            lambda value: value["candidate"].__setitem__("selection_authority", "remote-response-screen"),
             lambda value: value["training"].__setitem__("lora_dropout", 0.05),
             lambda value: value["training"].__setitem__("seeds", [20261025]),
             lambda value: value["training"].__setitem__("optimizer_updates", 1025),
@@ -114,8 +116,9 @@ class HeldoutConfirmationLineageTests(unittest.TestCase):
             "training_seed": 20261025,
         }
 
-    def test_complete_post_admission_lineage_passes(self):
-        self.assertEqual(self.module.validate_checkpoint_lineage(self.valid_lineage())["training_seed"], 20261025)
+    def test_provisional_qwen_lineage_has_no_executable_candidate_authority(self):
+        with self.assertRaises(ContractViolation):
+            self.module.validate_checkpoint_lineage(self.valid_lineage())
 
     def test_ineligible_or_incomplete_lineage_rejects(self):
         mutations = (
@@ -688,7 +691,7 @@ class HeldoutConfirmationReadinessTests(unittest.TestCase):
 
     def test_complete_digest_references_remain_blocked_without_authority_validation(self):
         self.assertEqual(self.module.readiness_status(self.manifest()), {
-            "missing": "external-record-validation", "status": "blocked",
+            "missing": "candidate-freeze-authority", "status": "blocked",
         })
 
     def test_drift_attempts_and_qa_order_reject(self):

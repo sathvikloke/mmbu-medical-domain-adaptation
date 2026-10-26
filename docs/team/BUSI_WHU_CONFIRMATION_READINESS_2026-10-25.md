@@ -1,15 +1,20 @@
 # BUSI-WHU confirmation readiness
 
 **Date:** October 25, 2026  
-**Current status:** protocol mechanics implemented; authority-backed record resolution and real execution blocked  
+**Current status:** historical mechanics retained; candidate identity withdrawn; real execution blocked
 **Evidence level:** CPU-only synthetic conformance, not biomedical or model-performance evidence
 
 ## What is ready
 
-The repository now contains a prospectively frozen Track 2 confirmation protocol for the fixed Qwen3.5-9B dual-objective family on BUSI-WHU v3. The package provides:
+The repository retains tested confirmation mechanics that were originally drafted around a provisional
+Qwen3.5-9B Track 2 lineage. The active October 26 specification now records `selection_authority=none` and
+`status=blocked_unjustified`; its candidate identity, revision, parameter count, runtime gate, and track are null.
+The preserved mechanics provide:
 
-- an exact protocol identity covering the model revision, three training seeds, LoRA recipe, prompts, parser, patient floor, resampling rule, decision margin, and one-attempt policy;
-- a fail-closed checkpoint-lineage validator that rejects the old exploratory adapters, incomplete training-source purposes, a missing Qwen3.5 successor runtime gate, and any MMBU public-content use;
+- an exact blocked protocol identity covering three training seeds, LoRA mechanics, prompts, parser, patient floor,
+  resampling rule, decision margin, and one-attempt policy without naming an executable candidate;
+- a preserved provisional-lineage mechanics validator, while the public checkpoint-lineage boundary rejects every
+  candidate until an independently justified successor freeze exists;
 - exact patient-balanced task, context, `Q`, class, bootstrap, and sign-randomization calculations using reduced rational arithmetic;
 - a non-rescuable primary decision requiring every seed delta, the family point estimate, and the one-sided lower bound to clear the frozen rule;
 - a reference checker that reports the first missing gate in a fixed order, but intentionally stays blocked even when every field contains a digest because digest syntax is not proof that a real validated record exists;
@@ -35,7 +40,8 @@ No real confirmation run is authorized or ready. These records still need to exi
 
 1. BUS-BRA plus at least two independent semantic-breadth families admitted for the `train` purpose, including exact
    split manifests and record-level lineage. The actual portfolio remains undecided and blocked.
-2. A reviewed Qwen3.5-9B successor runtime gate covering native load, one real training path, save, fresh offline reload, and equality.
+2. An independently justified and frozen candidate identity, revision, parameter count, track, and runtime gate. The
+   remote-only response screen has zero authority to fill these fields.
 3. Three new checkpoints trained after source admission. The October 25 exploratory adapters cannot be reused.
 4. BUSI-WHU v3 acquisition authorization and immutable archive checksums.
 5. Rights review for acquisition, confirmation use, challenge use, disclosure, and trained-weight release.
@@ -49,6 +55,11 @@ Any missing item keeps the package blocked. Synthetic values or prose cannot sub
 
 ## Scientific boundary
 
-This work improves the honesty and reproducibility of the next experiment. It does not raise the project's measured novelty, competition readiness, or biomedical performance score. The development evidence still supports Qwen3.5-9B as the Track 2 confirmation candidate, while Track 3 remains the administrative provisional route until the organizer resolves the size rule.
+This work improves the honesty and reproducibility of a future experiment. It does not raise the project's measured
+novelty, competition readiness, or biomedical performance score. No model or track is currently selected for
+confirmation. A future candidate must be justified by independently admissible evidence and frozen before any
+confirmation lineage can become executable.
 
-The next larger action needs a separate user decision: begin the real admission sequence for the two training sources and BUSI-WHU. No data acquisition, model loading, HPC work, or training follows automatically from this package.
+The next larger action needs a separate user decision: complete real source admission and a candidate-freeze decision
+that does not rely on the remote-only response screen. No data acquisition, model loading, HPC work, or training
+follows automatically from this package.

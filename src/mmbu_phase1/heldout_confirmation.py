@@ -18,7 +18,7 @@ from mmbu_phase1.fields import (
 )
 
 
-SPEC_DIGEST = "121d20c04fdb6ef38823d6483bcc04ca2349ae6937eae578a3972319c1cf3e4a"
+SPEC_DIGEST = "3e7b40547b1ee82ae4024505d7007f78f89c4846b86a2c283160684d640eedc8"
 SPEC_KEYS = (
     "authorization", "candidate", "confirmation_id", "gates", "prompts", "resources",
     "schema_id", "schema_version", "source", "statistics", "training",
@@ -53,8 +53,10 @@ LINEAGE_KEYS = (
 )
 
 
-def validate_checkpoint_lineage(value: object, path: str = "heldout_confirmation.lineage") -> dict:
-    """Accept only a newly retrained, fully authorized member of the fixed family."""
+def _validate_provisional_checkpoint_lineage_mechanics(
+    value: object, path: str = "heldout_confirmation.lineage",
+) -> dict:
+    """Validate the preserved Qwen mechanics without granting candidate authority."""
     row = closed(value, path, LINEAGE_KEYS)
     expected = {
         "base_model_id": "Qwen/Qwen3.5-9B",
@@ -92,6 +94,12 @@ def validate_checkpoint_lineage(value: object, path: str = "heldout_confirmation
     require(type(row["training_seed"]) is int and row["training_seed"] in (20261025, 20261026, 20261027),
             f"{path}.training_seed", "must be one of the three frozen non-boolean integer seeds")
     return row
+
+
+def validate_checkpoint_lineage(value: object, path: str = "heldout_confirmation.lineage") -> dict:
+    """Reject until an independently justified candidate freeze supersedes the provisional lineage."""
+    _validate_provisional_checkpoint_lineage_mechanics(value, path)
+    fail(path, "no independently justified candidate freeze authorizes this provisional lineage")
 
 
 REVIEW_REPORT_KEYS = (
@@ -927,7 +935,7 @@ def readiness_status(value: object) -> dict:
     expected_seeds = (20261025, 20261026, 20261027)
     source_portfolio = None
     for index, (lineage, seed) in enumerate(zip(lineages, expected_seeds)):
-        validated = validate_checkpoint_lineage(
+        validated = _validate_provisional_checkpoint_lineage_mechanics(
             lineage, f"heldout_confirmation.readiness.checkpoint_lineages[{index}]"
         )
         literal(validated["training_seed"],
@@ -959,7 +967,7 @@ def readiness_status(value: object) -> dict:
     require(inventory < qa_plan < qa_opened < lock, "heldout_confirmation.readiness.chronology",
             "must satisfy inventory close < QA plan freeze < QA opening < confirmation lock")
     literal(chronology["first_output_at"], "heldout_confirmation.readiness.chronology.first_output_at", None)
-    return {"missing": "external-record-validation", "status": "blocked"}
+    return {"missing": "candidate-freeze-authority", "status": "blocked"}
 
 
 def validate_synthetic_fixture(value: object) -> dict:

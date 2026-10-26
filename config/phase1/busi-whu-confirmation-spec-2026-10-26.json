@@ -7,11 +7,13 @@
     "training_allowed": false
   },
   "candidate": {
-    "expected_parameter_count": 9409813744,
-    "model_id": "Qwen/Qwen3.5-9B",
-    "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
-    "runtime_gate": "qwen3.5-9b-successor-native-runtime",
-    "track": "track2"
+    "expected_parameter_count": null,
+    "model_id": null,
+    "revision": null,
+    "runtime_gate": null,
+    "selection_authority": "none",
+    "status": "blocked_unjustified",
+    "track": null
   },
   "confirmation_id": "busi-whu-held-out-confirmation-2026-10-26",
   "gates": [

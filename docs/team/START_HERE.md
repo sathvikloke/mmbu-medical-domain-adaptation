@@ -88,8 +88,8 @@ For native processors, use the separate environment and exact pins in [processor
 9. [Decisions](DECISIONS.md) and [experiment workflow](EXPERIMENT_WORKFLOW.md): identify what evidence permits your next action.
 10. [Release rehearsal](RELEASE_REHEARSAL.md): use the fail-closed runbook only after one candidate passes the frozen
     confirmation rule; it is not upload authorization.
-11. [BUSI-WHU confirmation readiness](BUSI_WHU_CONFIRMATION_READINESS_2026-10-25.md): review the frozen Qwen3.5-9B
-    Track 2 confirmation mechanics and every real-world gate that still blocks execution.
+11. [BUSI-WHU confirmation readiness](BUSI_WHU_CONFIRMATION_READINESS_2026-10-25.md): review the preserved provisional
+    mechanics, the withdrawn candidate identity, and every real-world gate that still blocks execution.
 12. [Contributing](../../CONTRIBUTING.md): open a scoped branch and request review.
 
 ## Choose a first contribution

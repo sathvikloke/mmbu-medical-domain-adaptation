@@ -83,6 +83,11 @@ directories. These directories remain machine-local and unversioned: another clo
 silently treating them as evidence. A matched local root has zero source-admission, model-selection, or promotion
 authority; the manifest is an inventory and drift detector only, not a checkout-visible evidence bundle.
 
+The active BUSI-WHU confirmation specification now carries no model or track selection: candidate identity, revision,
+parameter count, runtime gate, and track are null, with `selection_authority=none`. The preserved provisional Qwen
+lineage remains mechanics-only and the production lineage boundary rejects it until an independently justified
+candidate-freeze authority exists.
+
 The historical offline smoke package retains its older Einstein-only status text. That output is a preserved
 historical artifact, not the current project status.
 

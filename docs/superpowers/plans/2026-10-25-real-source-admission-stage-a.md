@@ -55,7 +55,7 @@ Add tests asserting the three exact source IDs, exact BUSI-WHU file sizes/SHA-25
 
 - [x] **Step 2: Run the focused tests and verify failure**
 
-Run: `PYTHONPATH=src python3 -m unittest tests.phase1.test_source_admission_stage_a.StageAConfigTests -v`  
+Run: `PYTHONPATH=src python3 -m unittest tests.phase1.test_source_admission_stage_a.StageAConfigTests -v`
 Expected: FAIL because the module/config do not exist.
 
 - [x] **Step 3: Implement the closed validator and config**
@@ -64,7 +64,7 @@ Implement strict key sets, normalized basenames, positive integer sizes/byte cap
 
 - [x] **Step 4: Run the focused tests**
 
-Run: `PYTHONPATH=src python3 -m unittest tests.phase1.test_source_admission_stage_a.StageAConfigTests -v`  
+Run: `PYTHONPATH=src python3 -m unittest tests.phase1.test_source_admission_stage_a.StageAConfigTests -v`
 Expected: PASS.
 
 - [x] **Step 5: Commit**
@@ -90,7 +90,7 @@ Test deterministic packet creation, independent timestamp-plus-UUID launch IDs, 
 
 - [x] **Step 2: Run the packet tests and verify failure**
 
-Run: `PYTHONPATH=src python3 -m unittest tests.phase1.test_source_admission_stage_a.StageAPacketTests -v`  
+Run: `PYTHONPATH=src python3 -m unittest tests.phase1.test_source_admission_stage_a.StageAPacketTests -v`
 Expected: FAIL because packet functions are absent.
 
 - [x] **Step 3: Implement packet construction and CLI**
@@ -122,7 +122,7 @@ Use synthetic artifacts to require the exact chain: acquisition attestation, acq
 
 - [x] **Step 2: Run tests and verify failure**
 
-Run: `PYTHONPATH=src python3 -m unittest tests.phase1.test_source_admission_stage_a.StageACustodyTests -v`  
+Run: `PYTHONPATH=src python3 -m unittest tests.phase1.test_source_admission_stage_a.StageACustodyTests -v`
 Expected: FAIL because custody composition is absent.
 
 - [x] **Step 3: Implement verification using existing Phase 1 validators**
@@ -131,7 +131,7 @@ Do not duplicate admission validation rules. Validate records through `mmbu_phas
 
 - [x] **Step 4: Run custody and existing admission suites**
 
-Run: `PYTHONPATH=src python3 -m unittest tests.phase1.test_source_admission_stage_a.StageACustodyTests tests.phase1.test_admission -v`  
+Run: `PYTHONPATH=src python3 -m unittest tests.phase1.test_source_admission_stage_a.StageACustodyTests tests.phase1.test_admission -v`
 Expected: PASS.
 
 - [x] **Step 5: Commit**
@@ -157,7 +157,7 @@ Create tiny synthetic archives. Assert complete joins, explicit exclusions, dete
 
 - [ ] **Step 2: Run tests and verify failure**
 
-Run: `PYTHONPATH=src python3 -m unittest tests.phase1.test_source_admission_stage_a.StageAInventoryTests -v`  
+Run: `PYTHONPATH=src python3 -m unittest tests.phase1.test_source_admission_stage_a.StageAInventoryTests -v`
 Expected: FAIL because inventory functions are absent.
 
 - [ ] **Step 3: Implement minimal protected inventory functions**
@@ -166,7 +166,7 @@ Reuse existing BUS-BRA geometry utilities where their contracts match. Use a ZIP
 
 - [ ] **Step 4: Run focused and related suites**
 
-Run: `PYTHONPATH=src python3 -m unittest tests.phase1.test_source_admission_stage_a.StageAInventoryTests tests.phase1.test_biomedical_sources tests.phase1.test_heldout_confirmation -v`  
+Run: `PYTHONPATH=src python3 -m unittest tests.phase1.test_source_admission_stage_a.StageAInventoryTests tests.phase1.test_biomedical_sources tests.phase1.test_heldout_confirmation -v`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -191,7 +191,7 @@ Assert the launcher requires an absent run root, verifies free bytes against sea
 
 - [ ] **Step 2: Run tests and verify failure**
 
-Run: `PYTHONPATH=src python3 -m unittest tests.phase1.test_source_admission_stage_a.StageALauncherTests -v`  
+Run: `PYTHONPATH=src python3 -m unittest tests.phase1.test_source_admission_stage_a.StageALauncherTests -v`
 Expected: FAIL because the launcher is absent.
 
 - [ ] **Step 3: Implement the launcher and terminal receipts**

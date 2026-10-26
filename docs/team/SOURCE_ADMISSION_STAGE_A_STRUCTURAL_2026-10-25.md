@@ -1,7 +1,7 @@
 # Stage A protected structural opening evidence
 
-**Executed:** 2026-10-26 UTC  
-**Local work date:** 2026-10-25 America/Chicago  
+**Executed:** 2026-10-26 UTC
+**Local work date:** 2026-10-25 America/Chicago
 **Result:** all three bounded structural inspections passed; every source remains quarantined and unauthorized for model use.
 
 ## Sealed execution identity

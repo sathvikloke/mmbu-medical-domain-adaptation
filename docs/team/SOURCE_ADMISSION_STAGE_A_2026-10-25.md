@@ -1,7 +1,7 @@
 # Stage A real-source acquisition evidence
 
-**Local audit date:** October 25, 2026  
-**Status:** acquisition complete; every source remains quarantined and unauthorized for model use  
+**Local audit date:** October 25, 2026
+**Status:** acquisition complete; every source remains quarantined and unauthorized for model use
 **Evidence scope:** byte identity and transport custody only
 
 ## Result

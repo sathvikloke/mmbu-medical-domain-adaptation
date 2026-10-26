@@ -1,7 +1,7 @@
 # PathMNIST mapping limitation and status correction
 
-**Reviewed:** 2026-10-26 UTC  
-**Evidence:** corrected mapping inventory from CPU job `86061`  
+**Reviewed:** 2026-10-26 UTC
+**Evidence:** corrected mapping inventory from CPU job `86061`
 **Decision:** PathMNIST remains ineligible for decision-bearing development or confirmation use
 
 ## Material finding

@@ -1,7 +1,7 @@
 # Source rights and public-metadata reconciliation
 
-**Reviewed:** 2026-10-26 UTC  
-**Scope:** public record metadata only; no biomedical payload, label, image, or MMBU example was opened  
+**Reviewed:** 2026-10-26 UTC
+**Scope:** public record metadata only; no biomedical payload, label, image, or MMBU example was opened
 **Decision:** all three sources remain quarantined and unauthorized for model use
 
 ## Result

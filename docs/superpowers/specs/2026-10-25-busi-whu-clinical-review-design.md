@@ -1,8 +1,8 @@
 # BUSI-WHU clinical, annotation, and confirmation-admission design
 
-**Status:** prospective design only; no biomedical payload opening, source admission, model use, training, or confirmation execution is authorized  
-**Source:** BUSI-WHU v3, DOI `10.17632/k6cpmwybk3.3`  
-**Mechanical predecessor:** job `86066`, inventory digest `8df0b10e95b2cee3dcb3bd55754c42633a56b6f63fe2cf21b7105f5f3532f6f5`  
+**Status:** prospective design only; no biomedical payload opening, source admission, model use, training, or confirmation execution is authorized
+**Source:** BUSI-WHU v3, DOI `10.17632/k6cpmwybk3.3`
+**Mechanical predecessor:** job `86066`, inventory digest `8df0b10e95b2cee3dcb3bd55754c42633a56b6f63fe2cf21b7105f5f3532f6f5`
 **Role:** independent confirmation only
 
 ## Intent

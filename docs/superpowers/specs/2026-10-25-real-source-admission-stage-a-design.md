@@ -1,7 +1,7 @@
 # Real-source admission Stage A design
 
-**Date:** October 25, 2026  
-**Status:** authorized design direction; exact acquisition packet still requires one digest-bound acknowledgment  
+**Date:** October 25, 2026
+**Status:** authorized design direction; exact acquisition packet still requires one digest-bound acknowledgment
 **Purpose:** create truthful, immutable source-custody evidence without weakening any scientific, clinical, or legal gate
 
 ## Intent

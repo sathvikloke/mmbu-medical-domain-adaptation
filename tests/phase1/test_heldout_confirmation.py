@@ -167,10 +167,12 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
             "mmbu_public_content_used": False,
         })
 
-    def admission(self):
+    def admission(self, report):
         world = AdmissionWorld(
-            proposed=["confirmation"], source_id="busi-whu-v3", version="3", family="busi-whu"
+            proposed=["confirmation"], source_id="busi-whu-v3", version="3", family="busi-whu",
+            extra_admission_input_digests=[report["record_digest"]],
         )
+        world.extra.append(report)
         source_digest = world.digest("source_approved")
         split = copy.deepcopy(world.get("split_engineering"))
         split.pop("record_digest")
@@ -189,7 +191,7 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
 
     def test_authenticated_review_builds_existing_population_inputs(self):
         report = self.report()
-        store, source_digest, purpose_digest, _ = self.admission()
+        store, source_digest, purpose_digest, _ = self.admission(report)
         manifest = self.module.build_confirmation_source_manifest(
             report, store, source_digest, purpose_digest
         )
@@ -206,7 +208,7 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
 
     def test_unauthenticated_training_leakage_underpowered_and_cross_patient_duplicates_reject(self):
         report = self.report()
-        store, source_digest, purpose_digest, world = self.admission()
+        store, source_digest, purpose_digest, world = self.admission(report)
         with self.assertRaises(ContractViolation):
             self.module.build_confirmation_source_manifest(
                 report, RecordStore(), source_digest, purpose_digest
@@ -214,6 +216,13 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
         with self.assertRaises(ContractViolation):
             self.module.build_confirmation_source_manifest(
                 report, store, source_digest, world.digest("engineering_authorization")
+            )
+        forged = copy.deepcopy(report)
+        forged["primary_review_sha256"] = "8" * 64
+        forged["record_digest"] = canonical.record_digest(forged)
+        with self.assertRaises(ContractViolation):
+            self.module.build_confirmation_source_manifest(
+                forged, store, source_digest, purpose_digest
             )
         with self.assertRaises(ContractViolation):
             underpowered = self.report(59)
@@ -230,7 +239,7 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
 
     def test_post_lock_manifest_mutation_rejects(self):
         report = self.report()
-        store, source_digest, purpose_digest, _ = self.admission()
+        store, source_digest, purpose_digest, _ = self.admission(report)
         manifest = self.module.build_confirmation_source_manifest(
             report, store, source_digest, purpose_digest
         )

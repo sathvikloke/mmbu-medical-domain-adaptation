@@ -10,7 +10,7 @@ from fractions import Fraction
 from pathlib import Path
 import random
 
-from mmbu_phase1 import admission, canonical, rational
+from mmbu_phase1 import admission, canonical, decisions, rational
 from mmbu_phase1.store import RecordStore
 from mmbu_phase1.fields import (
     ContractViolation, boolean, closed, digest, fail, integer, literal, require, text, timestamp,
@@ -122,6 +122,17 @@ def _validated_bridge_inputs(
             "must be a Phase 1 record store")
     source = admission.check_source(store, source_admission_digest,
                                     "heldout_confirmation.source_admission_digest")
+    admission_receipt = decisions.check_decision_receipt(
+        store, source["admission_decision_receipt_digest"],
+        "heldout_confirmation.source_admission_decision_receipt",
+    )
+    admission_plan = store.get(
+        admission_receipt["plan_digest"], "decision_plan",
+        "heldout_confirmation.source_admission_plan",
+    )
+    require(report["record_digest"] in admission_plan["allowed_input_digests"],
+            "heldout_confirmation.review_report.record_digest",
+            "the source admission decision did not bind this exact review report")
     authorization = admission.check_purpose_authorization(
         store, purpose_authorization_digest,
         "heldout_confirmation.purpose_authorization_digest",

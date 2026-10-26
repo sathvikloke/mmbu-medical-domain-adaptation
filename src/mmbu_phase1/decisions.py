@@ -103,6 +103,7 @@ CANDIDATE_ADMISSION_INPUT_SCHEMAS = (
     "custody_summary",
     "reviewer_attestation",
     "lineage_receipt",
+    "busi_whu_review_validation",
 )
 
 

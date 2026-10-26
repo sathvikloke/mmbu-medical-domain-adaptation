@@ -27,13 +27,14 @@ def t(hhmmss):
 
 class AdmissionWorld:
     def __init__(self, overrides=None, proposed=None, *, source_id=SOURCE_ID, version=VERSION, family=FAMILY,
-                 artifacts=None):
+                 artifacts=None, extra_admission_input_digests=()):
         self.overrides = overrides or {}
         self.proposed = sorted(proposed or PROPOSED)
         self.source_id = source_id
         self.version = version
         self.family = family
         self.artifacts = artifacts
+        self.extra_admission_input_digests = list(extra_admission_input_digests)
         self.records = {}
         self.extra = []
         self.build()
@@ -317,7 +318,7 @@ class AdmissionWorld:
             "created_at": t("08:31:00"),
         }, [("custodian", "custody_reviewer", self.proposed, "syn-custody-reviewer", "approved")], t("08:31:00"))
         inputs = sorted([s1, m, self.digest("rights"), self.digest("grouping"), self.digest("qa_receipt"),
-                         self.digest("custody")])
+                         self.digest("custody"), *self.extra_admission_input_digests])
         self.admission_decision(inputs)
         approved = self.source("approved", "external_reviewed", s1, self.proposed, t("08:38:00"), reviewed=True)
         self.single("source_approved", approved, "candidate_admission_reviewer", self.proposed, "syn-admission-reviewer",

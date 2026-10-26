@@ -464,6 +464,12 @@ class BusiWhuCompletedReviewTests(unittest.TestCase):
             self.rewrite_json(fixture["adjudication"], fixture["adjudication_value"])
             self.assertIn(record_id, self.validate(fixture)["eligible_by_task"]["localization"]["record_ids"])
 
+            primary_row = next(value for value in fixture["primary_rows"] if value["record_id"] == record_id)
+            primary_row["reviewed_at"] = "2026-10-25T04:30:00Z"
+            self.rewrite_csv(fixture["primary"], fixture["primary_fields"], fixture["primary_rows"])
+            with self.assertRaisesRegex(ValueError, "after both independent reviews"):
+                self.validate(fixture)
+
     def test_task_narrowing_and_unresolved_exclusion_are_explicit(self):
         with tempfile.TemporaryDirectory() as folder:
             fixture = self.completed_fixture(Path(folder))

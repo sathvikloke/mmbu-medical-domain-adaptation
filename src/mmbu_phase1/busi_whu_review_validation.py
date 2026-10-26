@@ -371,14 +371,16 @@ def validate_completed_review(
     entry_keys = {
         "record_id", "adjudicator_id", "adjudicated_at", *DECISION_FIELDS, "notes",
     }
+    primary_times = {row["record_id"]: _time(row["reviewed_at"], "primary reviewed_at") for row in primary_rows}
     secondary_times = {row["record_id"]: _time(row["reviewed_at"], "secondary reviewed_at") for row in secondary_rows}
+    latest_independent_review_at = max([*primary_times.values(), *secondary_times.values()])
     for entry in entries:
         _closed(entry, entry_keys, "adjudication entry")
         record_id = entry["record_id"]
         if entry["adjudicator_id"] != profiles["adjudicator"]["reviewer_id"]:
             raise ValueError("adjudication requires the distinct assigned adjudicator")
         when = _time(entry["adjudicated_at"], "adjudication.adjudicated_at")
-        if when <= secondary_times[record_id] or when <= opened_at:
+        if when <= max(primary_times[record_id], secondary_times[record_id]) or when <= opened_at:
             raise ValueError("adjudication must occur after both independent reviews")
         adjudicated[record_id] = _decision(entry, f"adjudication {record_id}")
 
@@ -427,8 +429,8 @@ def validate_completed_review(
         else:
             if row["adjudicator_id"] != profiles["adjudicator"]["reviewer_id"]:
                 raise ValueError("duplicate disagreement requires the distinct assigned adjudicator")
-            if _time(row["adjudicated_at"], "duplicate adjudicated_at") <= opened_at:
-                raise ValueError("duplicate adjudication must occur after the authorized opening")
+            if _time(row["adjudicated_at"], "duplicate adjudicated_at") <= latest_independent_review_at:
+                raise ValueError("duplicate adjudication must occur after both independent reviews")
             if final_decision not in duplicate_decisions:
                 raise ValueError("duplicate adjudication final decision is unknown")
         _text(row["rationale"], "duplicate disposition.rationale")

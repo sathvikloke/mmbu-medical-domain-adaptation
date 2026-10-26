@@ -11,15 +11,18 @@ cryptographically binds the exact completed-review report plus a purpose binding
 training authority, fewer than 60 independent patients,
 cross-patient duplicate constraints, MMBU content use, and post-lock mutation.
 
-Fresh verification on this branch passed **582 Phase 1 CPU tests** with two expected skips, maintained Markdown-link
-verification, Python compilation of the new tools, and `git diff --check`. This is engineering and governance
+Fresh verification after the independent audit repair passed **622 Phase 1 CPU tests** with two expected skips,
+maintained Markdown-link verification, Python compilation of `src`, `tools`, and `tests`, working-tree
+`git diff --check`, and branch-range `git diff --check`. The audit-triggered tests cover exact authority-bound review
+inputs, persistent one-attempt consumption, descriptor-relative ancestor traversal, cross-source duplicate blocking,
+full authentication-chain re-resolution, and reviewer-to-credential identity binding. This is engineering and governance
 evidence only: the real BUSI-WHU pixels have not been opened by this workflow, reviewers have not completed the
 forms, no source has been admitted, and no confirmation/model output has run.
 
-**Observed:** October 23, 2026 23:12 CDT
+**Observed:** October 26, 2026 05:27 CDT
 **Runtime:** Python 3.14.6
-**Verified revision:** `4a9ada5a239d2e2b69bc63f1fc968895f442c598`
-**Status authority digest:** `cc162ece6394cdabe18ee889e36c181145dc34dd80da712e2340c5ce91208539`
+**Verified code revision:** `b3e8fdb`
+**Status authority digest:** `be1f935c954017ab28f9d8a48a5f2dba39beb1befc6057bc52e2d7b555f03730`
 **Scope:** repository integrity plus the bounded synthetic native receipts listed below
 
 ## Fresh local results
@@ -56,10 +59,10 @@ artifact hashes, and adverse attempts. They do not authorize or imply a source-d
 
 ## Current authority reconciliation
 
-`config/phase1/current-status.json` remains the sole Phase 1 status authority under the frozen contract. Its October 24
-successor, record digest `cc162ece6394cdabe18ee889e36c181145dc34dd80da712e2340c5ce91208539`, binds the exact
-October 16 predecessor plus the B1, B2-P, and dual-objective manifests. It records only bounded synthetic runtime
-facts, retains both failed heterogeneous-batch attempts, and keeps `phase=design_only`.
+`config/phase1/current-status.json` remains the sole Phase 1 status authority under the frozen contract. Its October 26
+successor, record digest `be1f935c954017ab28f9d8a48a5f2dba39beb1befc6057bc52e2d7b555f03730`, preserves the exact
+October 24 predecessor and records the decision-integrity repair as engineering evidence only. It keeps
+`phase=phase1_returned_blocked`; the later audit fixes do not themselves change that status or grant authority.
 
 MOCS account, durable allocation, and account-wide GPU entitlement remain unknown; per-job scheduler receipts cannot
 promote them. Real-source admission remains `blocked_external`. The successor and its exact status-evidence artifacts

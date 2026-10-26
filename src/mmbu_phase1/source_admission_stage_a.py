@@ -1329,6 +1329,152 @@ def validate_pathmnist_mapping(
     })
 
 
+def read_pathmnist_mapping(
+    path: Path, expected_counts: dict[str, int], *, maximum_bytes: int
+) -> dict:
+    """Read one bounded mapping file and pass it through the closed validator.
+
+    Real execution remains gated by a separately acknowledged protected-opening
+    packet.  This reader exists so that packet can bind already-tested code.
+    """
+    path = Path(path)
+    if isinstance(maximum_bytes, bool) or not isinstance(maximum_bytes, int) or maximum_bytes <= 0:
+        raise ValueError("maximum_bytes must be a positive integer")
+    size = path.stat().st_size
+    if size <= 0 or size > maximum_bytes:
+        raise ValueError("PathMNIST mapping exceeds its bounded byte ceiling")
+    expected_total = sum(expected_counts.values()) if isinstance(expected_counts, dict) else 0
+    rows: list[dict] = []
+    try:
+        with path.open("r", encoding="utf-8-sig", newline="") as stream:
+            reader = csv.DictReader(stream)
+            header = reader.fieldnames
+            if header != ["split", "index", "image_id"]:
+                raise ValueError("PathMNIST mapping header must be exactly split,index,image_id")
+            for row in reader:
+                rows.append(row)
+                if len(rows) > expected_total:
+                    raise ValueError("PathMNIST mapping contains more rows than the frozen shape")
+    except UnicodeDecodeError:
+        raise ValueError("PathMNIST mapping is not valid UTF-8 CSV") from None
+    validated = validate_pathmnist_mapping(header, rows, expected_counts)
+    payload = {key: value for key, value in validated.items() if key != "record_digest"}
+    payload["source_rows_read"] = len(rows)
+    payload["source_bytes_read"] = size
+    return canonical.seal(payload)
+
+
+def resolve_xlsx_header_strings(
+    path: Path,
+    sheet_name: str,
+    expected_references: list[str],
+    *,
+    maximum_shared_strings_bytes: int = 4 * 1024 * 1024,
+) -> dict:
+    """Resolve only shared strings referenced by one workbook header row."""
+    if not isinstance(sheet_name, str) or not sheet_name:
+        raise ValueError("sheet_name must be nonempty")
+    if (
+        not isinstance(expected_references, list)
+        or not expected_references
+        or expected_references != sorted(set(expected_references))
+        or any(re.fullmatch(r"[A-Z]{1,3}1", ref) is None for ref in expected_references)
+    ):
+        raise ValueError("expected_references must be sorted unique row-one cell references")
+    if (
+        isinstance(maximum_shared_strings_bytes, bool)
+        or not isinstance(maximum_shared_strings_bytes, int)
+        or maximum_shared_strings_bytes <= 0
+    ):
+        raise ValueError("maximum_shared_strings_bytes must be positive")
+    path = Path(path)
+    main_ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+    rel_ns = "http://schemas.openxmlformats.org/package/2006/relationships"
+    office_rel = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id"
+    try:
+        archive = zipfile.ZipFile(path)
+    except zipfile.BadZipFile:
+        raise ValueError(f"{path.name} is not a valid XLSX/ZIP archive") from None
+    with archive:
+        workbook = ET.fromstring(_safe_xml_member(archive, "xl/workbook.xml"))
+        rels = ET.fromstring(_safe_xml_member(archive, "xl/_rels/workbook.xml.rels"))
+        targets = {
+            row.attrib["Id"]: row.attrib["Target"]
+            for row in rels.findall(f"{{{rel_ns}}}Relationship")
+            if "Id" in row.attrib and "Target" in row.attrib
+        }
+        matching = [row for row in workbook.findall(f".//{{{main_ns}}}sheet")
+                    if row.attrib.get("name") == sheet_name]
+        if len(matching) != 1:
+            raise ValueError("XLSX must contain exactly one requested sheet")
+        target = targets.get(matching[0].attrib.get(office_rel, ""))
+        if target is None or target.startswith("/") or ".." in Path(target).parts:
+            raise ValueError("XLSX sheet relationship is missing or unsafe")
+        sheet_member = str(Path("xl") / target)
+        try:
+            sheet_info = archive.getinfo(sheet_member)
+        except KeyError:
+            raise ValueError(f"XLSX is missing required member {sheet_member!r}") from None
+        if sheet_info.file_size > 64 * 1024 * 1024:
+            raise ValueError("XLSX worksheet exceeds its header-resolution ceiling")
+
+        header_indices: dict[str, int] = {}
+        with archive.open(sheet_info) as stream:
+            for event, element in ET.iterparse(stream, events=("end",)):
+                if element.tag != f"{{{main_ns}}}row":
+                    continue
+                if element.attrib.get("r") != "1":
+                    raise ValueError("XLSX first materialized row must be row 1")
+                cells = element.findall(f"{{{main_ns}}}c")
+                references = [cell.attrib.get("r", "") for cell in cells]
+                if references != expected_references:
+                    raise ValueError("XLSX header references differ from the frozen contract")
+                for cell in cells:
+                    if cell.attrib.get("t") != "s":
+                        raise ValueError("XLSX header cells must use shared strings")
+                    value = cell.find(f"{{{main_ns}}}v")
+                    raw = value.text if value is not None else None
+                    if raw is None or re.fullmatch(r"0|[1-9][0-9]*", raw) is None:
+                        raise ValueError("XLSX header shared-string index is invalid")
+                    header_indices[cell.attrib["r"]] = int(raw)
+                break
+        if set(header_indices) != set(expected_references):
+            raise ValueError("XLSX header row was not found")
+
+        try:
+            shared_info = archive.getinfo("xl/sharedStrings.xml")
+        except KeyError:
+            raise ValueError("XLSX is missing sharedStrings.xml") from None
+        if shared_info.file_size > maximum_shared_strings_bytes:
+            raise ValueError("XLSX shared-string table exceeds its bounded byte ceiling")
+        needed = set(header_indices.values())
+        resolved: dict[int, str] = {}
+        with archive.open(shared_info) as stream:
+            for index, (_event, element) in enumerate(
+                (item for item in ET.iterparse(stream, events=("end",))
+                 if item[1].tag == f"{{{main_ns}}}si")
+            ):
+                if index in needed:
+                    value = "".join(node.text or "" for node in element.iter(f"{{{main_ns}}}t"))
+                    if not value or value.strip() != value:
+                        raise ValueError("XLSX header string is empty or not canonical")
+                    resolved[index] = value
+                element.clear()
+                if set(resolved) == needed:
+                    break
+        if set(resolved) != needed or len(set(resolved.values())) != len(resolved):
+            raise ValueError("XLSX header strings are missing or duplicated")
+    headers = [{"reference": ref, "value": resolved[header_indices[ref]]}
+               for ref in expected_references]
+    return canonical.seal({
+        "schema_id": "mmbu.phase1.xlsx_header_string_inventory", "schema_version": 1,
+        "artifact_name": path.name, "sheet_name": sheet_name, "headers": headers,
+        "shared_string_entries_resolved": len(resolved), "data_rows_read": 0,
+        "label_values_read": False, "image_payload_decoding_used": False,
+        "model_use_authorized": False, "mmbu_public_content_used": False,
+    })
+
+
 def _closed_member_names(member_names: list[str], directories: set[str]) -> list[str]:
     if not isinstance(member_names, list) or any(not isinstance(name, str) or not name for name in member_names):
         raise ValueError("archive member names must be a nonempty string list")
@@ -1566,6 +1712,8 @@ __all__ = [
     "inventory_busi_whu_structural",
     "pair_busbra_members",
     "pair_busi_whu_members",
+    "read_pathmnist_mapping",
+    "resolve_xlsx_header_strings",
     "validate_pathmnist_mapping",
     "verify_acquisition_authority",
 ]

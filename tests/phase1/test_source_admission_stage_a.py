@@ -27,6 +27,8 @@ from mmbu_phase1.source_admission_stage_a import (
     inventory_xlsx_schema,
     pair_busbra_members,
     pair_busi_whu_members,
+    read_pathmnist_mapping,
+    resolve_xlsx_header_strings,
     validate_pathmnist_mapping,
     build_structural_opening_records,
     acquisition_command_digest,
@@ -696,6 +698,31 @@ class StageAInventoryTests(unittest.TestCase):
 
 
 class StageASyntheticJoinRuleTests(unittest.TestCase):
+    def test_bounded_pathmnist_reader_feeds_closed_validator(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "mapping.csv"
+            path.write_text(
+                "split,index,image_id\ntrain,0,a\ntrain,1,b\nval,0,c\n",
+                encoding="utf-8",
+            )
+            result = read_pathmnist_mapping(
+                path, {"train": 2, "val": 1}, maximum_bytes=1024
+            )
+        self.assertEqual(result["split_counts"], {"train": 2, "val": 1})
+        self.assertEqual(result["source_rows_read"], 3)
+
+    def test_bounded_pathmnist_reader_rejects_oversize_and_extra_rows(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "mapping.csv"
+            path.write_text(
+                "split,index,image_id\ntrain,0,a\nval,0,b\nval,1,c\n",
+                encoding="utf-8",
+            )
+            with self.assertRaises(ValueError):
+                read_pathmnist_mapping(path, {"train": 1, "val": 1}, maximum_bytes=1024)
+            with self.assertRaises(ValueError):
+                read_pathmnist_mapping(path, {"train": 1, "val": 2}, maximum_bytes=8)
+
     def test_pathmnist_mapping_accepts_only_complete_train_val_indices(self):
         rows = [
             {"split": "train", "index": "0", "image_id": "train-a"},
@@ -773,6 +800,38 @@ class StageASyntheticJoinRuleTests(unittest.TestCase):
             with self.subTest(rows=rows):
                 with self.assertRaises(ValueError):
                     pair_busi_whu_members(rows)
+
+    def test_xlsx_header_resolver_reads_only_referenced_header_strings(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "Patient_infos_BUSI-WHU.xlsx"
+            with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_STORED) as archive:
+                archive.writestr("xl/workbook.xml", (
+                    b'<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '
+                    b'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+                    b'<sheets><sheet name="Sheet1" sheetId="1" r:id="rId1"/></sheets></workbook>'
+                ))
+                archive.writestr("xl/_rels/workbook.xml.rels", (
+                    b'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+                    b'<Relationship Id="rId1" Target="worksheets/sheet1.xml"/></Relationships>'
+                ))
+                archive.writestr("xl/worksheets/sheet1.xml", (
+                    b'<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+                    b'<sheetData><row r="1"><c r="A1" t="s"><v>0</v></c>'
+                    b'<c r="B1" t="s"><v>1</v></c></row>'
+                    b'<row r="2"><c r="A2" t="s"><v>2</v></c></row></sheetData></worksheet>'
+                ))
+                archive.writestr("xl/sharedStrings.xml", (
+                    b'<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+                    b'<si><t>Patient ID</t></si><si><t>Age</t></si>'
+                    b'<si><t>SECRET-DATA-VALUE</t></si></sst>'
+                ))
+            result = resolve_xlsx_header_strings(path, "Sheet1", ["A1", "B1"])
+        self.assertEqual(result["headers"], [
+            {"reference": "A1", "value": "Patient ID"},
+            {"reference": "B1", "value": "Age"},
+        ])
+        self.assertEqual(result["shared_string_entries_resolved"], 2)
+        self.assertEqual(result["data_rows_read"], 0)
 
     def test_xlsx_schema_reports_structure_without_cell_values(self):
         with tempfile.TemporaryDirectory() as folder:

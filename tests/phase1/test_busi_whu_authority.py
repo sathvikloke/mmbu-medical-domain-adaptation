@@ -30,13 +30,20 @@ def seal(value):
 
 
 class ReviewAuthorityWorld:
-    def __init__(self, mutate=None):
-        self.artifacts = [
+    def __init__(
+        self, mutate=None, *, input_root="/storage/scr/npl015/mmbu/quarantine",
+        output_root="/storage/scr/npl015/mmbu/review-1", artifacts=None, artifact_roles=None,
+    ):
+        self.input_root = input_root
+        self.output_root = output_root
+        self.artifact_roles = artifact_roles or {}
+        self.artifacts = artifacts or [
             {"logical_path": "busi-whu/archive.zip", "bytes": 4096, "sha256": d("archive-bytes")},
             {"logical_path": "busi-whu/metadata.xlsx", "bytes": 120, "sha256": d("workbook-bytes")},
         ]
         self.world = AdmissionWorld(
             source_id="busi-whu", version="3", family="busi-whu", artifacts=self.artifacts,
+            artifact_roles=artifact_roles,
         )
         self.records = {}
         self.mutate = mutate
@@ -79,20 +86,8 @@ class ReviewAuthorityWorld:
         )
         self.world.seal("review_lock", review_lock)
 
-        artifacts = [
-            {
-                "logical_path": "busi-whu/archive.zip",
-                "role": "archive",
-                "bytes": 4096,
-                "sha256": d("archive-bytes"),
-            },
-            {
-                "logical_path": "busi-whu/metadata.xlsx",
-                "role": "archive",
-                "bytes": 120,
-                "sha256": d("workbook-bytes"),
-            },
-        ]
+        role_by_path = self.artifact_roles
+        artifacts = [{**row, "role": role_by_path.get(row["logical_path"], "archive")} for row in self.artifacts]
         authorization = self.add("authorization", {
             "schema_id": P + "busi_whu_review_opening_authorization",
             "schema_version": 1,
@@ -112,7 +107,8 @@ class ReviewAuthorityWorld:
                 {"source_id": "bus-bra", "source_version": "1", "inventory_digest": d("busbra-fingerprints")},
             ],
             "allowed_operations": OPERATIONS,
-            "output_root": "/storage/scr/npl015/mmbu/review-1",
+            "input_root": self.input_root,
+            "output_root": self.output_root,
             "maximum_attempts": 1,
             "network_access_allowed": False,
             "model_use_allowed": False,

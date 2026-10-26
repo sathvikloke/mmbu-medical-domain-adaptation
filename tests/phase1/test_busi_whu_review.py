@@ -13,8 +13,10 @@ import unittest
 import zipfile
 
 from mmbu_phase1 import canonical
+from mmbu_phase1.busi_whu_authority import validate_busi_whu_review_opening
 from mmbu_phase1.busi_whu_review import build_review_packet, build_review_selection
 from mmbu_phase1.busi_whu_review_validation import validate_completed_review
+from tests.phase1.test_busi_whu_authority import ReviewAuthorityWorld, t
 
 
 def metadata_inventory() -> dict:
@@ -109,6 +111,25 @@ def packet_fixture(root: Path, *, changed_image=None, changed_mask=None):
     return archive, workbook, inventory, selection
 
 
+def authorized_review_packet(archive, workbook, inventory, selection, output):
+    root = archive.parent.resolve()
+    artifacts = [
+        {"logical_path": archive.name, "bytes": archive.stat().st_size,
+         "sha256": hashlib.sha256(archive.read_bytes()).hexdigest()},
+        {"logical_path": workbook.name, "bytes": workbook.stat().st_size,
+         "sha256": hashlib.sha256(workbook.read_bytes()).hexdigest()},
+    ]
+    roles = {archive.name: "archive", workbook.name: "metadata"}
+    world = ReviewAuthorityWorld(
+        input_root=str(root), output_root=str(output), artifacts=artifacts, artifact_roles=roles,
+    )
+    capability = validate_busi_whu_review_opening(
+        world.store(), world.authorization["record_digest"],
+        world.world.digest("review_opening"), t("09:10:02"),
+    )
+    return build_review_packet(capability, inventory, selection)
+
+
 class BusiWhuReviewSelectionTests(unittest.TestCase):
     def test_exact_population_freezes_primary_and_enriched_secondary_review(self):
         source = metadata_inventory()
@@ -179,7 +200,7 @@ class BusiWhuReviewPacketTests(unittest.TestCase):
             root = Path(folder)
             archive, workbook, inventory, selection = packet_fixture(root)
             output = root / "packet"
-            receipt = build_review_packet(archive, workbook, inventory, selection, output)
+            receipt = authorized_review_packet(archive, workbook, inventory, selection, output)
             manifest = json.loads((output / "review-manifest.json").read_text())
             decode = json.loads((output / "decode-inventory.json").read_text())
             duplicates = json.loads((output / "duplicate-candidates.json").read_text())
@@ -206,7 +227,7 @@ class BusiWhuReviewPacketTests(unittest.TestCase):
             )
             output = root / "packet"
             with self.assertRaisesRegex(ValueError, "dimensions"):
-                build_review_packet(archive, workbook, inventory, selection, output)
+                authorized_review_packet(archive, workbook, inventory, selection, output)
             self.assertFalse(output.exists())
 
     def test_nonbinary_and_empty_annotations_reject(self):
@@ -221,7 +242,7 @@ class BusiWhuReviewPacketTests(unittest.TestCase):
                 )
                 output = root / "packet"
                 with self.assertRaises(ValueError):
-                    build_review_packet(archive, workbook, inventory, selection, output)
+                    authorized_review_packet(archive, workbook, inventory, selection, output)
                 self.assertFalse(output.exists())
 
     def test_existing_output_is_never_overwritten(self):
@@ -233,7 +254,7 @@ class BusiWhuReviewPacketTests(unittest.TestCase):
             sentinel = output / "sentinel"
             sentinel.write_text("keep", encoding="utf-8")
             with self.assertRaises(FileExistsError):
-                build_review_packet(archive, workbook, inventory, selection, output)
+                authorized_review_packet(archive, workbook, inventory, selection, output)
             self.assertEqual(sentinel.read_text(encoding="utf-8"), "keep")
 
 
@@ -244,7 +265,7 @@ class BusiWhuCompletedReviewTests(unittest.TestCase):
     def completed_fixture(self, root: Path):
         archive, workbook, inventory, selection = packet_fixture(root)
         packet = root / "packet"
-        receipt = build_review_packet(archive, workbook, inventory, selection, packet)
+        receipt = authorized_review_packet(archive, workbook, inventory, selection, packet)
 
         def complete(template_name, reviewer_id, reviewed_at):
             with (packet / template_name).open(newline="", encoding="utf-8") as stream:

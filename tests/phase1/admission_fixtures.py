@@ -27,13 +27,14 @@ def t(hhmmss):
 
 class AdmissionWorld:
     def __init__(self, overrides=None, proposed=None, *, source_id=SOURCE_ID, version=VERSION, family=FAMILY,
-                 artifacts=None, extra_admission_input_digests=()):
+                 artifacts=None, artifact_roles=None, extra_admission_input_digests=()):
         self.overrides = overrides or {}
         self.proposed = sorted(proposed or PROPOSED)
         self.source_id = source_id
         self.version = version
         self.family = family
         self.artifacts = artifacts
+        self.artifact_roles = artifact_roles or {}
         self.extra_admission_input_digests = list(extra_admission_input_digests)
         self.records = {}
         self.extra = []
@@ -156,8 +157,10 @@ class AdmissionWorld:
             "canonical_locator_ids": ["syn-locator-1"], "acquisition_authorization_digest": a,
             "acquisition_execution_receipt_digest": self.digest("receipt"),
             "artifacts": [{**x, "upstream_checksum": None, "media_type": "application/octet-stream",
-                           "role": {"syn/annotations.json": "annotation", "syn/images.tar": "archive",
-                                    "syn/terms.txt": "terms"}.get(x["logical_path"], "archive")} for x in artifacts],
+                           "role": self.artifact_roles.get(x["logical_path"], {
+                               "syn/annotations.json": "annotation", "syn/images.tar": "archive",
+                               "syn/terms.txt": "terms",
+                           }.get(x["logical_path"], "archive"))} for x in artifacts],
             "total_bytes": sum(x["bytes"] for x in artifacts), "retriever_id": "syn-operator",
             "retrieved_at": t("08:04:00"), "retrieval_log_digest": d("retrieval-log"),
         })

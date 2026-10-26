@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+from contextlib import ExitStack
 import ctypes
 import errno
 import hashlib
@@ -17,6 +18,8 @@ import unicodedata
 import zipfile
 
 from . import canonical
+from .busi_whu_authority import ReviewOpeningCapability
+from .protected_io import open_authorized_artifact
 
 
 _INVENTORY_KEYS = {
@@ -295,14 +298,6 @@ def _write_json(path: Path, value: object) -> None:
     path.write_bytes(canonical.dumps(value))
 
 
-def _sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        for block in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
-
-
 def _file_entry(root: Path, path: Path) -> dict:
     payload = path.read_bytes()
     return {
@@ -357,34 +352,42 @@ def _write_review_csv(path: Path, records: list[dict]) -> None:
 
 
 def build_review_packet(
-    archive_path: Path,
-    workbook_path: Path,
+    capability: ReviewOpeningCapability,
     metadata_inventory: dict,
     selection: dict,
-    output: Path,
 ) -> dict:
     """Decode the closed corpus and atomically publish a pending review packet."""
     inventory = _closed(metadata_inventory, _INVENTORY_KEYS, "metadata_inventory")
     chosen = _closed(selection, _SELECTION_KEYS, "selection")
     if chosen != build_review_selection(inventory):
         raise ValueError("selection differs from the recomputed frozen review selection")
-    output = Path(output)
+    if type(capability) is not ReviewOpeningCapability:
+        raise ValueError("a validated BUSI-WHU review-opening capability is required")
+    output = Path(capability.output_root)
     if output.exists():
         raise FileExistsError(str(output))
-    archive_path = Path(archive_path).resolve(strict=True)
-    workbook_path = Path(workbook_path).resolve(strict=True)
-    if not archive_path.is_file() or not workbook_path.is_file():
-        raise ValueError("source artifacts must be regular files")
+    archive_rows = [row for row in capability.artifact_bindings if row[1] == "archive"]
+    workbook_rows = [row for row in capability.artifact_bindings if row[1] == "metadata"]
+    if len(archive_rows) != 1 or len(workbook_rows) != 1:
+        raise ValueError("capability must bind exactly one archive and one metadata workbook")
     output.parent.mkdir(parents=True, exist_ok=True)
     staging = Path(tempfile.mkdtemp(prefix=".busi-whu-review-", dir=output.parent))
+    resources = ExitStack()
     try:
+        archive_artifact = resources.enter_context(
+            open_authorized_artifact(capability, archive_rows[0][0], "archive")
+        )
+        workbook_artifact = resources.enter_context(
+            open_authorized_artifact(capability, workbook_rows[0][0], "metadata")
+        )
+        archive_stream = resources.enter_context(archive_artifact.stream())
         source_rows = {row["record_id"]: row for row in inventory["records"]}
         decoded_rows = []
         image_hashes: dict[str, list[str]] = {}
         perceptual_hashes: dict[str, list[str]] = {}
         assets = staging / "assets"
         assets.mkdir()
-        with zipfile.ZipFile(archive_path) as archive:
+        with zipfile.ZipFile(archive_stream) as archive:
             members = _safe_archive_members(archive, set(source_rows))
             for record_id in sorted(source_rows, key=lambda value: value.encode("utf-8")):
                 source = source_rows[record_id]
@@ -428,8 +431,10 @@ def build_review_packet(
             "schema_version": 1,
             "source_inventory_digest": inventory["record_digest"],
             "selection_digest": chosen["record_digest"],
-            "archive_sha256": _sha256_file(archive_path),
-            "workbook_sha256": _sha256_file(workbook_path),
+            "archive_sha256": archive_artifact.sha256,
+            "workbook_sha256": workbook_artifact.sha256,
+            "opening_authorization_digest": capability.authorization_digest,
+            "opening_receipt_digest": capability.opening_receipt_digest,
             "records": decoded_rows,
             "record_count": len(decoded_rows),
             "decoded_image_count": len(decoded_rows),
@@ -526,6 +531,8 @@ def build_review_packet(
         receipt = canonical.seal({
             "schema_id": "mmbu.phase1.busi_whu_review_packet_receipt",
             "schema_version": 1,
+            "opening_authorization_digest": capability.authorization_digest,
+            "opening_receipt_digest": capability.opening_receipt_digest,
             "manifest_digest": manifest["record_digest"],
             "decode_inventory_digest": decode_inventory["record_digest"],
             "duplicate_candidates_digest": duplicates["record_digest"],
@@ -541,6 +548,7 @@ def build_review_packet(
         _rename_no_replace(staging, output)
         return receipt
     finally:
+        resources.close()
         if staging.exists():
             shutil.rmtree(staging)
 

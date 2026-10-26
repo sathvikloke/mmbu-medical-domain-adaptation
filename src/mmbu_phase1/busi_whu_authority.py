@@ -53,7 +53,7 @@ AUTHORIZATION_KEYS = (
     "metadata_inventory_digest", "review_selection_digest", "review_schema_digest",
     "duplicate_contract_digest", "repository_revision", "artifact_bindings",
     "credential_verification_digests", "fingerprint_inventories",
-    "allowed_operations", "output_root", "maximum_attempts",
+    "allowed_operations", "input_root", "output_root", "maximum_attempts",
     "network_access_allowed", "model_use_allowed", "training_allowed",
     "mmbu_public_access_allowed", "upload_allowed", "submission_allowed",
     "prospective_lock_digest", "authorized_at", "expires_at", "record_digest",
@@ -148,7 +148,11 @@ def validate_review_opening_authorization(
               "must contain exactly one credential per required role")
     _fingerprints(record["fingerprint_inventories"], f"{path}.fingerprint_inventories")
     f.literal(record["allowed_operations"], f"{path}.allowed_operations", list(OPERATIONS))
-    f.text(record["output_root"], f"{path}.output_root")
+    from pathlib import Path
+    for name in ("input_root", "output_root"):
+        root = f.text(record[name], f"{path}.{name}")
+        f.require(Path(root).is_absolute() and ".." not in Path(root).parts, f"{path}.{name}",
+                  "must be an absolute normalized root")
     f.literal(record["maximum_attempts"], f"{path}.maximum_attempts", 1)
     for name in (
         "network_access_allowed", "model_use_allowed", "training_allowed",
@@ -211,6 +215,7 @@ class ReviewOpeningCapability:
     opening_registry_digest: str
     prospective_lock_digest: str
     source_artifact_manifest_digest: str
+    input_root: str
     output_root: str
     maximum_attempts: int
     allowed_operations: tuple[str, ...]
@@ -326,6 +331,7 @@ def validate_busi_whu_review_opening(
         "opening_registry_digest": opening_registry["record_digest"],
         "prospective_lock_digest": lock["record_digest"],
         "source_artifact_manifest_digest": manifest["record_digest"],
+        "input_root": authorization["input_root"],
         "output_root": authorization["output_root"],
         "maximum_attempts": authorization["maximum_attempts"],
         "allowed_operations": tuple(authorization["allowed_operations"]),

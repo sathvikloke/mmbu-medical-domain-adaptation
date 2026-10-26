@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import importlib
 import importlib.util
 import os
@@ -13,11 +14,124 @@ import tempfile
 import unittest
 
 from mmbu_phase1 import canonical
+from mmbu_phase1 import biomedical_lane1, evidence
 from mmbu_phase1.fields import ContractViolation
 
 
 REPO = Path(__file__).resolve().parents[2]
 MANIFEST = REPO / "config/phase1/replicated-response-screen-2026-10-25.json"
+
+
+def _portable_bundle(testcase, mutate=None, *, forbidden_member=False, mutate_analysis=None):
+    temp = tempfile.TemporaryDirectory()
+    testcase.addCleanup(temp.cleanup)
+    root = Path(temp.name) / "bundle"
+    manifest = importlib.import_module("mmbu_phase1.replicated_response").load_manifest(MANIFEST)
+    frozen = MANIFEST.read_bytes()
+    (root / "config").mkdir(parents=True)
+    (root / "config/frozen-manifest.json").write_bytes(frozen)
+
+    rows = []
+    predictions = []
+    for source in ("busbra", "pathmnist"):
+        for index in range(128):
+            row = importlib.import_module("mmbu_phase1.replicated_response").official_context_row({
+                "independent_unit_id": f"{source}::{index}",
+                "row_id": f"{source}::development::{index}",
+                "source_id": source,
+                "task_target": f"target-{index % 3}",
+            })
+            rows.append({key: row[key] for key in (
+                "context_target", "independent_unit_id", "requested_context_fields", "row_id", "source_id",
+                "task_target",
+            )})
+            predictions.append({
+                "context": canonical.dumps(row["context_target"]).decode("utf-8"),
+                "row_id": row["row_id"],
+                "task": row["task_target"],
+            })
+    population = {
+        "mmbu_public_content_used": False,
+        "rows": rows,
+        "schema_id": "mmbu.biomedical.replicated_response_development_projection",
+        "schema_version": 1,
+        "screen_id": manifest["screen_id"],
+        "source_payloads_included": False,
+    }
+    (root / "population").mkdir()
+    (root / "population/development.json").write_bytes(canonical.dumps(population))
+
+    metrics = biomedical_lane1.score_predictions(rows, predictions)
+    conditions = importlib.import_module("mmbu_phase1.replicated_response").conditions(manifest)
+    for index, condition in enumerate(conditions):
+        candidate = next(row for row in manifest["candidates"] if row["candidate_id"] == condition["candidate_id"])
+        directory = root / f"results/condition-{index}"
+        directory.mkdir(parents=True)
+        result = {
+            "adapter_inventory": [] if condition["profile"] == "base" else ["adapter_model.safetensors"],
+            "candidate": candidate,
+            "condition": condition,
+            "development_metrics": metrics,
+            "development_predictions": predictions,
+            "manifest_sha256": hashlib.sha256(frozen).hexdigest(),
+            "mmbu_public_content_used": False,
+            "optimizer_updates": 0 if condition["profile"] == "base" else 1024,
+            "portfolio_sha256": "a" * 64,
+            "promotion_eligible": False,
+            "reload_prediction_match": True,
+            "source_admission_complete": False,
+            "status": "passed",
+            "terminal_stage": "completed",
+        }
+        reload = {
+            "candidate_id": condition["candidate_id"],
+            "condition_id": condition["condition_id"],
+            "metrics": metrics,
+            "network_disabled": True,
+            "predictions": predictions,
+            "schema_id": "mmbu.biomedical.replicated_response_reload",
+            "schema_version": 1,
+        }
+        if mutate is not None:
+            mutate(index, result, reload)
+        (directory / "result.json").write_bytes(canonical.dumps(result))
+        (directory / "reload-result.json").write_bytes(canonical.dumps(reload))
+    grade_rows = [{
+        "adapted_correct": 1, "base_correct": 1, "group_id": row["independent_unit_id"],
+        "record_id": row["row_id"], "source_id": row["source_id"],
+    } for row in rows]
+    response = importlib.import_module("mmbu_phase1.replicated_response")
+    profile = response.paired_seed_mean_task_bootstrap(
+        {str(seed): copy.deepcopy(grade_rows) for seed in manifest["training"]["seeds"]},
+        iterations=25, bootstrap_seed=9, confidence=0.90,
+    )
+    analysis = {
+        "bootstrap": {"confidence": 0.90, "iterations": 25, "seed": 9},
+        "candidates": {
+            candidate["candidate_id"]: {
+                "inference": "post_output_exploratory_fixed_development_population",
+                "profiles": {"dual": copy.deepcopy(profile), "task_only": copy.deepcopy(profile)},
+                "promotion_eligible": False,
+            }
+            for candidate in manifest["candidates"]
+        },
+        "inference": "post_output_exploratory_fixed_development_population",
+        "promotion_eligible": False,
+    }
+    if mutate_analysis is not None:
+        mutate_analysis(analysis)
+    (root / "analysis").mkdir()
+    (root / "analysis/post-output-bootstrap.json").write_bytes(canonical.dumps(analysis))
+    if forbidden_member:
+        (root / "results/condition-1/adapter_model.safetensors").write_bytes(b"forbidden")
+    _, digest = evidence.build_evidence_manifest(
+        root, "mmbu-replicated-response-2026-10-25-portable", "2026-10-26T00:00:00.000000Z",
+    )
+    receipt = evidence.retention_receipt(
+        "local-test", "mmbu-replicated-response-2026-10-25-portable", digest,
+    )
+    (root.parent / "retention-receipt.json").write_bytes(canonical.dumps(receipt))
+    return root, receipt
 
 
 def _load_tool(name: str, path: Path):
@@ -195,6 +309,56 @@ class ReplicatedResponseManifestTests(unittest.TestCase):
             self.module.paired_seed_mean_task_bootstrap(
                 {"seed-1": invalid}, iterations=10, bootstrap_seed=1, confidence=0.90,
             )
+
+    def test_portable_evidence_replays_all_conditions_without_heavy_artifacts(self):
+        root, receipt = _portable_bundle(self)
+        summary = self.module.verify_portable_evidence_bundle(root, receipt)
+        self.assertEqual(summary["verified_conditions"], 14)
+        self.assertEqual(summary["verified_development_rows"], 256)
+        self.assertTrue(summary["all_metrics_replayed"])
+        self.assertFalse(summary["promotion_eligible"])
+
+    def test_portable_evidence_rejects_semantic_reload_mismatch_even_when_resealed(self):
+        def mutate(index, _result, reload):
+            if index == 3:
+                reload["predictions"][0] = {**reload["predictions"][0], "task": "changed"}
+
+        root, receipt = _portable_bundle(self, mutate)
+        with self.assertRaises(ContractViolation):
+            self.module.verify_portable_evidence_bundle(root, receipt)
+
+    def test_portable_evidence_rejects_model_or_adapter_payloads(self):
+        root, receipt = _portable_bundle(self, forbidden_member=True)
+        with self.assertRaises(ContractViolation):
+            self.module.verify_portable_evidence_bundle(root, receipt)
+
+    def test_portable_evidence_recomputes_and_rejects_resealed_analysis_claims(self):
+        def mutate(analysis):
+            analysis["candidates"]["rr-qwen35-9b"]["profiles"]["dual"]["point_delta"] = {
+                "denominator": 1, "numerator": 1,
+            }
+
+        root, receipt = _portable_bundle(self, mutate_analysis=mutate)
+        with self.assertRaises(ContractViolation):
+            self.module.verify_portable_evidence_bundle(root, receipt)
+
+    def test_portable_evidence_has_a_cold_reviewer_cli(self):
+        root, _ = _portable_bundle(self)
+        completed = subprocess.run(
+            [sys.executable, str(REPO / "tools/verify_replicated_response_evidence.py"),
+             "--bundle", str(root), "--receipt", str(root.parent / "retention-receipt.json")],
+            cwd=REPO, capture_output=True, text=True, check=False,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertIn('"verified_conditions":14', completed.stdout)
+
+    def test_checked_in_portable_evidence_bundle_verifies(self):
+        parent = REPO / "outputs/replicated-response-screen-2026-10-25-portable"
+        receipt = canonical.loads((parent / "retention-receipt.json").read_bytes())
+        summary = self.module.verify_portable_evidence_bundle(parent / "bundle", receipt)
+        self.assertEqual(summary["evidence_root_sha256"],
+                         "cd62e3a67169434f29a3d710603d11ccaf851e1dcc529b54326b5dd2c8bd0e56")
+        self.assertTrue(summary["analysis_replayed"])
 
 
 class ReplicatedResponseNativeEnvelopeTests(unittest.TestCase):

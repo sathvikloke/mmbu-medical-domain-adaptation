@@ -41,7 +41,7 @@ No real confirmation run is authorized or ready. These records still need to exi
 1. BUS-BRA plus at least two independent semantic-breadth families admitted for the `train` purpose, including exact
    split manifests and record-level lineage. The actual portfolio remains undecided and blocked.
 2. An independently justified and frozen candidate identity, revision, parameter count, track, and runtime gate. The
-   remote-only response screen has zero authority to fill these fields.
+   now-portable exploratory response screen has zero authority to fill these fields.
 3. A replacement context endpoint that is image-dependent, has per-record targets with at least two distinct target
    vectors, and is frozen by independent review authority. The current BUSI-WHU-wide body-part/domain/modality target
    is constant, can be answered without viewing an image, and therefore has no promotion authority.
@@ -66,5 +66,6 @@ A future candidate and replacement context endpoint must each be justified by in
 frozen before any confirmation lineage can become executable.
 
 The next larger action needs separate independent evidence: complete real source admission, freeze a scientifically
-informative context endpoint, and make a candidate-freeze decision that does not rely on the remote-only response
-screen. No data acquisition, model loading, HPC work, or training follows automatically from this package.
+informative context endpoint, and make a candidate-freeze decision that does not treat the portable exploratory
+response screen's development result as decision authority. No data acquisition, model loading, HPC work, or training
+follows automatically from this package.

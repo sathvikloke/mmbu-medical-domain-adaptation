@@ -26,16 +26,18 @@ class EvidenceDocumentationTests(unittest.TestCase):
             self.assertIn(marker, requirement)
         self.assertIn("EXTERNAL_TRUST_ROOT_REQUIREMENT.md", current)
 
-    def test_remote_only_response_screen_is_explicitly_non_replayable(self):
+    def test_response_screen_is_portable_but_explicitly_non_promotional(self):
         report = (
             REPO / "docs/team/REPLICATED_RESPONSE_SCREEN_2026-10-25.md"
         ).read_text(encoding="utf-8")
 
-        self.assertIn("**Checkout replay status:** unavailable", report)
+        self.assertIn("**Checkout replay status:** available from a sealed, payload-minimized portable bundle", report)
         self.assertIn("**Promotion authority:** none", report)
         self.assertIn("raw predictions", report)
         self.assertIn("result receipts", report)
-        self.assertIn("must be imported and hash-verified", report)
+        self.assertIn("recomputes all 14 metrics", report)
+        self.assertIn("cd62e3a67169434f29a3d710603d11ccaf851e1dcc529b54326b5dd2c8bd0e56", report)
+        self.assertIn("excludes source images and archives", report)
         self.assertIn("cannot establish candidate priority", report)
         self.assertNotIn("makes the 9B Track 2 route the priority", report)
         self.assertNotIn("supports carrying Qwen3.5-9B", report)
@@ -45,8 +47,8 @@ class EvidenceDocumentationTests(unittest.TestCase):
             encoding="utf-8"
         )
 
-        self.assertIn("passed **639 Phase 1 CPU tests**", report)
-        self.assertIn("| Current Phase 1 suite | **639 tests passed", report)
+        self.assertIn("passed **645 Phase 1 CPU tests**", report)
+        self.assertIn("| Current Phase 1 suite | **645 tests passed", report)
         self.assertNotIn("| Phase 1 suite | **623 tests passed", report)
         self.assertIn("**Status snapshot code revision (historical):**", report)
         self.assertNotIn("**Verified code revision:**", report)

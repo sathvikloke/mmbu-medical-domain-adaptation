@@ -6,15 +6,42 @@
 
 **Scientific use:** exploratory response evidence only; this screen does not select or promote a model
 
-**Checkout replay status:** unavailable
+**Checkout replay status:** available from a sealed, payload-minimized portable bundle
 
 **Promotion authority:** none
 
-The primary result receipts, raw predictions, exact execution manifest, and post-output analysis artifact remain on
-the named MOCS scratch roots and are not present in this checkout. Consequently, the numerical claims below are a
-remote-evidence report, not a locally replayable result. They have zero checkpoint-selection, promotion, or readiness
-authority in this checkout. Before they can support any decision-bearing claim, those artifacts must be imported and hash-verified
-against the recorded digests without rewriting the preserved remote evidence.
+The exact execution manifest, all 14 primary result receipts and raw development predictions, all 14 fresh-process
+reload receipts and predictions, the post-output analysis, and the relevant logs are now present in a sealed portable
+bundle. The bundle also contains a narrow 256-row development projection sufficient to replay task and context scoring;
+it excludes source images and archives, the compiled portfolio, model weights, adapter payloads, and caches. The local
+verifier authenticates every member, rejects additions and heavy artifacts, checks every frozen condition and receipt
+claim, matches primary and reload predictions, recomputes all 14 metrics, and recomputes both candidates' paired
+bootstrap analyses.
+
+This makes the historical experiment independently auditable from the checkout. It does not change its scientific
+status: the screen used a fixed development population, its bootstrap literals were selected after outputs existed,
+source admission remained incomplete, and model promotion was prohibited before launch.
+
+## Portable cold-review bundle
+
+- Bundle: `outputs/replicated-response-screen-2026-10-25-portable/bundle`
+- External retention receipt: `outputs/replicated-response-screen-2026-10-25-portable/retention-receipt.json`
+- Evidence-root SHA-256: `cd62e3a67169434f29a3d710603d11ccaf851e1dcc529b54326b5dd2c8bd0e56`
+- Bundle members including the manifest: 62
+- Total bundle size: 4,116,144 bytes
+- Remote export root: `/storage/scr/npl015/mmbu-response-export/2026-10-26-portable-7756918`
+
+Cold replay command:
+
+```bash
+python3 tools/verify_replicated_response_evidence.py \
+  --bundle outputs/replicated-response-screen-2026-10-25-portable/bundle \
+  --receipt outputs/replicated-response-screen-2026-10-25-portable/retention-receipt.json
+```
+
+The expected verified summary is 14 conditions, 256 development rows, all metrics replayed, analysis replayed, and
+`promotion_eligible=false`. The portable export was derived into a new MOCS root; neither the preserved replacement
+run nor its predecessor was modified.
 
 ## Bottom line
 
@@ -97,10 +124,10 @@ The calculation used 10,000 shared group-resampling draws, bootstrap seed `20261
 
 The canonical analysis artifact is `/storage/scr/npl015/mmbu-response-analysis/2026-10-25-6ef06ab/post-output-bootstrap.json`, SHA-256 `2aeeb194baa2a95af09e14e5b0a96788bf55af7af2f853638f63362cc51a12ef`. It reads the preserved run without changing any receipt, prediction, log, or model artifact.
 
-The reported 9B result is a large and replicated response on this fixed development population. Because the primary
-artifacts are unavailable in this checkout, it cannot establish candidate priority or authorize a confirmation
-candidate. It does not retroactively satisfy a binding confidence-bound gate, prove transfer to another source or
-partition, or authorize checkpoint promotion.
+The reported 9B result is a large and replicated response on this fixed development population. Its primary prediction
+and receipt evidence is now locally replayable, but it still cannot establish candidate priority or authorize a
+confirmation candidate. It does not retroactively satisfy a binding confidence-bound gate, prove transfer to another
+source or partition, or authorize checkpoint promotion.
 
 ## Predeclared descriptive checks
 
@@ -139,8 +166,8 @@ A regression test reproduced the missing-path failure with `PYTHONPATH` removed.
 
 ## Decision boundary
 
-The response screen completed its historical narrow purpose, but the checkout cannot independently establish that it
-passed. It does not support choosing a winner, candidate, objective, or track from these development results. A future
-decision-bearing experiment must independently justify and freeze the candidate set, source admission, held-out
-confirmation population, task and context endpoints, complete resampling algorithm and literals, and seed-level
-acceptance rules before any confirmation labels are opened.
+The response screen completed its historical narrow purpose, and the checkout can now independently establish its
+recorded execution, reload, scoring, and exploratory-analysis claims. It still does not support choosing a winner,
+candidate, objective, or track from these development results. A future decision-bearing experiment must independently
+justify and freeze the candidate set, source admission, held-out confirmation population, task and context endpoints,
+complete resampling algorithm and literals, and seed-level acceptance rules before any confirmation labels are opened.

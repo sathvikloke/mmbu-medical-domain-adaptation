@@ -255,6 +255,48 @@ def authenticate_completed_review(
     return canonical.seal(result)
 
 
+def validate_authenticated_completed_review(report: object, store: RecordStore) -> dict:
+    """Re-resolve and reproduce an authenticated report from its sealed evidence chain."""
+    report = _closed(report, COMPLETED_REPORT_KEYS, "authenticated completed review report")
+    if canonical.record_digest(report) != report.get("record_digest"):
+        raise ValueError("authenticated completed review report must be one sealed record")
+    if report.get("reviewer_identity_authenticated") is not True:
+        raise ValueError("completed review report is not authenticated")
+    authentication = report.get("review_authentication")
+    if type(authentication) is not dict:
+        raise ValueError("completed review authentication is missing")
+    base = store.get(
+        authentication.get("base_review_report_digest"), "busi_whu_review_validation",
+        "completed review base report",
+    )
+    attestation_digests = authentication.get("review_attestation_digests")
+    if type(attestation_digests) is not list or not attestation_digests:
+        raise ValueError("completed review attestations are missing")
+    subject_times = set()
+    for index, attestation_digest in enumerate(attestation_digests):
+        attestation = validate_review_attestation(
+            store.get(attestation_digest, "busi_whu_review_attestation",
+                      f"completed review attestations[{index}]"),
+            f"completed review attestations[{index}]",
+        )
+        subject_times.add(attestation["subject_created_at"])
+    if len(subject_times) != 1:
+        raise ValueError("completed review attestations disagree on subject chronology")
+    reproduced = authenticate_completed_review(
+        base, store,
+        authentication.get("opening_authorization_digest"),
+        authentication.get("opening_receipt_digest"),
+        attestation_digests,
+        authentication.get("clinical_assessment_digest"),
+        authentication.get("custodian_assessment_digest"),
+        report_created_at=subject_times.pop(),
+        now=authentication.get("authenticated_at"),
+    )
+    if reproduced != report:
+        raise ValueError("authenticated completed review differs from its resolved evidence chain")
+    return report
+
+
 def _negative_authority(value: dict, label: str) -> None:
     for field in AUTHORITY_FIELDS:
         if value.get(field) is not False:
@@ -743,5 +785,6 @@ def validate_completed_review(
 
 
 __all__ = [
-    "authenticate_completed_review", "validate_completed_review", "validate_source_assessments",
+    "authenticate_completed_review", "validate_authenticated_completed_review",
+    "validate_completed_review", "validate_source_assessments",
 ]

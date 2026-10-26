@@ -12,6 +12,7 @@ import random
 
 from mmbu_phase1 import admission, canonical, decisions, rational
 from mmbu_phase1.store import RecordStore
+from mmbu_phase1.busi_whu_review_validation import validate_authenticated_completed_review
 from mmbu_phase1.fields import (
     ContractViolation, boolean, closed, digest, fail, integer, literal, require, text, timestamp,
 )
@@ -123,6 +124,10 @@ def _validated_bridge_inputs(
     purpose_authorization_digest: str,
 ) -> tuple[dict, dict, dict]:
     report = closed(review_report, "heldout_confirmation.review_report", REVIEW_REPORT_KEYS)
+    try:
+        validate_authenticated_completed_review(report, store)
+    except (ContractViolation, ValueError) as exc:
+        fail("heldout_confirmation.review_report.review_authentication", str(exc))
     digest(report["record_digest"], "heldout_confirmation.review_report.record_digest")
     literal(report["record_digest"], "heldout_confirmation.review_report.record_digest",
             canonical.record_digest(report))

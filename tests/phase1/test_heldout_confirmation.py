@@ -16,7 +16,9 @@ from mmbu_phase1 import canonical, rational
 from mmbu_phase1.store import RecordStore
 from mmbu_phase1.scope import REQUIRED_PHASE1_TEST_MODULES
 from mmbu_phase1.fields import ContractViolation
+from mmbu_phase1.busi_whu_review_validation import authenticate_completed_review
 from tests.phase1.admission_fixtures import AdmissionWorld, t
+from tests.phase1.test_busi_whu_authority import ReviewAuthorityWorld
 
 
 REPO = Path(__file__).resolve().parents[2]
@@ -186,7 +188,59 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
             "mmbu_public_content_used": False,
         })
 
-    def admission(self, report):
+    def authenticated_report(self):
+        authority = ReviewAuthorityWorld()
+        base = dict(self.report())
+        base.pop("record_digest")
+        base["opening_authorization_digest"] = authority.authorization["record_digest"]
+        base["opening_receipt_digest"] = authority.world.digest("review_opening")
+        base["reviewer_identity_authenticated"] = False
+        base["review_authentication"] = None
+        base = canonical.seal(base)
+        store = authority.store()
+        store.add(base)
+        credentials = {
+            record["role"]: record for record in authority.records.values()
+            if record["schema_id"] == "mmbu.phase1.reviewer_credential_verification"
+        }
+        attestations = []
+        for index, (role, credential) in enumerate(sorted(credentials.items())):
+            attestation = canonical.seal({
+                "schema_id": "mmbu.phase1.busi_whu_review_attestation", "schema_version": 1,
+                "attestation_id": f"bridge-attestation-{index}",
+                "credential_verification_digest": credential["record_digest"],
+                "reviewer_id": credential["reviewer_id"], "role": role,
+                "subject_digest": base["record_digest"], "subject_created_at": t("09:20:00"),
+                "disposition": "approved", "limitations_digest": "e" * 64,
+                "attested_at": t("09:30:00"),
+            })
+            store.add(attestation)
+            attestations.append(attestation["record_digest"])
+        findings = {
+            "image_annotation_join_issue": "absent", "lesion_completeness_issue": "absent",
+            "patient_identity_issue": "absent", "target_semantics_issue": "absent",
+        }
+        assessments = {}
+        for role in ("clinical_adjudicator", "data_rights_authority"):
+            credential = credentials[role]
+            assessment = canonical.seal({
+                "schema_id": "mmbu.phase1.busi_whu_source_assessment", "schema_version": 1,
+                "assessment_id": f"bridge-assessment-{role}", "role": role,
+                "assessor_id": credential["reviewer_id"],
+                "credential_verification_digest": credential["record_digest"],
+                "subject_digest": base["record_digest"], "subject_created_at": t("09:20:00"),
+                "findings": findings, "assessed_at": t("09:31:00"),
+            })
+            store.add(assessment)
+            assessments[role] = assessment["record_digest"]
+        report = authenticate_completed_review(
+            base, store, authority.authorization["record_digest"], authority.world.digest("review_opening"),
+            attestations, assessments["clinical_adjudicator"], assessments["data_rights_authority"],
+            report_created_at=t("09:20:00"), now=t("09:40:00"),
+        )
+        return report, store.records()
+
+    def admission(self, report, evidence_records=()):
         world = AdmissionWorld(
             proposed=["confirmation"], source_id="busi-whu", version="3", family="busi-whu",
             extra_admission_input_digests=[report["record_digest"]],
@@ -206,11 +260,18 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
             "purpose_authorization_reviewer", ["confirmation"],
             "syn-purpose-reviewer", t("08:42:00"),
         )
-        return world.store(split), source_digest, world.digest("confirmation_authorization"), world
+        admission_store = world.store(split)
+        if evidence_records:
+            records = [
+                record for record in admission_store.records()
+                if record["schema_id"] != "mmbu.phase1.opening_receipt_registry"
+            ]
+            admission_store = RecordStore([*records, *evidence_records])
+        return admission_store, source_digest, world.digest("confirmation_authorization"), world
 
     def test_authenticated_review_builds_existing_population_inputs(self):
-        report = self.report()
-        store, source_digest, purpose_digest, _ = self.admission(report)
+        report, evidence_records = self.authenticated_report()
+        store, source_digest, purpose_digest, _ = self.admission(report, evidence_records)
         manifest = self.module.build_confirmation_source_manifest(
             report, store, source_digest, purpose_digest
         )
@@ -223,6 +284,14 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
         self.assertEqual(artifacts["population_binding"]["source_manifest_digest"], manifest["record_digest"])
         self.assertEqual(artifacts["target_map_digest"], manifest["target_map_digest"])
         self.assertFalse(hasattr(self.module, "build_randomization_artifacts"))
+
+    def test_admitted_report_with_fabricated_authentication_chain_rejects(self):
+        report = self.report()
+        store, source_digest, purpose_digest, _ = self.admission(report)
+        with self.assertRaises(ContractViolation):
+            self.module.build_confirmation_source_manifest(
+                report, store, source_digest, purpose_digest
+            )
 
     def test_unauthenticated_training_leakage_underpowered_and_cross_patient_duplicates_reject(self):
         report = self.report()
@@ -263,8 +332,8 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
             self.module.build_confirmation_source_manifest(duplicate, store, source_digest, purpose_digest)
 
     def test_post_lock_manifest_mutation_rejects(self):
-        report = self.report()
-        store, source_digest, purpose_digest, _ = self.admission(report)
+        report, evidence_records = self.authenticated_report()
+        store, source_digest, purpose_digest, _ = self.admission(report, evidence_records)
         manifest = self.module.build_confirmation_source_manifest(
             report, store, source_digest, purpose_digest
         )

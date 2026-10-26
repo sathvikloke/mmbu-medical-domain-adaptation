@@ -57,7 +57,15 @@ After the protected run, the observed member-name evidence was passed through ne
 - BUSI-WHU: all 927 visible image names form a one-to-one match with 927 annotation names. Pairing receipt digest: `262c1a511229e62eec9991392c152e7ea64e94683f470fdea351437acc9d4e4b`.
 - PathMNIST: a closed synthetic validator now requires exactly `split,index,image_id`, train/validation only, contiguous zero-based indices matching the frozen array shapes, and globally unique nonempty image IDs. It rejects test rows, index gaps, duplicate indices, duplicate image IDs, altered schemas, and unknown fields. No real mapping row was opened in this step.
 
-The source-admission test file passes 51 tests, including adversarial join fixtures. Repository link verification and the diff integrity check also pass.
+The source-admission test file passes 54 tests, including adversarial join fixtures. Repository link verification and the diff integrity check also pass.
+
+## First schema-value opening outcome
+
+The acknowledged schema-value packet `c5149e1b53c7463ff454e143c47164db012b5aa1f3c8e90826e7c812933012e1` ran once as CPU array job `86059`. The predecessor root and all logs remain preserved.
+
+- BUSI-WHU passed. Exactly 13 header strings were resolved; no data row or label value was emitted. Inventory digest: `6af0ba2ba1959976a9b5aa47ace8e7bcedf6673bf30c78f8185bde22069e08af`; status digest: `49bf2233983d7475f4dc4a40e4b0459ea9a0a465feb7d3ec59d0f417eb625d17`.
+- PathMNIST failed closed before emitting an inventory because the mapping has more than the 100,000 expected train/validation rows. This is consistent with additional test-split identity metadata, but the failed packet did not authorize widening the read. No retry occurred.
+- The reader was repaired against synthetic fixtures to accept bounded test-split mapping metadata solely for filtering, emit no excluded values, and still emit only the frozen 89,996 train plus 10,004 validation mappings. All 54 focused source-admission tests pass at commit `59da6097d56a203f2f94f43f5b7d817fb4981581`.
 
 ## Enforced negative claims
 
@@ -74,4 +82,4 @@ PathMNIST additionally records `test_member_payload_opened = false`. No GPU, mod
 
 This pass establishes the physical archive/workbook/array structure required to implement exact source-specific inventory logic without guessing. It does **not** establish dataset rights, clinical correctness, patient grouping, annotation completeness, source admission, training fitness, model quality, novelty, or competition readiness.
 
-The next evidence-producing step is a separately bounded schema-value opening: validate the real PathMNIST train/validation mapping rows through the frozen rule, and resolve only the 13 BUSI-WHU header strings needed to define its metadata contract. That step must remain distinct from label-value opening, image decoding, source admission, or model use.
+The next evidence-producing step is the one-attempt corrected PathMNIST mapping read sealed in packet `646c08a7f2cba4320cb7f0d5611f68b95a185f1df955d7c24c5ef30dfe53396a`. It permits reading only `split,index,image_id` mapping metadata across the bounded file, discards test-split identities from the output, and still forbids NPZ test-member opening, label values, image decoding, source admission, or model use.

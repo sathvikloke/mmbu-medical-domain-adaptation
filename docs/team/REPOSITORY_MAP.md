@@ -79,6 +79,7 @@ Paths in this guide are relative to the repository root. The historical layout i
 | [docs/team/TASK_PROTOCOL_SNAPSHOT.md](TASK_PROTOCOL_SNAPSHOT.md) | Dated visible task prompt/routing/judge snapshot, revision drift, and later malformed-output precedence |
 | [docs/team/BIOMEDICAL_LANE1_SHAKEDOWN_TRACE.md](BIOMEDICAL_LANE1_SHAKEDOWN_TRACE.md) | Hash-bound five-arm external-biomedical shakedown, matched-population metrics, reload checks, and non-promotion interpretation |
 | [docs/team/COMPETITION_DIRECTION_DECISION_2026-10-25.md](COMPETITION_DIRECTION_DECISION_2026-10-25.md) | Amended post-shakedown Track 1/2/3 decision, score arithmetic, dual-track uncertainties, family-diverse model screens, measured resource range, switch evidence, and stopping point |
+| [docs/team/TRACK3_COMPETITIVE_INTELLIGENCE_2026-10-26.md](TRACK3_COMPETITIVE_INTELLIGENCE_2026-10-26.md) | Revision-pinned public competitor evidence, self-report limits, pre-existing-candidate independence, threat implications, and matched external 2B experiment boundary |
 | [outputs/MMBU-domain-adaptation-plan-v2.md](../../outputs/MMBU-domain-adaptation-plan-v2.md) | Historical scientific rationale; its provisional model order is superseded by the current [experiment workflow](EXPERIMENT_WORKFLOW.md) |
 | [outputs/MMBU-precompute-v0.3-status.md](../../outputs/MMBU-precompute-v0.3-status.md) | Historical CPU completion status and limitations |
 | [outputs/mmbu-precompute](../../outputs/mmbu-precompute) | Version 0.3 package: source, tests, examples, configs, documentation, tools, and evidence |

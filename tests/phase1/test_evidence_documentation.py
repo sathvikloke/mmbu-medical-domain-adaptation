@@ -7,6 +7,28 @@ REPO = Path(__file__).resolve().parents[2]
 
 
 class EvidenceDocumentationTests(unittest.TestCase):
+    def test_track3_competitor_evidence_cannot_select_our_model(self):
+        intelligence = (
+            REPO / "docs/team/TRACK3_COMPETITIVE_INTELLIGENCE_2026-10-26.md"
+        ).read_text(encoding="utf-8")
+        feasibility = (
+            REPO / "docs/team/MODEL_FEASIBILITY_F0_2026-10-25.md"
+        ).read_text(encoding="utf-8")
+
+        for marker in (
+            "public self-report",
+            "zero model-selection authority",
+            "1a556fa3b5ec737a2775d34c9274ec185df297d5",
+            "OpenGVLab/InternVL3_5-2B-HF",
+            "pre-existing frozen F0 candidate",
+            "does not promote InternVL",
+            "general-capability regressions",
+            "matched external experiment",
+        ):
+            self.assertIn(marker, intelligence)
+        self.assertIn("OpenGVLab/InternVL3_5-2B-HF", feasibility)
+        self.assertNotIn("selected model", intelligence.lower())
+
     def test_pathmnist_author_reply_is_retained_without_overclaiming(self):
         receipt_path = (
             REPO

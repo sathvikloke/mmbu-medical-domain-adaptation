@@ -79,12 +79,16 @@ def validate_checkpoint_lineage(value: object, path: str = "heldout_confirmation
 
 
 ARTIFACT_KEYS = (
-    "created_at", "index_matrix", "index_matrix_digest", "patient_ids", "population_digest",
-    "sign_matrix", "sign_matrix_digest",
+    "created_at", "index_matrix", "index_matrix_digest", "patient_ids", "population_binding",
+    "population_digest", "sign_matrix", "sign_matrix_digest",
 )
 RESULT_ROW_KEYS = (
-    "condition_id", "context_field_grades", "output_failed", "patient_id", "record_id", "task_grade",
-    "target_label",
+    "condition_id", "output_failed", "patient_id", "post_reload_context_raw_output",
+    "post_reload_task_raw_output", "pre_reload_context_raw_output", "pre_reload_task_raw_output",
+    "prompt_spec_digest", "record_id", "target_label",
+)
+CONFIRMATION_LOCK_KEYS = (
+    "artifact_digest", "locked_at", "opening_receipt_digest", "population_digest", "record_digest",
 )
 CONDITIONS = ("base", "seed-20261025", "seed-20261026", "seed-20261027")
 SEED_CONDITIONS = CONDITIONS[1:]
@@ -102,21 +106,120 @@ def _validate_patient_ids(value: object, path: str = "heldout_confirmation.patie
     return value
 
 
-def build_randomization_artifacts(patient_ids: list[str], *, created_at: str) -> dict:
+PROMPT_SPEC_DIGEST = "c75d3bc7c0a46083d5636060edef29ced26b1d740118d36b0f6d1dc7bf782f87"
+
+
+def _random_matrices(count: int) -> tuple[list[list[int]], list[list[int]]]:
+    bootstrap = random.Random(20261025)
+    signs = random.Random(20261026)
+    return (
+        [[bootstrap.randrange(count) for _ in range(count)] for _ in range(10000)],
+        [[1 if signs.getrandbits(1) else -1 for _ in range(count)] for _ in range(10000)],
+    )
+
+
+def _population_binding(
+    patient_ids: list[str],
+    patient_to_records: object,
+    *,
+    source_manifest_digest: str,
+    exclusions_digest: str,
+    duplicate_disposition_digest: str,
+) -> dict:
+    digest(source_manifest_digest, "heldout_confirmation.population.source_manifest_digest")
+    digest(exclusions_digest, "heldout_confirmation.population.exclusions_digest")
+    digest(duplicate_disposition_digest, "heldout_confirmation.population.duplicate_disposition_digest")
+    require(type(patient_to_records) is dict and set(patient_to_records) == set(patient_ids),
+            "heldout_confirmation.population.patient_to_records", "must name every locked patient exactly")
+    normalized: dict[str, list[str]] = {}
+    record_owner: dict[str, str] = {}
+    for patient_id in patient_ids:
+        records = patient_to_records[patient_id]
+        require(type(records) is list and bool(records),
+                f"heldout_confirmation.population.patient_to_records.{patient_id}", "must be nonempty")
+        for index, record_id in enumerate(records):
+            text(record_id, f"heldout_confirmation.population.patient_to_records.{patient_id}[{index}]")
+        require(records == sorted(set(records), key=lambda item: item.encode("utf-8")),
+                f"heldout_confirmation.population.patient_to_records.{patient_id}",
+                "must be unique and sorted by UTF-8 bytes")
+        for record_id in records:
+            require(record_id not in record_owner,
+                    f"heldout_confirmation.population.patient_to_records.{patient_id}",
+                    f"record {record_id!r} is already assigned to patient {record_owner.get(record_id)!r}")
+            record_owner[record_id] = patient_id
+        normalized[patient_id] = list(records)
+    return {
+        "duplicate_disposition_digest": duplicate_disposition_digest,
+        "exclusions_digest": exclusions_digest,
+        "patient_to_records": normalized,
+        "source_manifest_digest": source_manifest_digest,
+    }
+
+
+def build_confirmation_lock(
+    artifacts: dict, *, locked_at: str, opening_receipt_digest: str
+) -> dict:
+    """Create the separate structural lock that binds the complete pre-output artifact."""
+    closed(artifacts, "heldout_confirmation.artifacts", ARTIFACT_KEYS)
+    timestamp(locked_at, "heldout_confirmation.lock.locked_at")
+    digest(opening_receipt_digest, "heldout_confirmation.lock.opening_receipt_digest")
+    return canonical.seal({
+        "artifact_digest": canonical.value_digest(artifacts),
+        "locked_at": locked_at,
+        "opening_receipt_digest": opening_receipt_digest,
+        "population_digest": artifacts["population_digest"],
+        "record_digest": "0" * 64,
+    })
+
+
+def _validate_confirmation_lock(
+    value: object, artifacts: dict, *, first_output_at: str
+) -> dict:
+    lock = closed(value, "heldout_confirmation.lock", CONFIRMATION_LOCK_KEYS)
+    digest(lock["artifact_digest"], "heldout_confirmation.lock.artifact_digest")
+    digest(lock["opening_receipt_digest"], "heldout_confirmation.lock.opening_receipt_digest")
+    digest(lock["population_digest"], "heldout_confirmation.lock.population_digest")
+    digest(lock["record_digest"], "heldout_confirmation.lock.record_digest")
+    literal(lock["record_digest"], "heldout_confirmation.lock.record_digest", canonical.record_digest(lock))
+    literal(lock["artifact_digest"], "heldout_confirmation.lock.artifact_digest",
+            canonical.value_digest(artifacts))
+    literal(lock["population_digest"], "heldout_confirmation.lock.population_digest",
+            artifacts["population_digest"])
+    created = timestamp(artifacts["created_at"], "heldout_confirmation.artifacts.created_at")
+    locked = timestamp(lock["locked_at"], "heldout_confirmation.lock.locked_at")
+    first = timestamp(first_output_at, "heldout_confirmation.first_output_at")
+    require(created < locked < first, "heldout_confirmation.lock.locked_at",
+            "must follow artifact creation and precede the first output")
+    return lock
+
+
+def build_randomization_artifacts(
+    patient_ids: list[str],
+    *,
+    patient_to_records: dict[str, list[str]],
+    source_manifest_digest: str,
+    exclusions_digest: str,
+    duplicate_disposition_digest: str,
+    created_at: str,
+) -> dict:
     """Build the frozen patient bootstrap and sign matrices before outputs exist."""
     patient_ids = list(_validate_patient_ids(patient_ids))
     timestamp(created_at, "heldout_confirmation.artifacts.created_at")
     count = len(patient_ids)
-    bootstrap = random.Random(20261025)
-    signs = random.Random(20261026)
-    index_matrix = [[bootstrap.randrange(count) for _ in range(count)] for _ in range(10000)]
-    sign_matrix = [[1 if signs.getrandbits(1) else -1 for _ in range(count)] for _ in range(10000)]
+    population = _population_binding(
+        patient_ids, patient_to_records,
+        source_manifest_digest=source_manifest_digest,
+        exclusions_digest=exclusions_digest,
+        duplicate_disposition_digest=duplicate_disposition_digest,
+    )
+    index_matrix, sign_matrix = _random_matrices(count)
     return {
         "created_at": created_at,
         "index_matrix": index_matrix,
         "index_matrix_digest": canonical.value_digest(index_matrix),
         "patient_ids": patient_ids,
-        "population_digest": canonical.value_digest(patient_ids),
+        "population_binding": population,
+        "population_digest": canonical.value_digest(population),
         "sign_matrix": sign_matrix,
         "sign_matrix_digest": canonical.value_digest(sign_matrix),
     }
@@ -129,8 +232,19 @@ def _validate_artifacts(value: object, *, first_output_at: str) -> dict:
     first_output = timestamp(first_output_at, "heldout_confirmation.first_output_at")
     require(created < first_output, "heldout_confirmation.artifacts.created_at",
             "must precede the first model output")
+    supplied_population = closed(artifact["population_binding"],
+                                 "heldout_confirmation.artifacts.population_binding", (
+                                     "duplicate_disposition_digest", "exclusions_digest", "patient_to_records",
+                                     "source_manifest_digest",
+                                 ))
+    population = _population_binding(
+        patient_ids, supplied_population["patient_to_records"],
+        source_manifest_digest=supplied_population["source_manifest_digest"],
+        exclusions_digest=supplied_population["exclusions_digest"],
+        duplicate_disposition_digest=supplied_population["duplicate_disposition_digest"],
+    )
     literal(artifact["population_digest"], "heldout_confirmation.artifacts.population_digest",
-            canonical.value_digest(patient_ids))
+            canonical.value_digest(population))
     count = len(patient_ids)
     index_matrix = artifact["index_matrix"]
     sign_matrix = artifact["sign_matrix"]
@@ -152,6 +266,11 @@ def _validate_artifacts(value: object, *, first_output_at: str) -> dict:
             canonical.value_digest(index_matrix))
     literal(artifact["sign_matrix_digest"], "heldout_confirmation.artifacts.sign_matrix_digest",
             canonical.value_digest(sign_matrix))
+    expected_indexes, expected_signs = _random_matrices(count)
+    require(index_matrix == expected_indexes, "heldout_confirmation.artifacts.index_matrix",
+            "does not match the frozen PRNG construction")
+    require(sign_matrix == expected_signs, "heldout_confirmation.artifacts.sign_matrix",
+            "does not match the frozen PRNG construction")
     return artifact
 
 
@@ -170,23 +289,59 @@ def _validate_result_row(value: object, index: int) -> dict:
     text(row["record_id"], f"{path}.record_id")
     require(type(row["target_label"]) is str and row["target_label"] in ("benign", "malignant"),
             f"{path}.target_label", "must be benign or malignant")
+    literal(row["prompt_spec_digest"], f"{path}.prompt_spec_digest", PROMPT_SPEC_DIGEST)
     failed = boolean(row["output_failed"], f"{path}.output_failed")
-    task = rational.from_wire(row["task_grade"], f"{path}.task_grade")
-    require(task in (Fraction(0), Fraction(1)), f"{path}.task_grade", "must be exactly 0 or 1")
-    grades = closed(row["context_field_grades"], f"{path}.context_field_grades",
-                    ("body_part", "medical_domain", "modality"))
-    for key in ("body_part", "medical_domain", "modality"):
-        grade = integer(grades[key], f"{path}.context_field_grades.{key}", minimum=0, maximum=1)
-        require(grade in (0, 1), f"{path}.context_field_grades.{key}", "must be binary")
     if failed:
-        require(task == 0 and all(value == 0 for value in grades.values()), path,
-                "an output failure must remain in the denominator as all-zero grades")
-    return row
+        for key in ("pre_reload_task_raw_output", "pre_reload_context_raw_output",
+                    "post_reload_task_raw_output", "post_reload_context_raw_output"):
+            literal(row[key], f"{path}.{key}", None)
+        task = Fraction(0)
+        grades = {"body_part": 0, "medical_domain": 0, "modality": 0}
+        structurally_valid = False
+    else:
+        task_raw = text(row["pre_reload_task_raw_output"],
+                        f"{path}.pre_reload_task_raw_output", allow_empty=True)
+        context_raw = text(row["pre_reload_context_raw_output"],
+                           f"{path}.pre_reload_context_raw_output", allow_empty=True)
+        post_task = text(row["post_reload_task_raw_output"],
+                         f"{path}.post_reload_task_raw_output", allow_empty=True)
+        post_context = text(row["post_reload_context_raw_output"],
+                            f"{path}.post_reload_context_raw_output", allow_empty=True)
+        require(task_raw.encode("utf-8") == post_task.encode("utf-8") and
+                context_raw.encode("utf-8") == post_context.encode("utf-8"), path,
+                "fresh-process task and context raw bytes must match exactly")
+        parsed = task_raw.strip().casefold()
+        task = Fraction(int(parsed in ("benign", "malignant") and parsed == row["target_label"]))
+        context_keys = ("body_part", "medical_domain", "modality")
+        target = {"body_part": "breast", "medical_domain": "breast imaging", "modality": "ultrasound"}
+        try:
+            parsed_context = canonical.loads(context_raw.encode("utf-8"))
+        except canonical.CanonicalJSONError:
+            parsed_context = None
+        structurally_valid = (
+            type(parsed_context) is dict
+            and list(parsed_context) == list(context_keys)
+            and all(type(parsed_context[key]) is str for key in context_keys)
+            and context_raw.startswith("{")
+            and context_raw.endswith("}")
+        )
+        grades = {
+            key: int(structurally_valid and parsed_context[key] == target[key])
+            for key in context_keys
+        }
+    derived = dict(row)
+    derived["_task_grade"] = task
+    derived["_context_field_grades"] = grades
+    derived["_context_valid"] = structurally_valid
+    return derived
 
 
-def analyze_patient_results(rows: list[dict], artifacts: dict, *, first_output_at: str) -> dict:
+def analyze_patient_results(
+    rows: list[dict], artifacts: dict, *, confirmation_lock: dict, first_output_at: str
+) -> dict:
     """Compute the frozen exact paired patient analysis from complete condition rows."""
     artifact = _validate_artifacts(artifacts, first_output_at=first_output_at)
+    _validate_confirmation_lock(confirmation_lock, artifact, first_output_at=first_output_at)
     patient_ids = artifact["patient_ids"]
     patient_set = set(patient_ids)
     if type(rows) is not list:
@@ -204,10 +359,12 @@ def analyze_patient_results(rows: list[dict], artifacts: dict, *, first_output_a
         output_failures += int(row["output_failed"])
 
     reference: dict[str, set[str]] = {}
+    locked_records = artifact["population_binding"]["patient_to_records"]
     for patient_id in patient_ids:
         reference[patient_id] = set(by_condition["base"].get(patient_id, {}))
-        require(bool(reference[patient_id]), f"heldout_confirmation.population.{patient_id}",
-                "has no base records")
+        require(reference[patient_id] == set(locked_records[patient_id]),
+                f"heldout_confirmation.population.{patient_id}",
+                "base records do not match the locked patient-to-record map")
         for condition in SEED_CONDITIONS:
             require(set(by_condition[condition].get(patient_id, {})) == reference[patient_id],
                     f"heldout_confirmation.population.{patient_id}.{condition}",
@@ -220,15 +377,27 @@ def analyze_patient_results(rows: list[dict], artifacts: dict, *, first_output_a
 
     task_patient: dict[str, dict[str, Fraction]] = {condition: {} for condition in CONDITIONS}
     context_patient: dict[str, dict[str, Fraction]] = {condition: {} for condition in CONDITIONS}
+    context_valid_patient: dict[str, dict[str, Fraction]] = {condition: {} for condition in CONDITIONS}
+    context_field_patient: dict[str, dict[str, dict[str, Fraction]]] = {
+        condition: {field: {} for field in ("body_part", "medical_domain", "modality")}
+        for condition in CONDITIONS
+    }
     for condition in CONDITIONS:
         for patient_id in patient_ids:
             patient_rows = list(by_condition[condition][patient_id].values())
             task_patient[condition][patient_id] = _mean(
-                [rational.from_wire(row["task_grade"]) for row in patient_rows], "task_patient"
+                [row["_task_grade"] for row in patient_rows], "task_patient"
             )
             context_patient[condition][patient_id] = _mean([
-                Fraction(sum(row["context_field_grades"].values()), 3) for row in patient_rows
+                Fraction(sum(row["_context_field_grades"].values()), 3) for row in patient_rows
             ], "context_patient")
+            context_valid_patient[condition][patient_id] = _mean([
+                Fraction(int(row["_context_valid"])) for row in patient_rows
+            ], "context_valid_patient")
+            for field in ("body_part", "medical_domain", "modality"):
+                context_field_patient[condition][field][patient_id] = _mean([
+                    Fraction(row["_context_field_grades"][field]) for row in patient_rows
+                ], f"context_field_patient.{field}")
 
     seed_deltas = {
         condition: _mean([
@@ -277,7 +446,7 @@ def analyze_patient_results(rows: list[dict], artifacts: dict, *, first_output_a
                 if matching:
                     image_count += len(matching)
                     patient_scores.append(_mean(
-                        [rational.from_wire(row["task_grade"]) for row in matching],
+                        [row["_task_grade"] for row in matching],
                         f"class.{condition}.{label}.{patient_id}",
                     ))
             class_diagnostics[condition][label] = {
@@ -285,6 +454,49 @@ def analyze_patient_results(rows: list[dict], artifacts: dict, *, first_output_a
                 "patient_count": len(patient_scores),
                 "score": rational.to_wire(_mean(patient_scores, f"class.{condition}.{label}")),
             }
+    secondary_conditions: dict[str, dict] = {}
+    for condition in CONDITIONS:
+        failure_count = sum(
+            int(row["output_failed"])
+            for patients in by_condition[condition].values()
+            for row in patients.values()
+        )
+        record_count = sum(len(records) for records in by_condition[condition].values())
+        class_balanced = _mean([
+            rational.from_wire(class_diagnostics[condition][label]["score"])
+            for label in ("benign", "malignant")
+        ], f"class_balanced.{condition}")
+        secondary_conditions[condition] = {
+            "class_balanced_accuracy": rational.to_wire(class_balanced),
+            "context": rational.to_wire(condition_context[condition]),
+            "context_fields": {
+                field: rational.to_wire(_mean(
+                    list(context_field_patient[condition][field].values()),
+                    f"context_field.{condition}.{field}",
+                ))
+                for field in ("body_part", "medical_domain", "modality")
+            },
+            "context_validity": rational.to_wire(_mean(
+                list(context_valid_patient[condition].values()), f"context_validity.{condition}"
+            )),
+            "output_failure_count": failure_count,
+            "output_failure_rate": rational.to_wire(Fraction(failure_count, record_count)),
+            "q": rational.to_wire(condition_q[condition]),
+            "task": rational.to_wire(condition_task[condition]),
+        }
+    secondary_seed_mean = {
+        key: rational.to_wire(_mean([
+            rational.from_wire(secondary_conditions[condition][key]) for condition in SEED_CONDITIONS
+        ], f"secondary_seed_mean.{key}"))
+        for key in ("class_balanced_accuracy", "context", "context_validity", "output_failure_rate", "q", "task")
+    }
+    secondary_seed_mean["context_fields"] = {
+        field: rational.to_wire(_mean([
+            rational.from_wire(secondary_conditions[condition]["context_fields"][field])
+            for condition in SEED_CONDITIONS
+        ], f"secondary_seed_mean.context_fields.{field}"))
+        for field in ("body_part", "medical_domain", "modality")
+    }
     return {
         "base": {
             "context": rational.to_wire(condition_context["base"]),
@@ -296,6 +508,8 @@ def analyze_patient_results(rows: list[dict], artifacts: dict, *, first_output_a
         "output_failure_count": output_failures,
         "patient_count": len(patient_ids),
         "point_delta": rational.to_wire(point),
+        "reload_mismatch_count": output_failures,
+        "secondary": {"conditions": secondary_conditions, "seed_mean": secondary_seed_mean},
         "seed_deltas": {key: rational.to_wire(value) for key, value in seed_deltas.items()},
         "seed_mean": {
             "context": rational.to_wire(_mean([condition_context[key] for key in SEED_CONDITIONS], "seed_context")),
@@ -308,11 +522,10 @@ def analyze_patient_results(rows: list[dict], artifacts: dict, *, first_output_a
 
 ANALYSIS_KEYS = (
     "base", "class_diagnostics", "lower_bound", "output_failure_count", "patient_count", "point_delta",
-    "seed_deltas", "seed_mean", "sign_randomization_p",
+    "reload_mismatch_count", "secondary", "seed_deltas", "seed_mean", "sign_randomization_p",
 )
 EXECUTION_KEYS = (
-    "adapted_attempts", "adapted_reload_match", "base_attempts", "base_reload_match", "identity_drift",
-    "mmbu_public_content_used", "source_id", "source_role",
+    "adapted_attempts", "base_attempts", "identity_drift", "mmbu_public_content_used", "source_id", "source_role",
 )
 READINESS_KEYS = (
     "attempts_started", "checkpoint_lineages", "chronology", "gate_records", "mmbu_public_content_used",
@@ -349,17 +562,15 @@ def confirmation_decision(analysis: object, execution: object) -> dict:
     reasons: list[str] = []
     if type(run["base_attempts"]) is not int or run["base_attempts"] != 1:
         reasons.append("base_attempt_count")
-    if type(run["base_reload_match"]) is not bool or not run["base_reload_match"]:
-        reasons.append("base_reload_mismatch")
     attempts = closed(run["adapted_attempts"], "heldout_confirmation.execution.adapted_attempts", SEED_CONDITIONS)
-    reloads = closed(run["adapted_reload_match"], "heldout_confirmation.execution.adapted_reload_match", SEED_CONDITIONS)
     for condition in SEED_CONDITIONS:
         if type(attempts[condition]) is not int or attempts[condition] != 1:
             reasons.append(f"adapted_attempt_count:{condition}")
-        if type(reloads[condition]) is not bool or not reloads[condition]:
-            reasons.append(f"adapted_reload_mismatch:{condition}")
     if type(run["identity_drift"]) is not bool or run["identity_drift"]:
         reasons.append("identity_drift")
+    if integer(result["reload_mismatch_count"],
+               "heldout_confirmation.analysis.reload_mismatch_count", minimum=0) != 0:
+        reasons.append("reload_output_mismatch")
 
     margin = Fraction(1, 20)
     seed_deltas = closed(result["seed_deltas"], "heldout_confirmation.analysis.seed_deltas", SEED_CONDITIONS)
@@ -379,6 +590,8 @@ def confirmation_decision(analysis: object, execution: object) -> dict:
             rational.from_wire(scores[key], f"heldout_confirmation.analysis.{name}.{key}")
     integer(result["output_failure_count"], "heldout_confirmation.analysis.output_failure_count", minimum=0)
     require(type(result["class_diagnostics"]) is dict, "heldout_confirmation.analysis.class_diagnostics",
+            "must be an object")
+    require(type(result["secondary"]) is dict, "heldout_confirmation.analysis.secondary",
             "must be an object")
     return {"reasons": reasons, "status": "confirmation_failed" if reasons else "confirmation_passed"}
 
@@ -427,7 +640,7 @@ def readiness_status(value: object) -> dict:
     require(inventory < qa_plan < qa_opened < lock, "heldout_confirmation.readiness.chronology",
             "must satisfy inventory close < QA plan freeze < QA opening < confirmation lock")
     literal(chronology["first_output_at"], "heldout_confirmation.readiness.chronology.first_output_at", None)
-    return {"missing": None, "status": "ready_for_authorized_execution"}
+    return {"missing": "external-record-validation", "status": "blocked"}
 
 
 def validate_synthetic_fixture(value: object) -> dict:
@@ -457,15 +670,15 @@ def validate_synthetic_fixture(value: object) -> dict:
         "output_failure_count": 0,
         "patient_count": patient_count,
         "point_delta": fixture["point_delta"],
+        "reload_mismatch_count": 0,
+        "secondary": {"conditions": {}, "seed_mean": {}},
         "seed_deltas": seed_deltas,
         "seed_mean": {"context": rational.to_wire(0), "q": rational.to_wire(0), "task": rational.to_wire(0)},
         "sign_randomization_p": rational.to_wire(1),
     }
     execution = {
         "adapted_attempts": {condition: 1 for condition in SEED_CONDITIONS},
-        "adapted_reload_match": {condition: True for condition in SEED_CONDITIONS},
         "base_attempts": 1,
-        "base_reload_match": True,
         "identity_drift": False,
         "mmbu_public_content_used": False,
         "source_id": "busi-whu-v3",
@@ -484,7 +697,8 @@ def validate_synthetic_fixture(value: object) -> dict:
 
 
 __all__ = [
-    "SPEC_DIGEST", "analyze_patient_results", "build_randomization_artifacts", "confirmation_decision", "load_spec",
+    "SPEC_DIGEST", "analyze_patient_results", "build_confirmation_lock", "build_randomization_artifacts",
+    "confirmation_decision", "load_spec",
     "readiness_status", "validate_checkpoint_lineage", "validate_spec", "validate_synthetic_fixture",
 ]
 

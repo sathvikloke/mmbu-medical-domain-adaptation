@@ -98,12 +98,12 @@
 - Create: `docs/team/BUSI_WHU_CONFIRMATION_READINESS_2026-10-25.md`
 - Modify: `docs/team/START_HERE.md`
 
-- [ ] Document exactly what is implemented and every real-world blocker, including source admission, protected inventory, QA, training-source admission, successor runtime gate, checkpoint retraining, and authorization.
-- [ ] Run `PYTHONPATH=src python3 -m unittest tests.phase1.test_heldout_confirmation -v`.
-- [ ] Run `python3 tools/team.py test`.
-- [ ] Run `python3 tools/team.py verify-links`.
-- [ ] Run `git diff --check` and inspect the complete diff.
-- [ ] Obtain an independent code review, repair demonstrated issues, rerun verification, and commit the sealed CPU-only package.
+- [x] Document exactly what is implemented and every real-world blocker, including source admission, protected inventory, QA, training-source admission, successor runtime gate, checkpoint retraining, and authorization.
+- [x] Run `PYTHONPATH=src python3 -m unittest tests.phase1.test_heldout_confirmation -v`.
+- [x] Run `python3 tools/team.py test`.
+- [x] Run `python3 tools/team.py verify-links`.
+- [x] Run `git diff --check` and inspect the complete diff.
+- [x] Obtain an independent code review and repair demonstrated issues; the final review found no remaining P1/P2 defect.
 
 ## Next experiment after this plan
 

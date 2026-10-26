@@ -12,7 +12,7 @@ import sys
 import tempfile
 import unittest
 
-from mmbu_phase1 import rational
+from mmbu_phase1 import canonical, rational
 from mmbu_phase1.scope import REQUIRED_PHASE1_TEST_MODULES
 from mmbu_phase1.fields import ContractViolation
 
@@ -135,33 +135,55 @@ class HeldoutConfirmationStatisticsTests(unittest.TestCase):
 
     def rows(self):
         rows = []
+        prompts = json.loads(SPEC.read_text(encoding="utf-8"))["prompts"]
+        prompt_digest = canonical.value_digest(prompts)
+        context_target = '{"body_part":"breast","medical_domain":"breast imaging","modality":"ultrasound"}'
         for patient_id in self.patients():
             for condition in ("base", "seed-20261025", "seed-20261026", "seed-20261027"):
                 adapted = condition != "base"
+                target = "benign" if int(patient_id[-3:]) % 2 == 0 else "malignant"
+                task_raw = target if adapted else ("malignant" if target == "benign" else "benign")
+                context_raw = context_target if adapted else "{}"
                 rows.append({
                     "condition_id": condition,
-                    "context_field_grades": {
-                        "body_part": 1 if adapted else 0,
-                        "medical_domain": 1 if adapted else 0,
-                        "modality": 1 if adapted else 0,
-                    },
                     "output_failed": False,
                     "patient_id": patient_id,
+                    "post_reload_context_raw_output": context_raw,
+                    "post_reload_task_raw_output": task_raw,
+                    "pre_reload_context_raw_output": context_raw,
+                    "pre_reload_task_raw_output": task_raw,
+                    "prompt_spec_digest": prompt_digest,
                     "record_id": patient_id + "::image-0",
-                    "task_grade": rational.to_wire(1 if adapted else 0),
-                    "target_label": "benign" if int(patient_id[-3:]) % 2 == 0 else "malignant",
+                    "target_label": target,
                 })
         return rows
 
     def artifacts(self):
+        return self.artifacts_for(self.patients())
+
+    def artifacts_for(self, patient_ids, patient_to_records=None):
+        if patient_to_records is None:
+            patient_to_records = {patient_id: [patient_id + "::image-0"] for patient_id in patient_ids}
         return self.module.build_randomization_artifacts(
-            self.patients(), created_at="2026-10-25T12:00:00Z"
+            patient_ids,
+            patient_to_records=patient_to_records,
+            source_manifest_digest="a" * 64,
+            exclusions_digest="b" * 64,
+            duplicate_disposition_digest="c" * 64,
+            created_at="2026-10-25T12:00:00Z",
+        )
+
+    def analyze(self, rows, artifacts=None, *, first_output_at="2026-10-25T12:00:01Z"):
+        artifacts = artifacts or self.artifacts()
+        lock = self.module.build_confirmation_lock(
+            artifacts, locked_at="2026-10-25T12:00:00.5Z", opening_receipt_digest="e" * 64
+        )
+        return self.module.analyze_patient_results(
+            rows, artifacts, confirmation_lock=lock, first_output_at=first_output_at
         )
 
     def test_exact_patient_analysis_uses_locked_matrices(self):
-        result = self.module.analyze_patient_results(
-            self.rows(), self.artifacts(), first_output_at="2026-10-25T12:00:01Z"
-        )
+        result = self.analyze(self.rows())
         self.assertEqual(result["patient_count"], 60)
         self.assertEqual(result["point_delta"], rational.to_wire(1))
         self.assertEqual(result["lower_bound"], rational.to_wire(1))
@@ -172,46 +194,80 @@ class HeldoutConfirmationStatisticsTests(unittest.TestCase):
         })
         self.assertEqual(result["base"]["task"], rational.to_wire(0))
         self.assertEqual(result["seed_mean"]["context"], rational.to_wire(1))
+        seed = result["secondary"]["conditions"]["seed-20261025"]
+        self.assertEqual(seed["task"], rational.to_wire(1))
+        self.assertEqual(seed["context"], rational.to_wire(1))
+        self.assertEqual(seed["q"], rational.to_wire(1))
+        self.assertEqual(seed["context_validity"], rational.to_wire(1))
+        self.assertEqual(seed["context_fields"], {
+            "body_part": rational.to_wire(1),
+            "medical_domain": rational.to_wire(1),
+            "modality": rational.to_wire(1),
+        })
+        self.assertEqual(seed["class_balanced_accuracy"], rational.to_wire(1))
+        self.assertEqual(seed["output_failure_rate"], rational.to_wire(0))
 
     def test_population_and_chronology_drift_reject(self):
         with self.assertRaises(ContractViolation):
-            self.module.build_randomization_artifacts(self.patients()[:-1], created_at="2026-10-25T12:00:00Z")
+            self.artifacts_for(self.patients()[:-1])
         with self.assertRaises(ContractViolation):
-            self.module.build_randomization_artifacts(list(reversed(self.patients())), created_at="2026-10-25T12:00:00Z")
+            self.artifacts_for(list(reversed(self.patients())))
         with self.assertRaises(ContractViolation):
-            self.module.analyze_patient_results(
-                self.rows(), self.artifacts(), first_output_at="2026-10-25T11:59:59Z"
-            )
+            self.analyze(self.rows(), first_output_at="2026-10-25T11:59:59Z")
 
     def test_missing_duplicate_and_matrix_drift_reject(self):
         rows = self.rows()
         for changed in (rows[:-1], rows + [copy.deepcopy(rows[0])]):
             with self.assertRaises(ContractViolation):
-                self.module.analyze_patient_results(
-                    changed, self.artifacts(), first_output_at="2026-10-25T12:00:01Z"
-                )
+                self.analyze(changed)
         artifact = self.artifacts()
+        lock = self.module.build_confirmation_lock(
+            artifact, locked_at="2026-10-25T12:00:00.5Z", opening_receipt_digest="e" * 64
+        )
         artifact["index_matrix"][0][0] = 59
+        artifact["index_matrix_digest"] = canonical.value_digest(artifact["index_matrix"])
         with self.assertRaises(ContractViolation):
             self.module.analyze_patient_results(
-                rows, artifact, first_output_at="2026-10-25T12:00:01Z"
+                rows, artifact, confirmation_lock=lock, first_output_at="2026-10-25T12:00:01Z"
             )
+
+        mapping = {patient_id: [patient_id + "::image-0"] for patient_id in self.patients()}
+        mapping["patient-001"] = mapping["patient-000"]
+        with self.assertRaises(ContractViolation):
+            self.artifacts_for(self.patients(), mapping)
 
     def test_failures_stay_as_exact_zero_and_floats_reject(self):
         rows = self.rows()
         rows[0]["output_failed"] = True
-        rows[0]["task_grade"] = rational.to_wire(0)
-        result = self.module.analyze_patient_results(
-            rows, self.artifacts(), first_output_at="2026-10-25T12:00:01Z"
-        )
+        for key in ("pre_reload_task_raw_output", "pre_reload_context_raw_output",
+                    "post_reload_task_raw_output", "post_reload_context_raw_output"):
+            rows[0][key] = None
+        result = self.analyze(rows)
         self.assertEqual(result["output_failure_count"], 1)
+        self.assertEqual(result["reload_mismatch_count"], 1)
 
         rows = self.rows()
-        rows[0]["task_grade"] = 0.0
+        rows[0]["pre_reload_task_raw_output"] = 0.0
         with self.assertRaises(ContractViolation):
-            self.module.analyze_patient_results(
-                rows, self.artifacts(), first_output_at="2026-10-25T12:00:01Z"
-            )
+            self.analyze(rows)
+
+        rows = self.rows()
+        rows[0]["post_reload_task_raw_output"] = "different"
+        with self.assertRaises(ContractViolation):
+            self.analyze(rows)
+
+    def test_partial_context_scores_fields_individually(self):
+        rows = self.rows()
+        partial = '{"body_part":"breast","medical_domain":"breast imaging","modality":"mri"}'
+        rows[1]["pre_reload_context_raw_output"] = partial
+        rows[1]["post_reload_context_raw_output"] = partial
+        result = self.analyze(rows)
+        self.assertEqual(result["seed_mean"]["context"], rational.to_wire(rational.Fraction(539, 540)))
+        seed = result["secondary"]["conditions"]["seed-20261025"]
+        self.assertEqual(seed["context_validity"], rational.to_wire(1))
+        self.assertEqual(seed["context_fields"]["body_part"], rational.to_wire(1))
+        self.assertEqual(seed["context_fields"]["medical_domain"], rational.to_wire(1))
+        self.assertEqual(seed["context_fields"]["modality"], rational.to_wire(rational.Fraction(59, 60)))
 
 
 class HeldoutConfirmationDecisionTests(unittest.TestCase):
@@ -227,6 +283,8 @@ class HeldoutConfirmationDecisionTests(unittest.TestCase):
             "output_failure_count": 0,
             "patient_count": 60,
             "point_delta": rational.to_wire(rational.Fraction(1, 10)),
+            "reload_mismatch_count": 0,
+            "secondary": {"conditions": {}, "seed_mean": {}},
             "seed_deltas": {
                 "seed-20261025": rational.to_wire(rational.Fraction(1, 10)),
                 "seed-20261026": rational.to_wire(rational.Fraction(1, 10)),
@@ -239,9 +297,7 @@ class HeldoutConfirmationDecisionTests(unittest.TestCase):
     def execution(self):
         return {
             "adapted_attempts": {"seed-20261025": 1, "seed-20261026": 1, "seed-20261027": 1},
-            "adapted_reload_match": {"seed-20261025": True, "seed-20261026": True, "seed-20261027": True},
             "base_attempts": 1,
-            "base_reload_match": True,
             "identity_drift": False,
             "mmbu_public_content_used": False,
             "source_id": "busi-whu-v3",
@@ -271,7 +327,6 @@ class HeldoutConfirmationDecisionTests(unittest.TestCase):
     def test_execution_failures_cannot_be_rescued(self):
         mutations = (
             (lambda row: row.__setitem__("base_attempts", 2), "base_attempt_count"),
-            (lambda row: row.__setitem__("base_reload_match", False), "base_reload_mismatch"),
             (lambda row: row["adapted_attempts"].__setitem__("seed-20261027", 2), "adapted_attempt_count:seed-20261027"),
             (lambda row: row.__setitem__("identity_drift", True), "identity_drift"),
         )
@@ -336,9 +391,9 @@ class HeldoutConfirmationReadinessTests(unittest.TestCase):
             "missing": "training-source-admission", "status": "blocked",
         })
 
-    def test_complete_structural_envelope_is_ready(self):
+    def test_complete_digest_references_remain_blocked_without_authority_validation(self):
         self.assertEqual(self.module.readiness_status(self.manifest()), {
-            "missing": None, "status": "ready_for_authorized_execution",
+            "missing": "external-record-validation", "status": "blocked",
         })
 
     def test_drift_attempts_and_qa_order_reject(self):
@@ -370,6 +425,13 @@ class HeldoutConfirmationReadinessTests(unittest.TestCase):
             [sys.executable, str(TOOL), "not-a-mode"], cwd=REPO, text=True, capture_output=True, check=False,
         )
         self.assertNotEqual(result.returncode, 0)
+
+        result = subprocess.run(
+            [sys.executable, str(TOOL), "synthetic-check", "--manifest", str(FIXTURES / "positive.json")],
+            cwd=REPO, text=True, capture_output=True, check=False,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(json.loads(result.stdout)["status"], "confirmation_passed")
 
     def test_readiness_command_reports_missing_without_opening_references(self):
         manifest = self.manifest()

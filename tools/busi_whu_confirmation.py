@@ -34,12 +34,16 @@ def main(argv: list[str] | None = None) -> int:
             heldout_confirmation.load_spec(args.spec)
             _emit({"status": "valid"})
             return 0
+        if args.command == "synthetic-check":
+            result = heldout_confirmation.validate_synthetic_fixture(
+                canonical.loads(args.manifest.read_bytes())
+            )
+            _emit(result)
+            return 0
         value = canonical.loads(args.manifest.read_bytes())
         result = heldout_confirmation.readiness_status(value)
-        if args.command == "synthetic-check":
-            result = dict(result, evidence_scope="synthetic_mechanics_only")
         _emit(result)
-        return 0 if result["status"] == "ready_for_authorized_execution" else 2
+        return 2
     except (OSError, canonical.CanonicalJSONError, ContractViolation) as exc:
         _emit({"error": str(exc), "status": "invalid"})
         return 3

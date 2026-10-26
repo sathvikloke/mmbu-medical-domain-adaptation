@@ -1260,6 +1260,159 @@ def inventory_busi_whu_structural(
     })
 
 
+def validate_pathmnist_mapping(
+    header: list[str], rows: list[dict], expected_counts: dict[str, int]
+) -> dict:
+    """Validate a decoded synthetic mapping against the frozen train/val shape.
+
+    This function is deliberately pure.  It does not open the real mapping or
+    any NPZ member; a later protected opening can feed rows through the same
+    contract without changing its decision logic.
+    """
+    if header != ["split", "index", "image_id"]:
+        raise ValueError("PathMNIST mapping header must be exactly split,index,image_id")
+    if (
+        not isinstance(expected_counts, dict)
+        or set(expected_counts) != {"train", "val"}
+        or any(isinstance(value, bool) or not isinstance(value, int) or value <= 0
+               for value in expected_counts.values())
+    ):
+        raise ValueError("expected_counts must contain positive integer train and val counts")
+    if not isinstance(rows, list):
+        raise ValueError("PathMNIST mapping rows must be a list")
+
+    by_split: dict[str, dict[int, str]] = {"train": {}, "val": {}}
+    image_ids: set[str] = set()
+    for position, row in enumerate(rows):
+        if not isinstance(row, dict) or list(row.keys()) != header:
+            raise ValueError(f"mapping row {position} must preserve the exact closed schema")
+        split = row["split"]
+        raw_index = row["index"]
+        image_id = row["image_id"]
+        if split not in by_split:
+            raise ValueError(f"mapping row {position} uses a forbidden split")
+        if not isinstance(raw_index, str) or re.fullmatch(r"0|[1-9][0-9]*", raw_index) is None:
+            raise ValueError(f"mapping row {position} has a non-canonical index")
+        if not isinstance(image_id, str) or not image_id or image_id.strip() != image_id:
+            raise ValueError(f"mapping row {position} has an invalid image_id")
+        index = int(raw_index)
+        if index in by_split[split]:
+            raise ValueError(f"mapping contains duplicate {split} index {index}")
+        if image_id in image_ids:
+            raise ValueError(f"mapping contains duplicate image_id {image_id!r}")
+        by_split[split][index] = image_id
+        image_ids.add(image_id)
+
+    records = []
+    for split in ("train", "val"):
+        expected = expected_counts[split]
+        if sorted(by_split[split]) != list(range(expected)):
+            raise ValueError(f"mapping {split} indices must be exactly contiguous 0..{expected - 1}")
+        for index in range(expected):
+            records.append({
+                "record_id": f"pathmnist-224:{split}:{index}",
+                "split": split,
+                "index": index,
+                "image_id": by_split[split][index],
+            })
+    return canonical.seal({
+        "schema_id": "mmbu.phase1.pathmnist_mapping_validation",
+        "schema_version": 1,
+        "header": list(header),
+        "split_counts": {"train": len(by_split["train"]), "val": len(by_split["val"])},
+        "records": records,
+        "test_split_used": False,
+        "label_values_read": False,
+        "image_payload_decoding_used": False,
+        "model_use_authorized": False,
+        "mmbu_public_content_used": False,
+    })
+
+
+def _closed_member_names(member_names: list[str], directories: set[str]) -> list[str]:
+    if not isinstance(member_names, list) or any(not isinstance(name, str) or not name for name in member_names):
+        raise ValueError("archive member names must be a nonempty string list")
+    if len(member_names) != len(set(member_names)):
+        raise ValueError("archive contains duplicate member names")
+    for name in member_names:
+        parts = name.replace("\\", "/").split("/")
+        if name.startswith(("/", "\\")) or "\\" in name or ".." in parts or "." in parts:
+            raise ValueError(f"archive member path is unsafe: {name!r}")
+        if name.endswith("/") and name not in directories:
+            raise ValueError(f"archive contains an unknown directory: {name!r}")
+    if not directories.issubset(set(member_names)):
+        raise ValueError("archive is missing a required directory entry")
+    return member_names
+
+
+def pair_busbra_members(member_names: list[str]) -> dict:
+    """Prove the BUS-BRA image/mask bijection from names only."""
+    directories = {"BUSBRA/", "BUSBRA/Images/", "BUSBRA/Masks/"}
+    known_files = {
+        "BUSBRA/LICENSE.txt", "BUSBRA/bus_data.csv",
+        "BUSBRA/5-fold-cv.csv", "BUSBRA/10-fold-cv.csv",
+    }
+    names = _closed_member_names(member_names, directories)
+    if not known_files.issubset(set(names)):
+        raise ValueError("BUS-BRA archive is missing required structural metadata")
+    images: dict[str, str] = {}
+    masks: dict[str, str] = {}
+    image_pattern = re.compile(r"BUSBRA/Images/(bus_[0-9]{4}-(?:l|r|s))\.png")
+    mask_pattern = re.compile(r"BUSBRA/Masks/mask_([0-9]{4}-(?:l|r|s))\.png")
+    for name in names:
+        if name in directories or name in known_files:
+            continue
+        image = image_pattern.fullmatch(name)
+        mask = mask_pattern.fullmatch(name)
+        if image:
+            images[image.group(1)] = name
+        elif mask:
+            masks[f"bus_{mask.group(1)}"] = name
+        else:
+            raise ValueError(f"BUS-BRA archive contains an unknown member: {name!r}")
+    if set(images) != set(masks) or not images:
+        raise ValueError("BUS-BRA image and mask members must form a nonempty bijection")
+    pairs = [{"record_id": key, "image_member": images[key], "mask_member": masks[key]}
+             for key in sorted(images)]
+    return canonical.seal({
+        "schema_id": "mmbu.phase1.busbra_member_pairing", "schema_version": 1,
+        "pairs": pairs, "pair_count": len(pairs), "member_payloads_opened": False,
+        "label_values_read": False, "image_payload_decoding_used": False,
+        "model_use_authorized": False, "mmbu_public_content_used": False,
+    })
+
+
+def pair_busi_whu_members(member_names: list[str]) -> dict:
+    """Prove the BUSI-WHU image/annotation bijection from names only."""
+    directories = {"img/", "gt/"}
+    names = _closed_member_names(member_names, directories)
+    images: dict[str, str] = {}
+    annotations: dict[str, str] = {}
+    image_pattern = re.compile(r"img/([A-Za-z0-9_-]+)\.bmp")
+    annotation_pattern = re.compile(r"gt/([A-Za-z0-9_-]+)_anno\.bmp")
+    for name in names:
+        if name in directories:
+            continue
+        image = image_pattern.fullmatch(name)
+        annotation = annotation_pattern.fullmatch(name)
+        if image:
+            images[image.group(1)] = name
+        elif annotation:
+            annotations[annotation.group(1)] = name
+        else:
+            raise ValueError(f"BUSI-WHU archive contains an unknown member: {name!r}")
+    if set(images) != set(annotations) or not images:
+        raise ValueError("BUSI-WHU image and annotation members must form a nonempty bijection")
+    pairs = [{"record_id": key, "image_member": images[key], "annotation_member": annotations[key]}
+             for key in sorted(images)]
+    return canonical.seal({
+        "schema_id": "mmbu.phase1.busi_whu_member_pairing", "schema_version": 1,
+        "pairs": pairs, "pair_count": len(pairs), "member_payloads_opened": False,
+        "label_values_read": False, "image_payload_decoding_used": False,
+        "model_use_authorized": False, "mmbu_public_content_used": False,
+    })
+
+
 def inventory_pathmnist_headers(
     archive_path: Path,
     records: list[dict],
@@ -1411,5 +1564,8 @@ __all__ = [
     "inventory_csv_schema",
     "inventory_xlsx_schema",
     "inventory_busi_whu_structural",
+    "pair_busbra_members",
+    "pair_busi_whu_members",
+    "validate_pathmnist_mapping",
     "verify_acquisition_authority",
 ]

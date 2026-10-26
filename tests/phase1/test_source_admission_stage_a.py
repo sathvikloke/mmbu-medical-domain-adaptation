@@ -25,6 +25,9 @@ from mmbu_phase1.source_admission_stage_a import (
     inventory_archive_member_headers,
     inventory_csv_schema,
     inventory_xlsx_schema,
+    pair_busbra_members,
+    pair_busi_whu_members,
+    validate_pathmnist_mapping,
     build_structural_opening_records,
     acquisition_command_digest,
     acquisition_method_digest,
@@ -690,6 +693,86 @@ class StageAInventoryTests(unittest.TestCase):
             result = inventory_csv_schema(path)
         self.assertEqual(result["columns"], ["image_id", "split", "parent_id"])
         self.assertEqual(result["data_rows_read"], 0)
+
+
+class StageASyntheticJoinRuleTests(unittest.TestCase):
+    def test_pathmnist_mapping_accepts_only_complete_train_val_indices(self):
+        rows = [
+            {"split": "train", "index": "0", "image_id": "train-a"},
+            {"split": "train", "index": "1", "image_id": "train-b"},
+            {"split": "val", "index": "0", "image_id": "val-a"},
+        ]
+        result = validate_pathmnist_mapping(
+            ["split", "index", "image_id"], rows, {"train": 2, "val": 1}
+        )
+        self.assertEqual(result["split_counts"], {"train": 2, "val": 1})
+        self.assertEqual([row["record_id"] for row in result["records"]], [
+            "pathmnist-224:train:0", "pathmnist-224:train:1", "pathmnist-224:val:0",
+        ])
+        self.assertFalse(result["test_split_used"])
+
+    def test_pathmnist_mapping_rejects_test_gaps_duplicates_and_wrong_schema(self):
+        valid = [
+            {"split": "train", "index": "0", "image_id": "a"},
+            {"split": "train", "index": "1", "image_id": "b"},
+            {"split": "val", "index": "0", "image_id": "c"},
+        ]
+        bad_cases = [
+            (["split", "index", "image_id"], valid + [{"split": "test", "index": "0", "image_id": "d"}]),
+            (["split", "index", "image_id"], [valid[0], {**valid[1], "index": "2"}, valid[2]]),
+            (["split", "index", "image_id"], [valid[0], {**valid[1], "image_id": "a"}, valid[2]]),
+            (["index", "split", "image_id"], valid),
+        ]
+        for header, rows in bad_cases:
+            with self.subTest(header=header, rows=rows):
+                with self.assertRaises(ValueError):
+                    validate_pathmnist_mapping(header, rows, {"train": 2, "val": 1})
+
+    def test_busbra_pairs_exact_images_masks_and_known_structure(self):
+        result = pair_busbra_members([
+            "BUSBRA/", "BUSBRA/Images/", "BUSBRA/Masks/", "BUSBRA/LICENSE.txt",
+            "BUSBRA/bus_data.csv", "BUSBRA/5-fold-cv.csv", "BUSBRA/10-fold-cv.csv",
+            "BUSBRA/Images/bus_0001-l.png", "BUSBRA/Masks/mask_0001-l.png",
+            "BUSBRA/Images/bus_0001-r.png", "BUSBRA/Masks/mask_0001-r.png",
+        ])
+        self.assertEqual(result["pair_count"], 2)
+        self.assertEqual([row["record_id"] for row in result["pairs"]], ["bus_0001-l", "bus_0001-r"])
+
+    def test_busbra_rejects_orphan_unknown_and_traversal_members(self):
+        base = [
+            "BUSBRA/", "BUSBRA/Images/", "BUSBRA/Masks/", "BUSBRA/LICENSE.txt",
+            "BUSBRA/bus_data.csv", "BUSBRA/5-fold-cv.csv", "BUSBRA/10-fold-cv.csv",
+            "BUSBRA/Images/bus_0001-l.png", "BUSBRA/Masks/mask_0001-l.png",
+        ]
+        for mutation in (
+            lambda rows: rows.pop(),
+            lambda rows: rows.append("BUSBRA/notes.txt"),
+            lambda rows: rows.append("BUSBRA/Images/../secret.png"),
+        ):
+            rows = list(base)
+            mutation(rows)
+            with self.assertRaises(ValueError):
+                pair_busbra_members(rows)
+
+    def test_busi_whu_pairs_exact_image_and_annotation_basenames(self):
+        result = pair_busi_whu_members([
+            "gt/", "img/", "img/00001.bmp", "gt/00001_anno.bmp",
+            "img/10090-4.bmp", "gt/10090-4_anno.bmp",
+        ])
+        self.assertEqual(result["pair_count"], 2)
+        self.assertEqual([row["record_id"] for row in result["pairs"]], ["00001", "10090-4"])
+
+    def test_busi_whu_rejects_orphans_duplicates_unknowns_and_traversal(self):
+        cases = [
+            ["gt/", "img/", "img/00001.bmp"],
+            ["gt/", "img/", "img/00001.bmp", "gt/00001_anno.bmp", "img/00001.bmp"],
+            ["gt/", "img/", "img/00001.bmp", "gt/00001_anno.bmp", "README.txt"],
+            ["gt/", "img/", "img/../00001.bmp", "gt/00001_anno.bmp"],
+        ]
+        for rows in cases:
+            with self.subTest(rows=rows):
+                with self.assertRaises(ValueError):
+                    pair_busi_whu_members(rows)
 
     def test_xlsx_schema_reports_structure_without_cell_values(self):
         with tempfile.TemporaryDirectory() as folder:

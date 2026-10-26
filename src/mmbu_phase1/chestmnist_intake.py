@@ -9,6 +9,8 @@ import re
 from collections import defaultdict
 from typing import Mapping
 
+from . import canonical
+
 
 SCHEMA_ID = "mmbu.phase1.chestmnist_mapping_audit"
 SCHEMA_VERSION = 1
@@ -214,3 +216,141 @@ def reconcile_official_split_bytes(mapping_raw: bytes, train_val_raw: bytes, tes
         "source_admitted": False,
         "mmbu_public_content_used": False,
     }
+
+
+def compile_official_development_manifest(
+    mapping_raw: bytes,
+    train_val_raw: bytes,
+    test_raw: bytes,
+    patient_roles_raw: bytes,
+) -> dict:
+    """Compile frozen train/development records without admitting NIH test patients.
+
+    The caller chooses patient roles in a separate frozen CSV. This function does
+    not choose ratios or inspect labels; it only proves exact population closure
+    and translates scientific roles to the wrapper array locations required to
+    retrieve the corresponding images later.
+    """
+    reconciliation = reconcile_official_split_bytes(mapping_raw, train_val_raw, test_raw)
+    official_train = _official_ids(train_val_raw, "official train/validation list")
+    official_test = _official_ids(test_raw, "official test list")
+
+    if not isinstance(patient_roles_raw, bytes) or patient_roles_raw.startswith(b"\xef\xbb\xbf"):
+        raise ValueError("patient roles must be exact UTF-8 bytes without BOM")
+    try:
+        roles_text = patient_roles_raw.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise ValueError(f"patient roles are not valid UTF-8: {exc}") from None
+    roles_reader = csv.reader(io.StringIO(roles_text, newline=""), strict=True)
+    try:
+        roles_header = next(roles_reader)
+    except StopIteration:
+        raise ValueError("patient roles are empty") from None
+    if roles_header != ["patient_id", "role"]:
+        raise ValueError("patient-role header must be exactly patient_id,role")
+
+    permitted_roles = ("train", "adaptive_development")
+    patient_roles: dict[str, str] = {}
+    try:
+        for line_number, row in enumerate(roles_reader, start=2):
+            if len(row) != 2:
+                raise ValueError(f"patient-role line {line_number} must contain exactly two fields")
+            patient_id, role = row
+            if re.fullmatch(r"[0-9]{8}", patient_id) is None:
+                raise ValueError(f"patient-role line {line_number} has an invalid patient ID")
+            if role not in permitted_roles:
+                raise ValueError(f"patient-role line {line_number} has an unknown role")
+            if patient_id in patient_roles:
+                raise ValueError(f"patient-role line {line_number} repeats patient {patient_id}")
+            patient_roles[patient_id] = role
+    except csv.Error as exc:
+        raise ValueError(f"invalid patient-role CSV: {exc}") from None
+
+    official_train_patients = {image_id[:8] for image_id in official_train}
+    official_test_patients = {image_id[:8] for image_id in official_test}
+    if set(patient_roles) != official_train_patients:
+        missing = len(official_train_patients - set(patient_roles))
+        extra = len(set(patient_roles) - official_train_patients)
+        test_patients = len(set(patient_roles) & official_test_patients)
+        raise ValueError(
+            "patient roles do not exactly cover official train/validation patients "
+            f"(missing={missing}, extra={extra}, official_test={test_patients})"
+        )
+    role_patient_counts = {
+        role: sum(assigned == role for assigned in patient_roles.values())
+        for role in permitted_roles
+    }
+    if any(count == 0 for count in role_patient_counts.values()):
+        raise ValueError("both train and adaptive_development require at least one patient")
+
+    if mapping_raw.startswith(b"\xef\xbb\xbf"):
+        raise ValueError("mapping UTF-8 BOM is forbidden")
+    try:
+        mapping_text = mapping_raw.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise ValueError(f"mapping is not valid UTF-8: {exc}") from None
+    mapping_reader = csv.reader(io.StringIO(mapping_text, newline=""), strict=True)
+    try:
+        mapping_header = next(mapping_reader)
+    except StopIteration:
+        raise ValueError("mapping is empty") from None
+    if mapping_header != ["split", "index", "image_id"]:
+        raise ValueError("mapping header must be exactly split,index,image_id")
+
+    locations: dict[str, tuple[str, int]] = {}
+    next_index = {split: 0 for split in SPLITS}
+    try:
+        for line_number, row in enumerate(mapping_reader, start=2):
+            if len(row) != 3:
+                raise ValueError(f"mapping line {line_number} must contain exactly three fields")
+            split, index_text, image_id = row
+            if split not in next_index:
+                raise ValueError(f"mapping line {line_number} has an unknown split")
+            try:
+                index = int(index_text)
+            except ValueError:
+                raise ValueError(f"mapping line {line_number} has a non-integer index") from None
+            if str(index) != index_text or index != next_index[split]:
+                raise ValueError(f"mapping line {line_number} has a noncanonical or noncontiguous index")
+            next_index[split] += 1
+            if IMAGE_ID.fullmatch(image_id) is None or image_id in locations:
+                raise ValueError(f"mapping line {line_number} has an invalid or duplicate image ID")
+            locations[image_id] = (split, index)
+    except csv.Error as exc:
+        raise ValueError(f"invalid mapping CSV: {exc}") from None
+    if set(locations) != official_train | official_test:
+        raise ValueError("mapping and official split universes differ")
+
+    records = []
+    for image_id in sorted(official_train):
+        wrapper_split, wrapper_index = locations[image_id]
+        patient_id = image_id[:8]
+        records.append({
+            "image_id": image_id,
+            "patient_id": patient_id,
+            "role": patient_roles[patient_id],
+            "wrapper_index": wrapper_index,
+            "wrapper_split": wrapper_split,
+        })
+    role_image_counts = {
+        role: sum(record["role"] == role for record in records)
+        for role in permitted_roles
+    }
+    return canonical.seal({
+        "schema_id": "mmbu.phase1.chestmnist_development_manifest",
+        "schema_version": 1,
+        "mapping_sha256": hashlib.sha256(mapping_raw).hexdigest(),
+        "official_train_val_sha256": reconciliation["official_train_val_sha256"],
+        "official_test_sha256": reconciliation["official_test_sha256"],
+        "patient_roles_sha256": hashlib.sha256(patient_roles_raw).hexdigest(),
+        "records": records,
+        "role_image_counts": role_image_counts,
+        "role_patient_counts": role_patient_counts,
+        "official_test_image_count_excluded": len(official_test),
+        "official_test_patient_count_excluded": len(official_test_patients),
+        "official_test_excluded": not any(record["image_id"] in official_test for record in records),
+        "labels_opened": False,
+        "pixels_opened": False,
+        "source_admitted": False,
+        "mmbu_public_content_used": False,
+    })

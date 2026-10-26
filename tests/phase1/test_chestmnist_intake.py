@@ -9,7 +9,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from mmbu_phase1.chestmnist_intake import audit_mapping_bytes, reconcile_official_split_bytes
+from mmbu_phase1.chestmnist_intake import (
+    audit_mapping_bytes,
+    compile_official_development_manifest,
+    reconcile_official_split_bytes,
+)
 
 
 REPO = Path(__file__).resolve().parents[2]
@@ -18,6 +22,11 @@ RECEIPT = REPO / "outputs/chestmnist-metadata-audit-2026-10-26/receipt.json"
 
 def _mapping(rows: list[tuple[str, int, str]], header: str = "split,index,image_id") -> bytes:
     body = [header, *(f"{split},{index},{image_id}" for split, index, image_id in rows)]
+    return ("\n".join(body) + "\n").encode("utf-8")
+
+
+def _patient_roles(rows: list[tuple[str, str]], header: str = "patient_id,role") -> bytes:
+    body = [header, *(f"{patient},{role}" for patient, role in rows)]
     return ("\n".join(body) + "\n").encode("utf-8")
 
 
@@ -165,6 +174,114 @@ class ChestMNISTMappingTests(unittest.TestCase):
             reconcile_official_split_bytes(mapping, b"00000001_001.png\n", b"00000001_001.png\n")
         with self.assertRaises(ValueError):
             reconcile_official_split_bytes(mapping, b"00000001_001.png\n", b"00000003_001.png\n")
+
+    def test_development_manifest_uses_only_official_train_val_patients(self):
+        mapping = _mapping([
+            ("train", 0, "00000001_001"),
+            ("train", 1, "00000003_001"),
+            ("val", 0, "00000002_001"),
+            ("test", 0, "00000001_002"),
+        ])
+        result = compile_official_development_manifest(
+            mapping,
+            b"00000001_001.png\n00000001_002.png\n00000002_001.png\n",
+            b"00000003_001.png\n",
+            _patient_roles([
+                ("00000001", "train"),
+                ("00000002", "adaptive_development"),
+            ]),
+        )
+        self.assertEqual(
+            result["records"],
+            [
+                {"image_id": "00000001_001", "patient_id": "00000001", "role": "train", "wrapper_index": 0, "wrapper_split": "train"},
+                {"image_id": "00000001_002", "patient_id": "00000001", "role": "train", "wrapper_index": 0, "wrapper_split": "test"},
+                {"image_id": "00000002_001", "patient_id": "00000002", "role": "adaptive_development", "wrapper_index": 0, "wrapper_split": "val"},
+            ],
+        )
+        self.assertEqual(result["role_image_counts"], {"adaptive_development": 1, "train": 2})
+        self.assertEqual(result["role_patient_counts"], {"adaptive_development": 1, "train": 1})
+        self.assertEqual(result["official_test_image_count_excluded"], 1)
+        self.assertEqual(result["official_test_patient_count_excluded"], 1)
+        self.assertTrue(result["official_test_excluded"])
+        self.assertFalse(result["labels_opened"])
+        self.assertFalse(result["pixels_opened"])
+        self.assertFalse(result["source_admitted"])
+
+    def test_development_manifest_rejects_role_or_population_drift(self):
+        mapping = _mapping([
+            ("train", 0, "00000001_001"),
+            ("train", 1, "00000003_001"),
+            ("val", 0, "00000002_001"),
+            ("test", 0, "00000001_002"),
+        ])
+        train_val = b"00000001_001.png\n00000001_002.png\n00000002_001.png\n"
+        test = b"00000003_001.png\n"
+        invalid = {
+            "missing_patient": _patient_roles([("00000001", "train")]),
+            "official_test_patient": _patient_roles([
+                ("00000001", "train"), ("00000002", "adaptive_development"), ("00000003", "train")
+            ]),
+            "unknown_role": _patient_roles([("00000001", "train"), ("00000002", "confirmation")]),
+            "duplicate_patient": _patient_roles([
+                ("00000001", "train"), ("00000001", "adaptive_development"), ("00000002", "train")
+            ]),
+            "empty_role": _patient_roles([("00000001", "train"), ("00000002", "train")]),
+            "wrong_header": _patient_roles([("00000001", "train"), ("00000002", "adaptive_development")], "role,patient_id"),
+        }
+        for name, roles in invalid.items():
+            with self.subTest(case=name), self.assertRaises(ValueError):
+                compile_official_development_manifest(mapping, train_val, test, roles)
+
+    def test_development_manifest_cli_emits_canonical_file(self):
+        mapping = _mapping([
+            ("train", 0, "00000001_001"),
+            ("train", 1, "00000003_001"),
+            ("val", 0, "00000002_001"),
+            ("test", 0, "00000001_002"),
+        ])
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            inputs = {
+                "mapping.csv": mapping,
+                "train_val.txt": b"00000001_001.png\n00000001_002.png\n00000002_001.png\n",
+                "test.txt": b"00000003_001.png\n",
+                "patient_roles.csv": _patient_roles([
+                    ("00000001", "train"),
+                    ("00000002", "adaptive_development"),
+                ]),
+            }
+            for name, payload in inputs.items():
+                (root / name).write_bytes(payload)
+            output = root / "manifest.json"
+            completed = subprocess.run(
+                [
+                    sys.executable,
+                    str(REPO / "tools/compile_chestmnist_development.py"),
+                    "--mapping", str(root / "mapping.csv"),
+                    "--official-train-val", str(root / "train_val.txt"),
+                    "--official-test", str(root / "test.txt"),
+                    "--patient-roles", str(root / "patient_roles.csv"),
+                    "--output", str(output),
+                ],
+                cwd=REPO,
+                check=False,
+                capture_output=True,
+            )
+            self.assertEqual(completed.returncode, 0, completed.stderr.decode())
+            payload = output.read_bytes()
+            self.assertEqual(payload, payload.strip() + b"\n")
+            result = json.loads(payload)
+            repeated = subprocess.run(
+                completed.args,
+                cwd=REPO,
+                check=False,
+                capture_output=True,
+            )
+            self.assertNotEqual(repeated.returncode, 0)
+            self.assertEqual(output.read_bytes(), payload)
+        self.assertTrue(result["official_test_excluded"])
+        self.assertEqual(len(result["records"]), 3)
 
 
 class ChestMNISTEvidenceTests(unittest.TestCase):

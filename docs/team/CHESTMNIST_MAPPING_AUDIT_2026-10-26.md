@@ -74,5 +74,21 @@ from training and adaptive development. The exact patient allocation, seed, clas
 thresholds must be frozen before label vectors or pixels are opened. Because the 14 findings are text-mined, an absent
 label remains unknown rather than a verified negative; this audit does not repair that limitation.
 
+The repository now enforces this boundary with `tools/compile_chestmnist_development.py`. It accepts the exact mapping,
+the two official NIH lists, and a separately frozen `patient_id,role` CSV. The compiler requires complete one-time
+coverage of every official train/validation patient across only `train` and `adaptive_development`, rejects test
+patients and population drift, and emits each retained image's exact MedMNIST array location. It never chooses a split
+ratio, opens labels or pixels, admits the source, or grants model-use authority. This separation prevents an operator
+from accidentally treating MedMNIST's wrapper role as the scientific role.
+
+```bash
+python3 tools/compile_chestmnist_development.py \
+  --mapping /path/to/chestmnist_split_info.csv \
+  --official-train-val /path/to/train_val_list.txt \
+  --official-test /path/to/test_list.txt \
+  --patient-roles /path/to/frozen-patient-roles.csv \
+  --output /new/path/chestmnist-development-manifest.json
+```
+
 The three crossing patients are evidence against the unchanged split, not permission to inspect test labels or images.
 The audit read test identity metadata only and recorded `test_labels_opened = false` and `test_images_opened = false`.

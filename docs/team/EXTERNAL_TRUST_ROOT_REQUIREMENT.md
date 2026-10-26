@@ -1,11 +1,24 @@
 # External trust-root requirement
 
-**Current state:** blocked external
+**Current state:** executable primitive implemented; production binding and external material remain blocked
 
 This contract defines the missing authority boundary for Stage A and BUSI-WHU. It does not supply a signer, public key,
 signature, approval, or identity; repository records are not a trust anchor. An actor who can manufacture a credential,
 registry, authorization, or attestation can also manufacture its content digest. Hash chaining establishes internal byte
 integrity only.
+
+## Executable primitive and remaining boundary
+
+`mmbu_phase1.external_trust.verify_external_authority` now implements the cryptographic core without a repository
+default: exact canonical policy and revocation records, independently supplied SHA-256 pins for policy/key/revocation
+and verifier bytes, Ed25519 detached-signature verification through that pinned verifier, namespace/principal/role and
+signing-time binding, active-revocation checks, verifier stability revalidation, and a private immutable capability.
+Negative tests reject key replacement, namespace replay, and revoked keys.
+
+This primitive is not yet wired into Stage A, BUSI-WHU opening/review, source admission, or confirmation. No real
+policy, key, pin, signature, time authority, or revocation feed has been supplied. Therefore existing repository
+records still grant no external authority, and no protected opening or decision-bearing action is enabled by this
+implementation alone.
 
 ## Required external inputs
 
@@ -74,6 +87,7 @@ revocation state must fail before payload access and consume no authority.
 ## Promotion boundary
 
 Until real external keys, roles, policies, signatures, timestamps, and revocation evidence are independently provided
-and the verifier above is implemented and tested, all existing Stage A and BUSI-WHU identity claims remain
-self-authenticated repository evidence. They may support engineering traceability but cannot grant biomedical payload
-opening, source admission, model use, training, checkpoint promotion, release, upload, or submission authority.
+and the verified capability is bound and reverified at every production decision boundary, all existing Stage A and
+BUSI-WHU identity claims remain self-authenticated repository evidence. They may support engineering traceability but
+cannot grant biomedical payload opening, source admission, model use, training, checkpoint promotion, release, upload,
+or submission authority.

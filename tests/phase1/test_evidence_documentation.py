@@ -15,7 +15,7 @@ class EvidenceDocumentationTests(unittest.TestCase):
         )
 
         for marker in (
-            "**Current state:** blocked external",
+            "**Current state:** executable primitive implemented; production binding and external material remain blocked",
             "repository records are not a trust anchor",
             "detached signature",
             "out-of-band pinned public-key fingerprint",
@@ -45,11 +45,18 @@ class EvidenceDocumentationTests(unittest.TestCase):
             encoding="utf-8"
         )
 
-        self.assertIn("passed **630 Phase 1 CPU tests**", report)
-        self.assertIn("| Current Phase 1 suite | **630 tests passed", report)
+        self.assertIn("passed **632 Phase 1 CPU tests**", report)
+        self.assertIn("| Current Phase 1 suite | **632 tests passed", report)
         self.assertNotIn("| Phase 1 suite | **623 tests passed", report)
         self.assertIn("**Status snapshot code revision (historical):**", report)
         self.assertNotIn("**Verified code revision:**", report)
+
+        trust = (REPO / "docs/team/EXTERNAL_TRUST_ROOT_REQUIREMENT.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("verify_external_authority", trust)
+        self.assertIn("not yet wired into Stage A", trust)
+        self.assertIn("no protected opening or decision-bearing action is enabled", trust)
 
 
 if __name__ == "__main__":

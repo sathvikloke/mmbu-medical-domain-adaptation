@@ -11,6 +11,7 @@ REQUIRED_PHASE1_TEST_MODULES = (
     "test_bundle.py",
     "test_busbra_review.py",
     "test_busi_whu_authority.py",
+    "test_busi_whu_cli.py",
     "test_busi_whu_review.py",
     "test_canonical.py",
     "test_condition.py",

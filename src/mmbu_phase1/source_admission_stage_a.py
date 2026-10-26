@@ -405,6 +405,35 @@ def validate_acquisition_packet(packet: object, config: dict) -> dict:
     return record
 
 
+def _validate_acquisition_packet_source(packet: object, config: dict, source_id: str) -> dict:
+    """Authenticate a historical packet and revalidate only the consumed source declaration."""
+    record = _closed(packet, PACKET_KEYS, "packet")
+    if record.get("record_digest") != canonical.record_digest(record):
+        raise ValueError("packet record digest is invalid")
+    if record.get("schema_id") != "mmbu.phase1.source_admission_stage_a_packet" or record.get("schema_version") != 1:
+        raise ValueError("packet schema identity is invalid")
+    if not isinstance(record.get("sources"), dict) or set(record["sources"]) != SOURCE_IDS:
+        raise ValueError("packet must contain exactly the three frozen sources")
+    for candidate_id, source in record["sources"].items():
+        _closed(source, PACKET_SOURCE_KEYS, f"packet.sources.{candidate_id}")
+    if source_id not in SOURCE_IDS:
+        raise ValueError("source_id is absent from the frozen source set")
+    expected = _packet_body(
+        config,
+        record["repository_commit"],
+        record["launch_id"],
+        record["run_root"],
+        record["created_at"],
+    )
+    if canonical.dumps(record["sources"][source_id]) != canonical.dumps(expected["sources"][source_id]):
+        raise ValueError(f"packet source {source_id!r} differs from the current frozen declaration")
+    if record["work_margin_bytes"] != expected["work_margin_bytes"]:
+        raise ValueError("packet work margin differs from the frozen declaration")
+    if record["forbidden_operations"] != expected["forbidden_operations"]:
+        raise ValueError("packet forbidden operations differ from the frozen declaration")
+    return record
+
+
 def _structural_opening_packet_body(
     config: dict,
     evidence: dict[str, dict],
@@ -439,15 +468,14 @@ def _structural_opening_packet_body(
             {"packet", "authority_records", "execution_receipt"},
             f"evidence.{source_id}",
         )
-        packet = validate_acquisition_packet(bundle["packet"], config)
+        packet = _validate_acquisition_packet_source(bundle["packet"], config, source_id)
         records = bundle["authority_records"]
         if not isinstance(records, list):
             raise ValueError(f"evidence.{source_id}.authority_records must be a record array")
         receipt = bundle["execution_receipt"]
-        authority = verify_acquisition_authority(
+        authority = _verify_acquisition_authority_records(
             records,
             packet,
-            config,
             source_id,
             receipt.get("started_at") if isinstance(receipt, dict) else "",
         )
@@ -549,9 +577,19 @@ def verify_acquisition_authority(
     now: str,
 ) -> dict:
     """Require an independently attested active acquisition head before network use."""
+    validate_acquisition_packet(packet, config)
+    return _verify_acquisition_authority_records(records, packet, source_id, now)
+
+
+def _verify_acquisition_authority_records(
+    records: list[dict],
+    packet: dict,
+    source_id: str,
+    now: str,
+) -> dict:
+    """Validate authority against an already authenticated packet revision."""
     from mmbu_phase1 import admission, fields, registries
 
-    validate_acquisition_packet(packet, config)
     if source_id not in packet["sources"]:
         raise ValueError("source_id is absent from the sealed acquisition packet")
     source = packet["sources"][source_id]

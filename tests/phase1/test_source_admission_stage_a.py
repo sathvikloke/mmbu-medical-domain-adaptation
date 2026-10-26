@@ -408,6 +408,28 @@ class StageAStructuralOpeningPacketTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_structural_opening_packet(changed, self.config, self.evidence)
 
+    def test_unchanged_source_from_authenticated_historical_packet_is_accepted(self):
+        evidence = copy.deepcopy(self.evidence)
+        historical = copy.deepcopy(evidence["bus-bra"]["packet"])
+        evidence["bus-bra"]["packet"] = historical
+        historical["sources"]["pathmnist-224"]["artifacts"][1]["expected_bytes"] = 55465
+        historical["config_digest"] = "1" * 64
+        historical["record_digest"] = canonical.value_digest(
+            {key: value for key, value in historical.items() if key != "record_digest"}
+        )
+        packet = build_structural_opening_packet(
+            self.config,
+            evidence,
+            "b" * 40,
+            "20261025T210000Z-123e4567-e89b-42d3-a456-426614174001",
+            "/storage/scr/npl015/mmbu-admission/20261025T210000Z-123e4567-e89b-42d3-a456-426614174001",
+            "2026-10-25T21:00:00Z",
+        )
+        self.assertEqual(
+            packet["sources"]["bus-bra"]["acquisition_packet_digest"],
+            historical["record_digest"],
+        )
+
 class _Response:
     def __init__(self, payload: bytes, url: str):
         self.payload = payload

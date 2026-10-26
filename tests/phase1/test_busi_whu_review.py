@@ -331,6 +331,10 @@ class BusiWhuCompletedReviewTests(unittest.TestCase):
                     "breast_anatomy_supported": "yes",
                     "annotation_usable": "yes",
                     "label_plausible": "yes",
+                    "intended_lesion_supported": "yes",
+                    "grounded_target_complete": "yes",
+                    "localization_target_complete": "yes",
+                    "additional_lesion_risk": "no",
                     "shortcut_artifact": "no",
                     "permitted_tasks": TASKS,
                     "disposition": "eligible",
@@ -530,6 +534,8 @@ class BusiWhuCompletedReviewTests(unittest.TestCase):
                 "image_interpretable": "yes", "ultrasound_modality_supported": "yes",
                 "breast_anatomy_supported": "yes", "annotation_usable": "yes",
                 "label_plausible": "yes", "shortcut_artifact": "no",
+                "intended_lesion_supported": "yes", "grounded_target_complete": "yes",
+                "localization_target_complete": "yes", "additional_lesion_risk": "no",
                 "permitted_tasks": TASKS, "disposition": "eligible",
                 "notes": "resolved after independent disagreement review",
             }]
@@ -556,6 +562,8 @@ class BusiWhuCompletedReviewTests(unittest.TestCase):
                 "image_interpretable": "yes", "ultrasound_modality_supported": "yes",
                 "breast_anatomy_supported": "yes", "annotation_usable": "yes",
                 "label_plausible": "yes", "shortcut_artifact": "no",
+                "intended_lesion_supported": "yes", "grounded_target_complete": "yes",
+                "localization_target_complete": "yes", "additional_lesion_risk": "no",
                 "permitted_tasks": TASKS, "disposition": "eligible",
                 "notes": "resolved after independent disagreement review",
             }
@@ -590,6 +598,31 @@ class BusiWhuCompletedReviewTests(unittest.TestCase):
             report = self.validate(fixture)
             self.assertIn(record_id, report["excluded_record_ids"])
             self.assertIn(record_id, report["unresolved_record_ids"])
+
+    def test_grounded_and_localization_require_complete_intended_lesion_evidence(self):
+        with tempfile.TemporaryDirectory() as folder:
+            fixture = self.completed_fixture(Path(folder))
+            record_id = fixture["secondary_rows"][0]["record_id"]
+            for rows in (fixture["primary_rows"], fixture["secondary_rows"]):
+                row = next(value for value in rows if value["record_id"] == record_id)
+                row["grounded_target_complete"] = "no"
+                row["localization_target_complete"] = "uncertain"
+                row["additional_lesion_risk"] = "present"
+                row["permitted_tasks"] = "global_classification|context_prediction"
+                row["disposition"] = "narrow"
+            self.rewrite_csv(fixture["primary"], fixture["primary_fields"], fixture["primary_rows"])
+            self.rewrite_csv(fixture["secondary"], fixture["secondary_fields"], fixture["secondary_rows"])
+            report = self.validate(fixture)
+            self.assertIn(record_id, report["eligible_by_task"]["global_classification"]["record_ids"])
+            self.assertNotIn(record_id, report["eligible_by_task"]["grounded_classification"]["record_ids"])
+            self.assertNotIn(record_id, report["eligible_by_task"]["localization"]["record_ids"])
+
+            primary_row = next(value for value in fixture["primary_rows"] if value["record_id"] == record_id)
+            primary_row["permitted_tasks"] = TASKS
+            primary_row["disposition"] = "eligible"
+            self.rewrite_csv(fixture["primary"], fixture["primary_fields"], fixture["primary_rows"])
+            with self.assertRaisesRegex(ValueError, "grounded_target_complete|additional_lesion_risk"):
+                self.validate(fixture)
 
     def test_purpose_decisions_are_separate_and_training_is_never_allowed(self):
         with tempfile.TemporaryDirectory() as folder:

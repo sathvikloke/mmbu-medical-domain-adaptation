@@ -29,7 +29,9 @@ IMMUTABLE_FIELDS = (
 )
 DECISION_FIELDS = (
     "image_interpretable", "ultrasound_modality_supported", "breast_anatomy_supported",
-    "annotation_usable", "label_plausible", "shortcut_artifact", "permitted_tasks", "disposition",
+    "annotation_usable", "label_plausible", "intended_lesion_supported",
+    "grounded_target_complete", "localization_target_complete", "additional_lesion_risk",
+    "shortcut_artifact", "permitted_tasks", "disposition",
 )
 AUTHORITY_FIELDS = (
     "source_admission_authorized", "training_ready", "model_use_authorized",
@@ -217,12 +219,15 @@ def _tasks(value: str, label: str) -> list[str]:
 def _decision(row: dict[str, str], label: str) -> dict:
     for field in (
         "image_interpretable", "ultrasound_modality_supported", "breast_anatomy_supported",
-        "annotation_usable", "label_plausible",
+        "annotation_usable", "label_plausible", "intended_lesion_supported",
+        "grounded_target_complete", "localization_target_complete",
     ):
         if row[field] not in ANSWERS:
             raise ValueError(f"{label}.{field} has an unknown answer")
     if row["shortcut_artifact"] not in {"no", "present", "uncertain"}:
         raise ValueError(f"{label}.shortcut_artifact has an unknown answer")
+    if row["additional_lesion_risk"] not in {"no", "present", "uncertain"}:
+        raise ValueError(f"{label}.additional_lesion_risk has an unknown answer")
     if row["disposition"] not in DISPOSITIONS:
         raise ValueError(f"{label}.disposition is unknown")
     tasks = _tasks(row["permitted_tasks"], f"{label}.permitted_tasks")
@@ -241,8 +246,16 @@ def _decision(row: dict[str, str], label: str) -> dict:
                 raise ValueError(f"{label}.{task} requires {field}=yes")
         if task in {"global_classification", "grounded_classification"} and row["label_plausible"] != "yes":
             raise ValueError(f"{label}.{task} requires label_plausible=yes")
+        if task in {"global_classification", "grounded_classification", "localization"} and row["intended_lesion_supported"] != "yes":
+            raise ValueError(f"{label}.{task} requires intended_lesion_supported=yes")
         if task in {"grounded_classification", "localization"} and row["annotation_usable"] != "yes":
             raise ValueError(f"{label}.{task} requires annotation_usable=yes")
+        if task == "grounded_classification" and row["grounded_target_complete"] != "yes":
+            raise ValueError(f"{label}.{task} requires grounded_target_complete=yes")
+        if task == "localization" and row["localization_target_complete"] != "yes":
+            raise ValueError(f"{label}.{task} requires localization_target_complete=yes")
+        if task in {"grounded_classification", "localization"} and row["additional_lesion_risk"] != "no":
+            raise ValueError(f"{label}.{task} requires additional_lesion_risk=no")
         if row["shortcut_artifact"] != "no":
             raise ValueError(f"{label}.{task} requires shortcut_artifact=no")
     _text(row["notes"], f"{label}.notes")
@@ -336,9 +349,11 @@ def validate_completed_review(
             decision["disposition"] != "eligible"
             or any(decision[field] != "yes" for field in (
                 "image_interpretable", "ultrasound_modality_supported", "breast_anatomy_supported",
-                "annotation_usable", "label_plausible",
+                "annotation_usable", "label_plausible", "intended_lesion_supported",
+                "grounded_target_complete", "localization_target_complete",
             ))
             or decision["shortcut_artifact"] != "no"
+            or decision["additional_lesion_risk"] != "no"
         )
     ]
     extra = {record_id: primary_by_id[record_id] for record_id in flagged}

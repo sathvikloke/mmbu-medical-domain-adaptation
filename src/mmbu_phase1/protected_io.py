@@ -44,10 +44,17 @@ def _proof(value: os.stat_result) -> StatProof:
     )
 
 
+def _required_open_flag(name: str) -> int:
+    value = getattr(os, name, None)
+    f.require(type(value) is int and value != 0, "protected_io.platform",
+              f"secure descriptor opening requires {name}")
+    return value
+
+
 def _directory_flags() -> int:
     return (
-        os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
-        | getattr(os, "O_DIRECTORY", 0)
+        os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | _required_open_flag("O_NOFOLLOW")
+        | _required_open_flag("O_DIRECTORY")
     )
 
 
@@ -209,7 +216,7 @@ def open_authorized_artifact(
     f.require(root.is_absolute(), "protected_io.input_root", "must be absolute")
     target = root.joinpath(*Path(bound_path).parts)
     parent_fd, final_name = _open_authorized_parent(root, bound_path)
-    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | _required_open_flag("O_NOFOLLOW")
     try:
         fd = os.open(final_name, flags, dir_fd=parent_fd)
     except OSError as exc:

@@ -146,6 +146,16 @@ class ProtectedArtifactTests(unittest.TestCase):
         with self.assertRaises(ContractViolation):
             open_authorized_artifact(capability, "busi-whu/archive.zip", "archive")
 
+    def test_missing_secure_open_flags_reject_instead_of_degrading(self):
+        capability, _ = self.capability()
+        for flag in ("O_NOFOLLOW", "O_DIRECTORY"):
+            with self.subTest(flag=flag):
+                with mock.patch.object(os, flag, 0):
+                    with self.assertRaisesRegex(ContractViolation, flag):
+                        open_authorized_artifact(
+                            capability, "busi-whu/archive.zip", "archive"
+                        )
+
 
 if __name__ == "__main__":
     unittest.main()

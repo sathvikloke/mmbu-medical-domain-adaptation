@@ -153,6 +153,25 @@ PACKET_SOURCE_KEYS = {
 FORBIDDEN_OPERATIONS = [
     "gpu_use", "mmbu_public_access", "model_loading", "retry_or_resume", "training", "upload_or_submit",
 ]
+STRUCTURAL_OPENING_PACKET_KEYS = {
+    "schema_id", "schema_version", "packet_id", "config_digest", "repository_commit", "launch_id",
+    "run_root", "created_at", "sources", "permitted_purpose", "forbidden_operations",
+    "image_payload_decoding_allowed", "model_use_authorized", "mmbu_public_content_used", "record_digest",
+}
+STRUCTURAL_OPENING_SOURCE_KEYS = {
+    "source_id", "source_version", "source_family", "proposed_purposes", "acquisition_packet_digest",
+    "acquisition_authorization_digest", "authorization_registry_digest",
+    "acquisition_execution_receipt_digest", "staging_destination", "observed_artifacts", "permitted_reads",
+}
+STRUCTURAL_READS = {
+    "bus-bra": ["archive_member_headers"],
+    "pathmnist-224": ["archive_member_headers", "mapping_schema", "train_val_array_headers"],
+    "busi-whu": ["archive_member_headers", "workbook_schema"],
+}
+STRUCTURAL_OPENING_FORBIDDEN = [
+    "image_payload_decoding", "label_value_reading", "mmbu_public_access", "model_loading",
+    "test_member_opening", "training", "upload_or_submit",
+]
 
 
 def _closed(value: object, keys: set[str], path: str) -> dict:
@@ -383,6 +402,126 @@ def validate_acquisition_packet(packet: object, config: dict) -> dict:
     )
     if canonical.dumps(record) != canonical.dumps(expected):
         raise ValueError("packet differs from the deterministic Stage A declaration")
+    return record
+
+
+def _structural_opening_packet_body(
+    config: dict,
+    evidence: dict[str, dict],
+    repository_commit: str,
+    launch_id: str,
+    run_root: str,
+    created_at: str,
+) -> dict:
+    """Bind successful transport evidence without granting payload access."""
+    from mmbu_phase1 import admission
+
+    validate_stage_a_config(config)
+    _hex(repository_commit, 40, "repository_commit")
+    if LAUNCH_ID.fullmatch(launch_id) is None:
+        raise ValueError("launch_id must be a UTC timestamp plus a lowercase UUIDv4")
+    expected_root = f"/storage/scr/npl015/mmbu-admission/{launch_id}"
+    if run_root != expected_root:
+        raise ValueError(f"run_root must be exactly {expected_root}")
+    try:
+        parsed_created = datetime.fromisoformat(created_at.replace("Z", "+00:00"))
+    except (TypeError, ValueError):
+        raise ValueError("created_at must be an RFC 3339 timestamp") from None
+    if parsed_created.tzinfo is None or not created_at.endswith("Z"):
+        raise ValueError("created_at must be UTC with a Z suffix")
+    if not isinstance(evidence, dict) or set(evidence) != SOURCE_IDS:
+        raise ValueError("structural opening evidence must contain exactly the three frozen sources")
+
+    sources = {}
+    for source_id in sorted(SOURCE_IDS):
+        bundle = _closed(
+            evidence[source_id],
+            {"packet", "authority_records", "execution_receipt"},
+            f"evidence.{source_id}",
+        )
+        packet = validate_acquisition_packet(bundle["packet"], config)
+        records = bundle["authority_records"]
+        if not isinstance(records, list):
+            raise ValueError(f"evidence.{source_id}.authority_records must be a record array")
+        receipt = bundle["execution_receipt"]
+        authority = verify_acquisition_authority(
+            records,
+            packet,
+            config,
+            source_id,
+            receipt.get("started_at") if isinstance(receipt, dict) else "",
+        )
+        store = RecordStore([*records, receipt])
+        receipt = admission.check_acquisition_execution_receipt(
+            store, receipt.get("record_digest") if isinstance(receipt, dict) else None,
+            f"evidence.{source_id}.execution_receipt",
+        )
+        if receipt["terminal_status"] != "succeeded":
+            raise ValueError(f"evidence.{source_id} does not contain a successful acquisition")
+        declaration = config["sources"][source_id]
+        packet_source = packet["sources"][source_id]
+        sources[source_id] = {
+            "source_id": source_id,
+            "source_version": declaration["source_version"],
+            "source_family": declaration["source_family"],
+            "proposed_purposes": list(declaration["proposed_purposes"]),
+            "acquisition_packet_digest": packet["record_digest"],
+            "acquisition_authorization_digest": authority["authorization"]["record_digest"],
+            "authorization_registry_digest": authority["registry"]["record_digest"],
+            "acquisition_execution_receipt_digest": receipt["record_digest"],
+            "staging_destination": packet_source["staging_destination"],
+            "observed_artifacts": deepcopy(receipt["observed_artifacts"]),
+            "permitted_reads": list(STRUCTURAL_READS[source_id]),
+        }
+    return {
+        "schema_id": "mmbu.phase1.stage_a_structural_opening_packet",
+        "schema_version": 1,
+        "packet_id": f"stage-a-structural-opening-{launch_id}",
+        "config_digest": canonical.value_digest(config),
+        "repository_commit": repository_commit,
+        "launch_id": launch_id,
+        "run_root": run_root,
+        "created_at": created_at,
+        "sources": sources,
+        "permitted_purpose": "quarantine_inspection",
+        "forbidden_operations": list(STRUCTURAL_OPENING_FORBIDDEN),
+        "image_payload_decoding_allowed": False,
+        "model_use_authorized": False,
+        "mmbu_public_content_used": False,
+    }
+
+
+def build_structural_opening_packet(
+    config: dict,
+    evidence: dict[str, dict],
+    repository_commit: str,
+    launch_id: str,
+    run_root: str,
+    created_at: str,
+) -> dict:
+    """Return a sealed structural-opening proposal; it is not an authorization."""
+    return canonical.seal(_structural_opening_packet_body(
+        config, evidence, repository_commit, launch_id, run_root, created_at
+    ))
+
+
+def validate_structural_opening_packet(packet: object, config: dict, evidence: dict[str, dict]) -> dict:
+    """Validate a structural-opening packet against the exact acquisition evidence."""
+    record = _closed(packet, STRUCTURAL_OPENING_PACKET_KEYS, "structural_opening_packet")
+    if not isinstance(record.get("sources"), dict):
+        raise ValueError("structural_opening_packet.sources must be an object")
+    for source_id, source in record["sources"].items():
+        _closed(source, STRUCTURAL_OPENING_SOURCE_KEYS, f"structural_opening_packet.sources.{source_id}")
+    expected = build_structural_opening_packet(
+        config,
+        evidence,
+        record["repository_commit"],
+        record["launch_id"],
+        record["run_root"],
+        record["created_at"],
+    )
+    if canonical.dumps(record) != canonical.dumps(expected):
+        raise ValueError("structural opening packet differs from the exact acquisition evidence")
     return record
 
 
@@ -784,8 +923,10 @@ __all__ = [
     "acquisition_method_digest",
     "acquire_artifacts_once",
     "build_acquisition_packet",
+    "build_structural_opening_packet",
     "load_stage_a_config",
     "validate_acquisition_packet",
+    "validate_structural_opening_packet",
     "validate_stage_a_config",
     "verify_inventory_opening",
     "inventory_pathmnist_headers",

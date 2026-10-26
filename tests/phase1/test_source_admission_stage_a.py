@@ -14,8 +14,10 @@ from pathlib import Path
 from mmbu_phase1 import canonical
 from mmbu_phase1.source_admission_stage_a import (
     build_acquisition_packet,
+    build_structural_opening_packet,
     load_stage_a_config,
     validate_acquisition_packet,
+    validate_structural_opening_packet,
     validate_stage_a_config,
     verify_inventory_opening,
     inventory_pathmnist_headers,
@@ -293,6 +295,118 @@ class StageAAcquisitionAuthorityTests(unittest.TestCase):
                 without_registry, self.packet, self.config, "bus-bra", "2026-10-25T18:31:00Z"
             )
 
+
+class StageAStructuralOpeningPacketTests(unittest.TestCase):
+    def setUp(self):
+        self.config = load_stage_a_config(CONFIG)
+        launch_id = "20261025T200000Z-123e4567-e89b-42d3-a456-426614174000"
+        self.acquisition_packet = build_acquisition_packet(
+            self.config,
+            "a" * 40,
+            launch_id,
+            f"/storage/scr/npl015/mmbu-admission/{launch_id}",
+            "2026-10-25T20:00:00Z",
+        )
+        self.evidence = {}
+        for source_id, declaration in self.config["sources"].items():
+            packet_source = self.acquisition_packet["sources"][source_id]
+            artifacts = [{
+                "logical_path": row["name"],
+                "bytes": row["expected_bytes"],
+                "sha256": row["sha256"] or ("f" * 64),
+            } for row in declaration["artifacts"]]
+
+            def bind_acquisition(record, _world, source=packet_source):
+                record.update({
+                    "allowed_artifact_names": sorted(row["name"] for row in source["artifacts"]),
+                    "maximum_bytes": source["maximum_bytes"],
+                    "network_host_allowlist": sorted({
+                        host for row in source["artifacts"] for host in row["allowed_hosts"]
+                    }),
+                    "operator_id": "stage-a-operator",
+                    "retrieval_command_digest": acquisition_command_digest(source),
+                    "retrieval_method_digest": acquisition_method_digest(source),
+                    "staging_destination": source["staging_destination"],
+                })
+
+            def bind_receipt(record, world, source=packet_source):
+                record.update({
+                    "acquisition_authorization_digest": world.digest("acquisition"),
+                    "authorization_registry_digest": world.digest("registry_g1"),
+                    "executed_command_digest": acquisition_command_digest(source),
+                    "executed_method_digest": acquisition_method_digest(source),
+                    "observed_hosts": sorted({
+                        host for row in source["artifacts"] for host in row["allowed_hosts"]
+                    }),
+                    "operator_id": "stage-a-operator",
+                    "staging_destination": source["staging_destination"],
+                })
+
+            world = AdmissionWorld(
+                overrides={"acquisition": bind_acquisition, "receipt": bind_receipt},
+                proposed=declaration["proposed_purposes"],
+                source_id=source_id,
+                version=declaration["source_version"],
+                family=declaration["source_family"],
+                artifacts=artifacts,
+            )
+            self.evidence[source_id] = {
+                "packet": self.acquisition_packet,
+                "authority_records": [
+                    world.get("registry_g0"),
+                    world.get("acquisition_attestation"),
+                    world.get("acquisition"),
+                    world.get("registry_g1"),
+                ],
+                "execution_receipt": world.get("receipt"),
+            }
+
+    def packet(self):
+        return build_structural_opening_packet(
+            self.config,
+            self.evidence,
+            "b" * 40,
+            "20261025T210000Z-123e4567-e89b-42d3-a456-426614174001",
+            "/storage/scr/npl015/mmbu-admission/20261025T210000Z-123e4567-e89b-42d3-a456-426614174001",
+            "2026-10-25T21:00:00Z",
+        )
+
+    def test_packet_binds_all_receipts_and_only_structural_reads(self):
+        packet = self.packet()
+        self.assertEqual(set(packet["sources"]), {"bus-bra", "pathmnist-224", "busi-whu"})
+        self.assertEqual(packet["sources"]["bus-bra"]["permitted_reads"], ["archive_member_headers"])
+        self.assertEqual(packet["sources"]["pathmnist-224"]["permitted_reads"], [
+            "archive_member_headers", "mapping_schema", "train_val_array_headers",
+        ])
+        self.assertEqual(packet["sources"]["busi-whu"]["permitted_reads"], [
+            "archive_member_headers", "workbook_schema",
+        ])
+        for source_id, source in packet["sources"].items():
+            self.assertEqual(
+                source["acquisition_execution_receipt_digest"],
+                self.evidence[source_id]["execution_receipt"]["record_digest"],
+            )
+        self.assertFalse(packet["image_payload_decoding_allowed"])
+        self.assertFalse(packet["model_use_authorized"])
+        self.assertFalse(packet["mmbu_public_content_used"])
+
+    def test_missing_source_or_changed_receipt_rejects(self):
+        missing = copy.deepcopy(self.evidence)
+        missing.pop("busi-whu")
+        with self.assertRaises(ValueError):
+            build_structural_opening_packet(
+                self.config, missing, "b" * 40,
+                "20261025T210000Z-123e4567-e89b-42d3-a456-426614174001",
+                "/storage/scr/npl015/mmbu-admission/20261025T210000Z-123e4567-e89b-42d3-a456-426614174001",
+                "2026-10-25T21:00:00Z",
+            )
+        changed = self.packet()
+        changed["sources"]["pathmnist-224"]["acquisition_execution_receipt_digest"] = "0" * 64
+        changed["record_digest"] = canonical.value_digest(
+            {key: value for key, value in changed.items() if key != "record_digest"}
+        )
+        with self.assertRaises(ValueError):
+            validate_structural_opening_packet(changed, self.config, self.evidence)
 
 class _Response:
     def __init__(self, payload: bytes, url: str):

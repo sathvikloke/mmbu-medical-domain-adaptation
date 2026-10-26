@@ -1,5 +1,20 @@
 # Current clone verification
 
+## October 25 BUSI-WHU confirmation-admission addendum
+
+The current source-admission branch adds a synthetic-tested, fail-closed BUSI-WHU review path: deterministic
+927-record primary coverage, a frozen 249-record independent second-review population, strict BMP and annotation
+integrity checks, exact/perceptual duplicate disposition, qualified-reviewer chronology, complete disagreement
+adjudication, separate purpose decisions, task-specific eligible patient/record manifests, and a minimal bridge into
+the pre-existing patient-resampled confirmation lock. The bridge accepts only a digest-authenticated Phase 1
+admission/purpose binding for `confirmation`, rejects training authority, fewer than 60 independent patients,
+cross-patient duplicate constraints, MMBU content use, and post-lock mutation.
+
+Fresh verification on this branch passed **582 Phase 1 CPU tests** with two expected skips, maintained Markdown-link
+verification, Python compilation of the new tools, and `git diff --check`. This is engineering and governance
+evidence only: the real BUSI-WHU pixels have not been opened by this workflow, reviewers have not completed the
+forms, no source has been admitted, and no confirmation/model output has run.
+
 **Observed:** October 23, 2026 23:12 CDT
 **Runtime:** Python 3.14.6
 **Verified revision:** `4a9ada5a239d2e2b69bc63f1fc968895f442c598`

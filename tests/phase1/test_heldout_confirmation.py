@@ -13,8 +13,10 @@ import tempfile
 import unittest
 
 from mmbu_phase1 import canonical, rational
+from mmbu_phase1.store import RecordStore
 from mmbu_phase1.scope import REQUIRED_PHASE1_TEST_MODULES
 from mmbu_phase1.fields import ContractViolation
+from tests.phase1.admission_fixtures import AdmissionWorld, t
 
 
 REPO = Path(__file__).resolve().parents[2]
@@ -123,6 +125,120 @@ class HeldoutConfirmationLineageTests(unittest.TestCase):
             mutate(changed)
             with self.subTest(index=index), self.assertRaises(ContractViolation):
                 self.module.validate_checkpoint_lineage(changed)
+
+
+class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.module = importlib.import_module("mmbu_phase1.heldout_confirmation")
+
+    def report(self, count=60):
+        records = [f"record-{index:03d}" for index in range(count)]
+        patients = [f"busi-whu:patient:{index:03d}" for index in range(count)]
+        population = {
+            "record_ids": records, "record_count": count,
+            "patient_ids": patients, "patient_count": count,
+            "patient_to_records": dict(zip(patients, ([record] for record in records), strict=True)),
+        }
+        return canonical.seal({
+            "schema_id": "mmbu.phase1.busi_whu_review_validation", "schema_version": 1,
+            "packet_receipt_digest": "1" * 64, "packet_manifest_digest": "2" * 64,
+            "review_opening_sha256": "3" * 64, "primary_review_sha256": "4" * 64,
+            "secondary_review_sha256": "5" * 64, "adjudication_review_sha256": "6" * 64,
+            "rights_review_sha256": "7" * 64, "reviewed_record_count": count,
+            "independently_reviewed_record_count": count, "adjudicated_record_count": 0,
+            "eligible_by_task": {
+                "global_classification": population,
+                "grounded_classification": population,
+                "localization": population,
+                "context_prediction": population,
+            },
+            "excluded_record_ids": [], "unresolved_record_ids": [],
+            "duplicate_group_constraints": [], "duplicate_excluded_record_ids": [],
+            "purpose_decisions": {
+                "confirmation_evaluation": "approve", "challenge_reporting": "approve",
+                "publication": "approve", "source_artifact_redistribution": "decline",
+                "trained_weight_release": "unresolved", "training": "decline",
+            },
+            "source_blockers": [], "confirmation_purposes_ready": True,
+            "review_evidence_complete": True, "reviewer_identity_authenticated": False,
+            "phase1_admission_still_required": True, "source_admission_authorized": False,
+            "training_ready": False, "model_use_authorized": False,
+            "mmbu_public_content_used": False,
+        })
+
+    def admission(self):
+        world = AdmissionWorld(
+            proposed=["confirmation"], source_id="busi-whu-v3", version="3", family="busi-whu"
+        )
+        source_digest = world.digest("source_approved")
+        split = copy.deepcopy(world.get("split_engineering"))
+        split.pop("record_digest")
+        split.update(split_id="split-confirmation", role="confirmation", created_at=t("08:39:30"))
+        split = canonical.seal(split)
+        world.single(
+            "confirmation_authorization",
+            world.authorization(
+                "auth-confirmation", "confirmation", source_digest,
+                [split["record_digest"]], [], t("08:42:00"),
+            ),
+            "purpose_authorization_reviewer", ["confirmation"],
+            "syn-purpose-reviewer", t("08:42:00"),
+        )
+        return world.store(split), source_digest, world.digest("confirmation_authorization"), world
+
+    def test_authenticated_review_builds_existing_population_inputs(self):
+        report = self.report()
+        store, source_digest, purpose_digest, _ = self.admission()
+        manifest = self.module.build_confirmation_source_manifest(
+            report, store, source_digest, purpose_digest
+        )
+        self.assertEqual(manifest["patient_count"], 60)
+        self.assertEqual(len(manifest["patient_to_records"]), 60)
+        artifacts = self.module.build_randomization_artifacts(
+            manifest["patient_ids"], patient_to_records=manifest["patient_to_records"],
+            source_manifest_digest=manifest["record_digest"],
+            exclusions_digest=manifest["exclusions_digest"],
+            duplicate_disposition_digest=manifest["duplicate_disposition_digest"],
+            created_at="2026-10-25T12:00:00Z",
+        )
+        self.assertEqual(artifacts["population_binding"]["source_manifest_digest"], manifest["record_digest"])
+
+    def test_unauthenticated_training_leakage_underpowered_and_cross_patient_duplicates_reject(self):
+        report = self.report()
+        store, source_digest, purpose_digest, world = self.admission()
+        with self.assertRaises(ContractViolation):
+            self.module.build_confirmation_source_manifest(
+                report, RecordStore(), source_digest, purpose_digest
+            )
+        with self.assertRaises(ContractViolation):
+            self.module.build_confirmation_source_manifest(
+                report, store, source_digest, world.digest("engineering_authorization")
+            )
+        with self.assertRaises(ContractViolation):
+            underpowered = self.report(59)
+            self.module.build_confirmation_source_manifest(underpowered, store, source_digest, purpose_digest)
+        duplicate = self.report()
+        duplicate["duplicate_group_constraints"] = [{
+            "group_type": "exact", "digest": "a" * 64,
+            "record_ids": ["record-000", "record-001"],
+            "patient_ids": ["busi-whu:patient:000", "busi-whu:patient:001"],
+        }]
+        duplicate["record_digest"] = canonical.record_digest(duplicate)
+        with self.assertRaises(ContractViolation):
+            self.module.build_confirmation_source_manifest(duplicate, store, source_digest, purpose_digest)
+
+    def test_post_lock_manifest_mutation_rejects(self):
+        report = self.report()
+        store, source_digest, purpose_digest, _ = self.admission()
+        manifest = self.module.build_confirmation_source_manifest(
+            report, store, source_digest, purpose_digest
+        )
+        manifest["patient_to_records"][manifest["patient_ids"][0]].append("injected")
+        with self.assertRaises(ContractViolation):
+            self.module.validate_confirmation_source_manifest(
+                manifest, report, store, source_digest, purpose_digest
+            )
 
 
 class HeldoutConfirmationStatisticsTests(unittest.TestCase):

@@ -457,9 +457,16 @@ def validate_completed_review(
             decision["permitted_tasks"], f"final {record_id}.permitted_tasks"
         ))
         patient_ids = sorted({records[record_id]["parent_id"] for record_id in record_ids})
+        patient_to_records = {
+            patient_id: sorted(
+                record_id for record_id in record_ids if records[record_id]["parent_id"] == patient_id
+            )
+            for patient_id in patient_ids
+        }
         eligible_by_task[task] = {
             "record_ids": record_ids, "record_count": len(record_ids),
             "patient_ids": patient_ids, "patient_count": len(patient_ids),
+            "patient_to_records": patient_to_records,
         }
     unresolved = sorted(record_id for record_id, decision in final.items() if decision["disposition"] == "unresolved")
     excluded = sorted({

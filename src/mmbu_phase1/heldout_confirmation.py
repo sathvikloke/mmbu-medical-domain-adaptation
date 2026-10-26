@@ -10,7 +10,8 @@ from fractions import Fraction
 from pathlib import Path
 import random
 
-from mmbu_phase1 import canonical, rational
+from mmbu_phase1 import admission, canonical, rational
+from mmbu_phase1.store import RecordStore
 from mmbu_phase1.fields import (
     ContractViolation, boolean, closed, digest, fail, integer, literal, require, text, timestamp,
 )
@@ -76,6 +77,141 @@ def validate_checkpoint_lineage(value: object, path: str = "heldout_confirmation
     require(type(row["training_seed"]) is int and row["training_seed"] in (20261025, 20261026, 20261027),
             f"{path}.training_seed", "must be one of the three frozen non-boolean integer seeds")
     return row
+
+
+REVIEW_REPORT_KEYS = (
+    "adjudicated_record_count", "adjudication_review_sha256", "confirmation_purposes_ready",
+    "duplicate_excluded_record_ids", "duplicate_group_constraints", "eligible_by_task",
+    "excluded_record_ids", "independently_reviewed_record_count", "mmbu_public_content_used",
+    "model_use_authorized", "packet_manifest_digest", "packet_receipt_digest",
+    "phase1_admission_still_required", "primary_review_sha256", "purpose_decisions", "record_digest",
+    "review_evidence_complete", "review_opening_sha256", "reviewed_record_count",
+    "reviewer_identity_authenticated", "rights_review_sha256", "schema_id", "schema_version",
+    "secondary_review_sha256", "source_admission_authorized", "source_blockers", "training_ready",
+    "unresolved_record_ids",
+)
+SOURCE_MANIFEST_KEYS = (
+    "confirmation_task", "duplicate_disposition_digest", "exclusions_digest",
+    "mmbu_public_content_used", "model_use_authorized", "patient_count", "patient_ids",
+    "patient_to_records", "purpose_authorization_digest", "record_count", "record_digest",
+    "record_ids", "review_validation_digest", "schema_id", "schema_version",
+    "source_admission_digest", "source_id", "source_role", "training_allowed",
+)
+
+
+def _validated_bridge_inputs(
+    review_report: object, store: RecordStore, source_admission_digest: str,
+    purpose_authorization_digest: str,
+) -> tuple[dict, dict, dict]:
+    report = closed(review_report, "heldout_confirmation.review_report", REVIEW_REPORT_KEYS)
+    digest(report["record_digest"], "heldout_confirmation.review_report.record_digest")
+    literal(report["record_digest"], "heldout_confirmation.review_report.record_digest",
+            canonical.record_digest(report))
+    literal(report["schema_id"], "heldout_confirmation.review_report.schema_id",
+            "mmbu.phase1.busi_whu_review_validation")
+    literal(report["schema_version"], "heldout_confirmation.review_report.schema_version", 1)
+    literal(report["review_evidence_complete"],
+            "heldout_confirmation.review_report.review_evidence_complete", True)
+    literal(report["confirmation_purposes_ready"],
+            "heldout_confirmation.review_report.confirmation_purposes_ready", True)
+    literal(report["source_blockers"], "heldout_confirmation.review_report.source_blockers", [])
+    for name in ("source_admission_authorized", "training_ready", "model_use_authorized",
+                 "mmbu_public_content_used"):
+        literal(report[name], f"heldout_confirmation.review_report.{name}", False)
+    require(isinstance(store, RecordStore), "heldout_confirmation.admission_store",
+            "must be a Phase 1 record store")
+    source = admission.check_source(store, source_admission_digest,
+                                    "heldout_confirmation.source_admission_digest")
+    authorization = admission.check_purpose_authorization(
+        store, purpose_authorization_digest,
+        "heldout_confirmation.purpose_authorization_digest",
+    )
+    literal(source["source_id"], "heldout_confirmation.source.source_id", "busi-whu-v3")
+    literal(source["status"], "heldout_confirmation.source.status", "approved")
+    require("confirmation" in source["allowed_purposes"], "heldout_confirmation.source.allowed_purposes",
+            "must allow confirmation")
+    literal(authorization["source_digest"], "heldout_confirmation.authorization.source_digest",
+            source_admission_digest)
+    literal(authorization["purpose"], "heldout_confirmation.authorization.purpose", "confirmation")
+    literal(authorization["decision"], "heldout_confirmation.authorization.decision", "allowed")
+    constraints = report["duplicate_group_constraints"]
+    require(type(constraints) is list, "heldout_confirmation.review_report.duplicate_group_constraints",
+            "must be an array")
+    for index, group in enumerate(constraints):
+        require(type(group) is dict and type(group.get("patient_ids")) is list,
+                f"heldout_confirmation.review_report.duplicate_group_constraints[{index}]",
+                "must contain patient IDs")
+        require(len(group["patient_ids"]) <= 1,
+                f"heldout_confirmation.review_report.duplicate_group_constraints[{index}]",
+                "cross-patient duplicate groups cannot enter independent-patient confirmation")
+    return report, source, authorization
+
+
+def build_confirmation_source_manifest(
+    review_report: object, store: RecordStore, source_admission_digest: str,
+    purpose_authorization_digest: str,
+) -> dict:
+    """Bridge authenticated review evidence into the existing confirmation population contract."""
+    report, _source, _authorization = _validated_bridge_inputs(
+        review_report, store, source_admission_digest, purpose_authorization_digest
+    )
+    eligible = closed(report["eligible_by_task"], "heldout_confirmation.review_report.eligible_by_task", (
+        "global_classification", "grounded_classification", "localization", "context_prediction",
+    ))["global_classification"]
+    eligible = closed(eligible, "heldout_confirmation.review_report.global_classification", (
+        "patient_count", "patient_ids", "patient_to_records", "record_count", "record_ids",
+    ))
+    patient_ids = _validate_patient_ids(
+        eligible["patient_ids"], "heldout_confirmation.review_report.global_classification.patient_ids"
+    )
+    require(eligible["patient_count"] == len(patient_ids),
+            "heldout_confirmation.review_report.global_classification.patient_count", "count mismatch")
+    record_ids = eligible["record_ids"]
+    require(type(record_ids) is list and record_ids == sorted(set(record_ids), key=lambda item: item.encode("utf-8")),
+            "heldout_confirmation.review_report.global_classification.record_ids",
+            "must be unique and sorted")
+    require(eligible["record_count"] == len(record_ids),
+            "heldout_confirmation.review_report.global_classification.record_count", "count mismatch")
+    population = _population_binding(
+        patient_ids, eligible["patient_to_records"],
+        source_manifest_digest=source_admission_digest,
+        exclusions_digest=canonical.value_digest({
+            "excluded_record_ids": report["excluded_record_ids"],
+            "unresolved_record_ids": report["unresolved_record_ids"],
+            "duplicate_excluded_record_ids": report["duplicate_excluded_record_ids"],
+        }),
+        duplicate_disposition_digest=canonical.value_digest(report["duplicate_group_constraints"]),
+    )
+    require(sorted(record_id for rows in population["patient_to_records"].values() for record_id in rows) == record_ids,
+            "heldout_confirmation.review_report.global_classification.patient_to_records",
+            "must own every eligible record exactly")
+    return canonical.seal({
+        "schema_id": "mmbu.confirmation.busi_whu_source_manifest", "schema_version": 1,
+        "source_id": "busi-whu-v3", "source_role": "confirmation",
+        "confirmation_task": "global_classification", "patient_ids": patient_ids,
+        "patient_count": len(patient_ids), "record_ids": record_ids, "record_count": len(record_ids),
+        "patient_to_records": population["patient_to_records"],
+        "exclusions_digest": population["exclusions_digest"],
+        "duplicate_disposition_digest": population["duplicate_disposition_digest"],
+        "review_validation_digest": report["record_digest"],
+        "source_admission_digest": source_admission_digest,
+        "purpose_authorization_digest": purpose_authorization_digest,
+        "training_allowed": False, "model_use_authorized": False,
+        "mmbu_public_content_used": False,
+    })
+
+
+def validate_confirmation_source_manifest(
+    value: object, review_report: object, store: RecordStore, source_admission_digest: str,
+    purpose_authorization_digest: str,
+) -> dict:
+    manifest = closed(value, "heldout_confirmation.source_manifest", SOURCE_MANIFEST_KEYS)
+    expected = build_confirmation_source_manifest(
+        review_report, store, source_admission_digest, purpose_authorization_digest
+    )
+    require(manifest == expected, "heldout_confirmation.source_manifest",
+            "differs from the authenticated review and admission evidence")
+    return manifest
 
 
 ARTIFACT_KEYS = (
@@ -697,8 +833,9 @@ def validate_synthetic_fixture(value: object) -> dict:
 
 
 __all__ = [
-    "SPEC_DIGEST", "analyze_patient_results", "build_confirmation_lock", "build_randomization_artifacts",
-    "confirmation_decision", "load_spec",
-    "readiness_status", "validate_checkpoint_lineage", "validate_spec", "validate_synthetic_fixture",
+    "SPEC_DIGEST", "analyze_patient_results", "build_confirmation_lock",
+    "build_confirmation_source_manifest", "build_randomization_artifacts", "confirmation_decision",
+    "load_spec", "readiness_status", "validate_checkpoint_lineage",
+    "validate_confirmation_source_manifest", "validate_spec", "validate_synthetic_fixture",
 ]
 

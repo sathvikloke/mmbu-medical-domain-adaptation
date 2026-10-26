@@ -126,7 +126,9 @@ def packet_fixture(root: Path, *, changed_image=None, changed_mask=None):
     return archive, workbook, inventory, selection
 
 
-def authorized_review_packet(archive, workbook, inventory, selection, output, *, return_world=False):
+def authorized_review_packet(
+    archive, workbook, inventory, selection, output, *, return_world=False, fingerprint_records=None,
+):
     root = archive.parent.resolve()
     artifacts = [
         {"logical_path": archive.name, "bytes": archive.stat().st_size,
@@ -135,7 +137,10 @@ def authorized_review_packet(archive, workbook, inventory, selection, output, *,
          "sha256": hashlib.sha256(workbook.read_bytes()).hexdigest()},
     ]
     roles = {archive.name: "archive", workbook.name: "metadata"}
-    fingerprint_payload = {"source_id": "bus-bra", "source_version": "1", "complete": True, "records": []}
+    fingerprint_payload = {
+        "source_id": "bus-bra", "source_version": "1", "complete": True,
+        "records": fingerprint_records or [],
+    }
     fingerprint_inventory = {**fingerprint_payload, "inventory_digest": canonical.value_digest(fingerprint_payload)}
     fingerprint_closure = {
         "eligible_sources": [{"source_id": "bus-bra", "source_version": "1"}],
@@ -356,11 +361,20 @@ TASKS = "global_classification|grounded_classification|localization|context_pred
 
 
 class BusiWhuCompletedReviewTests(unittest.TestCase):
-    def completed_fixture(self, root: Path):
+    def completed_fixture(self, root: Path, *, cross_source_duplicate=False):
         archive, workbook, inventory, selection = packet_fixture(root)
         packet = root / "packet"
+        decoded = struct.pack("<II", 2, 2) + bytes((0, 0, 0, 255, 255, 255, 255, 255, 255, 0, 0, 0))
+        fingerprint_records = None
+        if cross_source_duplicate:
+            fingerprint_records = [{
+                "source_id": "bus-bra", "source_version": "1", "record_id": "external-match",
+                "decoded_sha256": hashlib.sha256(decoded).hexdigest(), "dhash64": "0000000000000000",
+                "width": 2, "height": 2,
+            }]
         receipt, authority_world = authorized_review_packet(
-            archive, workbook, inventory, selection, packet, return_world=True
+            archive, workbook, inventory, selection, packet, return_world=True,
+            fingerprint_records=fingerprint_records,
         )
 
         def complete(template_name, reviewer_id, reviewed_at):
@@ -542,6 +556,16 @@ class BusiWhuCompletedReviewTests(unittest.TestCase):
             self.assertFalse(report["source_admission_authorized"])
             self.assertFalse(report["training_ready"])
             self.assertFalse(report["model_use_authorized"])
+
+    def test_cross_source_duplicate_candidates_block_confirmation_until_adjudicated(self):
+        with tempfile.TemporaryDirectory() as folder:
+            fixture = self.completed_fixture(Path(folder), cross_source_duplicate=True)
+            duplicates = json.loads((fixture["packet"] / "duplicate-candidates.json").read_text())
+            self.assertTrue(duplicates["cross_source_candidates"])
+            self.assertTrue(duplicates["human_disposition_required"])
+            report = self.validate(fixture)
+            self.assertIn("unresolved_cross_source_duplicate_candidates", report["source_blockers"])
+            self.assertFalse(report["confirmation_purposes_ready"])
 
     def test_authenticated_report_requires_all_four_post_report_attestations(self):
         with tempfile.TemporaryDirectory() as folder:

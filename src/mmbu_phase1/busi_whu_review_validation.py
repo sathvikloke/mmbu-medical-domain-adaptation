@@ -674,6 +674,8 @@ def validate_completed_review(
     rights, rights_payload = _load_canonical(rights_review, "rights review")
     decisions, blockers = _validate_rights(rights, receipt["record_digest"], opened_at)
     blockers.extend(duplicate_blockers)
+    if duplicates["cross_source_candidates"]:
+        blockers.append("unresolved_cross_source_duplicate_candidates")
     final = dict(primary)
     final.update(secondary)
     final.update(adjudicated)

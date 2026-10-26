@@ -576,7 +576,9 @@ def build_review_packet(
             "exact_duplicate_record_count": sum(len(row["record_ids"]) for row in duplicate_groups),
             "cross_patient_exact_group_count": sum(row["cross_patient"] for row in duplicate_groups),
             "cross_patient_perceptual_group_count": sum(row["cross_patient"] for row in perceptual_groups),
-            "human_disposition_required": bool(duplicate_groups or perceptual_groups),
+            "human_disposition_required": bool(
+                duplicate_groups or perceptual_groups or cross_source_candidates
+            ),
             "source_admission_authorized": False,
             "training_ready": False,
             "model_use_authorized": False,

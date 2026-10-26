@@ -16,7 +16,7 @@ from urllib.parse import urlparse
 from mmbu_phase1 import canonical
 
 
-TOP_KEYS = {"schema_id", "schema_version", "work_margin_bytes", "duplicate_method", "sources"}
+TOP_KEYS = {"schema_id", "schema_version", "python_executable", "work_margin_bytes", "duplicate_method", "sources"}
 DUPLICATE_KEYS = {
     "exact_decoded_identity", "perceptual_hash", "maximum_hamming_distance",
     "maximum_aspect_ratio_delta", "comparison_scope", "missing_parent_policy",
@@ -103,6 +103,8 @@ def validate_stage_a_config(config: object) -> dict:
     root = _closed(config, TOP_KEYS, "config")
     if root["schema_id"] != "mmbu.phase1.source_admission_stage_a_config" or root["schema_version"] != 1:
         raise ValueError("unsupported Stage A config schema")
+    if root["python_executable"] != "/storage/groups/rrg_shared/hpc/Research/Code/mylibs/anaconda3/bin/python3":
+        raise ValueError("python_executable differs from the measured MOCS runtime")
     if _positive_int(root["work_margin_bytes"], "work_margin_bytes") != 20 * 1024**3:
         raise ValueError("work_margin_bytes must be exactly 20 GiB")
 
@@ -215,7 +217,7 @@ def _packet_body(
     for source_id in sorted(config["sources"]):
         declaration = config["sources"][source_id]
         command = [
-            "/usr/bin/python3",
+            config["python_executable"],
             f"{run_root}/repo/tools/source_admission_stage_a.py",
             "acquire-source",
             "--packet",

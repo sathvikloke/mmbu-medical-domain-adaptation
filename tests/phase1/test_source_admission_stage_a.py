@@ -35,6 +35,10 @@ class StageAConfigTests(unittest.TestCase):
     def test_frozen_source_identities_and_roles(self):
         validated = load_stage_a_config(CONFIG)
         self.assertEqual(set(validated["sources"]), {"bus-bra", "pathmnist-224", "busi-whu"})
+        self.assertEqual(
+            validated["python_executable"],
+            "/storage/groups/rrg_shared/hpc/Research/Code/mylibs/anaconda3/bin/python3",
+        )
         self.assertEqual(validated["work_margin_bytes"], 20 * 1024**3)
         self.assertEqual(validated["sources"]["bus-bra"]["proposed_purposes"], ["release", "train"])
         self.assertEqual(validated["sources"]["pathmnist-224"]["proposed_purposes"], ["release", "train"])
@@ -60,6 +64,9 @@ class StageAConfigTests(unittest.TestCase):
 
     def test_unknown_key_rejects(self):
         self.rejects(lambda value: value.update({"surprise": True}))
+
+    def test_unmeasured_python_path_rejects(self):
+        self.rejects(lambda value: value.update({"python_executable": "/usr/bin/python3"}))
 
     def test_glob_artifact_name_rejects(self):
         self.rejects(lambda value: value["sources"]["bus-bra"]["artifacts"][0].update({"name": "BUS*.zip"}))
@@ -129,7 +136,10 @@ class StageAPacketTests(unittest.TestCase):
     def test_packet_binds_per_source_command_and_identity(self):
         for source_id, source in self.packet["sources"].items():
             command = source["retrieval_command"]
-            self.assertEqual(command[0], "/usr/bin/python3")
+            self.assertEqual(
+                command[0],
+                "/storage/groups/rrg_shared/hpc/Research/Code/mylibs/anaconda3/bin/python3",
+            )
             self.assertIn(f"{self.run_root}/repo/tools/source_admission_stage_a.py", command)
             self.assertEqual(command[-2:], ["--source-id", source_id])
             self.assertNotIn("--retry", command)

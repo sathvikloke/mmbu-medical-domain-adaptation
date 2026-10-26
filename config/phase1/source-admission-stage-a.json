@@ -1,6 +1,7 @@
 {
   "schema_id": "mmbu.phase1.source_admission_stage_a_config",
   "schema_version": 1,
+  "python_executable": "/storage/groups/rrg_shared/hpc/Research/Code/mylibs/anaconda3/bin/python3",
   "work_margin_bytes": 21474836480,
   "duplicate_method": {
     "exact_decoded_identity": "sha256_rgb_pixels_width_height_v1",

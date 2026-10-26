@@ -6,6 +6,26 @@ REPO = Path(__file__).resolve().parents[2]
 
 
 class EvidenceDocumentationTests(unittest.TestCase):
+    def test_external_trust_root_requirement_is_explicit_and_non_self_authorizing(self):
+        requirement = (
+            REPO / "docs/team/EXTERNAL_TRUST_ROOT_REQUIREMENT.md"
+        ).read_text(encoding="utf-8")
+        current = (REPO / "docs/team/CURRENT_VERIFICATION.md").read_text(
+            encoding="utf-8"
+        )
+
+        for marker in (
+            "**Current state:** blocked external",
+            "repository records are not a trust anchor",
+            "detached signature",
+            "out-of-band pinned public-key fingerprint",
+            "no fallback",
+            "Stage A",
+            "BUSI-WHU",
+        ):
+            self.assertIn(marker, requirement)
+        self.assertIn("EXTERNAL_TRUST_ROOT_REQUIREMENT.md", current)
+
     def test_remote_only_response_screen_is_explicitly_non_replayable(self):
         report = (
             REPO / "docs/team/REPLICATED_RESPONSE_SCREEN_2026-10-25.md"
@@ -22,8 +42,8 @@ class EvidenceDocumentationTests(unittest.TestCase):
             encoding="utf-8"
         )
 
-        self.assertIn("passed **627 Phase 1 CPU tests**", report)
-        self.assertIn("| Current Phase 1 suite | **627 tests passed", report)
+        self.assertIn("passed **628 Phase 1 CPU tests**", report)
+        self.assertIn("| Current Phase 1 suite | **628 tests passed", report)
         self.assertNotIn("| Phase 1 suite | **623 tests passed", report)
         self.assertIn("**Status snapshot code revision (historical):**", report)
         self.assertNotIn("**Verified code revision:**", report)

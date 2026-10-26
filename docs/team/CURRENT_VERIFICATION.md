@@ -11,7 +11,7 @@ cryptographically binds the exact completed-review report plus a purpose binding
 training authority, fewer than 60 independent patients,
 cross-patient duplicate constraints, MMBU content use, and post-lock mutation.
 
-Fresh verification after the independent audit repair passed **627 Phase 1 CPU tests** with two expected skips,
+Fresh verification after the independent audit repair passed **628 Phase 1 CPU tests** with two expected skips,
 maintained Markdown-link verification, Python compilation of `src`, `tools`, and `tests`, working-tree
 `git diff --check`, and branch-range `git diff --check`. The audit-triggered tests cover exact authority-bound review
 inputs, persistent one-attempt consumption, descriptor-relative ancestor traversal, cross-source duplicate blocking,
@@ -31,7 +31,7 @@ forms, no source has been admitted, and no confirmation/model output has run.
 |---|---|---|
 | Historical preparation suite | **277 tests passed; 44 optional-Pillow image tests skipped** | Re-executes the preserved CPU package without Pillow; it does not replace the image-enabled CI lane or test a model |
 | Root repository/tool suite | **75 tests passed; 13 optional-Pillow image tests skipped** | Covers repository, publication, scope, receipt, and authorization tooling; it is not scientific evidence |
-| Current Phase 1 suite | **627 tests passed; two expected optional-dependency tests skipped** | Covers current fail-closed contracts, manifests, registries, evidence chains, geometry, bundles, synthetic orchestration, and evidence-documentation boundaries; native model execution is evidenced separately below |
+| Current Phase 1 suite | **628 tests passed; two expected optional-dependency tests skipped** | Covers current fail-closed contracts, manifests, registries, evidence chains, geometry, bundles, synthetic orchestration, and evidence-documentation boundaries; native model execution is evidenced separately below |
 | Offline smoke workflow | **passed** | Replays historical synthetic demonstrations and toy arithmetic only; it reports `model_executed=false` and `official_evaluation=false` |
 | Maintained local Markdown links and anchors | **passed** | External URLs were not fetched by this check |
 | Published v0.3 artifact verification | **passed** for 275 files, ZIP members, fixed transforms, and historical receipts | Establishes byte integrity only, not scientific validity or medical truth |
@@ -68,6 +68,11 @@ MOCS account, durable allocation, and account-wide GPU entitlement remain unknow
 promote them. Real-source admission remains `blocked_external`. The successor and its exact status-evidence artifacts
 are copied into new Phase 1A bundles, so standalone validation does not depend on an unbundled repository claim. The
 predecessor bytes and every historical native receipt remain unchanged.
+
+The [external trust-root requirement](EXTERNAL_TRUST_ROOT_REQUIREMENT.md) now specifies the cryptographic evidence and
+fail-closed verification order needed to replace self-authenticated names and digest-shaped claims in Stage A and
+BUSI-WHU. No external key, signature, identity proof, or revocation evidence has been supplied, so this design does not
+grant authority and the project remains `blocked_external`.
 
 The historical offline smoke package retains its older Einstein-only status text. That output is a preserved
 historical artifact, not the current project status.

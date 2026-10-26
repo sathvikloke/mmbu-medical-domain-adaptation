@@ -101,8 +101,9 @@ source slides.
 - The [NIH ChestX-ray paper](https://arxiv.org/abs/1705.02315) documents report-mined image labels and the public NIH
   distribution; it does not turn those labels into adjudicated radiologist truth.
 - The October 26 [exact mapping audit](CHESTMNIST_MAPPING_AUDIT_2026-10-26.md) recovered all 30,805 patient prefixes
-  but found three patients crossing the published train/validation/test roles. The original wrapper split is therefore
-  not patient-disjoint and cannot be used unchanged for decision-bearing development.
+  and reconciled all 112,120 identities against the official NIH patient-level split. MedMNIST's wrapper roles place
+  20,384 official NIH test images in wrapper train/validation, so those roles cannot govern decision-bearing
+  development even though the official NIH train/validation and test populations are patient-disjoint.
 
 ### Permitted target meaning
 
@@ -115,8 +116,8 @@ serializer and cannot be silently collapsed to whichever label is convenient.
 ChestMNIST remains ineligible unless all of these hold:
 
 1. the exact source mapping recovers a patient parent for every retained image, and a prospectively frozen replacement
-   split assigns patients—not images—to roles; every patient touching the wrapper test split remains outside training
-   and adaptive development;
+   split assigns patients—not images—to roles using only the NIH-published train/validation population; the complete
+   NIH official test population remains outside training and adaptive development regardless of MedMNIST wrapper role;
 2. a frozen inclusion rule handles multi-label rows without inventing negative labels or choosing labels after model
    output;
 3. medical QA estimates positive-label correctness for every retained class and blocks classes that miss the frozen

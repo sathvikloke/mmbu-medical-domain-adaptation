@@ -3,7 +3,7 @@
 **Date:** October 26, 2026
 
 **Decision:** the patient key is recoverable, but the published wrapper split is not patient-disjoint and must not be
-used unchanged for decision-bearing development.
+used unchanged for decision-bearing development. The NIH-published patient-level train/test boundary must govern.
 
 **Authority boundary:** public mapping metadata only; no image, label vector, model output, or MMBU public content was
 opened. This audit does not admit ChestMNIST or authorize model use.
@@ -43,15 +43,34 @@ python3 tools/audit_chestmnist_mapping.py \
   --train-count 78468 --val-count 11219 --test-count 22433 --patient-count 30805
 ```
 
+## NIH split reconciliation
+
+The official NIH repository also publishes a 72,223-byte FAQ, an 86,524-image `train_val_list.txt`, and a
+25,596-image `test_list.txt`. The FAQ says usage is unrestricted with attribution and citation, describes the NLP
+labels as imperfect, warns that “No finding” is not “normal,” and says the two NIH lists are patient-level disjoint.
+The exact lists contain 28,008 and 2,797 patients respectively, with zero patient overlap. Together they cover the
+same 112,120 image IDs as the MedMNIST mapping.
+
+The MedMNIST wrapper roles do not preserve that official boundary:
+
+| MedMNIST role | NIH train/validation images | NIH test images |
+| --- | ---: | ---: |
+| train | 60,549 | 17,919 |
+| validation | 8,754 | 2,465 |
+| test | 17,221 | 5,212 |
+
+This supersedes the narrower “three crossing patients” interpretation. Those three are crossings among wrapper roles;
+the larger scientific problem is that the wrapper roles mix NIH's official development and held-out populations.
+
 ## Binding intake consequence
 
 ChestMNIST is no longer blocked on whether patient grouping can be reconstructed. It remains unadmitted and blocked on
 label semantics, qualified positive-label QA, image/resize audit, rights/purpose/release review, and cross-source
 proximity checks.
 
-Any later development population must be constructed prospectively by patient, not by reusing the wrapper split.
-At minimum, every patient touching the wrapper test population must remain excluded from training and adaptive
-development, and no patient may cross the newly frozen roles. The exact patient allocation, seed, class policy, and
+Any later development population must start only from NIH's official 86,524-image train/validation population and be
+constructed prospectively by patient. All 25,596 official NIH test images and their 2,797 patients remain excluded
+from training and adaptive development. The exact patient allocation, seed, class policy, and
 thresholds must be frozen before label vectors or pixels are opened. Because the 14 findings are text-mined, an absent
 label remains unknown rather than a verified negative; this audit does not repair that limitation.
 

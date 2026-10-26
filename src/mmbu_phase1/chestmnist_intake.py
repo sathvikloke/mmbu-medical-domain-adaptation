@@ -129,3 +129,88 @@ def audit_mapping_bytes(
         "source_admitted": False,
         "mmbu_public_content_used": False,
     }
+
+
+def _official_ids(raw: bytes, label: str) -> set[str]:
+    if not isinstance(raw, bytes) or raw.startswith(b"\xef\xbb\xbf"):
+        raise ValueError(f"{label} must be exact UTF-8 bytes without BOM")
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise ValueError(f"{label} is not valid UTF-8: {exc}") from None
+    result: set[str] = set()
+    for line_number, line in enumerate(text.splitlines(), start=1):
+        if not re.fullmatch(r"[0-9]{8}_[0-9]{3}\.png", line):
+            raise ValueError(f"{label} line {line_number} has an invalid filename")
+        image_id = line[:-4]
+        if image_id in result:
+            raise ValueError(f"{label} repeats image ID {image_id}")
+        result.add(image_id)
+    if not result:
+        raise ValueError(f"{label} is empty")
+    return result
+
+
+def reconcile_official_split_bytes(mapping_raw: bytes, train_val_raw: bytes, test_raw: bytes) -> dict:
+    """Compare wrapper roles with the NIH-published patient-level split lists."""
+    try:
+        text = mapping_raw.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise ValueError(f"mapping is not valid UTF-8: {exc}") from None
+    if mapping_raw.startswith(b"\xef\xbb\xbf"):
+        raise ValueError("mapping UTF-8 BOM is forbidden")
+    reader = csv.DictReader(io.StringIO(text, newline=""), strict=True)
+    if reader.fieldnames != ["split", "index", "image_id"]:
+        raise ValueError("mapping header must be exactly split,index,image_id")
+    wrapper: dict[str, set[str]] = {split: set() for split in SPLITS}
+    seen: set[str] = set()
+    for row in reader:
+        if set(row) != {"split", "index", "image_id"} or row["split"] not in wrapper:
+            raise ValueError("mapping row is outside the closed schema")
+        if IMAGE_ID.fullmatch(row["image_id"]) is None or row["image_id"] in seen:
+            raise ValueError("mapping contains an invalid or duplicate image ID")
+        seen.add(row["image_id"])
+        wrapper[row["split"]].add(row["image_id"])
+
+    official_train = _official_ids(train_val_raw, "official train/validation list")
+    official_test = _official_ids(test_raw, "official test list")
+    if official_train & official_test:
+        raise ValueError("official split lists overlap")
+    mapping_ids = set.union(*wrapper.values())
+    if mapping_ids != official_train | official_test:
+        raise ValueError("official split lists do not cover the mapping universe exactly")
+    train_patients = {image[:8] for image in official_train}
+    test_patients = {image[:8] for image in official_test}
+    if train_patients & test_patients:
+        raise ValueError("official split lists are not patient-disjoint")
+
+    matrix = {
+        split: {
+            "official_test": len(wrapper[split] & official_test),
+            "official_train_val": len(wrapper[split] & official_train),
+        }
+        for split in SPLITS
+    }
+    preserves = (
+        matrix["train"]["official_test"] == 0
+        and matrix["val"]["official_test"] == 0
+        and matrix["test"]["official_train_val"] == 0
+    )
+    return {
+        "schema_id": "mmbu.phase1.chestmnist_official_split_reconciliation",
+        "schema_version": 1,
+        "official_train_val_bytes": len(train_val_raw),
+        "official_train_val_sha256": hashlib.sha256(train_val_raw).hexdigest(),
+        "official_test_bytes": len(test_raw),
+        "official_test_sha256": hashlib.sha256(test_raw).hexdigest(),
+        "official_split_counts": {"train_val": len(official_train), "test": len(official_test)},
+        "official_patient_counts": {"train_val": len(train_patients), "test": len(test_patients)},
+        "official_split_patient_disjoint": True,
+        "mapping_universe_matches_official_lists": True,
+        "wrapper_by_official_split": matrix,
+        "wrapper_roles_preserve_official_split": preserves,
+        "labels_opened": False,
+        "pixels_opened": False,
+        "source_admitted": False,
+        "mmbu_public_content_used": False,
+    }

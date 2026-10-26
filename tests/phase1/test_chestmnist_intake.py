@@ -9,7 +9,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from mmbu_phase1.chestmnist_intake import audit_mapping_bytes
+from mmbu_phase1.chestmnist_intake import audit_mapping_bytes, reconcile_official_split_bytes
 
 
 REPO = Path(__file__).resolve().parents[2]
@@ -137,6 +137,35 @@ class ChestMNISTMappingTests(unittest.TestCase):
         self.assertEqual(result["row_count"], 4)
         self.assertEqual(result["patient_count"], 3)
 
+    def test_official_split_reconciliation_exposes_wrapper_drift(self):
+        mapping = _mapping([
+            ("train", 0, "00000001_001"),
+            ("train", 1, "00000003_001"),
+            ("val", 0, "00000002_001"),
+            ("test", 0, "00000001_002"),
+        ])
+        result = reconcile_official_split_bytes(
+            mapping,
+            b"00000001_001.png\n00000001_002.png\n00000002_001.png\n",
+            b"00000003_001.png\n",
+        )
+        self.assertTrue(result["official_split_patient_disjoint"])
+        self.assertFalse(result["wrapper_roles_preserve_official_split"])
+        self.assertEqual(result["wrapper_by_official_split"]["train"], {"official_test": 1, "official_train_val": 1})
+        self.assertEqual(result["wrapper_by_official_split"]["test"], {"official_test": 0, "official_train_val": 1})
+
+    def test_official_split_reconciliation_rejects_overlap_or_unmatched_universe(self):
+        mapping = _mapping([
+            ("train", 0, "00000001_001"),
+            ("train", 1, "00000003_001"),
+            ("val", 0, "00000002_001"),
+            ("test", 0, "00000001_002"),
+        ])
+        with self.assertRaises(ValueError):
+            reconcile_official_split_bytes(mapping, b"00000001_001.png\n", b"00000001_001.png\n")
+        with self.assertRaises(ValueError):
+            reconcile_official_split_bytes(mapping, b"00000001_001.png\n", b"00000003_001.png\n")
+
 
 class ChestMNISTEvidenceTests(unittest.TestCase):
     def test_real_metadata_receipt_is_exact_and_non_admitting(self):
@@ -156,6 +185,19 @@ class ChestMNISTEvidenceTests(unittest.TestCase):
         self.assertFalse(receipt["test_images_opened"])
         self.assertFalse(receipt["source_admitted"])
         self.assertFalse(receipt["mmbu_public_content_used"])
+        official = receipt["official_nih_split_reconciliation"]
+        self.assertEqual(official["official_split_counts"], {"test": 25_596, "train_val": 86_524})
+        self.assertEqual(official["official_patient_counts"], {"test": 2_797, "train_val": 28_008})
+        self.assertTrue(official["official_split_patient_disjoint"])
+        self.assertFalse(official["wrapper_roles_preserve_official_split"])
+        self.assertEqual(
+            official["wrapper_by_official_split"],
+            {
+                "test": {"official_test": 5_212, "official_train_val": 17_221},
+                "train": {"official_test": 17_919, "official_train_val": 60_549},
+                "val": {"official_test": 2_465, "official_train_val": 8_754},
+            },
+        )
 
 
 if __name__ == "__main__":

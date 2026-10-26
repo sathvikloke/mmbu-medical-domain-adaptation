@@ -377,6 +377,7 @@ class StageATransportTests(unittest.TestCase):
 class StageALauncherTests(unittest.TestCase):
     def test_launcher_is_cpu_only_one_shot_and_uses_sealed_inputs(self):
         text = (REPO / "tools/source_admission_stage_a.sbatch").read_text(encoding="utf-8")
+        self.assertIn("#SBATCH --partition=epyc-cpu", text)
         self.assertIn("#SBATCH --array=0-2%3", text)
         self.assertIn("#SBATCH --cpus-per-task=1", text)
         self.assertIn("#SBATCH --no-requeue", text)

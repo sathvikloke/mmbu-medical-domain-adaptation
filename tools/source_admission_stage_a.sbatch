@@ -1,5 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=mmbu-stage-a
+#SBATCH --partition=epyc-cpu
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1

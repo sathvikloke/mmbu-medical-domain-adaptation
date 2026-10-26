@@ -28,6 +28,10 @@ def metadata_inventory() -> dict:
             "record_id": f"b{index:04d}",
             "row_digest": f"{index + 1:064x}",
             "workbook_row": index + 2,
+            "workbook_geometry": {"scale_pixel_per_cm": 1, "scale_category": "synthetic",
+                                  "gt_area_pixel2": 1, "image_area_pixel2": 4, "gt_cm2": 1,
+                                  "gt_all": 0.25, "centroid_x": 1, "centroid_y": 0,
+                                  "max_diameter": 1, "min_diameter": 1},
         })
     for index in range(218):
         records.append({
@@ -36,6 +40,10 @@ def metadata_inventory() -> dict:
             "record_id": f"m{index:04d}",
             "row_digest": f"{index + 1001:064x}",
             "workbook_row": index + 562,
+            "workbook_geometry": {"scale_pixel_per_cm": 1, "scale_category": "synthetic",
+                                  "gt_area_pixel2": 1, "image_area_pixel2": 4, "gt_cm2": 1,
+                                  "gt_all": 0.25, "centroid_x": 1, "centroid_y": 0,
+                                  "max_diameter": 1, "min_diameter": 1},
         })
     sizes = [2] * 15 + [3] * 4 + [4] * 6 + [5] * 5 + [6] * 2 + [7] * 3 + [8] * 2 + [9]
     row = 780
@@ -47,6 +55,10 @@ def metadata_inventory() -> dict:
                 "record_id": f"x{patient_index:02d}-{record_index}",
                 "row_digest": f"{row + 2001:064x}",
                 "workbook_row": row + 2,
+                "workbook_geometry": {"scale_pixel_per_cm": 1, "scale_category": "synthetic",
+                                      "gt_area_pixel2": 1, "image_area_pixel2": 4, "gt_cm2": 1,
+                                      "gt_all": 0.25, "centroid_x": 1, "centroid_y": 0,
+                                      "max_diameter": 1, "min_diameter": 1},
             })
             row += 1
     records.sort(key=lambda item: item["record_id"])
@@ -120,14 +132,22 @@ def authorized_review_packet(archive, workbook, inventory, selection, output):
          "sha256": hashlib.sha256(workbook.read_bytes()).hexdigest()},
     ]
     roles = {archive.name: "archive", workbook.name: "metadata"}
+    fingerprint_payload = {"source_id": "bus-bra", "source_version": "1", "complete": True, "records": []}
+    fingerprint_inventory = {**fingerprint_payload, "inventory_digest": canonical.value_digest(fingerprint_payload)}
+    fingerprint_closure = {
+        "eligible_sources": [{"source_id": "bus-bra", "source_version": "1"}],
+        "inventories": [fingerprint_inventory],
+    }
     world = ReviewAuthorityWorld(
         input_root=str(root), output_root=str(output), artifacts=artifacts, artifact_roles=roles,
+        fingerprint_inventories=[{"source_id": "bus-bra", "source_version": "1",
+                                  "inventory_digest": fingerprint_inventory["inventory_digest"]}],
     )
     capability = validate_busi_whu_review_opening(
         world.store(), world.authorization["record_digest"],
         world.world.digest("review_opening"), t("09:10:02"),
     )
-    return build_review_packet(capability, inventory, selection)
+    return build_review_packet(capability, inventory, selection, fingerprint_closure)
 
 
 class BusiWhuReviewSelectionTests(unittest.TestCase):
@@ -208,6 +228,19 @@ class BusiWhuReviewPacketTests(unittest.TestCase):
             self.assertEqual(decode["record_count"], 927)
             self.assertEqual(decode["decoded_image_count"], 927)
             self.assertEqual(decode["decoded_annotation_count"], 927)
+            self.assertEqual(len(decode["record_targets"]), 927)
+            self.assertEqual(decode["records"][0]["canonical_target"], "benign")
+            self.assertEqual(decode["records"][0]["geometry_consistency_disposition"], "consistent")
+            target_manifest = json.loads((output / "target-manifest.json").read_text())
+            self.assertEqual(decode["target_map_digest"], target_manifest["record_digest"])
+            self.assertEqual(target_manifest["record_targets"]["b0000"], "benign")
+            self.assertEqual(target_manifest["record_targets"]["m0000"], "malignant")
+            task_digests = manifest["mechanical_task_manifest_digests"]
+            self.assertEqual(set(task_digests), set(TASKS.split("|")))
+            for task, digest in task_digests.items():
+                task_manifest = json.loads((output / f"task-manifest-{task}.json").read_text())
+                self.assertEqual(task_manifest["record_digest"], digest)
+                self.assertEqual(task_manifest["target_map_digest"], target_manifest["record_digest"])
             self.assertEqual(len(duplicates["exact_image_groups"]), 1)
             self.assertEqual(len(duplicates["exact_image_groups"][0]["record_ids"]), 927)
             self.assertTrue(duplicates["exact_image_groups"][0]["cross_patient"])
@@ -218,6 +251,24 @@ class BusiWhuReviewPacketTests(unittest.TestCase):
             self.assertFalse(receipt["training_ready"])
             self.assertFalse(receipt["model_use_authorized"])
             self.assertFalse(receipt["mmbu_public_content_used"])
+
+    def test_workbook_geometry_disagreement_is_unresolved_not_repaired(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            archive, workbook, inventory, _ = packet_fixture(root)
+            inventory["records"][0]["workbook_geometry"]["gt_area_pixel2"] = 2
+            inventory["record_digest"] = canonical.record_digest(inventory)
+            selection = build_review_selection(inventory)
+            output = root / "packet"
+            authorized_review_packet(archive, workbook, inventory, selection, output)
+            decode = json.loads((output / "decode-inventory.json").read_text())
+            row = next(item for item in decode["records"] if item["record_id"] == inventory["records"][0]["record_id"])
+            self.assertEqual(row["geometry_consistency_disposition"], "unresolved")
+            self.assertEqual(row["geometry_evidence"]["gt_area_pixel2"]["disposition"], "unresolved")
+            grounded = json.loads((output / "task-manifest-grounded_classification.json").read_text())
+            localization = json.loads((output / "task-manifest-localization.json").read_text())
+            self.assertIn(row["record_id"], grounded["mechanically_blocked_record_ids"])
+            self.assertIn(row["record_id"], localization["mechanically_blocked_record_ids"])
 
     def test_dimension_mismatch_rejects_without_publishing(self):
         with tempfile.TemporaryDirectory() as folder:

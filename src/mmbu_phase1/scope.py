@@ -22,6 +22,7 @@ REQUIRED_PHASE1_TEST_MODULES = (
     "test_firewall.py",
     "test_geometry.py",
     "test_heldout_confirmation.py",
+    "test_image_fingerprints.py",
     "test_locks.py",
     "test_lane1_trainer.py",
     "test_model_feasibility.py",

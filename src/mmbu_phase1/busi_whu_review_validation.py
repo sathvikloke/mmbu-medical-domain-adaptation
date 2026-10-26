@@ -24,7 +24,7 @@ PURPOSES = {
     "source_artifact_redistribution", "trained_weight_release", "training",
 }
 IMMUTABLE_FIELDS = (
-    "record_id", "parent_id", "label_code", "workbook_row", "image_path", "annotation_path",
+    "record_id", "parent_id", "label_code", "canonical_target", "workbook_row", "image_path", "annotation_path",
     "decoded_width", "decoded_height", "annotation_bbox_xywh",
 )
 DECISION_FIELDS = (

@@ -33,10 +33,14 @@ class ReviewAuthorityWorld:
     def __init__(
         self, mutate=None, *, input_root="/storage/scr/npl015/mmbu/quarantine",
         output_root="/storage/scr/npl015/mmbu/review-1", artifacts=None, artifact_roles=None,
+        fingerprint_inventories=None,
     ):
         self.input_root = input_root
         self.output_root = output_root
         self.artifact_roles = artifact_roles or {}
+        self.fingerprint_inventories = fingerprint_inventories or [
+            {"source_id": "bus-bra", "source_version": "1", "inventory_digest": d("busbra-fingerprints")},
+        ]
         self.artifacts = artifacts or [
             {"logical_path": "busi-whu/archive.zip", "bytes": 4096, "sha256": d("archive-bytes")},
             {"logical_path": "busi-whu/metadata.xlsx", "bytes": 120, "sha256": d("workbook-bytes")},
@@ -78,7 +82,8 @@ class ReviewAuthorityWorld:
 
         inputs = sorted([
             self.world.digest("manifest"), d("busi-metadata"), d("review-selection"),
-            d("review-schema"), d("duplicate-contract"), d("busbra-fingerprints"),
+            d("review-schema"), d("duplicate-contract"),
+            *[row["inventory_digest"] for row in self.fingerprint_inventories],
         ])
         review_lock = self.world.lock(
             "busi-whu-clinical-review", "custody_inventory", None, inputs,
@@ -103,9 +108,7 @@ class ReviewAuthorityWorld:
             "repository_revision": "a" * 40,
             "artifact_bindings": artifacts,
             "credential_verification_digests": sorted(credentials),
-            "fingerprint_inventories": [
-                {"source_id": "bus-bra", "source_version": "1", "inventory_digest": d("busbra-fingerprints")},
-            ],
+            "fingerprint_inventories": self.fingerprint_inventories,
             "allowed_operations": OPERATIONS,
             "input_root": self.input_root,
             "output_root": self.output_root,

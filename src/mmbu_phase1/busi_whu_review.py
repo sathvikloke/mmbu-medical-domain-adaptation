@@ -19,6 +19,7 @@ import zipfile
 
 from . import canonical
 from .busi_whu_authority import ReviewOpeningCapability
+from .image_fingerprints import build_duplicate_candidates, dhash64
 from .protected_io import open_authorized_artifact
 
 
@@ -28,7 +29,11 @@ _INVENTORY_KEYS = {
     "mmbu_public_content_used", "model_use_authorized", "patient_count", "record_count",
     "record_digest", "records", "schema_id", "schema_version", "sheet_name",
 }
-_RECORD_KEYS = {"label_code", "parent_id", "record_id", "row_digest", "workbook_row"}
+_RECORD_KEYS = {"label_code", "parent_id", "record_id", "row_digest", "workbook_row", "workbook_geometry"}
+_WORKBOOK_GEOMETRY_KEYS = {
+    "scale_pixel_per_cm", "scale_category", "gt_area_pixel2", "image_area_pixel2", "gt_cm2", "gt_all",
+    "centroid_x", "centroid_y", "max_diameter", "min_diameter",
+}
 _SELECTION_KEYS = {
     "mandatory_multi_record_count", "mandatory_multi_record_patient_count",
     "mmbu_public_content_used", "model_use_authorized", "population_digest",
@@ -40,7 +45,7 @@ _SELECTION_KEYS = {
     "training_ready",
 }
 _REVIEW_FIELDS = (
-    "record_id", "parent_id", "label_code", "workbook_row", "image_path", "annotation_path",
+    "record_id", "parent_id", "label_code", "canonical_target", "workbook_row", "image_path", "annotation_path",
     "decoded_width", "decoded_height", "annotation_bbox_xywh", "reviewer_id", "reviewed_at",
     "image_interpretable", "ultrasound_modality_supported", "breast_anatomy_supported",
     "annotation_usable", "label_plausible", "shortcut_artifact", "disposition", "notes",
@@ -57,6 +62,18 @@ def _closed(value: object, keys: set[str], path: str) -> dict:
 def _ranking(patient_id: str) -> tuple[bytes, bytes]:
     encoded = patient_id.encode("utf-8")
     return hashlib.sha256(b"busi-whu-review-v1\0" + encoded).digest(), encoded
+
+
+def _workbook_geometry(value: object, path: str) -> dict:
+    row = _closed(value, _WORKBOOK_GEOMETRY_KEYS, path)
+    if not isinstance(row["scale_category"], str) or not row["scale_category"]:
+        raise ValueError(f"{path}.scale_category must be nonblank text")
+    for name in _WORKBOOK_GEOMETRY_KEYS - {"scale_category"}:
+        if type(row[name]) not in {int, float}:
+            raise ValueError(f"{path}.{name} must be a finite non-boolean number")
+    if row["scale_pixel_per_cm"] <= 0 or row["image_area_pixel2"] <= 0 or row["gt_area_pixel2"] < 0:
+        raise ValueError(f"{path} contains invalid nonpositive geometry")
+    return row
 
 
 def build_review_selection(metadata_inventory: object) -> dict:
@@ -92,6 +109,7 @@ def build_review_selection(metadata_inventory: object) -> dict:
     record_ids: set[str] = set()
     for index, value in enumerate(records):
         row = _closed(value, _RECORD_KEYS, f"metadata_inventory.records[{index}]")
+        _workbook_geometry(row["workbook_geometry"], f"metadata_inventory.records[{index}].workbook_geometry")
         if row["label_code"] not in {"0", "1"}:
             raise ValueError("record label_code must be 0 or 1")
         if not isinstance(row["record_id"], str) or not row["record_id"] or row["record_id"] in record_ids:
@@ -239,6 +257,9 @@ def _decode_bmp(payload: bytes, *, annotation: bool) -> dict:
     foreground_top = height
     foreground_right = -1
     foreground_bottom = -1
+    foreground_count = 0
+    foreground_x_sum = 0
+    foreground_y_sum = 0
     for logical_y in range(height):
         stored_y = logical_y if signed_height < 0 else height - 1 - logical_y
         start = pixel_offset + stored_y * stride
@@ -259,6 +280,9 @@ def _decode_bmp(payload: bytes, *, annotation: bool) -> dict:
                 if red != green or green != blue or red not in {0, 255}:
                     raise ValueError("annotation pixels must be exactly binary 0/255")
                 if red == 255:
+                    foreground_count += 1
+                    foreground_x_sum += x
+                    foreground_y_sum += logical_y
                     foreground_left = min(foreground_left, x)
                     foreground_top = min(foreground_top, logical_y)
                     foreground_right = max(foreground_right, x)
@@ -274,23 +298,28 @@ def _decode_bmp(payload: bytes, *, annotation: bool) -> dict:
             foreground_right - foreground_left + 1,
             foreground_bottom - foreground_top + 1,
         ]
-    luminance = []
+    grayscale_rows = []
     for y_index in range(8):
         y = min(height - 1, y_index * height // 8)
-        for x_index in range(8):
-            x = min(width - 1, x_index * width // 8)
+        grayscale_row = []
+        for x_index in range(9):
+            x = min(width - 1, x_index * width // 9)
             offset = 3 * (y * width + x)
             red, green, blue = rgb[offset:offset + 3]
-            luminance.append(299 * red + 587 * green + 114 * blue)
-    average = sum(luminance) / len(luminance)
-    perceptual_bits = "".join("1" if value >= average else "0" for value in luminance)
+            grayscale_row.append((299 * red + 587 * green + 114 * blue + 500) // 1000)
+        grayscale_rows.append(grayscale_row)
     decoded = struct.pack("<II", width, height) + bytes(rgb)
     return {
         "width": width,
         "height": height,
         "decoded_sha256": hashlib.sha256(decoded).hexdigest(),
-        "perceptual_hash": f"{int(perceptual_bits, 2):016x}",
+        "perceptual_hash": f"{dhash64(grayscale_rows):016x}",
         "bbox_xywh": bbox,
+        "foreground_area": foreground_count if annotation else None,
+        "foreground_centroid": (
+            [foreground_x_sum / foreground_count, foreground_y_sum / foreground_count]
+            if annotation else None
+        ),
     }
 
 
@@ -348,19 +377,50 @@ def _write_review_csv(path: Path, records: list[dict]) -> None:
                 "decoded_width": row["decoded_width"],
                 "decoded_height": row["decoded_height"],
                 "annotation_bbox_xywh": canonical.dumps(row["annotation_bbox_xywh"]).decode("ascii"),
+                "canonical_target": row["canonical_target"],
             })
+
+
+def _geometry_evidence(workbook: dict, image: dict, annotation: dict) -> tuple[dict, str]:
+    derived = {
+        "gt_area_pixel2": annotation["foreground_area"],
+        "image_area_pixel2": image["width"] * image["height"],
+        "gt_cm2": annotation["foreground_area"] / (workbook["scale_pixel_per_cm"] ** 2),
+        "gt_all": annotation["foreground_area"] / (image["width"] * image["height"]),
+        "centroid_x": annotation["foreground_centroid"][0],
+        "centroid_y": annotation["foreground_centroid"][1],
+    }
+    evidence = {}
+    unresolved = False
+    for name, observed in derived.items():
+        expected = workbook[name]
+        disposition = "consistent" if canonical.exact(expected) == canonical.exact(observed) else "unresolved"
+        evidence[name] = {"workbook": expected, "derived": observed, "disposition": disposition}
+        unresolved = unresolved or disposition == "unresolved"
+    for name in ("max_diameter", "min_diameter"):
+        evidence[name] = {
+            "workbook": workbook[name], "derived": None, "disposition": "not_directly_recomputed",
+        }
+    return evidence, "unresolved" if unresolved else "consistent"
 
 
 def build_review_packet(
     capability: ReviewOpeningCapability,
     metadata_inventory: dict,
     selection: dict,
+    source_fingerprint_inventories: dict,
 ) -> dict:
     """Decode the closed corpus and atomically publish a pending review packet."""
     inventory = _closed(metadata_inventory, _INVENTORY_KEYS, "metadata_inventory")
     chosen = _closed(selection, _SELECTION_KEYS, "selection")
     if chosen != build_review_selection(inventory):
         raise ValueError("selection differs from the recomputed frozen review selection")
+    supplied_inventory_digests = {
+        row.get("inventory_digest") for row in source_fingerprint_inventories.get("inventories", [])
+        if type(row) is dict
+    }
+    if supplied_inventory_digests != set(capability.fingerprint_inventory_digests):
+        raise ValueError("fingerprint inventory closure differs from the opening authorization")
     if type(capability) is not ReviewOpeningCapability:
         raise ValueError("a validated BUSI-WHU review-opening capability is required")
     output = Path(capability.output_root)
@@ -409,8 +469,12 @@ def build_review_packet(
                 annotation_path.write_bytes(annotation_payload)
                 image_hashes.setdefault(image["decoded_sha256"], []).append(record_id)
                 perceptual_hashes.setdefault(image["perceptual_hash"], []).append(record_id)
+                geometry_evidence, geometry_disposition = _geometry_evidence(
+                    source["workbook_geometry"], image, annotation,
+                )
                 decoded_rows.append({
                     **source,
+                    "canonical_target": {"0": "benign", "1": "malignant"}[source["label_code"]],
                     "image_member": image_member,
                     "annotation_member": annotation_member,
                     "image_path": image_path.relative_to(staging).as_posix(),
@@ -423,14 +487,35 @@ def build_review_packet(
                     "decoded_width": image["width"],
                     "decoded_height": image["height"],
                     "annotation_bbox_xywh": annotation["bbox_xywh"],
+                    "geometry_evidence": geometry_evidence,
+                    "geometry_consistency_disposition": geometry_disposition,
                     "review_status": "pending",
                 })
+
+        record_targets = {
+            row["record_id"]: row["canonical_target"]
+            for row in sorted(decoded_rows, key=lambda row: row["record_id"].encode("utf-8"))
+        }
+        target_manifest = canonical.seal({
+            "schema_id": "mmbu.phase1.busi_whu_target_manifest",
+            "schema_version": 1,
+            "source_inventory_digest": inventory["record_digest"],
+            "record_targets": record_targets,
+            "record_count": len(record_targets),
+            "source_admission_authorized": False,
+            "training_ready": False,
+            "model_use_authorized": False,
+            "mmbu_public_content_used": False,
+        })
+        _write_json(staging / "target-manifest.json", target_manifest)
 
         decode_inventory = canonical.seal({
             "schema_id": "mmbu.phase1.busi_whu_decode_inventory",
             "schema_version": 1,
             "source_inventory_digest": inventory["record_digest"],
             "selection_digest": chosen["record_digest"],
+            "target_map_digest": target_manifest["record_digest"],
+            "record_targets": record_targets,
             "archive_sha256": archive_artifact.sha256,
             "workbook_sha256": workbook_artifact.sha256,
             "opening_authorization_digest": capability.authorization_digest,
@@ -466,12 +551,23 @@ def build_review_packet(
             duplicate_group("perceptual_hash", digest, record_ids)
             for digest, record_ids in sorted(perceptual_hashes.items()) if len(record_ids) > 1
         ]
+        fingerprint_rows = [
+            {"source_id": "busi-whu", "source_version": "3", "record_id": row["record_id"],
+             "decoded_sha256": row["image_decoded_sha256"], "dhash64": row["image_perceptual_hash"],
+             "width": row["decoded_width"], "height": row["decoded_height"]}
+            for row in decoded_rows
+        ]
+        cross_source_candidates = build_duplicate_candidates(
+            fingerprint_rows, source_fingerprint_inventories, include_within_source=False,
+        )
         duplicates = canonical.seal({
             "schema_id": "mmbu.phase1.busi_whu_duplicate_candidates",
             "schema_version": 1,
             "decode_inventory_digest": decode_inventory["record_digest"],
             "exact_image_groups": duplicate_groups,
             "perceptual_image_groups": perceptual_groups,
+            "cross_source_candidates": cross_source_candidates,
+            "source_fingerprint_inventory_digests": sorted(supplied_inventory_digests),
             "exact_duplicate_record_count": sum(len(row["record_ids"]) for row in duplicate_groups),
             "cross_patient_exact_group_count": sum(row["cross_patient"] for row in duplicate_groups),
             "cross_patient_perceptual_group_count": sum(row["cross_patient"] for row in perceptual_groups),
@@ -483,13 +579,45 @@ def build_review_packet(
         })
         _write_json(staging / "duplicate-candidates.json", duplicates)
 
+        all_record_ids = sorted(row["record_id"] for row in decoded_rows)
+        geometry_blocked_ids = sorted(
+            row["record_id"] for row in decoded_rows
+            if row["geometry_consistency_disposition"] != "consistent"
+        )
+        task_manifest_digests = {}
+        for task in (
+            "context_prediction", "global_classification", "grounded_classification", "localization",
+        ):
+            blocked = geometry_blocked_ids if task in {"grounded_classification", "localization"} else []
+            blocked_set = set(blocked)
+            task_manifest = canonical.seal({
+                "schema_id": "mmbu.phase1.busi_whu_mechanical_task_manifest",
+                "schema_version": 1,
+                "task": task,
+                "target_map_digest": target_manifest["record_digest"],
+                "decode_inventory_digest": decode_inventory["record_digest"],
+                "mechanically_candidate_record_ids": [
+                    record_id for record_id in all_record_ids if record_id not in blocked_set
+                ],
+                "mechanically_blocked_record_ids": blocked,
+                "eligibility_status": "pending_human_review",
+                "source_admission_authorized": False,
+                "training_ready": False,
+                "model_use_authorized": False,
+                "mmbu_public_content_used": False,
+            })
+            _write_json(staging / f"task-manifest-{task}.json", task_manifest)
+            task_manifest_digests[task] = task_manifest["record_digest"]
+
         manifest = canonical.seal({
             "schema_id": "mmbu.phase1.busi_whu_review_packet_manifest",
             "schema_version": 1,
             "source_inventory_digest": inventory["record_digest"],
             "selection_digest": chosen["record_digest"],
+            "target_map_digest": target_manifest["record_digest"],
             "decode_inventory_digest": decode_inventory["record_digest"],
             "duplicate_candidates_digest": duplicates["record_digest"],
+            "mechanical_task_manifest_digests": task_manifest_digests,
             "record_count": len(decoded_rows),
             "primary_record_count": len(decoded_rows),
             "secondary_record_count": chosen["secondary_record_count"],
@@ -534,6 +662,7 @@ def build_review_packet(
             "opening_authorization_digest": capability.authorization_digest,
             "opening_receipt_digest": capability.opening_receipt_digest,
             "manifest_digest": manifest["record_digest"],
+            "target_map_digest": target_manifest["record_digest"],
             "decode_inventory_digest": decode_inventory["record_digest"],
             "duplicate_candidates_digest": duplicates["record_digest"],
             "members": [_file_entry(staging, path) for path in files],

@@ -110,6 +110,7 @@ def _validate_sealed(value: dict, label: str) -> dict:
 def _source_assessment(
     store: RecordStore, assessment_digest: str, expected_role: str,
     subject_digest: str, subject_created_at: str, label: str,
+    *, not_after: datetime | None = None,
 ) -> dict:
     value = store.get(assessment_digest, "busi_whu_source_assessment", label)
     _closed(value, SOURCE_ASSESSMENT_KEYS, label)
@@ -123,8 +124,11 @@ def _source_assessment(
     if value["subject_digest"] != subject_digest or value["subject_created_at"] != subject_created_at:
         raise ValueError(f"{label} subject binding mismatch")
     created = _time(value["subject_created_at"], f"{label}.subject_created_at")
-    if _time(value["assessed_at"], f"{label}.assessed_at") <= created:
+    assessed = _time(value["assessed_at"], f"{label}.assessed_at")
+    if assessed <= created:
         raise ValueError(f"{label} must follow immutable subject creation")
+    if not_after is not None and assessed > not_after:
+        raise ValueError(f"{label}.assessed_at must not follow completed review authenticated_at")
     findings = _closed(value["findings"], SOURCE_FINDINGS, f"{label}.findings")
     if any(status not in {"absent", "present", "unresolved"} for status in findings.values()):
         raise ValueError(f"{label}.findings contains an unknown status")
@@ -144,7 +148,7 @@ def _source_assessment(
 
 def validate_source_assessments(
     store: RecordStore, clinical_assessment_digest: str, custodian_assessment_digest: str,
-    *, subject_digest: str, subject_created_at: str,
+    *, subject_digest: str, subject_created_at: str, authenticated_at: str | None = None,
 ) -> dict:
     """Resolve two independent source assessments and return fail-closed blockers."""
     if not isinstance(store, RecordStore):
@@ -152,13 +156,17 @@ def validate_source_assessments(
     if not re.fullmatch(r"[0-9a-f]{64}", subject_digest):
         raise ValueError("source assessment subject digest is invalid")
     _time(subject_created_at, "source assessment subject_created_at")
+    not_after = (
+        _time(authenticated_at, "source assessment authenticated_at")
+        if authenticated_at is not None else None
+    )
     clinical = _source_assessment(
         store, clinical_assessment_digest, "clinical_adjudicator", subject_digest,
-        subject_created_at, "clinical source assessment",
+        subject_created_at, "clinical source assessment", not_after=not_after,
     )
     custodian = _source_assessment(
         store, custodian_assessment_digest, "data_rights_authority", subject_digest,
-        subject_created_at, "custodian source assessment",
+        subject_created_at, "custodian source assessment", not_after=not_after,
     )
     if clinical["assessor_id"] == custodian["assessor_id"]:
         raise ValueError("source assessments require distinct people")
@@ -197,7 +205,7 @@ def authenticate_completed_review(
     ):
         raise ValueError("completed review opening authority binding mismatch")
     _time(report_created_at, "completed review report_created_at")
-    _time(now, "completed review authenticated_at")
+    authenticated_at = _time(now, "completed review authenticated_at")
     capability = validate_busi_whu_review_opening(
         store, authorization_digest, opening_receipt_digest, now
     )
@@ -236,12 +244,17 @@ def authenticate_completed_review(
             or attestation["disposition"] != "approved"
         ):
             raise ValueError("completed review attestation binding or disposition mismatch")
+        if _time(attestation["attested_at"], f"review attestations[{index}].attested_at") > authenticated_at:
+            raise ValueError(
+                f"review attestations[{index}].attested_at must not follow completed review authenticated_at"
+            )
         attestations[role] = attestation
     if set(attestations) != set(ROLES):
         raise ValueError("completed review attestation roles are incomplete")
     source_assessments = validate_source_assessments(
         store, clinical_assessment_digest, custodian_assessment_digest,
         subject_digest=report["record_digest"], subject_created_at=report_created_at,
+        authenticated_at=now,
     )
     blockers = sorted(set(report["source_blockers"]) | set(source_assessments["blockers"]))
     result = dict(report)

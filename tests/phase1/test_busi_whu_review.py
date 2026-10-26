@@ -679,6 +679,41 @@ class BusiWhuCompletedReviewTests(unittest.TestCase):
                     report_created_at=created_at, now=t("09:40:00"),
                 )
 
+            future_attestations = []
+            for index, (role, credential) in enumerate(sorted(credentials.items())):
+                attestation = canonical.seal({
+                    "schema_id": "mmbu.phase1.busi_whu_review_attestation", "schema_version": 1,
+                    "attestation_id": f"future-review-attestation-{index}",
+                    "credential_verification_digest": credential["record_digest"],
+                    "reviewer_id": credential["reviewer_id"], "role": role,
+                    "subject_digest": report["record_digest"], "subject_created_at": created_at,
+                    "disposition": "approved", "limitations_digest": "d" * 64,
+                    "attested_at": t("09:50:00"),
+                })
+                store.add(attestation)
+                future_attestations.append(attestation["record_digest"])
+            future_assessments = {}
+            for role in ("clinical_adjudicator", "data_rights_authority"):
+                credential = credentials[role]
+                assessment = canonical.seal({
+                    "schema_id": "mmbu.phase1.busi_whu_source_assessment", "schema_version": 1,
+                    "assessment_id": f"future-source-assessment-{role}", "role": role,
+                    "assessor_id": credential["reviewer_id"],
+                    "credential_verification_digest": credential["record_digest"],
+                    "subject_digest": report["record_digest"], "subject_created_at": created_at,
+                    "findings": findings, "assessed_at": t("09:51:00"),
+                })
+                store.add(assessment)
+                future_assessments[role] = assessment["record_digest"]
+            with self.assertRaisesRegex(ValueError, "authenticated_at"):
+                authenticate_completed_review(
+                    report, store, world.authorization["record_digest"],
+                    world.world.digest("review_opening"), future_attestations,
+                    future_assessments["clinical_adjudicator"],
+                    future_assessments["data_rights_authority"],
+                    report_created_at=created_at, now=t("09:40:00"),
+                )
+
     def test_primary_and_frozen_secondary_coverage_are_exact(self):
         with tempfile.TemporaryDirectory() as folder:
             fixture = self.completed_fixture(Path(folder))

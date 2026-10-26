@@ -4,10 +4,15 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import json
+from pathlib import Path
+import struct
+import tempfile
 import unittest
+import zipfile
 
 from mmbu_phase1 import canonical
-from mmbu_phase1.busi_whu_review import build_review_selection
+from mmbu_phase1.busi_whu_review import build_review_packet, build_review_selection
 
 
 def metadata_inventory() -> dict:
@@ -58,6 +63,48 @@ def metadata_inventory() -> dict:
         "model_use_authorized": False,
         "mmbu_public_content_used": False,
     })
+
+
+def bmp(width=2, height=2, rows=None) -> bytes:
+    """Create a tiny uncompressed 8-bit grayscale BMP without Pillow."""
+    if rows is None:
+        rows = [[0, 255], [255, 0]]
+    stride = (width + 3) & ~3
+    pixels = b"".join(bytes(row) + b"\0" * (stride - width) for row in reversed(rows))
+    palette = b"".join(bytes((value, value, value, 0)) for value in range(256))
+    offset = 14 + 40 + len(palette)
+    size = offset + len(pixels)
+    return (
+        b"BM"
+        + struct.pack("<IHHI", size, 0, 0, offset)
+        + struct.pack("<IiiHHIIiiII", 40, width, height, 1, 8, 0, len(pixels), 0, 0, 256, 0)
+        + palette
+        + pixels
+    )
+
+
+def packet_fixture(root: Path, *, changed_image=None, changed_mask=None):
+    inventory = metadata_inventory()
+    selection = build_review_selection(inventory)
+    archive = root / "BUSI-WHU.zip"
+    image = bmp()
+    mask = bmp(rows=[[0, 255], [0, 0]])
+    with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED) as stream:
+        stream.writestr("img/", b"")
+        stream.writestr("gt/", b"")
+        for row in inventory["records"]:
+            record_id = row["record_id"]
+            stream.writestr(
+                f"img/{record_id}.bmp",
+                changed_image[1] if changed_image and changed_image[0] == record_id else image,
+            )
+            stream.writestr(
+                f"gt/{record_id}_anno.bmp",
+                changed_mask[1] if changed_mask and changed_mask[0] == record_id else mask,
+            )
+    workbook = root / "Patient_infos_BUSI-WHU.xlsx"
+    workbook.write_bytes(b"synthetic-workbook-identity")
+    return archive, workbook, inventory, selection
 
 
 class BusiWhuReviewSelectionTests(unittest.TestCase):
@@ -122,6 +169,70 @@ class BusiWhuReviewSelectionTests(unittest.TestCase):
         missing["record_digest"] = canonical.record_digest(missing)
         with self.assertRaises(ValueError):
             build_review_selection(missing)
+
+
+class BusiWhuReviewPacketTests(unittest.TestCase):
+    def test_packet_closes_full_decode_inventory_and_authority(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            archive, workbook, inventory, selection = packet_fixture(root)
+            output = root / "packet"
+            receipt = build_review_packet(archive, workbook, inventory, selection, output)
+            manifest = json.loads((output / "review-manifest.json").read_text())
+            decode = json.loads((output / "decode-inventory.json").read_text())
+            duplicates = json.loads((output / "duplicate-candidates.json").read_text())
+            self.assertEqual(manifest["record_count"], 927)
+            self.assertEqual(decode["record_count"], 927)
+            self.assertEqual(decode["decoded_image_count"], 927)
+            self.assertEqual(decode["decoded_annotation_count"], 927)
+            self.assertEqual(len(duplicates["exact_image_groups"]), 1)
+            self.assertEqual(len(duplicates["exact_image_groups"][0]["record_ids"]), 927)
+            self.assertTrue(duplicates["exact_image_groups"][0]["cross_patient"])
+            self.assertEqual(len(duplicates["perceptual_image_groups"]), 1)
+            self.assertTrue((output / "primary-review.csv").is_file())
+            self.assertTrue((output / "secondary-review.csv").is_file())
+            self.assertFalse(receipt["source_admission_authorized"])
+            self.assertFalse(receipt["training_ready"])
+            self.assertFalse(receipt["model_use_authorized"])
+            self.assertFalse(receipt["mmbu_public_content_used"])
+
+    def test_dimension_mismatch_rejects_without_publishing(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            archive, workbook, inventory, selection = packet_fixture(
+                root, changed_image=("b0000", bmp(3, 2, [[0, 1, 2], [3, 4, 5]]))
+            )
+            output = root / "packet"
+            with self.assertRaisesRegex(ValueError, "dimensions"):
+                build_review_packet(archive, workbook, inventory, selection, output)
+            self.assertFalse(output.exists())
+
+    def test_nonbinary_and_empty_annotations_reject(self):
+        for name, mask in (
+            ("nonbinary", bmp(rows=[[0, 127], [0, 0]])),
+            ("empty", bmp(rows=[[0, 0], [0, 0]])),
+        ):
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as folder:
+                root = Path(folder)
+                archive, workbook, inventory, selection = packet_fixture(
+                    root, changed_mask=("b0000", mask)
+                )
+                output = root / "packet"
+                with self.assertRaises(ValueError):
+                    build_review_packet(archive, workbook, inventory, selection, output)
+                self.assertFalse(output.exists())
+
+    def test_existing_output_is_never_overwritten(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            archive, workbook, inventory, selection = packet_fixture(root)
+            output = root / "packet"
+            output.mkdir()
+            sentinel = output / "sentinel"
+            sentinel.write_text("keep", encoding="utf-8")
+            with self.assertRaises(FileExistsError):
+                build_review_packet(archive, workbook, inventory, selection, output)
+            self.assertEqual(sentinel.read_text(encoding="utf-8"), "keep")
 
 
 if __name__ == "__main__":

@@ -45,8 +45,8 @@ class EvidenceDocumentationTests(unittest.TestCase):
             encoding="utf-8"
         )
 
-        self.assertIn("passed **628 Phase 1 CPU tests**", report)
-        self.assertIn("| Current Phase 1 suite | **628 tests passed", report)
+        self.assertIn("passed **630 Phase 1 CPU tests**", report)
+        self.assertIn("| Current Phase 1 suite | **630 tests passed", report)
         self.assertNotIn("| Phase 1 suite | **623 tests passed", report)
         self.assertIn("**Status snapshot code revision (historical):**", report)
         self.assertNotIn("**Verified code revision:**", report)

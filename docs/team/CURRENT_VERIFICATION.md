@@ -11,9 +11,10 @@ cryptographically binds the exact completed-review report plus a purpose binding
 training authority, fewer than 60 independent patients,
 cross-patient duplicate constraints, MMBU content use, and post-lock mutation.
 
-Fresh verification after the independent audit repair passed **628 Phase 1 CPU tests** with two expected skips,
+Fresh verification after the independent audit repair passed **630 Phase 1 CPU tests** with two expected skips,
 maintained Markdown-link verification, Python compilation of `src`, `tools`, and `tests`, working-tree
-`git diff --check`, and branch-range `git diff --check`. The audit-triggered tests cover exact authority-bound review
+`git diff --check`. Historical branch-range whitespace findings remain outside this bounded repair. The audit-triggered
+tests cover exact authority-bound review
 inputs, persistent one-attempt consumption, descriptor-relative ancestor traversal, cross-source duplicate blocking,
 full authentication-chain re-resolution, and reviewer-to-credential identity binding. This is engineering and governance
 evidence only: the real BUSI-WHU pixels have not been opened by this workflow, reviewers have not completed the
@@ -31,7 +32,7 @@ forms, no source has been admitted, and no confirmation/model output has run.
 |---|---|---|
 | Historical preparation suite | **277 tests passed; 44 optional-Pillow image tests skipped** | Re-executes the preserved CPU package without Pillow; it does not replace the image-enabled CI lane or test a model |
 | Root repository/tool suite | **75 tests passed; 13 optional-Pillow image tests skipped** | Covers repository, publication, scope, receipt, and authorization tooling; it is not scientific evidence |
-| Current Phase 1 suite | **628 tests passed; two expected optional-dependency tests skipped** | Covers current fail-closed contracts, manifests, registries, evidence chains, geometry, bundles, synthetic orchestration, and evidence-documentation boundaries; native model execution is evidenced separately below |
+| Current Phase 1 suite | **630 tests passed; two expected optional-dependency tests skipped** | Covers current fail-closed contracts, manifests, registries, evidence chains, geometry, bundles, synthetic orchestration, and evidence-documentation boundaries; native model execution is evidenced separately below |
 | Offline smoke workflow | **passed** | Replays historical synthetic demonstrations and toy arithmetic only; it reports `model_executed=false` and `official_evaluation=false` |
 | Maintained local Markdown links and anchors | **passed** | External URLs were not fetched by this check |
 | Published v0.3 artifact verification | **passed** for 275 files, ZIP members, fixed transforms, and historical receipts | Establishes byte integrity only, not scientific validity or medical truth |
@@ -73,6 +74,12 @@ The [external trust-root requirement](EXTERNAL_TRUST_ROOT_REQUIREMENT.md) now sp
 fail-closed verification order needed to replace self-authenticated names and digest-shaped claims in Stage A and
 BUSI-WHU. No external key, signature, identity proof, or revocation evidence has been supplied, so this design does not
 grant authority and the project remains `blocked_external`.
+
+The [machine-local evidence-root manifest](../../config/phase1/machine-local-evidence-roots-2026-10-26.json) records
+the exact file count, byte count, and closed inventory digest of each of the six currently present Stage A output
+directories. These directories remain machine-local and unversioned: another clone reports them as absent rather than
+silently treating them as evidence. A matched local root has zero source-admission, model-selection, or promotion
+authority; the manifest is an inventory and drift detector only, not a checkout-visible evidence bundle.
 
 The historical offline smoke package retains its older Einstein-only status text. That output is a preserved
 historical artifact, not the current project status.

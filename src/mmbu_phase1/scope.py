@@ -27,6 +27,7 @@ REQUIRED_PHASE1_TEST_MODULES = (
     "test_image_fingerprints.py",
     "test_locks.py",
     "test_lane1_trainer.py",
+    "test_machine_local_evidence.py",
     "test_model_feasibility.py",
     "test_official_context.py",
     "test_package_b.py",

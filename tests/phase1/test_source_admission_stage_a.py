@@ -5,8 +5,10 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+import struct
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 
 from mmbu_phase1 import canonical
@@ -16,6 +18,7 @@ from mmbu_phase1.source_admission_stage_a import (
     validate_acquisition_packet,
     validate_stage_a_config,
     verify_inventory_opening,
+    inventory_pathmnist_headers,
 )
 from tests.phase1.admission_fixtures import AdmissionWorld
 
@@ -209,6 +212,60 @@ class StageACustodyTests(unittest.TestCase):
     def test_opening_after_authorization_expiry_rejects(self):
         with self.assertRaises(ValueError):
             verify_inventory_opening(self.records, "syn-src", "2028-10-16T08:10:30Z")
+
+
+def _npy_bytes(descr: str, shape: tuple[int, ...], payload: bytes) -> bytes:
+    header = repr({"descr": descr, "fortran_order": False, "shape": shape})
+    prefix = b"\x93NUMPY\x01\x00"
+    padding = (16 - ((len(prefix) + 2 + len(header) + 1) % 16)) % 16
+    encoded = (header + " " * padding + "\n").encode("latin1")
+    return prefix + struct.pack("<H", len(encoded)) + encoded + payload
+
+
+class StageAInventoryTests(unittest.TestCase):
+    def setUp(self):
+        self.declaration = load_stage_a_config(CONFIG)["sources"]["pathmnist-224"]
+        world = AdmissionWorld()
+        opening = verify_inventory_opening(list(world.records.values()), "syn-src", "2026-10-16T08:10:30Z")
+        opening["source"] = {**opening["source"], "source_id": "pathmnist-224"}
+        opening["manifest"] = {**opening["manifest"], "source_id": "pathmnist-224"}
+        self.opening = opening
+
+    def _archive(self, folder: str) -> Path:
+        path = Path(folder) / "pathmnist_224.npz"
+        with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_STORED) as archive:
+            for split in ("train", "val"):
+                archive.writestr(f"{split}_images.npy", _npy_bytes("|u1", (2, 2, 2, 3), bytes(24)))
+                archive.writestr(f"{split}_labels.npy", _npy_bytes("|u1", (2, 1), bytes([0, 1])))
+            archive.writestr("test_images.npy", b"poison-never-open")
+            archive.writestr("test_labels.npy", b"poison-never-open")
+        return path
+
+    def test_pathmnist_headers_open_only_train_and_val(self):
+        with tempfile.TemporaryDirectory() as folder:
+            result = inventory_pathmnist_headers(self._archive(folder), self.opening, self.declaration)
+        self.assertEqual(
+            [row["member"] for row in result["opened_members"]],
+            ["train_images.npy", "train_labels.npy", "val_images.npy", "val_labels.npy"],
+        )
+        self.assertEqual(result["unopened_forbidden_members"], ["test_images.npy", "test_labels.npy"])
+        self.assertFalse(result["test_payload_opened"])
+
+    def test_missing_or_extra_member_rejects(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = self._archive(folder)
+            with zipfile.ZipFile(path, "a") as archive:
+                archive.writestr("surprise.npy", b"x")
+            with self.assertRaises(ValueError):
+                inventory_pathmnist_headers(path, self.opening, self.declaration)
+
+    def test_mismatched_opening_rejects_before_archive_access(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = self._archive(folder)
+            bad = copy.deepcopy(self.opening)
+            bad["opening"]["opening_kind"] = "first_output"
+            with self.assertRaises(ValueError):
+                inventory_pathmnist_headers(path, bad, self.declaration)
 
 
 if __name__ == "__main__":

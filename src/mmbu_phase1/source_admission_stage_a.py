@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import re
+import zipfile
 from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
@@ -382,10 +383,68 @@ def verify_inventory_opening(records: list[dict], source_id: str, now: str) -> d
     }
 
 
+def inventory_pathmnist_headers(archive_path: Path, opening_evidence: dict, declaration: dict) -> dict:
+    """Inspect only allowlisted PathMNIST train/val NPY headers.
+
+    ZIP central-directory names are visible, but forbidden test members are
+    never opened.  This is a structural pre-inventory and emits no labels,
+    rows, or model-use authority.
+    """
+    from mmbu_phase1.biomedical_sources import ContractViolation, _npy_header
+
+    declaration = _closed(declaration, SOURCE_KEYS, "pathmnist_declaration")
+    if (
+        declaration["source_id"] != "pathmnist-224"
+        or declaration["role"] != "training"
+        or declaration["proposed_purposes"] != ["release", "train"]
+        or declaration["population"]["allowed_splits"] != ["train", "val"]
+        or declaration["population"]["forbidden_member_prefixes"] != ["test_"]
+    ):
+        raise ValueError("PathMNIST declaration differs from the protected train/val contract")
+    opening = opening_evidence.get("opening", {})
+    manifest = opening_evidence.get("manifest", {})
+    source = opening_evidence.get("source", {})
+    if (
+        source.get("status") != "quarantined"
+        or opening.get("opening_kind") != "protected_access"
+        or opening.get("manifest_digests") != [manifest.get("record_digest")]
+    ):
+        raise ValueError("a verified exact protected opening is required before PathMNIST header access")
+    path = Path(archive_path)
+    if not path.is_file() or path.name != "pathmnist_224.npz":
+        raise ValueError("PathMNIST archive must be the exact declared basename")
+    expected = {f"{split}_{kind}.npy" for split in ("train", "val", "test") for kind in ("images", "labels")}
+    allowed = {f"{split}_{kind}.npy" for split in ("train", "val") for kind in ("images", "labels")}
+    try:
+        archive = zipfile.ZipFile(path)
+    except zipfile.BadZipFile:
+        raise ValueError("PathMNIST artifact is not a valid NPZ/ZIP archive") from None
+    opened = []
+    with archive:
+        names = [item.filename for item in archive.infolist()]
+        if len(names) != len(set(names)) or set(names) != expected:
+            raise ValueError("PathMNIST archive must contain exactly the six official array members")
+        for member in sorted(allowed):
+            try:
+                with archive.open(member) as stream:
+                    dtype, shape, header_bytes = _npy_header(stream, f"pathmnist.{member}")
+            except ContractViolation as exc:
+                raise ValueError(str(exc)) from None
+            opened.append({"member": member, "dtype": dtype, "shape": list(shape), "header_bytes": header_bytes})
+    return {
+        "schema_id": "mmbu.phase1.pathmnist_header_inventory",
+        "schema_version": 1,
+        "opened_members": opened,
+        "unopened_forbidden_members": sorted(expected - allowed),
+        "test_payload_opened": False,
+        "model_use_authorized": False,
+        "mmbu_public_content_used": False,
+    }
 __all__ = [
     "build_acquisition_packet",
     "load_stage_a_config",
     "validate_acquisition_packet",
     "validate_stage_a_config",
     "verify_inventory_opening",
+    "inventory_pathmnist_headers",
 ]

@@ -22,6 +22,10 @@ from mmbu_phase1.source_admission_stage_a import (
     verify_inventory_opening,
     inventory_pathmnist_headers,
     inventory_busbra,
+    inventory_archive_member_headers,
+    inventory_csv_schema,
+    inventory_xlsx_schema,
+    build_structural_opening_records,
     acquisition_command_digest,
     acquisition_method_digest,
     verify_acquisition_authority,
@@ -430,6 +434,27 @@ class StageAStructuralOpeningPacketTests(unittest.TestCase):
             historical["record_digest"],
         )
 
+    def test_bound_human_statements_create_valid_opening_chains(self):
+        packet = self.packet()
+        owner = "owner approved exact packet"
+        reviewer = "independent reviewer approved structural inspection"
+        for source_id in sorted(packet["sources"]):
+            bundle = self.evidence[source_id]
+            records = build_structural_opening_records(
+                packet,
+                source_id,
+                bundle["authority_records"],
+                bundle["execution_receipt"],
+                owner,
+                reviewer,
+                "2026-10-25T21:01:00Z",
+            )
+            result = verify_inventory_opening(records, source_id, "2026-10-25T21:01:06Z")
+            self.assertEqual(result["source"]["allowed_purposes"], ["quarantine_inspection"])
+            self.assertEqual(result["opening"]["opening_kind"], "protected_access")
+            self.assertIn(canonical.raw_digest(owner.encode()), result["authorization"]["decision_basis_digests"])
+            self.assertIn(canonical.raw_digest(reviewer.encode()), result["authorization"]["decision_basis_digests"])
+
 class _Response:
     def __init__(self, payload: bytes, url: str):
         self.payload = payload
@@ -534,6 +559,20 @@ class StageALauncherTests(unittest.TestCase):
         self.assertIn("acquisition-authority.json", text)
         self.assertIn("exec \"${STAGE_A_PYTHON}\"", text)
 
+    def test_structural_launcher_is_cpu_only_and_binds_final_packet(self):
+        text = (REPO / "tools/source_admission_stage_a_structural.sbatch").read_text(encoding="utf-8")
+        self.assertIn("#SBATCH --partition=epyc-cpu", text)
+        self.assertIn("#SBATCH --array=0-2%3", text)
+        self.assertIn("#SBATCH --no-requeue", text)
+        self.assertNotIn("--gres", text)
+        self.assertNotIn("--gpus", text)
+        self.assertNotIn("--retry", text)
+        self.assertNotIn("while ", text)
+        self.assertIn("structural-inspect", text)
+        self.assertIn("eb8dba78a2de705b84b0120153a21fcc82b156137d6a81ff8c52512ea16952c1", text)
+        self.assertIn("owner-statement.txt", text)
+        self.assertIn("reviewer-statement.txt", text)
+
 
 def _npy_bytes(descr: str, shape: tuple[int, ...], payload: bytes) -> bytes:
     header = repr({"descr": descr, "fortran_order": False, "shape": shape})
@@ -630,6 +669,55 @@ class StageAInventoryTests(unittest.TestCase):
             bad = self._records(path, "other-source", "1.0", "bus-bra")
             with self.assertRaises(ValueError):
                 inventory_busbra(path, bad, "2026-10-16T08:10:30Z", _busbra_declaration(path))
+
+    def test_archive_headers_never_open_members(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "BUSBRA.zip"
+            with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_STORED) as archive:
+                archive.writestr("safe/header.txt", b"do-not-read-this-payload")
+            records = self._records(path, "bus-bra", "1.0", "bus-bra")
+            result = inventory_archive_member_headers(
+                path, records, "2026-10-16T08:10:30Z", "bus-bra"
+            )
+        self.assertEqual(result["members"][0]["name"], "safe/header.txt")
+        self.assertFalse(result["member_payloads_opened"])
+
+    def test_csv_schema_reads_only_header(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "mapping.csv"
+            path.write_bytes(b"image_id,split,parent_id\nSECRET,test,PATIENT\n")
+            result = inventory_csv_schema(path)
+        self.assertEqual(result["columns"], ["image_id", "split", "parent_id"])
+        self.assertEqual(result["data_rows_read"], 0)
+
+    def test_xlsx_schema_reports_structure_without_cell_values(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "Patient_infos_BUSI-WHU.xlsx"
+            with zipfile.ZipFile(path, "w", compression=zipfile.ZIP_STORED) as archive:
+                archive.writestr("[Content_Types].xml", b"<Types/>")
+                archive.writestr("xl/workbook.xml", (
+                    b'<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '
+                    b'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+                    b'<sheets><sheet name="Patients" sheetId="1" r:id="rId1"/></sheets></workbook>'
+                ))
+                archive.writestr("xl/_rels/workbook.xml.rels", (
+                    b'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+                    b'<Relationship Id="rId1" Target="worksheets/sheet1.xml" '
+                    b'Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet"/>'
+                    b'</Relationships>'
+                ))
+                archive.writestr("xl/worksheets/sheet1.xml", (
+                    b'<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+                    b'<dimension ref="A1:C99"/><sheetData><row r="1">'
+                    b'<c r="A1" t="s"><v>0</v></c><c r="B1" t="s"><v>1</v></c>'
+                    b'</row><row r="2"><c r="A2" t="s"><v>999</v></c></row></sheetData></worksheet>'
+                ))
+            result = inventory_xlsx_schema(path)
+        self.assertEqual(result["sheets"][0]["name"], "Patients")
+        self.assertEqual(result["sheets"][0]["dimension"], "A1:C99")
+        self.assertEqual(result["sheets"][0]["header_cells"][0], {"reference": "A1", "type": "s"})
+        self.assertFalse(result["shared_string_values_resolved"])
+        self.assertEqual(result["data_rows_read"], 0)
 
 
 if __name__ == "__main__":

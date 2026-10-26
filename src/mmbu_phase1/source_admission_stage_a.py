@@ -12,8 +12,11 @@ import os
 import re
 import shutil
 import zipfile
+import csv
+import io
+import xml.etree.ElementTree as ET
 from copy import deepcopy
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -824,6 +827,439 @@ def verify_inventory_opening(records: list[dict], source_id: str, now: str) -> d
     }
 
 
+def _at(value: str, seconds: int) -> str:
+    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    if parsed.tzinfo is None or not value.endswith("Z"):
+        raise ValueError("reviewed_at must be UTC with a Z suffix")
+    return (parsed + timedelta(seconds=seconds)).isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+def _attestation(record: dict, reviewer: str, verifier: str, statement: str, at: str) -> dict:
+    payload = {
+        "statement_version": "mmbu-review-attestation-v1",
+        "reviewer_id": reviewer,
+        "reviewer_role": "purpose_authorization_reviewer",
+        "subject_digest": canonical.subject_digest(record, "single_attestation"),
+        "purposes": ["quarantine_inspection"],
+        "disposition": "approved",
+        "limitations_digest": canonical.raw_digest(
+            b"Structural header/schema inspection only; no model use, labels, image decoding, training, or release."
+        ),
+        "reviewed_at": at,
+        "declaration_text_digest": canonical.raw_digest(statement.encode("utf-8")),
+    }
+    return canonical.seal({
+        "schema_id": "mmbu.phase1.reviewer_attestation",
+        "schema_version": 1,
+        "attestation_id": f"stage-a-structural-purpose-{record['authorization_id']}",
+        "payload": payload,
+        "payload_digest": canonical.value_digest(payload),
+        "verification": {
+            "method": "manual_identity_check",
+            "verifier_id": verifier,
+            "verified_at": at,
+            "verification_artifact_digest": canonical.raw_digest(statement.encode("utf-8")),
+        },
+    })
+
+
+def build_structural_opening_records(
+    packet: dict,
+    source_id: str,
+    acquisition_records: list[dict],
+    execution_receipt: dict,
+    owner_statement: str,
+    reviewer_statement: str,
+    reviewed_at: str,
+) -> list[dict]:
+    """Build the exact quarantine-only chain needed for one structural opening.
+
+    The human statements are bound as evidence, but this function creates no
+    rights, grouping, clinical, model-use, training, confirmation, or release
+    authority.
+    """
+    from mmbu_phase1 import admission, locks, registries
+
+    if packet.get("record_digest") != canonical.record_digest(packet):
+        raise ValueError("structural opening packet digest is invalid")
+    if packet.get("schema_id") != "mmbu.phase1.stage_a_structural_opening_packet":
+        raise ValueError("unexpected structural opening packet schema")
+    if packet.get("image_payload_decoding_allowed") or packet.get("model_use_authorized"):
+        raise ValueError("structural packet attempts to grant forbidden access")
+    source = packet.get("sources", {}).get(source_id)
+    if not isinstance(source, dict):
+        raise ValueError("source is absent from the structural opening packet")
+    if not owner_statement.strip() or not reviewer_statement.strip():
+        raise ValueError("both exact human statements are required")
+
+    receipt_store = RecordStore([*acquisition_records, execution_receipt])
+    authorization = admission.check_acquisition_authorization(
+        receipt_store, source["acquisition_authorization_digest"], "structural.acquisition_authorization"
+    )
+    registry = registries.check_authorization_registry_chain(
+        receipt_store, source["authorization_registry_digest"], "structural.acquisition_registry"
+    )
+    if registry["acquisition_heads"].get(f"{source_id}|{source['source_version']}") != authorization["record_digest"]:
+        raise ValueError("structural packet does not bind the active acquisition authority")
+    for name in ("source_id", "source_version", "source_family", "staging_destination"):
+        if source[name] != authorization[name]:
+            raise ValueError(f"structural source {name} differs from acquisition authority")
+    receipt = admission.check_acquisition_execution_receipt(
+        receipt_store, execution_receipt.get("record_digest"), "structural.execution_receipt"
+    )
+    if receipt["terminal_status"] != "succeeded" or receipt["record_digest"] != source["acquisition_execution_receipt_digest"]:
+        raise ValueError("structural packet does not bind this successful execution receipt")
+
+    declaration_artifacts = {row["logical_path"]: row for row in receipt["observed_artifacts"]}
+    artifacts = []
+    for name in sorted(declaration_artifacts):
+        row = declaration_artifacts[name]
+        suffix = Path(name).suffix.lower()
+        artifacts.append({
+            "logical_path": name,
+            "bytes": row["bytes"],
+            "sha256": row["sha256"],
+            "upstream_checksum": None,
+            "media_type": {
+                ".zip": "application/zip",
+                ".npz": "application/zip",
+                ".csv": "text/csv",
+                ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            }.get(suffix, "application/octet-stream"),
+            "role": "archive" if suffix in {".zip", ".npz"} else "metadata",
+        })
+    manifest = canonical.seal({
+        "schema_id": "mmbu.phase1.source_artifact_manifest",
+        "schema_version": 1,
+        "manifest_id": f"stage-a-structural-{packet['launch_id']}-{source_id}",
+        "source_id": source_id,
+        "source_version": source["source_version"],
+        "source_family": source["source_family"],
+        "canonical_locator_ids": authorization["canonical_locator_ids"],
+        "acquisition_authorization_digest": authorization["record_digest"],
+        "acquisition_execution_receipt_digest": receipt["record_digest"],
+        "artifacts": artifacts,
+        "total_bytes": sum(row["bytes"] for row in artifacts),
+        "retriever_id": receipt["operator_id"],
+        "retrieved_at": receipt["ended_at"],
+        "retrieval_log_digest": receipt["retrieval_log_digest"],
+    })
+    base_source = {
+        "schema_id": "mmbu.phase1.source",
+        "schema_version": 1,
+        "source_id": source_id,
+        "source_version": source["source_version"],
+        "source_family": source["source_family"],
+        "origin_class": "external_quarantine",
+        "artifact_manifest_digest": manifest["record_digest"],
+        "proposed_purposes": source["proposed_purposes"],
+        "rights_receipt_digest": None,
+        "grouping_receipt_digest": None,
+        "qa_receipt_digest": None,
+        "admission_decision_receipt_digest": None,
+        "approval_attestation_digest": None,
+        "reviewer_id": None,
+        "reviewed_at": None,
+    }
+    candidate = canonical.seal({
+        **base_source, "status": "candidate", "allowed_purposes": [],
+        "created_at": reviewed_at, "supersedes_digest": None,
+    })
+    quarantined = canonical.seal({
+        **base_source, "status": "quarantined", "allowed_purposes": ["quarantine_inspection"],
+        "created_at": _at(reviewed_at, 1), "supersedes_digest": candidate["record_digest"],
+    })
+    artifact_names = [row["logical_path"] for row in artifacts]
+    split = canonical.seal({
+        "schema_id": "mmbu.phase1.split", "schema_version": 1,
+        "split_id": f"stage-a-structural-quarantine-{source_id}",
+        "source_digest": quarantined["record_digest"],
+        "source_artifact_manifest_digest": manifest["record_digest"],
+        "role": "quarantine", "record_manifest_digest": canonical.value_digest(artifact_names),
+        "parent_namespace": "artifact_path", "parent_ids_digest": canonical.value_digest(artifact_names),
+        "record_ids_digest": canonical.value_digest(artifact_names),
+        "construction_rule_digest": canonical.value_digest({"rule": "mmbu.phase1.canonical_path_projection", "version": 1}),
+        "created_at": _at(reviewed_at, 1),
+    })
+    basis = sorted({
+        packet["record_digest"], canonical.raw_digest(owner_statement.encode("utf-8")),
+        canonical.raw_digest(reviewer_statement.encode("utf-8")),
+    })
+    purpose_body = {
+        "schema_id": "mmbu.phase1.purpose_authorization", "schema_version": 1,
+        "authorization_id": f"stage-a-structural-{packet['launch_id']}-{source_id}",
+        "purpose": "quarantine_inspection", "source_digest": quarantined["record_digest"],
+        "split_digests": [split["record_digest"]], "lineage_root_digests": [],
+        "decision": "allowed", "decision_basis_digests": basis, "reviewer_id": "Neeraj Movva",
+        "reviewer_attestation_digest": None, "released_checkpoint_digest": None,
+        "validated_model_lineage_digest": None, "release_rights_receipt_digest": None,
+        "release_decision_receipt_digest": None, "no_new_data_access": None,
+        "decided_at": _at(reviewed_at, 2), "expires_at": None, "supersedes_digest": None,
+    }
+    attestation = _attestation(purpose_body, "Neeraj Movva", "Aditya Raut", reviewer_statement, _at(reviewed_at, 2))
+    purpose = canonical.seal({**purpose_body, "reviewer_attestation_digest": attestation["record_digest"]})
+
+    prior_registry = max(
+        (row for row in acquisition_records if row.get("schema_id") == "mmbu.phase1.authorization_registry"),
+        key=lambda row: row["generation"],
+    )
+    registry = canonical.seal({
+        "schema_id": "mmbu.phase1.authorization_registry", "schema_version": 1,
+        "registry_id": f"stage-a-structural-{source_id}-g{prior_registry['generation'] + 1}",
+        "generation": prior_registry["generation"] + 1,
+        "supersedes_registry_digest": prior_registry["record_digest"],
+        "acquisition_authorization_digests": list(prior_registry["acquisition_authorization_digests"]),
+        "source_record_digests": sorted([candidate["record_digest"], quarantined["record_digest"]]),
+        "purpose_authorization_digests": [purpose["record_digest"]],
+        "acquisition_heads": deepcopy(prior_registry["acquisition_heads"]),
+        "source_heads": {source_id: quarantined["record_digest"]},
+        "authorization_heads": {f"{source_id}|quarantine_inspection": purpose["record_digest"]},
+        "revoked_digests": list(prior_registry["revoked_digests"]), "as_of": _at(reviewed_at, 2),
+    })
+    source_state = canonical.value_digest({"packet": packet["record_digest"], "source": source})
+    lock = canonical.seal({
+        "schema_id": "mmbu.phase1.prospective_lock", "schema_version": 1,
+        "lock_id": f"stage-a-structural-{source_id}",
+        "scope": {"scope_id": f"stage-a-structural-{source_id}", "purpose": "quarantine_inspection",
+                  "phase": "custody_inventory", "primary_estimand_id": "structural-schema-complete",
+                  "comparison_ids": ["structural-only"], "analysis_population_digest": manifest["record_digest"]},
+        "source_state_digest": source_state,
+        "input_artifact_digests": sorted([manifest["record_digest"], quarantined["record_digest"]]),
+        "qa_sampling_plan_digest": None, "excluded_result_digests": [], "candidate_ids": [source_id],
+        "seed_ids": [], "thresholds": [], "groups": [],
+        "evaluator_digest": canonical.value_digest({"contract": "stage-a-structural-inspector", "version": 1}),
+        "multiplicity_rule": {"family_id": "structural", "alpha": 0.05, "method": "none",
+                                "hypothesis_ids": ["structural-complete"],
+                                "rule_digest": canonical.value_digest({"rule": "structural-only", "version": 1})},
+        "compute_plan_digest": canonical.value_digest({"partition": "epyc-cpu", "gpu": False, "version": 1}),
+        "decision_function_digest": canonical.value_digest({"rule": "emit-schema-no-decision", "version": 1}),
+        "claim_boundary": {"primary_claim_id": "structural-schema-complete",
+                           "allowed_claim_ids": ["structural-schema-complete"],
+                           "prohibited_claim_ids": ["clinical-validity", "model-use", "training-ready"],
+                           "failure_claim_id": "structural-schema-failed"},
+        "planned_opening_event": {"opening_kind": "protected_access", "trigger": "stage-a-structural-inspector",
+                                  "not_before": _at(reviewed_at, 4), "operator_role": "custody_reviewer",
+                                  "protected_artifact_digests": [manifest["record_digest"]],
+                                  "command_template_digest": canonical.value_digest({"reads": source["permitted_reads"], "version": 1})},
+        "retry_policies": [], "created_at": _at(reviewed_at, 3),
+        "supersedes_digest": None, "amendment_reason": None,
+    })
+    opening = canonical.seal({
+        "schema_id": "mmbu.phase1.opening_receipt", "schema_version": 1,
+        "opening_id": f"stage-a-structural-{packet['launch_id']}-{source_id}",
+        "lock_digest": lock["record_digest"], "source_state_digest": source_state,
+        "manifest_digests": [manifest["record_digest"]],
+        "command_digest": canonical.value_digest({"reads": source["permitted_reads"], "version": 1}),
+        "environment_digest": canonical.value_digest({"partition": "epyc-cpu", "gpu": False, "version": 1}),
+        "operator_id": "npl015-stage-a", "opening_kind": "protected_access",
+        "first_access_at": _at(reviewed_at, 5), "receipt_generation": 0,
+        "supersedes_receipt_digest": None, "expected_run_ids": [], "observed_failure_ids": [], "retries": [],
+    })
+    opening_g0 = canonical.seal({
+        "schema_id": "mmbu.phase1.opening_receipt_registry", "schema_version": 1,
+        "registry_id": f"stage-a-structural-{source_id}-opening-g0", "generation": 0,
+        "supersedes_registry_digest": None, "heads": [], "created_at": _at(reviewed_at, 3),
+    })
+    opening_g1 = canonical.seal({
+        "schema_id": "mmbu.phase1.opening_receipt_registry", "schema_version": 1,
+        "registry_id": f"stage-a-structural-{source_id}-opening-g1", "generation": 1,
+        "supersedes_registry_digest": opening_g0["record_digest"],
+        "heads": [{"lock_digest": lock["record_digest"], "opening_id": opening["opening_id"],
+                   "head_receipt_digest": opening["record_digest"], "receipt_generation": 0}],
+        "created_at": _at(reviewed_at, 5),
+    })
+    records = [*acquisition_records, execution_receipt, manifest, candidate, quarantined, split,
+               attestation, purpose, registry, lock, opening, opening_g0, opening_g1]
+    store = RecordStore(records)
+    admission.check_source_artifact_manifest(store, manifest["record_digest"])
+    admission.check_source(store, quarantined["record_digest"])
+    admission.check_purpose_authorization(store, purpose["record_digest"])
+    registries.check_authorization_registry_chain(store, registry["record_digest"])
+    locks.validate_prospective_lock(lock)
+    registries.check_opening_receipt_registry_chain(store, opening_g1["record_digest"])
+    verify_inventory_opening(records, source_id, _at(reviewed_at, 6))
+    return records
+
+
+def inventory_archive_member_headers(
+    archive_path: Path,
+    records: list[dict],
+    now: str,
+    source_id: str,
+) -> dict:
+    """Read a ZIP central directory without opening any member payload."""
+    opening = verify_inventory_opening(records, source_id, now)
+    _require_protected_opening(opening, source_id)
+    path = Path(archive_path)
+    _require_manifest_artifact(path, opening)
+    try:
+        archive = zipfile.ZipFile(path)
+    except zipfile.BadZipFile:
+        raise ValueError(f"{path.name} is not a valid ZIP archive") from None
+    with archive:
+        infos = archive.infolist()
+        names = [row.filename for row in infos]
+        if len(names) != len(set(names)):
+            raise ValueError("archive contains duplicate member names")
+        members = [{
+            "name": row.filename,
+            "compressed_bytes": row.compress_size,
+            "uncompressed_bytes": row.file_size,
+            "compression_method": row.compress_type,
+            "crc32": f"{row.CRC:08x}",
+            "is_directory": row.is_dir(),
+        } for row in infos]
+    return canonical.seal({
+        "schema_id": "mmbu.phase1.archive_member_header_inventory",
+        "schema_version": 1,
+        "source_id": source_id,
+        "artifact_name": path.name,
+        "members": members,
+        "member_count": len(members),
+        "member_payloads_opened": False,
+        "image_payload_decoding_used": False,
+        "label_values_read": False,
+        "model_use_authorized": False,
+        "mmbu_public_content_used": False,
+    })
+
+
+def inventory_csv_schema(path: Path) -> dict:
+    """Read exactly one bounded CSV header row and no data row."""
+    path = Path(path)
+    with path.open("rb") as stream:
+        first = stream.readline(65537)
+    if not first or len(first) > 65536 or not first.endswith((b"\n", b"\r")):
+        raise ValueError("CSV header is absent or exceeds the 64 KiB schema ceiling")
+    try:
+        columns = next(csv.reader(io.StringIO(first.decode("utf-8-sig"))))
+    except (UnicodeDecodeError, csv.Error, StopIteration):
+        raise ValueError("CSV header is not valid UTF-8 CSV") from None
+    if not columns or any(not column.strip() for column in columns):
+        raise ValueError("CSV header contains an empty column name")
+    return canonical.seal({
+        "schema_id": "mmbu.phase1.csv_schema_inventory", "schema_version": 1,
+        "artifact_name": path.name, "columns": columns,
+        "header_bytes": len(first), "data_rows_read": 0,
+        "label_values_read": False, "model_use_authorized": False,
+        "mmbu_public_content_used": False,
+    })
+
+
+def _safe_xml_member(archive: zipfile.ZipFile, name: str, maximum_bytes: int = 4 * 1024 * 1024) -> bytes:
+    try:
+        info = archive.getinfo(name)
+    except KeyError:
+        raise ValueError(f"XLSX is missing required member {name!r}") from None
+    if info.file_size > maximum_bytes:
+        raise ValueError(f"XLSX structural member {name!r} exceeds its schema ceiling")
+    with archive.open(info) as stream:
+        payload = stream.read(maximum_bytes + 1)
+    if len(payload) > maximum_bytes or b"<!DOCTYPE" in payload or b"<!ENTITY" in payload:
+        raise ValueError(f"XLSX structural member {name!r} is unsafe")
+    return payload
+
+
+def inventory_xlsx_schema(path: Path) -> dict:
+    """Inspect workbook/sheet structure without resolving or emitting cell values."""
+    path = Path(path)
+    try:
+        archive = zipfile.ZipFile(path)
+    except zipfile.BadZipFile:
+        raise ValueError(f"{path.name} is not a valid XLSX/ZIP archive") from None
+    main_ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+    rel_ns = "http://schemas.openxmlformats.org/package/2006/relationships"
+    office_rel = "{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id"
+    with archive:
+        workbook = ET.fromstring(_safe_xml_member(archive, "xl/workbook.xml"))
+        rels = ET.fromstring(_safe_xml_member(archive, "xl/_rels/workbook.xml.rels"))
+        targets = {
+            row.attrib["Id"]: row.attrib["Target"]
+            for row in rels.findall(f"{{{rel_ns}}}Relationship")
+            if "Id" in row.attrib and "Target" in row.attrib
+        }
+        sheets = []
+        for sheet in workbook.findall(f".//{{{main_ns}}}sheet"):
+            rel_id = sheet.attrib.get(office_rel)
+            target = targets.get(rel_id or "")
+            if target is None or target.startswith("/") or ".." in Path(target).parts:
+                raise ValueError("XLSX sheet relationship is missing or unsafe")
+            member = str(Path("xl") / target)
+            try:
+                info = archive.getinfo(member)
+            except KeyError:
+                raise ValueError(f"XLSX is missing required member {member!r}") from None
+            if info.file_size > 64 * 1024 * 1024:
+                raise ValueError("XLSX worksheet exceeds its structural-inspection ceiling")
+            with archive.open(info) as probe:
+                prefix = probe.read(4096)
+            if b"<!DOCTYPE" in prefix or b"<!ENTITY" in prefix:
+                raise ValueError("XLSX worksheet XML is unsafe")
+            dimension_ref = None
+            header_cells = []
+            with archive.open(info) as stream:
+                for event, element in ET.iterparse(stream, events=("start", "end")):
+                    if event == "start" and element.tag == f"{{{main_ns}}}dimension":
+                        dimension_ref = element.attrib.get("ref")
+                    if event == "end" and element.tag == f"{{{main_ns}}}row":
+                        header_cells = [
+                            {"reference": cell.attrib.get("r", ""), "type": cell.attrib.get("t", "n")}
+                            for cell in element.findall(f"{{{main_ns}}}c")
+                        ]
+                        break
+            sheets.append({
+                "name": sheet.attrib.get("name", ""), "sheet_id": sheet.attrib.get("sheetId", ""),
+                "member": member, "dimension": dimension_ref,
+                "header_cells": header_cells,
+            })
+    return canonical.seal({
+        "schema_id": "mmbu.phase1.xlsx_schema_inventory", "schema_version": 1,
+        "artifact_name": path.name, "sheets": sheets,
+        "shared_string_values_resolved": False, "cell_values_emitted": False,
+        "data_rows_read": 0, "label_values_read": False,
+        "model_use_authorized": False, "mmbu_public_content_used": False,
+    })
+
+
+def inventory_pathmnist_structural(
+    archive_path: Path,
+    mapping_path: Path,
+    records: list[dict],
+    now: str,
+    declaration: dict,
+) -> dict:
+    opening = verify_inventory_opening(records, "pathmnist-224", now)
+    _require_manifest_artifact(Path(mapping_path), opening)
+    return canonical.seal({
+        "schema_id": "mmbu.phase1.pathmnist_structural_inventory", "schema_version": 1,
+        "archive_headers": inventory_archive_member_headers(
+            archive_path, records, now, "pathmnist-224"
+        ),
+        "array_headers": inventory_pathmnist_headers(archive_path, records, now, declaration),
+        "mapping_schema": inventory_csv_schema(mapping_path),
+        "test_member_payload_opened": False, "label_values_read": False,
+        "image_payload_decoding_used": False, "model_use_authorized": False,
+        "mmbu_public_content_used": False,
+    })
+
+
+def inventory_busi_whu_structural(
+    archive_path: Path,
+    workbook_path: Path,
+    records: list[dict],
+    now: str,
+) -> dict:
+    opening = verify_inventory_opening(records, "busi-whu", now)
+    _require_manifest_artifact(Path(workbook_path), opening)
+    return canonical.seal({
+        "schema_id": "mmbu.phase1.busi_whu_structural_inventory", "schema_version": 1,
+        "archive_headers": inventory_archive_member_headers(archive_path, records, now, "busi-whu"),
+        "workbook_schema": inventory_xlsx_schema(workbook_path),
+        "label_values_read": False, "image_payload_decoding_used": False,
+        "model_use_authorized": False, "mmbu_public_content_used": False,
+    })
+
+
 def inventory_pathmnist_headers(
     archive_path: Path,
     records: list[dict],
@@ -962,12 +1398,18 @@ __all__ = [
     "acquire_artifacts_once",
     "build_acquisition_packet",
     "build_structural_opening_packet",
+    "build_structural_opening_records",
     "load_stage_a_config",
     "validate_acquisition_packet",
     "validate_structural_opening_packet",
     "validate_stage_a_config",
     "verify_inventory_opening",
     "inventory_pathmnist_headers",
+    "inventory_pathmnist_structural",
     "inventory_busbra",
+    "inventory_archive_member_headers",
+    "inventory_csv_schema",
+    "inventory_xlsx_schema",
+    "inventory_busi_whu_structural",
     "verify_acquisition_authority",
 ]

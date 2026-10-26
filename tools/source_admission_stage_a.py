@@ -9,7 +9,7 @@ import os
 import subprocess
 import sys
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import urlparse
 from urllib.request import HTTPRedirectHandler, Request, build_opener
@@ -23,8 +23,13 @@ from mmbu_phase1.source_admission_stage_a import (  # noqa: E402
     acquisition_command_digest,
     acquisition_method_digest,
     build_acquisition_packet,
+    build_structural_opening_records,
+    inventory_archive_member_headers,
+    inventory_busi_whu_structural,
+    inventory_pathmnist_structural,
     load_stage_a_config,
     validate_acquisition_packet,
+    validate_structural_opening_packet,
     verify_acquisition_authority,
 )
 from mmbu_phase1 import admission  # noqa: E402
@@ -200,6 +205,83 @@ def acquire_source(args: argparse.Namespace) -> int:
         return 1
 
 
+def structural_inspect(args: argparse.Namespace) -> int:
+    config = load_stage_a_config(args.config)
+    packet_payload = args.packet.read_bytes()
+    if hashlib.sha256(packet_payload).hexdigest() != args.packet_sha256:
+        raise ValueError("structural packet full-file SHA-256 mismatch")
+    packet = canonical.loads(packet_payload)
+    if canonical.dumps(packet) != packet_payload:
+        raise ValueError("structural packet is not canonical JSON")
+    evidence = {}
+    for source_id in ("bus-bra", "busi-whu", "pathmnist-224"):
+        evidence[source_id] = {
+            "packet": _load_canonical(args.evidence_root / f"{source_id}-acquisition-packet.json"),
+            "authority_records": _load_canonical(args.evidence_root / f"{source_id}-acquisition-authority.json"),
+            "execution_receipt": _load_canonical(args.evidence_root / f"{source_id}-execution-receipt.json"),
+        }
+    validate_structural_opening_packet(packet, config, evidence)
+    if packet["repository_commit"] != args.repository_commit.read_text(encoding="ascii").strip():
+        raise ValueError("staged repository commit differs from the sealed structural packet")
+    owner = args.owner_statement.read_text(encoding="utf-8").strip()
+    reviewer = args.reviewer_statement.read_text(encoding="utf-8").strip()
+    source = packet["sources"][args.source_id]
+    output = Path(packet["run_root"]) / "results" / args.source_id
+    status_path = Path(packet["run_root"]) / "records" / f"{args.source_id}-structural-status.json"
+    if output.exists() or status_path.exists():
+        raise FileExistsError("structural output already exists; one-shot inspection will not overwrite")
+    output.mkdir(parents=True, mode=0o700)
+    try:
+        started = datetime.now(timezone.utc).replace(microsecond=0)
+        reviewed_at = (started - timedelta(seconds=5)).isoformat().replace("+00:00", "Z")
+        records = build_structural_opening_records(
+            packet, args.source_id, evidence[args.source_id]["authority_records"],
+            evidence[args.source_id]["execution_receipt"], owner, reviewer, reviewed_at,
+        )
+        records_path = output / "opening-records.json"
+        _write_new(records_path, canonical.dumps(records))
+        now = _utc_now()
+        staging = Path(source["staging_destination"])
+        if args.source_id == "bus-bra":
+            result = inventory_archive_member_headers(staging / "BUSBRA.zip", records, now, args.source_id)
+        elif args.source_id == "pathmnist-224":
+            result = inventory_pathmnist_structural(
+                staging / "pathmnist_224.npz", staging / "pathmnist_split_info.csv",
+                records, now, config["sources"][args.source_id],
+            )
+        elif args.source_id == "busi-whu":
+            result = inventory_busi_whu_structural(
+                staging / "BUSI-WHU.zip", staging / "Patient_infos_BUSI-WHU.xlsx", records, now,
+            )
+        else:
+            raise ValueError("source is outside the sealed structural source set")
+        _write_new(output / "structural-inventory.json", canonical.dumps(result))
+        status = canonical.seal({
+            "schema_id": "mmbu.phase1.stage_a_structural_status", "schema_version": 1,
+            "source_id": args.source_id, "status": "succeeded",
+            "packet_digest": packet["record_digest"], "inventory_digest": result["record_digest"],
+            "error_class": None, "error_message": None,
+            "image_payload_decoding_used": False, "label_values_read": False,
+            "model_use_authorized": False, "mmbu_public_content_used": False,
+            "ended_at": _utc_now(),
+        })
+        _write_new(status_path, canonical.dumps(status))
+        print(f"inventory_digest={result['record_digest']}")
+        return 0
+    except BaseException as exc:
+        status = canonical.seal({
+            "schema_id": "mmbu.phase1.stage_a_structural_status", "schema_version": 1,
+            "source_id": args.source_id, "status": "failed", "packet_digest": packet["record_digest"],
+            "inventory_digest": None, "error_class": type(exc).__name__, "error_message": str(exc),
+            "image_payload_decoding_used": False, "label_values_read": False,
+            "model_use_authorized": False, "mmbu_public_content_used": False,
+            "ended_at": _utc_now(),
+        })
+        _write_new(status_path, canonical.dumps(status))
+        print(f"structural inspection failed: {type(exc).__name__}: {exc}", file=sys.stderr)
+        return 1
+
+
 def parser() -> argparse.ArgumentParser:
     cli = argparse.ArgumentParser()
     sub = cli.add_subparsers(dest="command", required=True)
@@ -221,6 +303,16 @@ def parser() -> argparse.ArgumentParser:
     acquire.add_argument("--records", type=Path, required=True)
     acquire.add_argument("--source-id", required=True)
     acquire.set_defaults(func=acquire_source)
+    inspect = sub.add_parser("structural-inspect")
+    inspect.add_argument("--config", type=Path, default=REPO / "config/phase1/source-admission-stage-a.json")
+    inspect.add_argument("--packet", type=Path, required=True)
+    inspect.add_argument("--packet-sha256", required=True)
+    inspect.add_argument("--evidence-root", type=Path, required=True)
+    inspect.add_argument("--repository-commit", type=Path, required=True)
+    inspect.add_argument("--owner-statement", type=Path, required=True)
+    inspect.add_argument("--reviewer-statement", type=Path, required=True)
+    inspect.add_argument("--source-id", choices=("bus-bra", "pathmnist-224", "busi-whu"), required=True)
+    inspect.set_defaults(func=structural_inspect)
     return cli
 
 

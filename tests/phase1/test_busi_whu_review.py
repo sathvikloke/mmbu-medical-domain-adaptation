@@ -542,6 +542,30 @@ class BusiWhuCompletedReviewTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "after both independent reviews"):
                 self.validate(fixture)
 
+    def test_duplicate_adjudication_record_id_never_uses_last_entry(self):
+        with tempfile.TemporaryDirectory() as folder:
+            fixture = self.completed_fixture(Path(folder))
+            record_id = fixture["secondary_rows"][0]["record_id"]
+            fixture["secondary_rows"][0]["disposition"] = "excluded"
+            fixture["secondary_rows"][0]["permitted_tasks"] = ""
+            self.rewrite_csv(fixture["secondary"], fixture["secondary_fields"], fixture["secondary_rows"])
+            entry = {
+                "record_id": record_id,
+                "adjudicator_id": "adjudicator-clinician",
+                "adjudicated_at": "2026-10-25T04:00:00Z",
+                "image_interpretable": "yes", "ultrasound_modality_supported": "yes",
+                "breast_anatomy_supported": "yes", "annotation_usable": "yes",
+                "label_plausible": "yes", "shortcut_artifact": "no",
+                "permitted_tasks": TASKS, "disposition": "eligible",
+                "notes": "resolved after independent disagreement review",
+            }
+            fixture["adjudication_value"]["adjudications"] = [entry, copy.deepcopy(entry)]
+            fixture["adjudication_value"]["adjudications"][1]["disposition"] = "excluded"
+            fixture["adjudication_value"]["adjudications"][1]["permitted_tasks"] = ""
+            self.rewrite_json(fixture["adjudication"], fixture["adjudication_value"])
+            with self.assertRaisesRegex(ValueError, "repeated|duplicate"):
+                self.validate(fixture)
+
     def test_task_narrowing_and_unresolved_exclusion_are_explicit(self):
         with tempfile.TemporaryDirectory() as folder:
             fixture = self.completed_fixture(Path(folder))

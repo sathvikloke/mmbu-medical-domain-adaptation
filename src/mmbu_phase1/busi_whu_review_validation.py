@@ -365,7 +365,12 @@ def validate_completed_review(
         record_id for record_id in secondary if secondary[record_id] != primary[record_id]
     }
     entries = adjudication["adjudications"]
-    if not isinstance(entries, list) or {row.get("record_id") for row in entries if isinstance(row, dict)} != disagreements:
+    if not isinstance(entries, list):
+        raise ValueError("adjudication entries must be a list")
+    entry_ids = [row.get("record_id") for row in entries if isinstance(row, dict)]
+    if len(entry_ids) != len(entries) or len(entry_ids) != len(set(entry_ids)):
+        raise ValueError("adjudication contains a repeated record ID")
+    if set(entry_ids) != disagreements:
         raise ValueError("adjudication must exactly cover every independent-review disagreement")
     adjudicated = {}
     entry_keys = {
@@ -390,7 +395,10 @@ def validate_completed_review(
         ("perceptual", "perceptual_hash", duplicates["perceptual_image_groups"]),
     ):
         for group in group_rows:
-            expected_duplicate_groups[(group_type, group[digest_field])] = group
+            key = (group_type, group[digest_field])
+            if key in expected_duplicate_groups:
+                raise ValueError("packet contains a repeated duplicate group")
+            expected_duplicate_groups[key] = group
     duplicate_rows = adjudication["duplicate_dispositions"]
     if not isinstance(duplicate_rows, list):
         raise ValueError("duplicate dispositions must be a list")

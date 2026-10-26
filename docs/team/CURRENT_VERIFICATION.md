@@ -144,3 +144,10 @@ historical artifact, not the current project status.
 The next honest evidence gain is not another prose score increase. It is human-governed admission of BUS-BRA plus at
 least two additional eligible external biomedical source families. Only then can a prospective biomedical
 baseline/ablation program begin without contaminating the competition decision process.
+
+The repository now also contains a narrower executable
+[BUS-BRA train-only evidence sprint](BUSBRA_TRAIN_ONLY_EVIDENCE_SPRINT.md). It projects the immutable review packet into
+mandatory visual exceptions plus a deterministic patient-exclusive routine sample and validates completed visual-QA
+and train-rights evidence. This reduces the human burden for the nonclinical `train` claim, but it has admitted no
+source, grants no model use, and does not change the current score or `blocked_external` status. Clinical review and two
+additional semantic families remain mandatory before any decision-bearing comparison.

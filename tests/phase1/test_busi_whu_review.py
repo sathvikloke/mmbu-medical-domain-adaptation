@@ -6,10 +6,13 @@ import copy
 import csv
 import hashlib
 import json
+import os
 from pathlib import Path
+import stat
 import struct
 import tempfile
 import unittest
+from unittest import mock
 import zipfile
 
 from mmbu_phase1 import canonical
@@ -371,8 +374,17 @@ class BusiWhuReviewPacketTests(unittest.TestCase):
                 world.store(), world.authorization["record_digest"],
                 world.world.digest("review_opening"), t("09:10:02"),
             )
-            with self.assertRaisesRegex(ValueError, "dimensions"):
-                build_review_packet(capability, inventory, selection, closure)
+            real_fsync = os.fsync
+            synced_modes = []
+
+            def record_fsync(descriptor):
+                synced_modes.append(os.fstat(descriptor).st_mode)
+                real_fsync(descriptor)
+
+            with mock.patch("mmbu_phase1.busi_whu_review.os.fsync", side_effect=record_fsync):
+                with self.assertRaisesRegex(ValueError, "dimensions"):
+                    build_review_packet(capability, inventory, selection, closure)
+            self.assertTrue(any(stat.S_ISDIR(mode) for mode in synced_modes))
             with self.assertRaisesRegex(FileExistsError, "attempt"):
                 build_review_packet(capability, inventory, selection, closure)
             self.assertFalse(output.exists())

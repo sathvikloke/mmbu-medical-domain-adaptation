@@ -457,6 +457,16 @@ def build_review_packet(
         os.fsync(attempt_fd)
     finally:
         os.close(attempt_fd)
+    directory_flag = getattr(os, "O_DIRECTORY", 0)
+    if type(directory_flag) is not int or directory_flag == 0:
+        raise RuntimeError("durable attempt publication requires O_DIRECTORY")
+    attempt_parent_fd = os.open(
+        output.parent, os.O_RDONLY | directory_flag | getattr(os, "O_CLOEXEC", 0)
+    )
+    try:
+        os.fsync(attempt_parent_fd)
+    finally:
+        os.close(attempt_parent_fd)
     staging = Path(tempfile.mkdtemp(prefix=".busi-whu-review-", dir=output.parent))
     resources = ExitStack()
     try:

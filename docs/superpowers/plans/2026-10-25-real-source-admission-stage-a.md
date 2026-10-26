@@ -49,25 +49,25 @@
 - Produces: `load_stage_a_config(path: Path) -> dict` and `validate_stage_a_config(config: object) -> dict`.
 - Produces: exact `sources` keyed by `bus-bra`, `pathmnist-224`, and `busi-whu`, each with identity evidence, artifacts, host allowlist, proposed purposes, and population rules.
 
-- [ ] **Step 1: Write failing config tests**
+- [x] **Step 1: Write failing config tests**
 
 Add tests asserting the three exact source IDs, exact BUSI-WHU file sizes/SHA-256 values, `train/release` for the two training sources, `confirmation/release` for BUSI-WHU, a 20 GiB work margin, and rejection of unknown keys, glob artifact names, duplicate names, unlisted redirect hosts, non-HTTPS locators, missing release-purpose review, and a PathMNIST population that contains `test`.
 
-- [ ] **Step 2: Run the focused tests and verify failure**
+- [x] **Step 2: Run the focused tests and verify failure**
 
 Run: `PYTHONPATH=src python3 -m unittest tests.phase1.test_source_admission_stage_a.StageAConfigTests -v`  
 Expected: FAIL because the module/config do not exist.
 
-- [ ] **Step 3: Implement the closed validator and config**
+- [x] **Step 3: Implement the closed validator and config**
 
 Implement strict key sets, normalized basenames, positive integer sizes/byte caps, 64-character lowercase SHA-256 where frozen, sorted unique hosts/purposes, exact source roles, and the PathMNIST member deny rule. The config must bind the duplicate thresholds `dhash64_hamming<=4` and `aspect_ratio_delta<=0.05`.
 
-- [ ] **Step 4: Run the focused tests**
+- [x] **Step 4: Run the focused tests**
 
 Run: `PYTHONPATH=src python3 -m unittest tests.phase1.test_source_admission_stage_a.StageAConfigTests -v`  
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Commit message: `feat: freeze stage a source identities`
 

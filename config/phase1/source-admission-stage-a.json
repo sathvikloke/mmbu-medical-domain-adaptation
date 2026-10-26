@@ -1,0 +1,176 @@
+{
+  "schema_id": "mmbu.phase1.source_admission_stage_a_config",
+  "schema_version": 1,
+  "work_margin_bytes": 21474836480,
+  "duplicate_method": {
+    "exact_decoded_identity": "sha256_rgb_pixels_width_height_v1",
+    "perceptual_hash": "dhash64",
+    "maximum_hamming_distance": 4,
+    "maximum_aspect_ratio_delta": 0.05,
+    "comparison_scope": "within_and_across_stage_a_sources",
+    "missing_parent_policy": "reject_record"
+  },
+  "sources": {
+    "bus-bra": {
+      "source_id": "bus-bra",
+      "source_version": "1.0",
+      "source_family": "bus-bra",
+      "role": "training",
+      "doi": "10.5281/zenodo.8231412",
+      "canonical_locators": [
+        "https://zenodo.org/records/8231412"
+      ],
+      "proposed_purposes": [
+        "release",
+        "train"
+      ],
+      "maximum_bytes": 134217728,
+      "artifacts": [
+        {
+          "name": "BUSBRA.zip",
+          "url": "https://zenodo.org/api/records/8231412/files/BUSBRA.zip/content",
+          "expected_bytes": 133917740,
+          "sha256": null,
+          "upstream_checksum": {
+            "algorithm": "md5",
+            "value": "1f8b2be6476d58fc97bfb5e5a1ea9bab"
+          },
+          "media_type": "application/zip",
+          "role": "archive",
+          "official_file_id": "BUSBRA.zip",
+          "allowed_hosts": [
+            "zenodo.org"
+          ]
+        }
+      ],
+      "population": {
+        "rule": "outer_fold_training_only",
+        "allowed_splits": [
+          "train"
+        ],
+        "forbidden_member_prefixes": [],
+        "minimum_eligible_parents": 1,
+        "target_derived_filtering": false
+      }
+    },
+    "pathmnist-224": {
+      "source_id": "pathmnist-224",
+      "source_version": "3.0",
+      "source_family": "nct-crc",
+      "role": "training",
+      "doi": "10.5281/zenodo.10519652",
+      "canonical_locators": [
+        "https://github.com/MedMNIST/MedMNIST",
+        "https://zenodo.org/records/10519652"
+      ],
+      "proposed_purposes": [
+        "release",
+        "train"
+      ],
+      "maximum_bytes": 12633243648,
+      "artifacts": [
+        {
+          "name": "pathmnist_224.npz",
+          "url": "https://zenodo.org/api/records/10519652/files/pathmnist_224.npz/content",
+          "expected_bytes": 12629854322,
+          "sha256": null,
+          "upstream_checksum": {
+            "algorithm": "md5",
+            "value": "2c51a510bcdc9cf8ddb2af93af1eadec"
+          },
+          "media_type": "application/zip",
+          "role": "archive",
+          "official_file_id": "pathmnist_224.npz",
+          "allowed_hosts": [
+            "zenodo.org"
+          ]
+        },
+        {
+          "name": "pathmnist_split_info.csv",
+          "url": "https://drive.usercontent.google.com/download?id=1uxZpSW3O02TIYVzNgKBsbN2nQb-ZrzZW&export=download",
+          "expected_bytes": 55465,
+          "sha256": null,
+          "upstream_checksum": null,
+          "media_type": "text/csv",
+          "role": "mapping",
+          "official_file_id": "1uxZpSW3O02TIYVzNgKBsbN2nQb-ZrzZW",
+          "allowed_hosts": [
+            "drive.usercontent.google.com"
+          ]
+        }
+      ],
+      "population": {
+        "rule": "wrapper_train_val_with_primary_parent_mapping",
+        "allowed_splits": [
+          "train",
+          "val"
+        ],
+        "forbidden_member_prefixes": [
+          "test_"
+        ],
+        "minimum_eligible_parents": 1,
+        "target_derived_filtering": false
+      }
+    },
+    "busi-whu": {
+      "source_id": "busi-whu",
+      "source_version": "3",
+      "source_family": "busi-whu",
+      "role": "confirmation",
+      "doi": "10.17632/k6cpmwybk3.3",
+      "canonical_locators": [
+        "https://data.mendeley.com/datasets/k6cpmwybk3/3"
+      ],
+      "proposed_purposes": [
+        "confirmation",
+        "release"
+      ],
+      "maximum_bytes": 129000000,
+      "artifacts": [
+        {
+          "name": "BUSI-WHU.zip",
+          "url": "https://data.mendeley.com/public-files/datasets/k6cpmwybk3/files/5aa18322-e19e-4779-8392-e621ec660f79/file_downloaded",
+          "expected_bytes": 128106790,
+          "sha256": "5d10c0bb931666e9cff48db9161febc0ec0c74e4b611c2edcbb9726f6d9d74cc",
+          "upstream_checksum": {
+            "algorithm": "sha256",
+            "value": "5d10c0bb931666e9cff48db9161febc0ec0c74e4b611c2edcbb9726f6d9d74cc"
+          },
+          "media_type": "application/zip",
+          "role": "archive",
+          "official_file_id": "5aa18322-e19e-4779-8392-e621ec660f79",
+          "allowed_hosts": [
+            "data.mendeley.com",
+            "prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com"
+          ]
+        },
+        {
+          "name": "Patient_infos_BUSI-WHU.xlsx",
+          "url": "https://data.mendeley.com/public-files/datasets/k6cpmwybk3/files/6f13c484-94e1-4378-bc73-293a68671948/file_downloaded",
+          "expected_bytes": 92017,
+          "sha256": "14f6bb5332036218e4c59d119d12ea67281b0a4d1373668d35530763f9121d44",
+          "upstream_checksum": {
+            "algorithm": "sha256",
+            "value": "14f6bb5332036218e4c59d119d12ea67281b0a4d1373668d35530763f9121d44"
+          },
+          "media_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "role": "patient_mapping",
+          "official_file_id": "6f13c484-94e1-4378-bc73-293a68671948",
+          "allowed_hosts": [
+            "data.mendeley.com",
+            "prod-dcd-datasets-public-files-eu-west-1.s3.eu-west-1.amazonaws.com"
+          ]
+        }
+      ],
+      "population": {
+        "rule": "all_structurally_eligible_patient_joined_v3_records",
+        "allowed_splits": [
+          "confirmation"
+        ],
+        "forbidden_member_prefixes": [],
+        "minimum_eligible_parents": 60,
+        "target_derived_filtering": false
+      }
+    }
+  }
+}

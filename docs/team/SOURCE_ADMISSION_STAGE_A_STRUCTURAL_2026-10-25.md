@@ -82,4 +82,15 @@ PathMNIST additionally records `test_member_payload_opened = false`. No GPU, mod
 
 This pass establishes the physical archive/workbook/array structure required to implement exact source-specific inventory logic without guessing. It does **not** establish dataset rights, clinical correctness, patient grouping, annotation completeness, source admission, training fitness, model quality, novelty, or competition readiness.
 
-The next evidence-producing step is the one-attempt corrected PathMNIST mapping read sealed in packet `646c08a7f2cba4320cb7f0d5611f68b95a185f1df955d7c24c5ef30dfe53396a`. It permits reading only `split,index,image_id` mapping metadata across the bounded file, discards test-split identities from the output, and still forbids NPZ test-member opening, label values, image decoding, source admission, or model use.
+## Corrected PathMNIST mapping outcome
+
+The one-attempt corrected packet `646c08a7f2cba4320cb7f0d5611f68b95a185f1df955d7c24c5ef30dfe53396a` completed successfully as CPU job `86061` in 12 seconds.
+
+- All 107,180 `split,index,image_id` rows were structurally validated.
+- Exactly 89,996 train and 10,004 validation records were emitted with contiguous split-local indices and globally unique image IDs.
+- Exactly 7,180 test-split mapping identities were counted and excluded; zero excluded rows or identities appear in the emitted records.
+- Inventory digest: `69d5978b10b5d7586df2bbb24ab165bf770131f0c88c4b0dd02ee77c14c6e507`.
+- Status digest: `1d35390e2cc7a7d2e95059452f2e4b97407fde4b18258853496231547c4a7730`.
+- The status receipt records false for image decoding, label-value reading, NPZ test-member opening, model use, and MMBU public content use.
+
+The next evidence-producing step is no longer schema discovery. It is source admission: independent rights, grouping, annotation/clinical-validity, and use-purpose decisions must be completed before any source can be granted model use or enter training.

@@ -1,0 +1,67 @@
+# Stage A protected structural opening evidence
+
+**Executed:** 2026-10-26 UTC  
+**Local work date:** 2026-10-25 America/Chicago  
+**Result:** all three bounded structural inspections passed; every source remains quarantined and unauthorized for model use.
+
+## Sealed execution identity
+
+- Packet canonical digest: `36d37a4e78a3fc326a149db2320eabd8f47df0d78e935d37977e23cc5a9b85c6`
+- Packet full-file SHA-256: `e959028e3e857935f73b730a28fa8b1e982ea38ffaa488b9b78e252d8cc5ce77`
+- Repository commit: `0e049584c4769f78074274d0a5ea34ca256b604e`
+- MOCS run root: `/storage/scr/npl015/mmbu-admission/20261026T025503Z-ac920240-2338-41d3-9369-6597af128743`
+- Slurm array: `86056`, tasks `0-2`, `epyc-cpu`, one attempt, no requeue
+- All three Slurm tasks completed with exit code `0:0`; all three stderr logs are empty.
+
+## Per-source results
+
+| Task | Source | Structural result | Inventory digest | Status receipt digest |
+|---:|---|---|---|---|
+| 0 | BUS-BRA | Passed: 3,757 ZIP member headers | `38444eac36493aa741912f2e387f462345ed985129883197e8e65659323497a7` | `5e04645fbab62cd34594bb89f7094960a15702cb5841abd43a9e5f5c2a8b21f6` |
+| 1 | PathMNIST-224 | Passed: six NPZ members, four permitted train/validation array headers, and CSV schema | `6f3d6b93121efa8e0b85e921e1f726c17ff520d4d7b9a0a17b7553ce6fc7f505` | `83583c8f2781bca7532063885b775418a1b54b821ce7242d5bafa1ee586c934e` |
+| 2 | BUSI-WHU v3 | Passed: 1,856 ZIP member headers and workbook structure | `9113ef658000488f9863c1340340930bd7c086dd53f34db4c9a4586a1cc4927a` | `a96055fddc7f9730bd1d563a3219d5b4a313c151991d22f2330378a6aa87ced8` |
+
+Every result was independently reloaded from canonical JSON and revalidated through the complete acquisition, manifest, candidate-to-quarantine, purpose-authorization, prospective-lock, opening-receipt, and registry chains.
+
+## Structural findings
+
+### BUS-BRA
+
+- The archive contains one `BUSBRA/` tree with 3,750 PNG members, three CSV members, one text member, and three directory entries.
+- The visible structural metadata names `bus_data.csv`, `5-fold-cv.csv`, `10-fold-cv.csv`, `Images/`, and corresponding mask/image paths.
+- No archive member payload was opened during this pass.
+
+### PathMNIST-224
+
+- The archive contains exactly the six expected members: train, validation, and test image/label arrays.
+- Only the four train/validation NPY headers were opened.
+- Observed shapes:
+  - `train_images.npy`: `89996 × 224 × 224 × 3`, unsigned byte
+  - `train_labels.npy`: `89996 × 1`, unsigned byte
+  - `val_images.npy`: `10004 × 224 × 224 × 3`, unsigned byte
+  - `val_labels.npy`: `10004 × 1`, unsigned byte
+- The mapping CSV schema is exactly `split,index,image_id`.
+- The two test members remained unopened.
+
+### BUSI-WHU v3
+
+- The image archive contains 928 `img/` members and 928 `gt/` members: 1,854 BMP files plus two directory entries.
+- The workbook contains one sheet, `Sheet1`, with dimension `A1:M928` and 13 header cells.
+- Header cell coordinates and storage types were recorded, but shared-string values were deliberately not resolved.
+
+## Enforced negative claims
+
+All three status receipts and inventories record:
+
+- `image_payload_decoding_used = false`
+- `label_values_read = false`
+- `model_use_authorized = false`
+- `mmbu_public_content_used = false`
+
+PathMNIST additionally records `test_member_payload_opened = false`. No GPU, model loading, training, upload, submission, or MMBU public-set access occurred.
+
+## What this establishes—and what it does not
+
+This pass establishes the physical archive/workbook/array structure required to implement exact source-specific inventory logic without guessing. It does **not** establish dataset rights, clinical correctness, patient grouping, annotation completeness, source admission, training fitness, model quality, novelty, or competition readiness.
+
+The next bounded engineering step is to implement the exact BUS-BRA, PathMNIST mapping, and BUSI-WHU join rules against synthetic fixtures using these observed schemas. BUSI-WHU header names remain intentionally unresolved, so a later separately bounded schema-value opening may be needed before its join can be executed against real data.

@@ -11,6 +11,9 @@ class EvidenceDocumentationTests(unittest.TestCase):
         intelligence = (
             REPO / "docs/team/TRACK3_COMPETITIVE_INTELLIGENCE_2026-10-26.md"
         ).read_text(encoding="utf-8")
+        historical = (
+            REPO / "docs/team/PUBLIC_MODEL_REPOSITORY_AUDIT.md"
+        ).read_text(encoding="utf-8")
         feasibility = (
             REPO / "docs/team/MODEL_FEASIBILITY_F0_2026-10-25.md"
         ).read_text(encoding="utf-8")
@@ -28,6 +31,8 @@ class EvidenceDocumentationTests(unittest.TestCase):
             self.assertIn(marker, intelligence)
         self.assertIn("OpenGVLab/InternVL3_5-2B-HF", feasibility)
         self.assertNotIn("selected model", intelligence.lower())
+        self.assertIn("Historical snapshot, superseded for current competitive intelligence", historical)
+        self.assertIn("TRACK3_COMPETITIVE_INTELLIGENCE_2026-10-26.md", historical)
 
     def test_pathmnist_author_reply_is_retained_without_overclaiming(self):
         receipt_path = (

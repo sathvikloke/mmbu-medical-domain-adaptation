@@ -64,6 +64,19 @@ class EvidenceDocumentationTests(unittest.TestCase):
         self.assertIn("original source lead", limitation)
         self.assertIn("closed negatively", limitation)
 
+        chest_outreach = json.loads(
+            (
+                REPO
+                / "outputs/source-clarification-replies/chestmnist-reviewer-outreach-2026-10-26.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(chest_outreach["gmail_message_id"], "1a17a2027a0fea00")
+        self.assertEqual(chest_outreach["recipient"], "Conor Lowry, MD <conor.lowry@uky.edu>")
+        self.assertFalse(chest_outreach["decision_projection"]["reviewer_agreement_received"])
+        self.assertFalse(chest_outreach["decision_projection"]["source_admitted"])
+        self.assertIn("ChestMNIST positive-label QA", outreach)
+        self.assertIn("No agreement or review authority exists", outreach)
+
     def test_external_trust_root_requirement_is_explicit_and_non_self_authorizing(self):
         requirement = (
             REPO / "docs/team/EXTERNAL_TRUST_ROOT_REQUIREMENT.md"

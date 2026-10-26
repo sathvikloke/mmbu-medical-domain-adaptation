@@ -14,10 +14,14 @@ license decision, source admission, purpose authorization, or permission to open
 | --- | --- | --- | --- |
 | [Dr. Nicole Stranch](https://www.uthsc.edu/graduate-medical-education/residency-and-fellowship-programs/coordinators.php) | Public UTHSC/Memphis breast-imaging fellowship materials name her fellowship director | Discuss serving as the primary reviewer for the frozen 244-record BUS-BRA sample or refer another qualified breast-imaging physician | Sent; no agreement or review authority exists until a reply and qualification/conflict evidence are retained |
 | [Dr. Margaret Szabunio](https://medicine.uky.edu/users/mmsz222) | University of Kentucky profile identifies her as Professor of Radiology and Chief, Division of Breast Radiology | Discuss serving as the independent reviewer for the 50 mandatory BUS-BRA exceptions and escalated records, or refer another qualified reviewer | Automatic absence notice received October 23; no agreement, referral, or review authority exists |
+| [Dr. Conor Lowry](https://medicine.uky.edu/users/cmlo233) | University of Kentucky profile identifies him as Associate Professor of Radiology, Cardiovascular and Thoracic Radiology Fellowship Program Director, and fellowship-trained in thoracic radiology | Review the proposed ChestMNIST positive-label QA protocol and consider a later small fixed sample; no private data, diagnosis, patient-care advice, source admission, or model approval requested | Sent October 26; retained in `outputs/source-clarification-replies/chestmnist-reviewer-outreach-2026-10-26.json`. No agreement or review authority exists until a reply, conflict check, qualification decision, and scoped review record are retained |
 
 The outreach describes the fixed clinical-review scope: image interpretability, mask usability/completeness, clinical
 plausibility of the recorded pathology and BI-RADS fields, and shortcut artifacts. It does not ask either recipient to
 diagnose a patient, certify a model, decide rights, or approve clinical use.
+
+The ChestMNIST request is separate and limited to positive-label QA because the source labels are report-mined. It
+does not treat missing findings as verified negatives or authorize opening labels or images.
 
 ## Source-author and steward clarifications
 

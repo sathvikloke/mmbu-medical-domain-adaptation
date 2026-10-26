@@ -84,11 +84,17 @@ REVIEW_REPORT_KEYS = (
     "duplicate_excluded_record_ids", "duplicate_group_constraints", "eligible_by_task",
     "excluded_record_ids", "independently_reviewed_record_count", "mmbu_public_content_used",
     "model_use_authorized", "packet_manifest_digest", "packet_receipt_digest",
+    "opening_authorization_digest", "opening_receipt_digest", "review_authentication",
     "phase1_admission_still_required", "primary_review_sha256", "purpose_decisions", "record_digest",
     "review_evidence_complete", "review_opening_sha256", "reviewed_record_count",
     "reviewer_identity_authenticated", "rights_review_sha256", "schema_id", "schema_version",
     "secondary_review_sha256", "source_admission_authorized", "source_blockers", "training_ready",
     "unresolved_record_ids", "target_map", "target_map_digest", "global_task_manifest_digest",
+)
+REVIEW_AUTHENTICATION_KEYS = (
+    "authenticated_at", "base_review_report_digest", "clinical_assessment_digest",
+    "custodian_assessment_digest", "opening_authorization_digest", "opening_receipt_digest",
+    "review_attestation_digests",
 )
 SOURCE_MANIFEST_KEYS = (
     "confirmation_task", "duplicate_disposition_digest", "exclusions_digest",
@@ -127,6 +133,33 @@ def _validated_bridge_inputs(
             "heldout_confirmation.review_report.review_evidence_complete", True)
     literal(report["reviewer_identity_authenticated"],
             "heldout_confirmation.review_report.reviewer_identity_authenticated", True)
+    authentication = closed(
+        report["review_authentication"], "heldout_confirmation.review_report.review_authentication",
+        REVIEW_AUTHENTICATION_KEYS,
+    )
+    for name in (
+        "base_review_report_digest", "clinical_assessment_digest", "custodian_assessment_digest",
+        "opening_authorization_digest", "opening_receipt_digest",
+    ):
+        digest(authentication[name], f"heldout_confirmation.review_report.review_authentication.{name}")
+    timestamp(authentication["authenticated_at"],
+              "heldout_confirmation.review_report.review_authentication.authenticated_at")
+    require(
+        type(authentication["review_attestation_digests"]) is list
+        and len(authentication["review_attestation_digests"]) == 4
+        and authentication["review_attestation_digests"]
+        == sorted(set(authentication["review_attestation_digests"])),
+        "heldout_confirmation.review_report.review_authentication.review_attestation_digests",
+        "must contain four unique sorted digests",
+    )
+    for index, value in enumerate(authentication["review_attestation_digests"]):
+        digest(value, f"heldout_confirmation.review_report.review_authentication.review_attestation_digests[{index}]")
+    literal(authentication["opening_authorization_digest"],
+            "heldout_confirmation.review_report.review_authentication.opening_authorization_digest",
+            report["opening_authorization_digest"])
+    literal(authentication["opening_receipt_digest"],
+            "heldout_confirmation.review_report.review_authentication.opening_receipt_digest",
+            report["opening_receipt_digest"])
     literal(report["confirmation_purposes_ready"],
             "heldout_confirmation.review_report.confirmation_purposes_ready", True)
     literal(report["source_blockers"], "heldout_confirmation.review_report.source_blockers", [])

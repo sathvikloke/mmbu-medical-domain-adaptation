@@ -16,7 +16,7 @@ from mmbu_phase1 import canonical
 from mmbu_phase1.busi_whu_authority import validate_busi_whu_review_opening
 from mmbu_phase1.busi_whu_review import build_review_packet, build_review_selection
 from mmbu_phase1.busi_whu_review_validation import (
-    validate_completed_review, validate_source_assessments,
+    authenticate_completed_review, validate_completed_review, validate_source_assessments,
 )
 from mmbu_phase1.store import RecordStore
 from tests.phase1.test_busi_whu_authority import ReviewAuthorityWorld, t
@@ -126,7 +126,7 @@ def packet_fixture(root: Path, *, changed_image=None, changed_mask=None):
     return archive, workbook, inventory, selection
 
 
-def authorized_review_packet(archive, workbook, inventory, selection, output):
+def authorized_review_packet(archive, workbook, inventory, selection, output, *, return_world=False):
     root = archive.parent.resolve()
     artifacts = [
         {"logical_path": archive.name, "bytes": archive.stat().st_size,
@@ -150,7 +150,8 @@ def authorized_review_packet(archive, workbook, inventory, selection, output):
         world.store(), world.authorization["record_digest"],
         world.world.digest("review_opening"), t("09:10:02"),
     )
-    return build_review_packet(capability, inventory, selection, fingerprint_closure)
+    receipt = build_review_packet(capability, inventory, selection, fingerprint_closure)
+    return (receipt, world) if return_world else receipt
 
 
 class BusiWhuReviewSelectionTests(unittest.TestCase):
@@ -319,7 +320,9 @@ class BusiWhuCompletedReviewTests(unittest.TestCase):
     def completed_fixture(self, root: Path):
         archive, workbook, inventory, selection = packet_fixture(root)
         packet = root / "packet"
-        receipt = authorized_review_packet(archive, workbook, inventory, selection, packet)
+        receipt, authority_world = authorized_review_packet(
+            archive, workbook, inventory, selection, packet, return_world=True
+        )
 
         def complete(template_name, reviewer_id, reviewed_at):
             with (packet / template_name).open(newline="", encoding="utf-8") as stream:
@@ -458,6 +461,7 @@ class BusiWhuCompletedReviewTests(unittest.TestCase):
             "primary_rows": primary_rows, "secondary_rows": secondary_rows,
             "primary_fields": primary_fields, "secondary_fields": secondary_fields,
             "opening_value": opening, "adjudication_value": adjudication, "rights_value": rights,
+            "authority_world": authority_world,
             **paths,
         }
 
@@ -499,6 +503,64 @@ class BusiWhuCompletedReviewTests(unittest.TestCase):
             self.assertFalse(report["source_admission_authorized"])
             self.assertFalse(report["training_ready"])
             self.assertFalse(report["model_use_authorized"])
+
+    def test_authenticated_report_requires_all_four_post_report_attestations(self):
+        with tempfile.TemporaryDirectory() as folder:
+            fixture = self.completed_fixture(Path(folder))
+            report = self.validate(fixture)
+            world = fixture["authority_world"]
+            store = world.store()
+            created_at = t("09:20:00")
+            attestations = []
+            credentials = {}
+            for name, credential in world.records.items():
+                if name.startswith("credential_"):
+                    credentials[credential["role"]] = credential
+            for index, (role, credential) in enumerate(sorted(credentials.items())):
+                attestation = canonical.seal({
+                    "schema_id": "mmbu.phase1.busi_whu_review_attestation", "schema_version": 1,
+                    "attestation_id": f"review-attestation-{index}",
+                    "credential_verification_digest": credential["record_digest"],
+                    "reviewer_id": credential["reviewer_id"], "role": role,
+                    "subject_digest": report["record_digest"], "subject_created_at": created_at,
+                    "disposition": "approved", "limitations_digest": "d" * 64,
+                    "attested_at": t("09:30:00"),
+                })
+                store.add(attestation)
+                attestations.append(attestation["record_digest"])
+            findings = {
+                "image_annotation_join_issue": "absent", "lesion_completeness_issue": "absent",
+                "patient_identity_issue": "absent", "target_semantics_issue": "absent",
+            }
+            assessments = {}
+            for role in ("clinical_adjudicator", "data_rights_authority"):
+                credential = credentials[role]
+                assessment = canonical.seal({
+                    "schema_id": "mmbu.phase1.busi_whu_source_assessment", "schema_version": 1,
+                    "assessment_id": f"source-assessment-{role}", "role": role,
+                    "assessor_id": credential["reviewer_id"],
+                    "credential_verification_digest": credential["record_digest"],
+                    "subject_digest": report["record_digest"], "subject_created_at": created_at,
+                    "findings": findings, "assessed_at": t("09:31:00"),
+                })
+                store.add(assessment)
+                assessments[role] = assessment["record_digest"]
+            authenticated = authenticate_completed_review(
+                report, store, world.authorization["record_digest"], world.world.digest("review_opening"),
+                attestations, assessments["clinical_adjudicator"], assessments["data_rights_authority"],
+                report_created_at=created_at, now=t("09:40:00"),
+            )
+            self.assertTrue(authenticated["reviewer_identity_authenticated"])
+            self.assertTrue(authenticated["confirmation_purposes_ready"])
+            self.assertEqual(authenticated["review_authentication"]["base_review_report_digest"],
+                             report["record_digest"])
+            with self.assertRaises(ValueError):
+                authenticate_completed_review(
+                    report, store, world.authorization["record_digest"],
+                    world.world.digest("review_opening"), attestations[:-1],
+                    assessments["clinical_adjudicator"], assessments["data_rights_authority"],
+                    report_created_at=created_at, now=t("09:40:00"),
+                )
 
     def test_primary_and_frozen_secondary_coverage_are_exact(self):
         with tempfile.TemporaryDirectory() as folder:

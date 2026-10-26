@@ -150,6 +150,7 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
         return canonical.seal({
             "schema_id": "mmbu.phase1.busi_whu_review_validation", "schema_version": 1,
             "packet_receipt_digest": "1" * 64, "packet_manifest_digest": "2" * 64,
+            "opening_authorization_digest": "9" * 64, "opening_receipt_digest": "a" * 64,
             "review_opening_sha256": "3" * 64, "primary_review_sha256": "4" * 64,
             "secondary_review_sha256": "5" * 64, "adjudication_review_sha256": "6" * 64,
             "rights_review_sha256": "7" * 64, "reviewed_record_count": count,
@@ -171,6 +172,15 @@ class HeldoutConfirmationAdmissionBridgeTests(unittest.TestCase):
             },
             "source_blockers": [], "confirmation_purposes_ready": True,
             "review_evidence_complete": True, "reviewer_identity_authenticated": True,
+            "review_authentication": {
+                "authenticated_at": "2026-10-25T06:00:00Z",
+                "base_review_report_digest": "b" * 64,
+                "clinical_assessment_digest": "c" * 64,
+                "custodian_assessment_digest": "d" * 64,
+                "opening_authorization_digest": "9" * 64,
+                "opening_receipt_digest": "a" * 64,
+                "review_attestation_digests": [value * 64 for value in "4567"],
+            },
             "phase1_admission_still_required": True, "source_admission_authorized": False,
             "training_ready": False, "model_use_authorized": False,
             "mmbu_public_content_used": False,

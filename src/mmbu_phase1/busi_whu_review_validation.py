@@ -10,7 +10,10 @@ import re
 import stat
 
 from . import canonical
-from .busi_whu_authority import validate_credential_verification
+from .busi_whu_authority import (
+    ROLES, validate_busi_whu_review_opening, validate_credential_verification,
+    validate_review_attestation,
+)
 from .busi_whu_review import _REVIEW_FIELDS
 from .store import RecordStore
 
@@ -48,6 +51,19 @@ SOURCE_ASSESSMENT_KEYS = {
     "schema_id", "schema_version", "assessment_id", "role", "assessor_id",
     "credential_verification_digest", "subject_digest", "subject_created_at",
     "findings", "assessed_at", "record_digest",
+}
+COMPLETED_REPORT_KEYS = {
+    "schema_id", "schema_version", "packet_receipt_digest", "packet_manifest_digest",
+    "opening_authorization_digest", "opening_receipt_digest", "review_opening_sha256",
+    "primary_review_sha256", "secondary_review_sha256", "adjudication_review_sha256",
+    "rights_review_sha256", "reviewed_record_count", "independently_reviewed_record_count",
+    "adjudicated_record_count", "target_map", "target_map_digest",
+    "global_task_manifest_digest", "eligible_by_task", "excluded_record_ids",
+    "unresolved_record_ids", "duplicate_group_constraints", "duplicate_excluded_record_ids",
+    "purpose_decisions", "source_blockers", "confirmation_purposes_ready",
+    "review_evidence_complete", "reviewer_identity_authenticated", "review_authentication",
+    "phase1_admission_still_required", "source_admission_authorized", "training_ready",
+    "model_use_authorized", "mmbu_public_content_used", "record_digest",
 }
 
 
@@ -159,6 +175,84 @@ def validate_source_assessments(
         "clinical_assessment_digest": clinical["record_digest"],
         "custodian_assessment_digest": custodian["record_digest"],
     }
+
+
+def authenticate_completed_review(
+    report: object, store: RecordStore, authorization_digest: str, opening_receipt_digest: str,
+    review_attestation_digests: list[str], clinical_assessment_digest: str,
+    custodian_assessment_digest: str, *, report_created_at: str, now: str,
+) -> dict:
+    """Promote a validated report only through the full pre/post human authority chain."""
+    report = _closed(report, COMPLETED_REPORT_KEYS, "completed review report")
+    if canonical.record_digest(report) != report.get("record_digest"):
+        raise ValueError("completed review report must be one sealed record")
+    if report["schema_id"] != "mmbu.phase1.busi_whu_review_validation" or report["schema_version"] != 1:
+        raise ValueError("completed review report identity mismatch")
+    if report.get("reviewer_identity_authenticated") is not False or report.get("review_authentication") is not None:
+        raise ValueError("completed review report is not an unauthenticated base report")
+    if (
+        report.get("opening_authorization_digest") != authorization_digest
+        or report.get("opening_receipt_digest") != opening_receipt_digest
+    ):
+        raise ValueError("completed review opening authority binding mismatch")
+    _time(report_created_at, "completed review report_created_at")
+    _time(now, "completed review authenticated_at")
+    capability = validate_busi_whu_review_opening(
+        store, authorization_digest, opening_receipt_digest, now
+    )
+    if type(review_attestation_digests) is not list or len(review_attestation_digests) != len(ROLES):
+        raise ValueError("completed review requires exactly one attestation per authority role")
+    if len(review_attestation_digests) != len(set(review_attestation_digests)):
+        raise ValueError("completed review contains a repeated attestation digest")
+    credentials = {}
+    for credential_digest in capability.credential_verification_digests:
+        credential = validate_credential_verification(
+            store.get(credential_digest, "reviewer_credential_verification", "review credential"),
+            "review credential",
+        )
+        credentials[credential["role"]] = credential
+    attestations = {}
+    for index, attestation_digest in enumerate(review_attestation_digests):
+        attestation = validate_review_attestation(
+            store.get(attestation_digest, "busi_whu_review_attestation",
+                      f"review attestations[{index}]"),
+            f"review attestations[{index}]",
+        )
+        role = attestation["role"]
+        if role in attestations or role not in credentials:
+            raise ValueError("completed review attestation role is unknown or repeated")
+        credential = credentials[role]
+        if (
+            attestation["credential_verification_digest"] != credential["record_digest"]
+            or attestation["reviewer_id"] != credential["reviewer_id"]
+            or attestation["subject_digest"] != report["record_digest"]
+            or attestation["subject_created_at"] != report_created_at
+            or attestation["disposition"] != "approved"
+        ):
+            raise ValueError("completed review attestation binding or disposition mismatch")
+        attestations[role] = attestation
+    if set(attestations) != set(ROLES):
+        raise ValueError("completed review attestation roles are incomplete")
+    source_assessments = validate_source_assessments(
+        store, clinical_assessment_digest, custodian_assessment_digest,
+        subject_digest=report["record_digest"], subject_created_at=report_created_at,
+    )
+    blockers = sorted(set(report["source_blockers"]) | set(source_assessments["blockers"]))
+    result = dict(report)
+    result.pop("record_digest")
+    result["source_blockers"] = blockers
+    result["confirmation_purposes_ready"] = report["confirmation_purposes_ready"] and not blockers
+    result["reviewer_identity_authenticated"] = True
+    result["review_authentication"] = {
+        "base_review_report_digest": report["record_digest"],
+        "opening_authorization_digest": authorization_digest,
+        "opening_receipt_digest": opening_receipt_digest,
+        "review_attestation_digests": sorted(review_attestation_digests),
+        "clinical_assessment_digest": source_assessments["clinical_assessment_digest"],
+        "custodian_assessment_digest": source_assessments["custodian_assessment_digest"],
+        "authenticated_at": now,
+    }
+    return canonical.seal(result)
 
 
 def _negative_authority(value: dict, label: str) -> None:
@@ -613,6 +707,8 @@ def validate_completed_review(
         "schema_version": 1,
         "packet_receipt_digest": receipt["record_digest"],
         "packet_manifest_digest": manifest["record_digest"],
+        "opening_authorization_digest": receipt["opening_authorization_digest"],
+        "opening_receipt_digest": receipt["opening_receipt_digest"],
         "review_opening_sha256": hashlib.sha256(opening_payload).hexdigest(),
         "primary_review_sha256": hashlib.sha256(primary_payload).hexdigest(),
         "secondary_review_sha256": hashlib.sha256(secondary_payload).hexdigest(),
@@ -634,6 +730,7 @@ def validate_completed_review(
         "confirmation_purposes_ready": not blockers,
         "review_evidence_complete": True,
         "reviewer_identity_authenticated": False,
+        "review_authentication": None,
         "phase1_admission_still_required": True,
         "source_admission_authorized": False,
         "training_ready": False,
@@ -643,4 +740,6 @@ def validate_completed_review(
     return report
 
 
-__all__ = ["validate_completed_review", "validate_source_assessments"]
+__all__ = [
+    "authenticate_completed_review", "validate_completed_review", "validate_source_assessments",
+]

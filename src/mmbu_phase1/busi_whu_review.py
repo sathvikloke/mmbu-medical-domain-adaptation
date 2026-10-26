@@ -414,6 +414,10 @@ def build_review_packet(
     """Decode the closed corpus and atomically publish a pending review packet."""
     inventory = _closed(metadata_inventory, _INVENTORY_KEYS, "metadata_inventory")
     chosen = _closed(selection, _SELECTION_KEYS, "selection")
+    if inventory["record_digest"] != capability.metadata_inventory_digest:
+        raise ValueError("metadata inventory differs from the opening authorization")
+    if chosen["record_digest"] != capability.review_selection_digest:
+        raise ValueError("review selection differs from the opening authorization")
     if chosen != build_review_selection(inventory):
         raise ValueError("selection differs from the recomputed frozen review selection")
     supplied_inventory_digests = {

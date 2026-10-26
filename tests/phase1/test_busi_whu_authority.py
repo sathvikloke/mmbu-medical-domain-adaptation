@@ -33,11 +33,13 @@ class ReviewAuthorityWorld:
     def __init__(
         self, mutate=None, *, input_root="/storage/scr/npl015/mmbu/quarantine",
         output_root="/storage/scr/npl015/mmbu/review-1", artifacts=None, artifact_roles=None,
-        fingerprint_inventories=None,
+        fingerprint_inventories=None, metadata_inventory_digest=None, review_selection_digest=None,
     ):
         self.input_root = input_root
         self.output_root = output_root
         self.artifact_roles = artifact_roles or {}
+        self.metadata_inventory_digest = metadata_inventory_digest or d("busi-metadata")
+        self.review_selection_digest = review_selection_digest or d("review-selection")
         self.fingerprint_inventories = fingerprint_inventories or [
             {"source_id": "bus-bra", "source_version": "1", "inventory_digest": d("busbra-fingerprints")},
         ]
@@ -81,7 +83,7 @@ class ReviewAuthorityWorld:
             credentials.append(row["record_digest"])
 
         inputs = sorted([
-            self.world.digest("manifest"), d("busi-metadata"), d("review-selection"),
+            self.world.digest("manifest"), self.metadata_inventory_digest, self.review_selection_digest,
             d("review-schema"), d("duplicate-contract"),
             *[row["inventory_digest"] for row in self.fingerprint_inventories],
         ])
@@ -101,8 +103,8 @@ class ReviewAuthorityWorld:
             "source_version": "3",
             "source_artifact_manifest_digest": self.world.digest("manifest"),
             "quarantine_source_digest": self.world.digest("source_quarantined"),
-            "metadata_inventory_digest": d("busi-metadata"),
-            "review_selection_digest": d("review-selection"),
+            "metadata_inventory_digest": self.metadata_inventory_digest,
+            "review_selection_digest": self.review_selection_digest,
             "review_schema_digest": d("review-schema"),
             "duplicate_contract_digest": d("duplicate-contract"),
             "repository_revision": "a" * 40,

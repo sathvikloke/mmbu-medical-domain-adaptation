@@ -215,6 +215,8 @@ class ReviewOpeningCapability:
     opening_registry_digest: str
     prospective_lock_digest: str
     source_artifact_manifest_digest: str
+    metadata_inventory_digest: str
+    review_selection_digest: str
     input_root: str
     output_root: str
     maximum_attempts: int
@@ -331,6 +333,8 @@ def validate_busi_whu_review_opening(
         "opening_registry_digest": opening_registry["record_digest"],
         "prospective_lock_digest": lock["record_digest"],
         "source_artifact_manifest_digest": manifest["record_digest"],
+        "metadata_inventory_digest": authorization["metadata_inventory_digest"],
+        "review_selection_digest": authorization["review_selection_digest"],
         "input_root": authorization["input_root"],
         "output_root": authorization["output_root"],
         "maximum_attempts": authorization["maximum_attempts"],

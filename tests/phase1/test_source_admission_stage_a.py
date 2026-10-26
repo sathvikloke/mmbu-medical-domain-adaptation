@@ -702,14 +702,16 @@ class StageASyntheticJoinRuleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "mapping.csv"
             path.write_text(
-                "split,index,image_id\ntrain,0,a\ntrain,1,b\nval,0,c\n",
+                "split,index,image_id\ntrain,0,a\ntrain,1,b\nval,0,c\ntest,0,held-out\n",
                 encoding="utf-8",
             )
             result = read_pathmnist_mapping(
-                path, {"train": 2, "val": 1}, maximum_bytes=1024
+                path, {"train": 2, "val": 1}, maximum_bytes=1024, maximum_rows=10
             )
         self.assertEqual(result["split_counts"], {"train": 2, "val": 1})
-        self.assertEqual(result["source_rows_read"], 3)
+        self.assertEqual(result["source_rows_read"], 4)
+        self.assertEqual(result["excluded_split_counts"], {"test": 1})
+        self.assertEqual(result["excluded_rows_emitted"], 0)
 
     def test_bounded_pathmnist_reader_rejects_oversize_and_extra_rows(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -719,9 +721,13 @@ class StageASyntheticJoinRuleTests(unittest.TestCase):
                 encoding="utf-8",
             )
             with self.assertRaises(ValueError):
-                read_pathmnist_mapping(path, {"train": 1, "val": 1}, maximum_bytes=1024)
+                read_pathmnist_mapping(
+                    path, {"train": 1, "val": 1}, maximum_bytes=1024, maximum_rows=2
+                )
             with self.assertRaises(ValueError):
-                read_pathmnist_mapping(path, {"train": 1, "val": 2}, maximum_bytes=8)
+                read_pathmnist_mapping(
+                    path, {"train": 1, "val": 2}, maximum_bytes=8, maximum_rows=10
+                )
 
     def test_pathmnist_mapping_accepts_only_complete_train_val_indices(self):
         rows = [

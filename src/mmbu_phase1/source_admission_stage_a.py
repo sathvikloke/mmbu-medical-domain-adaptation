@@ -1330,7 +1330,11 @@ def validate_pathmnist_mapping(
 
 
 def read_pathmnist_mapping(
-    path: Path, expected_counts: dict[str, int], *, maximum_bytes: int
+    path: Path,
+    expected_counts: dict[str, int],
+    *,
+    maximum_bytes: int,
+    maximum_rows: int,
 ) -> dict:
     """Read one bounded mapping file and pass it through the closed validator.
 
@@ -1340,11 +1344,15 @@ def read_pathmnist_mapping(
     path = Path(path)
     if isinstance(maximum_bytes, bool) or not isinstance(maximum_bytes, int) or maximum_bytes <= 0:
         raise ValueError("maximum_bytes must be a positive integer")
+    if isinstance(maximum_rows, bool) or not isinstance(maximum_rows, int) or maximum_rows <= 0:
+        raise ValueError("maximum_rows must be a positive integer")
     size = path.stat().st_size
     if size <= 0 or size > maximum_bytes:
         raise ValueError("PathMNIST mapping exceeds its bounded byte ceiling")
-    expected_total = sum(expected_counts.values()) if isinstance(expected_counts, dict) else 0
-    rows: list[dict] = []
+    selected_rows: list[dict] = []
+    source_rows_read = 0
+    excluded_counts = {"test": 0}
+    all_image_ids: set[str] = set()
     try:
         with path.open("r", encoding="utf-8-sig", newline="") as stream:
             reader = csv.DictReader(stream)
@@ -1352,15 +1360,32 @@ def read_pathmnist_mapping(
             if header != ["split", "index", "image_id"]:
                 raise ValueError("PathMNIST mapping header must be exactly split,index,image_id")
             for row in reader:
-                rows.append(row)
-                if len(rows) > expected_total:
-                    raise ValueError("PathMNIST mapping contains more rows than the frozen shape")
+                source_rows_read += 1
+                if source_rows_read > maximum_rows:
+                    raise ValueError("PathMNIST mapping exceeds its bounded row ceiling")
+                if list(row) != header:
+                    raise ValueError("PathMNIST mapping row differs from the closed schema")
+                split, raw_index, image_id = row["split"], row["index"], row["image_id"]
+                if split not in {"train", "val", "test"}:
+                    raise ValueError("PathMNIST mapping contains an unknown split")
+                if re.fullmatch(r"0|[1-9][0-9]*", raw_index or "") is None:
+                    raise ValueError("PathMNIST mapping contains a non-canonical index")
+                if not image_id or image_id.strip() != image_id or image_id in all_image_ids:
+                    raise ValueError("PathMNIST mapping contains an invalid or duplicate image_id")
+                all_image_ids.add(image_id)
+                if split == "test":
+                    excluded_counts["test"] += 1
+                else:
+                    selected_rows.append(row)
     except UnicodeDecodeError:
         raise ValueError("PathMNIST mapping is not valid UTF-8 CSV") from None
-    validated = validate_pathmnist_mapping(header, rows, expected_counts)
+    validated = validate_pathmnist_mapping(header, selected_rows, expected_counts)
     payload = {key: value for key, value in validated.items() if key != "record_digest"}
-    payload["source_rows_read"] = len(rows)
+    payload["source_rows_read"] = source_rows_read
     payload["source_bytes_read"] = size
+    payload["excluded_split_counts"] = excluded_counts
+    payload["excluded_rows_emitted"] = 0
+    payload["test_mapping_rows_read"] = excluded_counts["test"] > 0
     return canonical.seal(payload)
 
 

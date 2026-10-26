@@ -55,6 +55,12 @@ class StageAConfigTests(unittest.TestCase):
         self.assertEqual(validated["sources"]["bus-bra"]["proposed_purposes"], ["release", "train"])
         self.assertEqual(validated["sources"]["pathmnist-224"]["proposed_purposes"], ["release", "train"])
         self.assertEqual(validated["sources"]["busi-whu"]["proposed_purposes"], ["confirmation", "release"])
+        mapping = validated["sources"]["pathmnist-224"]["artifacts"][1]
+        self.assertEqual(mapping["expected_bytes"], 2785821)
+        self.assertEqual(
+            mapping["sha256"],
+            "ba6f166b2deae125086ecb7ff84223daa90bf35a7c95053be4f030be1a4ac0bb",
+        )
         busi = {row["name"]: row for row in validated["sources"]["busi-whu"]["artifacts"]}
         self.assertEqual(busi["BUSI-WHU.zip"]["expected_bytes"], 128106790)
         self.assertEqual(

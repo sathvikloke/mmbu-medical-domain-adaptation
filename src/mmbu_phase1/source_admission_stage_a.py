@@ -99,9 +99,9 @@ FROZEN_ARTIFACT_IDENTITIES = {
         {
             "name": "pathmnist_split_info.csv",
             "url": "https://drive.usercontent.google.com/download?id=1uxZpSW3O02TIYVzNgKBsbN2nQb-ZrzZW&export=download",
-            "expected_bytes": 55465,
-            "sha256": None,
-            "upstream_checksum": None,
+            "expected_bytes": 2785821,
+            "sha256": "ba6f166b2deae125086ecb7ff84223daa90bf35a7c95053be4f030be1a4ac0bb",
+            "upstream_checksum": {"algorithm": "md5", "value": "76fa12d34fd5b50cfa56310ae3f090a3"},
             "media_type": "text/csv",
             "role": "mapping",
             "official_file_id": "1uxZpSW3O02TIYVzNgKBsbN2nQb-ZrzZW",

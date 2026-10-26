@@ -20,6 +20,10 @@ from mmbu_phase1.source_admission_stage_a import (
     verify_inventory_opening,
     inventory_pathmnist_headers,
     inventory_busbra,
+    acquisition_command_digest,
+    acquisition_method_digest,
+    verify_acquisition_authority,
+    acquire_artifacts_once,
 )
 from tests.phase1.admission_fixtures import AdmissionWorld
 from tests.phase1.test_biomedical_sources import _build_archive as _build_busbra_archive
@@ -227,6 +231,165 @@ class StageACustodyTests(unittest.TestCase):
     def test_opening_after_authorization_expiry_rejects(self):
         with self.assertRaises(ValueError):
             verify_inventory_opening(self.records, "syn-src", "2028-10-16T08:10:30Z")
+
+
+class StageAAcquisitionAuthorityTests(unittest.TestCase):
+    def setUp(self):
+        self.config = load_stage_a_config(CONFIG)
+        self.launch_id = "20261025T183000Z-123e4567-e89b-42d3-a456-426614174000"
+        self.run_root = f"/storage/scr/npl015/mmbu-admission/{self.launch_id}"
+        self.packet = build_acquisition_packet(
+            self.config, "a" * 40, self.launch_id, self.run_root, "2026-10-25T18:30:00Z"
+        )
+        source = self.packet["sources"]["bus-bra"]
+
+        def bind(record, _world):
+            record.update({
+                "allowed_artifact_names": ["BUSBRA.zip"],
+                "maximum_bytes": source["maximum_bytes"],
+                "network_host_allowlist": ["zenodo.org"],
+                "operator_id": "stage-a-operator",
+                "retrieval_command_digest": acquisition_command_digest(source),
+                "retrieval_method_digest": acquisition_method_digest(source),
+                "staging_destination": source["staging_destination"],
+            })
+
+        world = AdmissionWorld(
+            overrides={"acquisition": bind},
+            source_id="bus-bra",
+            version="1.0",
+            family="bus-bra",
+        )
+        self.records = list(world.records.values())
+
+    def test_exact_active_authority_passes(self):
+        result = verify_acquisition_authority(
+            self.records, self.packet, self.config, "bus-bra", "2026-10-25T18:31:00Z"
+        )
+        self.assertEqual(result["authorization"]["operator_id"], "stage-a-operator")
+        self.assertEqual(result["source"]["retrieval_command"], self.packet["sources"]["bus-bra"]["retrieval_command"])
+
+    def test_command_or_registry_substitution_rejects(self):
+        changed = copy.deepcopy(self.packet)
+        changed["sources"]["bus-bra"]["retrieval_command"].append("--retry")
+        changed["record_digest"] = canonical.value_digest(
+            {key: value for key, value in changed.items() if key != "record_digest"}
+        )
+        with self.assertRaises(ValueError):
+            verify_acquisition_authority(
+                self.records, changed, self.config, "bus-bra", "2026-10-25T18:31:00Z"
+            )
+        without_registry = [
+            row for row in self.records if row["schema_id"] != "mmbu.phase1.authorization_registry"
+        ]
+        with self.assertRaises(ValueError):
+            verify_acquisition_authority(
+                without_registry, self.packet, self.config, "bus-bra", "2026-10-25T18:31:00Z"
+            )
+
+
+class _Response:
+    def __init__(self, payload: bytes, url: str):
+        self.payload = payload
+        self.url = url
+        self.offset = 0
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_args):
+        return False
+
+    def geturl(self):
+        return self.url
+
+    def read(self, size: int):
+        chunk = self.payload[self.offset:self.offset + size]
+        self.offset += len(chunk)
+        return chunk
+
+
+class StageATransportTests(unittest.TestCase):
+    def source(self, payload: bytes, *, checksum: str | None = None) -> dict:
+        return {
+            "maximum_bytes": 100,
+            "artifacts": [{
+                "name": "source.zip",
+                "url": "https://official.test/source.zip",
+                "expected_bytes": len(payload),
+                "sha256": hashlib.sha256(payload).hexdigest(),
+                "upstream_checksum": {
+                    "algorithm": "md5",
+                    "value": checksum or hashlib.md5(payload).hexdigest(),  # nosec: synthetic upstream checksum
+                },
+                "media_type": "application/zip",
+                "role": "archive",
+                "official_file_id": "source.zip",
+                "allowed_hosts": ["official.test"],
+            }],
+        }
+
+    def test_one_attempt_publishes_without_partial_or_overwrite(self):
+        payload = b"synthetic-source"
+        calls = []
+
+        def open_url(url):
+            calls.append(url)
+            return _Response(payload, url)
+
+        with tempfile.TemporaryDirectory() as folder:
+            destination = Path(folder) / "new-source"
+            result = acquire_artifacts_once(self.source(payload), destination, open_url)
+            self.assertEqual((destination / "source.zip").read_bytes(), payload)
+            self.assertFalse((destination / "source.zip.partial").exists())
+        self.assertEqual(calls, ["https://official.test/source.zip"])
+        self.assertEqual(result["observed_hosts"], ["official.test"])
+        self.assertEqual(result["observed_artifacts"][0]["bytes"], len(payload))
+
+    def test_checksum_failure_preserves_partial_and_never_retries(self):
+        payload = b"synthetic-source"
+        calls = []
+
+        def open_url(url):
+            calls.append(url)
+            return _Response(payload, url)
+
+        with tempfile.TemporaryDirectory() as folder:
+            destination = Path(folder) / "new-source"
+            with self.assertRaises(ValueError):
+                acquire_artifacts_once(self.source(payload, checksum="0" * 32), destination, open_url)
+            self.assertEqual((destination / "source.zip.partial").read_bytes(), payload)
+            self.assertFalse((destination / "source.zip").exists())
+        self.assertEqual(len(calls), 1)
+
+    def test_existing_destination_blocks_before_network(self):
+        calls = []
+        with tempfile.TemporaryDirectory() as folder:
+            destination = Path(folder) / "existing"
+            destination.mkdir()
+            with self.assertRaises(FileExistsError):
+                acquire_artifacts_once(
+                    self.source(b"x"), destination, lambda url: calls.append(url)
+                )
+        self.assertEqual(calls, [])
+
+
+class StageALauncherTests(unittest.TestCase):
+    def test_launcher_is_cpu_only_one_shot_and_uses_sealed_inputs(self):
+        text = (REPO / "tools/source_admission_stage_a.sbatch").read_text(encoding="utf-8")
+        self.assertIn("#SBATCH --array=0-2%3", text)
+        self.assertIn("#SBATCH --cpus-per-task=1", text)
+        self.assertIn("#SBATCH --no-requeue", text)
+        self.assertNotIn("--gres", text)
+        self.assertNotIn("--gpus", text)
+        self.assertNotIn("--retry", text)
+        self.assertNotIn("--continue-at", text)
+        self.assertNotIn("while ", text)
+        self.assertNotIn("for ", text)
+        self.assertIn("source_ids=(bus-bra pathmnist-224 busi-whu)", text)
+        self.assertIn("acquisition-packet.json", text)
+        self.assertIn("acquisition-authority.json", text)
+        self.assertIn("exec \"${STAGE_A_PYTHON}\"", text)
 
 
 def _npy_bytes(descr: str, shape: tuple[int, ...], payload: bytes) -> bytes:

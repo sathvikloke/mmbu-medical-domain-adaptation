@@ -8,7 +8,9 @@ from __future__ import annotations
 
 import json
 import hashlib
+import os
 import re
+import shutil
 import zipfile
 from copy import deepcopy
 from datetime import datetime
@@ -324,6 +326,8 @@ def _packet_body(
             "acquire-source",
             "--packet",
             f"{run_root}/records/acquisition-packet.json",
+            "--records",
+            f"{run_root}/records/acquisition-authority.json",
             "--source-id",
             source_id,
         ]
@@ -380,6 +384,166 @@ def validate_acquisition_packet(packet: object, config: dict) -> dict:
     if canonical.dumps(record) != canonical.dumps(expected):
         raise ValueError("packet differs from the deterministic Stage A declaration")
     return record
+
+
+def acquisition_method_digest(packet_source: dict) -> str:
+    """Bind the named transport method as a versioned executable contract."""
+    return canonical.value_digest({
+        "method": packet_source["retrieval_method"],
+        "version": 1,
+    })
+
+
+def acquisition_command_digest(packet_source: dict) -> str:
+    """Bind the exact argv array; shell text is never part of the authority."""
+    return canonical.value_digest({
+        "argv": packet_source["retrieval_command"],
+        "version": 1,
+    })
+
+
+def verify_acquisition_authority(
+    records: list[dict],
+    packet: dict,
+    config: dict,
+    source_id: str,
+    now: str,
+) -> dict:
+    """Require an independently attested active acquisition head before network use."""
+    from mmbu_phase1 import admission, fields, registries
+
+    validate_acquisition_packet(packet, config)
+    if source_id not in packet["sources"]:
+        raise ValueError("source_id is absent from the sealed acquisition packet")
+    source = packet["sources"][source_id]
+    store = RecordStore(records)
+    candidates = store.records("authorization_registry")
+    if not candidates:
+        raise ValueError("an authorization registry chain is required before acquisition")
+    registry = max(candidates, key=lambda row: row["generation"])
+    registry = registries.check_authorization_registry_chain(
+        store, registry["record_digest"], "acquisition.registry"
+    )
+    key = f"{source_id}|{source['source_version']}"
+    authorization_digest = registry["acquisition_heads"].get(key)
+    if authorization_digest is None:
+        raise ValueError(f"active acquisition authority is missing for {key!r}")
+    authorization = admission.check_acquisition_authorization(
+        store, authorization_digest, "acquisition.authorization"
+    )
+    expected_hosts = sorted({
+        host for artifact in source["artifacts"] for host in artifact["allowed_hosts"]
+    })
+    expected = {
+        "source_id": source_id,
+        "source_version": source["source_version"],
+        "source_family": source["source_family"],
+        "allowed_artifact_names": sorted(row["name"] for row in source["artifacts"]),
+        "intended_purpose": "quarantine_inspection",
+        "staging_destination": source["staging_destination"],
+        "retrieval_method_digest": acquisition_method_digest(source),
+        "retrieval_command_digest": acquisition_command_digest(source),
+        "network_host_allowlist": expected_hosts,
+        "maximum_bytes": source["maximum_bytes"],
+        "decision": "allowed",
+        "inspection_prohibited": True,
+    }
+    for field, value in expected.items():
+        if authorization[field] != value:
+            raise ValueError(f"acquisition authorization {field} differs from the sealed packet")
+    now_ns = fields.timestamp(now, "acquisition.now")
+    if now_ns < fields.timestamp(authorization["authorized_at"], "acquisition.authorized_at"):
+        raise ValueError("acquisition authority is not yet active")
+    if now_ns >= fields.timestamp(authorization["expires_at"], "acquisition.expires_at"):
+        raise ValueError("acquisition authority has expired")
+    if fields.timestamp(registry["as_of"], "acquisition.registry.as_of") > now_ns:
+        raise ValueError("authorization registry postdates the acquisition check")
+    return {"authorization": authorization, "registry": registry, "source": source}
+
+
+def acquire_artifacts_once(
+    packet_source: dict,
+    destination: Path,
+    open_url,
+    *,
+    required_free_bytes: int | None = None,
+) -> dict:
+    """Retrieve each frozen artifact exactly once with create-new semantics.
+
+    A failed transfer deliberately leaves its ``.partial`` bytes in place.
+    This function never retries, resumes, replaces, or opens payload content.
+    """
+    destination = Path(destination)
+    if destination.exists():
+        raise FileExistsError(f"staging destination already exists: {destination}")
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    required = required_free_bytes or packet_source["maximum_bytes"] + 20 * 1024**3
+    _positive_int(required, "required_free_bytes")
+    if shutil.disk_usage(destination.parent).free < required:
+        raise OSError("insufficient free space for sealed byte cap plus 20 GiB margin")
+    destination.mkdir(mode=0o700)
+    observed_artifacts = []
+    observed_hosts = set()
+    for artifact in packet_source["artifacts"]:
+        target = destination / artifact["name"]
+        partial = destination / f"{artifact['name']}.partial"
+        if target.exists() or partial.exists():
+            raise FileExistsError(f"artifact output already exists for {artifact['name']}")
+        descriptor = os.open(partial, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o400)
+        sha256 = hashlib.sha256()
+        upstream = artifact["upstream_checksum"]
+        secondary = hashlib.new(upstream["algorithm"]) if upstream is not None else None
+        count = 0
+        initial_host = urlparse(artifact["url"]).hostname
+        if initial_host is not None:
+            observed_hosts.add(initial_host)
+        try:
+            if hasattr(open_url, "set_allowed_hosts"):
+                open_url.set_allowed_hosts(set(artifact["allowed_hosts"]))
+            response = open_url(artifact["url"])
+            with response, os.fdopen(descriptor, "wb") as output:
+                final_host = urlparse(response.geturl()).hostname
+                if final_host is None or final_host not in artifact["allowed_hosts"]:
+                    raise ValueError(f"artifact {artifact['name']} resolved to an unlisted host")
+                observed_hosts.add(final_host)
+                while True:
+                    chunk = response.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    count += len(chunk)
+                    if count > artifact["expected_bytes"] or count > packet_source["maximum_bytes"]:
+                        raise ValueError(f"artifact {artifact['name']} exceeded its sealed byte cap")
+                    output.write(chunk)
+                    sha256.update(chunk)
+                    if secondary is not None:
+                        secondary.update(chunk)
+                output.flush()
+                os.fsync(output.fileno())
+            observed_hosts.update(getattr(open_url, "observed_hosts", ()))
+        except BaseException:
+            try:
+                os.close(descriptor)
+            except OSError:
+                pass
+            raise
+        if count != artifact["expected_bytes"]:
+            raise ValueError(f"artifact {artifact['name']} byte count differs from the frozen identity")
+        observed_sha256 = sha256.hexdigest()
+        if artifact["sha256"] is not None and observed_sha256 != artifact["sha256"]:
+            raise ValueError(f"artifact {artifact['name']} SHA-256 differs from the frozen identity")
+        if secondary is not None and secondary.hexdigest() != upstream["value"]:
+            raise ValueError(f"artifact {artifact['name']} upstream checksum differs from the frozen identity")
+        os.link(partial, target, follow_symlinks=False)
+        partial.unlink()
+        observed_artifacts.append({
+            "logical_path": artifact["name"],
+            "bytes": count,
+            "sha256": observed_sha256,
+        })
+    return {
+        "observed_hosts": sorted(observed_hosts),
+        "observed_artifacts": observed_artifacts,
+    }
 
 
 def verify_inventory_opening(records: list[dict], source_id: str, now: str) -> dict:
@@ -616,6 +780,9 @@ def inventory_busbra(
         "mmbu_public_content_used": False,
     })
 __all__ = [
+    "acquisition_command_digest",
+    "acquisition_method_digest",
+    "acquire_artifacts_once",
     "build_acquisition_packet",
     "load_stage_a_config",
     "validate_acquisition_packet",
@@ -623,4 +790,5 @@ __all__ = [
     "verify_inventory_opening",
     "inventory_pathmnist_headers",
     "inventory_busbra",
+    "verify_acquisition_authority",
 ]

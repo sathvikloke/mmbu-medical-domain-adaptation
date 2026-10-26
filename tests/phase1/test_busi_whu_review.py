@@ -329,6 +329,48 @@ class BusiWhuReviewPacketTests(unittest.TestCase):
                 authorized_review_packet(archive, workbook, inventory, selection, output)
             self.assertFalse(output.exists())
 
+    def test_failed_post_open_attempt_is_persistently_consumed(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder).resolve()
+            archive, workbook, inventory, selection = packet_fixture(
+                root, changed_image=("b0000", bmp(3, 2, [[0, 1, 2], [3, 4, 5]]))
+            )
+            output = root / "packet"
+            artifacts = [
+                {"logical_path": archive.name, "bytes": archive.stat().st_size,
+                 "sha256": hashlib.sha256(archive.read_bytes()).hexdigest()},
+                {"logical_path": workbook.name, "bytes": workbook.stat().st_size,
+                 "sha256": hashlib.sha256(workbook.read_bytes()).hexdigest()},
+            ]
+            fingerprint_payload = {
+                "source_id": "bus-bra", "source_version": "1", "complete": True, "records": [],
+            }
+            fingerprint_inventory = {
+                **fingerprint_payload, "inventory_digest": canonical.value_digest(fingerprint_payload),
+            }
+            closure = {
+                "eligible_sources": [{"source_id": "bus-bra", "source_version": "1"}],
+                "inventories": [fingerprint_inventory],
+            }
+            world = ReviewAuthorityWorld(
+                input_root=str(root), output_root=str(output), artifacts=artifacts,
+                artifact_roles={archive.name: "archive", workbook.name: "metadata"},
+                fingerprint_inventories=[{
+                    "source_id": "bus-bra", "source_version": "1",
+                    "inventory_digest": fingerprint_inventory["inventory_digest"],
+                }], metadata_inventory_digest=inventory["record_digest"],
+                review_selection_digest=selection["record_digest"],
+            )
+            capability = validate_busi_whu_review_opening(
+                world.store(), world.authorization["record_digest"],
+                world.world.digest("review_opening"), t("09:10:02"),
+            )
+            with self.assertRaisesRegex(ValueError, "dimensions"):
+                build_review_packet(capability, inventory, selection, closure)
+            with self.assertRaisesRegex(FileExistsError, "attempt"):
+                build_review_packet(capability, inventory, selection, closure)
+            self.assertFalse(output.exists())
+
     def test_nonbinary_and_empty_annotations_reject(self):
         for name, mask in (
             ("nonbinary", bmp(rows=[[0, 127], [0, 0]])),

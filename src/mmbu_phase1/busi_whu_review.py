@@ -436,6 +436,27 @@ def build_review_packet(
     if len(archive_rows) != 1 or len(workbook_rows) != 1:
         raise ValueError("capability must bind exactly one archive and one metadata workbook")
     output.parent.mkdir(parents=True, exist_ok=True)
+    attempt = output.parent / f".{output.name}.attempt-{capability.authorization_digest}"
+    attempt_payload = canonical.dumps(canonical.seal({
+        "schema_id": "mmbu.phase1.busi_whu_review_attempt",
+        "schema_version": 1,
+        "authorization_digest": capability.authorization_digest,
+        "opening_receipt_digest": capability.opening_receipt_digest,
+        "output_root": str(output),
+    }))
+    try:
+        attempt_fd = os.open(
+            attempt, os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0), 0o600,
+        )
+    except FileExistsError:
+        raise FileExistsError(f"review attempt already consumed: {attempt}") from None
+    try:
+        view = memoryview(attempt_payload)
+        while view:
+            view = view[os.write(attempt_fd, view):]
+        os.fsync(attempt_fd)
+    finally:
+        os.close(attempt_fd)
     staging = Path(tempfile.mkdtemp(prefix=".busi-whu-review-", dir=output.parent))
     resources = ExitStack()
     try:

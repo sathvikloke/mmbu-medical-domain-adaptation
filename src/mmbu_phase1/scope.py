@@ -10,6 +10,8 @@ REQUIRED_PHASE1_TEST_MODULES = (
     "test_biomedical_sources.py",
     "test_bundle.py",
     "test_busbra_review.py",
+    "test_busbra_train_qa.py",
+    "test_busbra_train_review_ui.py",
     "test_busi_whu_authority.py",
     "test_busi_whu_cli.py",
     "test_busi_whu_review.py",

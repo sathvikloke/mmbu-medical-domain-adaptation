@@ -3,21 +3,25 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
 
+from mmbu_phase1 import canonical
 from mmbu_phase1.chestmnist_intake import (
     audit_mapping_bytes,
     compile_official_development_manifest,
+    freeze_official_patient_roles,
     reconcile_official_split_bytes,
 )
 
 
 REPO = Path(__file__).resolve().parents[2]
 RECEIPT = REPO / "outputs/chestmnist-metadata-audit-2026-10-26/receipt.json"
+DEVELOPMENT_EVIDENCE = REPO / "outputs/chestmnist-development-freeze-2026-10-26"
 
 
 def _mapping(rows: list[tuple[str, int, str]], header: str = "split,index,image_id") -> bytes:
@@ -28,6 +32,24 @@ def _mapping(rows: list[tuple[str, int, str]], header: str = "split,index,image_
 def _patient_roles(rows: list[tuple[str, str]], header: str = "patient_id,role") -> bytes:
     body = [header, *(f"{patient},{role}" for patient, role in rows)]
     return ("\n".join(body) + "\n").encode("utf-8")
+
+
+def _official_population_fixture() -> tuple[bytes, bytes]:
+    def population(first_patient: int, patient_count: int, image_count: int) -> bytes:
+        rows = [f"{patient:08d}_000.png" for patient in range(first_patient, first_patient + patient_count)]
+        remaining = image_count - patient_count
+        patient = first_patient
+        follow_up = 1
+        while remaining:
+            rows.append(f"{patient:08d}_{follow_up:03d}.png")
+            remaining -= 1
+            follow_up += 1
+            if follow_up == 1000:
+                patient += 1
+                follow_up = 1
+        return ("\n".join(rows) + "\n").encode("utf-8")
+
+    return population(1, 28_008, 86_524), population(50_000, 2_797, 25_596)
 
 
 class ChestMNISTMappingTests(unittest.TestCase):
@@ -208,6 +230,63 @@ class ChestMNISTMappingTests(unittest.TestCase):
         self.assertFalse(result["pixels_opened"])
         self.assertFalse(result["source_admitted"])
 
+    def test_patient_roles_are_frozen_before_labels_or_pixels(self):
+        train_val, test = _official_population_fixture()
+        roles, receipt = freeze_official_patient_roles(train_val, test)
+        rows = roles.decode("utf-8").splitlines()
+        self.assertEqual(rows[0], "patient_id,role")
+        self.assertEqual(len(rows), 28_009)
+        self.assertEqual(rows[1:], sorted(rows[1:]))
+        self.assertEqual(sum(row.endswith(",adaptive_development") for row in rows[1:]), 2_801)
+        self.assertEqual(sum(row.endswith(",train") for row in rows[1:]), 25_207)
+        self.assertEqual(receipt["role_patient_counts"], {"adaptive_development": 2_801, "train": 25_207})
+        self.assertEqual(receipt["official_test_patient_count_excluded"], 2_797)
+        self.assertEqual(receipt["patient_roles_sha256"], __import__("hashlib").sha256(roles).hexdigest())
+        self.assertFalse(receipt["labels_opened"])
+        self.assertFalse(receipt["pixels_opened"])
+        self.assertFalse(receipt["source_admitted"])
+        self.assertFalse(receipt["mmbu_public_content_used"])
+        repeated = freeze_official_patient_roles(train_val, test)
+        self.assertEqual(repeated, (roles, receipt))
+
+    def test_patient_role_freeze_rejects_wrong_population_or_leakage(self):
+        train_val, test = _official_population_fixture()
+        cases = [
+            (train_val.rsplit(b"\n", 2)[0] + b"\n", test),
+            (train_val, test.rsplit(b"\n", 2)[0] + b"\n"),
+            (train_val, test + b"00000001_999.png\n"),
+        ]
+        for changed_train, changed_test in cases:
+            with self.assertRaises(ValueError):
+                freeze_official_patient_roles(changed_train, changed_test)
+
+    def test_patient_role_freeze_cli_publishes_both_outputs_once(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            train_val, test = _official_population_fixture()
+            (root / "train_val.txt").write_bytes(train_val)
+            (root / "test.txt").write_bytes(test)
+            roles = root / "roles.csv"
+            receipt = root / "receipt.json"
+            command = [
+                sys.executable,
+                str(REPO / "tools/freeze_chestmnist_patient_roles.py"),
+                "--official-train-val", str(root / "train_val.txt"),
+                "--official-test", str(root / "test.txt"),
+                "--roles-output", str(roles),
+                "--receipt-output", str(receipt),
+            ]
+            completed = subprocess.run(command, cwd=REPO, check=False, capture_output=True)
+            self.assertEqual(completed.returncode, 0, completed.stderr.decode())
+            roles_before = roles.read_bytes()
+            receipt_before = receipt.read_bytes()
+            self.assertEqual(receipt_before, receipt_before.strip() + b"\n")
+            self.assertEqual(json.loads(receipt_before)["patient_roles_sha256"], __import__("hashlib").sha256(roles_before).hexdigest())
+            repeated = subprocess.run(command, cwd=REPO, check=False, capture_output=True)
+            self.assertNotEqual(repeated.returncode, 0)
+            self.assertEqual(roles.read_bytes(), roles_before)
+            self.assertEqual(receipt.read_bytes(), receipt_before)
+
     def test_development_manifest_rejects_role_or_population_drift(self):
         mapping = _mapping([
             ("train", 0, "00000001_001"),
@@ -315,6 +394,51 @@ class ChestMNISTEvidenceTests(unittest.TestCase):
                 "val": {"official_test": 2_465, "official_train_val": 8_754},
             },
         )
+
+    def test_real_development_freeze_is_portable_exact_and_non_admitting(self):
+        expected = {
+            "mapping-audit.json": "a30d1b2165c7b2207f07989f7759a3d21a2da2f5c3b91a7b2e5684ea46f85c19",
+            "patient-roles.csv": "a6c5eb102638c33fd6a88652394e36080e6cfb7ab70d2bd3952cbf0ea7e0613a",
+            "patient-role-freeze-receipt.json": "12c8158ce216c64882391e1502dbfa70ecde1397bc7c8d36706f314432fc8177",
+            "development-manifest.json": "eefd33a8fcdf8d22900efa1debeaeabd1be5b3296c770ced51e441a32d17343d",
+        }
+        portable = (DEVELOPMENT_EVIDENCE / "SHA256SUMS.portable").read_text().splitlines()
+        self.assertEqual(
+            portable,
+            [f"{digest}  {name}" for name, digest in expected.items()],
+        )
+        for name, digest in expected.items():
+            self.assertEqual(hashlib.sha256((DEVELOPMENT_EVIDENCE / name).read_bytes()).hexdigest(), digest)
+
+        roles_raw = (DEVELOPMENT_EVIDENCE / "patient-roles.csv").read_bytes()
+        receipt = json.loads((DEVELOPMENT_EVIDENCE / "patient-role-freeze-receipt.json").read_bytes())
+        manifest = json.loads((DEVELOPMENT_EVIDENCE / "development-manifest.json").read_bytes())
+        self.assertEqual(receipt["patient_roles_sha256"], hashlib.sha256(roles_raw).hexdigest())
+        self.assertEqual(receipt["record_digest"], canonical.record_digest(receipt))
+        self.assertEqual(manifest["record_digest"], canonical.record_digest(manifest))
+
+        role_rows = roles_raw.decode("utf-8").splitlines()
+        roles = dict(row.split(",", 1) for row in role_rows[1:])
+        self.assertEqual(len(roles), 28_008)
+        self.assertEqual(sum(role == "adaptive_development" for role in roles.values()), 2_801)
+        self.assertEqual(sum(role == "train" for role in roles.values()), 25_207)
+        records = manifest["records"]
+        self.assertEqual(len(records), 86_524)
+        self.assertEqual(len({row["image_id"] for row in records}), 86_524)
+        self.assertEqual(len({(row["wrapper_split"], row["wrapper_index"]) for row in records}), 86_524)
+        self.assertEqual({row["patient_id"] for row in records}, set(roles))
+        self.assertTrue(all(row["patient_id"] == row["image_id"][:8] for row in records))
+        self.assertTrue(all(row["role"] == roles[row["patient_id"]] for row in records))
+        self.assertEqual(manifest["role_image_counts"], {"adaptive_development": 8_738, "train": 77_786})
+        self.assertEqual(manifest["role_patient_counts"], {"adaptive_development": 2_801, "train": 25_207})
+        self.assertEqual(manifest["official_test_image_count_excluded"], 25_596)
+        self.assertEqual(manifest["official_test_patient_count_excluded"], 2_797)
+        self.assertTrue(manifest["official_test_excluded"])
+        for record in (receipt, manifest):
+            self.assertFalse(record["labels_opened"])
+            self.assertFalse(record["pixels_opened"])
+            self.assertFalse(record["source_admitted"])
+            self.assertFalse(record["mmbu_public_content_used"])
 
 
 if __name__ == "__main__":

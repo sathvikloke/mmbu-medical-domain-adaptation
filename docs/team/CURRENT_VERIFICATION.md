@@ -39,7 +39,7 @@ forms, no source has been admitted, and no confirmation/model output has run.
 |---|---|---|
 | Historical preparation suite | **277 tests passed; 44 optional-Pillow image tests skipped** | Re-executes the preserved CPU package without Pillow; it does not replace the image-enabled CI lane or test a model |
 | Root repository/tool suite | **75 tests passed; 13 optional-Pillow image tests skipped** | Covers repository, publication, scope, receipt, and authorization tooling; it is not scientific evidence |
-| Current Phase 1 suite | **661 tests passed; two expected optional-dependency tests skipped** | Covers current fail-closed contracts, manifests, registries, evidence chains, geometry, bundles, synthetic orchestration, external-trust primitives, portable response-screen replay, evidence-documentation boundaries, purpose-tiered QA enforcement, exact ChestMNIST-to-NIH split reconciliation, and immutable compilation of reviewed patient roles into leak-free wrapper array locations; native model execution is evidenced separately below |
+| Current Phase 1 suite | **688 tests passed; two expected optional-dependency tests skipped** | Covers current fail-closed contracts, manifests, registries, evidence chains, geometry, bundles, synthetic orchestration, external-trust primitives, portable response-screen replay, evidence-documentation boundaries, bounded reviewer-outreach evidence, purpose-tiered QA enforcement, exact ChestMNIST-to-NIH split reconciliation, fixed label-blind patient allocation, portable 86,524-record evidence, and immutable compilation into leak-free wrapper array locations; native model execution is evidenced separately below |
 | Offline smoke workflow | **passed** | Replays historical synthetic demonstrations and toy arithmetic only; it reports `model_executed=false` and `official_evaluation=false` |
 | Maintained local Markdown links and anchors | **passed** | External URLs were not fetched by this check |
 | Published v0.3 artifact verification | **passed** for 275 files, ZIP members, fixed transforms, and historical receipts | Establishes byte integrity only, not scientific validity or medical truth |
@@ -144,3 +144,10 @@ historical artifact, not the current project status.
 The next honest evidence gain is not another prose score increase. It is human-governed admission of BUS-BRA plus at
 least two additional eligible external biomedical source families. Only then can a prospective biomedical
 baseline/ablation program begin without contaminating the competition decision process.
+
+The repository now also contains a narrower executable
+[BUS-BRA train-only evidence sprint](BUSBRA_TRAIN_ONLY_EVIDENCE_SPRINT.md). It projects the immutable review packet into
+mandatory visual exceptions plus a deterministic patient-exclusive routine sample and validates completed visual-QA
+and train-rights evidence. This reduces the human burden for the nonclinical `train` claim, but it has admitted no
+source, grants no model use, and does not change the current score or `blocked_external` status. Clinical review and two
+additional semantic families remain mandatory before any decision-bearing comparison.

@@ -92,3 +92,11 @@ python3 tools/compile_chestmnist_development.py \
 
 The three crossing patients are evidence against the unchanged split, not permission to inspect test labels or images.
 The audit read test identity metadata only and recorded `test_labels_opened = false` and `test_images_opened = false`.
+
+## Executed successor
+
+The label-blind patient allocation described above was executed once on the exact audited metadata and is retained in
+the [ChestMNIST development freeze](CHESTMNIST_DEVELOPMENT_FREEZE_2026-10-26.md). It assigns 25,207 patients / 77,786
+images to training and 2,801 patients / 8,738 images to adaptive development while excluding all 2,797 NIH test
+patients / 25,596 images. This closes split selection only; ChestMNIST remains unadmitted and no label or pixel was
+opened.

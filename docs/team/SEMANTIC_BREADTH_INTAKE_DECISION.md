@@ -1,8 +1,8 @@
 # Semantic-breadth source intake decision
 
-**Date:** October 23, 2026
-**Evidence class:** public primary metadata and repository review only
-**Status:** prospective intake decision; no dataset archive, image, label row, model output, or MMBU example was opened
+**Date:** October 23, 2026; ChestMNIST mapping amendment October 26, 2026
+**Evidence class:** public primary metadata, exact ChestMNIST mapping metadata, and repository review only
+**Status:** prospective intake decision; no image, label row, model output, or MMBU example was opened
 
 The MedMNIST repository resolved during this review to commit
 `805b74237fb5bd2db376fd94e50646b6a8905d9d`. Zenodo record `10519652` reported version `3.0`, update time
@@ -24,10 +24,11 @@ The next metadata-only source work should stop referring to “selected MedMNIST
 is a wrapper over materially different upstream families, and wrapper membership cannot establish source
 independence. The ordered intake frontier is:
 
-1. **PathMNIST-224 / NCT-CRC** as the first non-ultrasound semantic-breadth candidate, conditional on recovering a
-   slide- or patient-level parent for every retained patch;
-2. **ChestMNIST-224 / NIH ChestX-ray14** as the fallback breadth candidate, conditional on patient-level grouping and
-   a target policy that never treats absence of a text-mined label as a verified negative finding;
+1. **ChestMNIST-224 / NIH ChestX-ray14** as the current first executable non-ultrasound breadth candidate, conditional
+   on a prospectively rebuilt patient-grouped development split and a target policy that never treats absence of a
+   text-mined label as a verified negative finding;
+2. **PathMNIST-224 / NCT-CRC** remains blocked unless authoritative evidence recovers a slide- or patient-level parent
+   for every retained patch;
 3. **OrganAMNIST-224 / LiTS-derived organ crops** as anatomy/context support only, conditional on CT-volume grouping
    and a shortcut audit; and
 4. no other MedMNIST subset enters the first intake packet unless all three candidates above fail their declared
@@ -35,16 +36,16 @@ independence. The ordered intake frontier is:
 
 This ordering does not admit a source, authorize acquisition, grant a model-use purpose, or alter the requirement that
 the first decision-bearing B1-L/B2-P portfolio contain BUS-BRA plus at least two independently admitted
-semantic-breadth families. BUS-UCLM remains the preferred independent ultrasound replication candidate. PathMNIST is
-the preferred modality-and-semantics breadth candidate. If either fails, the portfolio remains blocked rather than
+semantic-breadth families. BUS-UCLM remains the preferred independent ultrasound replication candidate. ChestMNIST is
+the current executable modality-and-semantics breadth candidate, but is not admitted. If either fails, the portfolio remains blocked rather than
 silently counting the MedMNIST wrapper as a family.
 
 ## Why this is the smallest defensible portfolio
 
 The answer-first competition ladder needs evidence that an adapter improves more than one acquisition source and does
 not merely learn a breast-ultrasound shortcut. BUS-BRA supplies authoritative pathology, BI-RADS, and lesion geometry.
-BUS-UCLM can test whether the learned behavior survives a separate breast-ultrasound collection. PathMNIST can add a
-genuinely different modality and semantic vocabulary using native 224-pixel pathology patches.
+BUS-UCLM can test whether the learned behavior survives a separate breast-ultrasound collection. ChestMNIST can add a
+different modality and semantic vocabulary only after its patient grouping and noisy positive labels pass the frozen gates.
 
 That three-family structure is stronger than adding a second large but weakly grouped wrapper subset. It still cannot
 identify the rejected broad MOSAIC factorization claim, and it does not prove hidden-benchmark generalization. Its job
@@ -99,6 +100,10 @@ source slides.
   the 224-pixel release resizes the 1,024-pixel source images.
 - The [NIH ChestX-ray paper](https://arxiv.org/abs/1705.02315) documents report-mined image labels and the public NIH
   distribution; it does not turn those labels into adjudicated radiologist truth.
+- The October 26 [exact mapping audit](CHESTMNIST_MAPPING_AUDIT_2026-10-26.md) recovered all 30,805 patient prefixes
+  and reconciled all 112,120 identities against the official NIH patient-level split. MedMNIST's wrapper roles place
+  20,384 official NIH test images in wrapper train/validation, so those roles cannot govern decision-bearing
+  development even though the official NIH train/validation and test populations are patient-disjoint.
 
 ### Permitted target meaning
 
@@ -110,7 +115,9 @@ serializer and cannot be silently collapsed to whichever label is convenient.
 
 ChestMNIST remains ineligible unless all of these hold:
 
-1. the exact source mapping recovers a patient parent for every retained image and proves patient-disjoint roles;
+1. the exact source mapping recovers a patient parent for every retained image, and a prospectively frozen replacement
+   split assigns patients—not images—to roles using only the NIH-published train/validation population; the complete
+   NIH official test population remains outside training and adaptive development regardless of MedMNIST wrapper role;
 2. a frozen inclusion rule handles multi-label rows without inventing negative labels or choosing labels after model
    output;
 3. medical QA estimates positive-label correctness for every retained class and blocks classes that miss the frozen
@@ -120,7 +127,8 @@ ChestMNIST remains ineligible unless all of these hold:
    separately; and
 6. the 224-pixel resizing path passes an image-content and source-mapping audit.
 
-ChestMNIST is a fallback, not a default. Its scale does not compensate for weak labels.
+ChestMNIST is the first executable breadth intake candidate after PathMNIST's parent-lineage failure, not an admitted
+default. Its scale and recoverable patient IDs do not compensate for weak labels.
 
 ## Candidate C — OrganAMNIST-224 / LiTS-derived organ crops
 
@@ -170,8 +178,8 @@ No actual role assignment occurs until each source is admitted, but the scientif
 | --- | --- | --- |
 | BUS-BRA | engineering, then train/adaptive development after full admission | single-source evidence of broad generalization |
 | BUS-UCLM | held-out ultrasound family or confirmation, after full admission | extra BUS-BRA sample count or independent modality |
-| PathMNIST / NCT-CRC | non-ultrasound breadth train or held-out family, after full admission | patient-level evidence when only patch IDs are known |
-| ChestMNIST / NIH | fallback non-ultrasound breadth role | adjudicated disease absence or clean radiologist truth |
+| PathMNIST / NCT-CRC | blocked non-ultrasound breadth candidate pending authoritative parent lineage | patient-level evidence when only patch IDs are known |
+| ChestMNIST / NIH | first executable non-ultrasound breadth intake candidate, after full admission | unchanged wrapper split, adjudicated disease absence, or clean radiologist truth |
 | OrganMNIST / LiTS | anatomy/context auxiliary role | diagnosis evidence or a second CT family from another view |
 
 The final role assignment, source counts, seeds, and decision thresholds must be frozen through the repository's
@@ -180,7 +188,8 @@ decision-runner and opening-receipt process before any decision-bearing labels o
 ## Stop rules
 
 - Stop PathMNIST intake if the source mapping cannot produce complete parent groups.
-- Stop ChestMNIST intake if positive-label QA or patient mapping fails; do not repair it with “no finding” negatives.
+- Stop ChestMNIST intake if positive-label QA fails or a prospectively rebuilt patient-disjoint split cannot be frozen;
+  do not reuse the wrapper split or repair weak labels with “no finding” negatives.
 - Stop OrganAMNIST intake if anatomy is recoverable mainly from transformation artifacts or if its field is absent
   from the frozen context contract.
 - Do not replace a failed candidate by silently selecting another MedMNIST subset. Issue a successor decision.

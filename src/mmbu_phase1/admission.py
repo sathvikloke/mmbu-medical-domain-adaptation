@@ -13,10 +13,12 @@ import re
 from typing import Any, Iterable
 
 from mmbu_phase1 import canonical, fields as f, paths
+from mmbu_phase1.external_trust import ExternalAuthorityCapability
 from mmbu_phase1.store import RecordStore
 from mmbu_phase1.vocab import PURPOSES
 
 PROPOSABLE_PURPOSES = ("engineering", "train", "adaptive_dev", "confirmation", "release")
+DECISION_BEARING_QA_PURPOSES = frozenset({"adaptive_dev", "confirmation"})
 REVIEWER_ROLES = (
     "acquisition_reviewer",
     "rights_reviewer",
@@ -34,6 +36,14 @@ CANONICAL_PATH_PROJECTION_RULE = {"rule": "mmbu.phase1.canonical_path_projection
 CHECKSUM_LENGTHS = {"md5": 32, "sha1": 40, "sha256": 64, "sha512": 128}
 _GLOB = re.compile(r"[*?\[\]]")
 _HEX = re.compile(r"[0-9a-f]+")
+
+
+def required_qa_reviewer_roles(purposes: Iterable[str]) -> frozenset[str]:
+    """Return the QA roles required for the proposed source purposes."""
+    required = {"visual_qa_reviewer"}
+    if set(purposes) & DECISION_BEARING_QA_PURPOSES:
+        required.add("clinical_qa_reviewer")
+    return frozenset(required)
 
 ATTESTATION_KEYS = ("schema_id", "schema_version", "attestation_id", "payload", "payload_digest", "verification",
                     "record_digest")
@@ -164,6 +174,7 @@ LEGAL_SOURCE_TRANSITIONS = {
     "approved": {"rejected"},
     "rejected": set(),
 }
+SOURCE_ADMISSION_AUTHORITY_NAMESPACE = "mmbu.phase1.source-admission.v1"
 
 # Phase 1A threshold-role conventions inside the closed lock threshold shape.
 OVERALL_ESTIMAND = "overall_critical_error"
@@ -485,6 +496,79 @@ def check_source(store: RecordStore, digest: Any, path: str = "source") -> dict:
     if record["status"] == "approved":
         _check_approval(store, record, path)
     return record
+
+
+def source_admission_authority_subject(
+    store: RecordStore, source_digest: Any, path: str = "source_admission_authority",
+) -> dict:
+    """Return the exact approved-source transition an external authority must sign."""
+    from mmbu_phase1 import decisions
+
+    source = check_source(store, source_digest, f"{path}.source")
+    f.literal(source["status"], f"{path}.source.status", "approved")
+    receipt = decisions.check_decision_receipt(
+        store, source["admission_decision_receipt_digest"], f"{path}.decision_receipt",
+    )
+    return canonical.seal({
+        "schema_id": "mmbu.phase1.source_admission_authority_subject",
+        "schema_version": 1,
+        "source_digest": source["record_digest"],
+        "source_id": source["source_id"],
+        "source_version": source["source_version"],
+        "source_family": source["source_family"],
+        "artifact_manifest_digest": source["artifact_manifest_digest"],
+        "rights_receipt_digest": source["rights_receipt_digest"],
+        "grouping_receipt_digest": source["grouping_receipt_digest"],
+        "qa_receipt_digest": source["qa_receipt_digest"],
+        "admission_decision_receipt_digest": source["admission_decision_receipt_digest"],
+        "admission_plan_digest": receipt["plan_digest"],
+        "admission_payload_digest": receipt["decision_payload_digest"],
+        "approval_attestation_digest": source["approval_attestation_digest"],
+        "proposed_purposes": source["proposed_purposes"],
+        "allowed_purposes": source["allowed_purposes"],
+        "reviewer_id": source["reviewer_id"],
+        "reviewed_at": source["reviewed_at"],
+    })
+
+
+def source_admission_authority_binding_digest(authority: ExternalAuthorityCapability) -> str:
+    """Bind stable external signature evidence while permitting later reverification."""
+    return canonical.value_digest({
+        "namespace": authority.namespace, "principal": authority.principal,
+        "role": authority.role, "subject_digest": authority.subject_digest,
+        "policy_sha256": authority.policy_sha256,
+        "public_key_sha256": authority.public_key_sha256,
+        "revocation_sha256": authority.revocation_sha256,
+        "signature_sha256": authority.signature_sha256,
+        "signed_at": authority.signed_at,
+        "verifier_sha256": authority.verifier_sha256,
+        "verifier_version": authority.verifier_version,
+    })
+
+
+def check_externally_authorized_source(
+    store: RecordStore, source_digest: Any, external_authority: object,
+    path: str = "source_admission_authority", *, not_after: str | None = None,
+) -> dict:
+    """Validate an approved source plus its independently pinned admission authority."""
+    source = check_source(store, source_digest, f"{path}.source")
+    subject = source_admission_authority_subject(store, source_digest, path)
+    if type(external_authority) is not ExternalAuthorityCapability:
+        f.fail(path, "requires an externally verified source-admission-authority capability")
+    f.literal(external_authority.namespace, f"{path}.namespace",
+              SOURCE_ADMISSION_AUTHORITY_NAMESPACE)
+    f.literal(external_authority.role, f"{path}.role", "source-admission-authority")
+    f.literal(external_authority.subject_digest, f"{path}.subject_digest",
+              canonical.value_digest(subject))
+    signed = ts(external_authority.signed_at, f"{path}.signed_at")
+    verified = ts(external_authority.verified_at, f"{path}.verified_at")
+    f.require(signed > ts(source["reviewed_at"], f"{path}.source.reviewed_at"),
+              f"{path}.signed_at", "must follow the sealed approval review")
+    f.require(verified >= signed, f"{path}.verified_at", "must not precede signing")
+    if not_after is not None:
+        f.require(verified < ts(not_after, f"{path}.not_after"), f"{path}.verified_at",
+                  "must precede the governed source use")
+    return source
 
 
 def _check_approval(store: RecordStore, record: dict, path: str) -> None:
@@ -933,8 +1017,9 @@ def check_qa_receipt(store: RecordStore, digest: Any, path: str = "qa_receipt") 
                                           subject=subject, roles=roles, purposes=record["purposes"],
                                           approved=record["disposition"] == "approved")
         reviewers.add(attestation["payload"]["reviewer_role"])
-    f.require({"clinical_qa_reviewer", "visual_qa_reviewer"} <= reviewers, f"{path}.reviewer_attestation_digests",
-              "distinct clinical and visual QA attestations are required")
+    required_roles = required_qa_reviewer_roles(record["purposes"])
+    f.require(required_roles <= reviewers, f"{path}.reviewer_attestation_digests",
+              f"required QA reviewer roles are {sorted(required_roles)}")
     if record["adjudication"]["disagreement_count"]:
         f.require(record["adjudication"]["adjudicator_attestation_digest"] in record["reviewer_attestation_digests"],
                   f"{path}.adjudication", "a distinct adjudicator attestation is required when reviewers disagree")

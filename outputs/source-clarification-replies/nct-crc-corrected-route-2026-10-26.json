@@ -1,0 +1,25 @@
+{
+  "schema_id": "mmbu.source_clarification_route_correction",
+  "schema_version": 1,
+  "original_send_message_id": "1a16c348314ba3d5",
+  "original_recipient": "jakob_nikolas.kather@tu-dresden.de",
+  "automatic_reply_message_id": "1a16c3494ae67966",
+  "automatic_reply_received_at": "2026-10-24T04:39:06Z",
+  "automatic_reply_authentication": {
+    "dkim": "pass",
+    "dmarc": "pass",
+    "spf": "pass"
+  },
+  "automatic_reply_text": "this mailbox is not monitored\n\nfor inquiries regarding the EKFZ, please contact ekfz@tu-dresden.de\n\nto contact Jakob Kather, use jakob.kather@med.uni-heidelberg.de",
+  "corrected_recipient": "jakob.kather@med.uni-heidelberg.de",
+  "corrected_send_message_id": "1a179efa3c999283",
+  "corrected_send_date": "2026-10-26",
+  "subject": "NCT-CRC patch-to-slide/patient lineage question",
+  "scope_change": "none; the original bounded lineage question was resent to the address supplied by the automatic reply",
+  "decision_projection": {
+    "corrected_route_used": true,
+    "source_author_answer_received": false,
+    "slide_or_patient_mapping_supplied": false,
+    "source_admitted": false
+  }
+}

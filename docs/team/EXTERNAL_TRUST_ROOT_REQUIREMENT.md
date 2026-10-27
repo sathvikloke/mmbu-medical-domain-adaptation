@@ -1,0 +1,122 @@
+# External trust-root requirement
+
+**Current state:** every named production boundary is executable and fail-closed; real external material remains absent
+
+This contract defines the missing authority boundary for Stage A and BUSI-WHU. It does not supply a signer, public key,
+signature, approval, or identity; repository records are not a trust anchor. An actor who can manufacture a credential,
+registry, authorization, or attestation can also manufacture its content digest. Hash chaining establishes internal byte
+integrity only.
+
+## Executable primitive and bound boundaries
+
+`mmbu_phase1.external_trust.verify_external_authority` now implements the cryptographic core without a repository
+default: exact canonical policy and revocation records, independently supplied SHA-256 pins for policy/key/revocation
+and verifier bytes, Ed25519 detached-signature verification through that pinned verifier, namespace/principal/role and
+signing-time binding, active-revocation checks, verifier stability revalidation, and a private immutable capability.
+Negative tests reject key replacement, namespace replay, and revoked keys.
+
+The protected BUSI-WHU artifact-opening boundary now requires a successfully verified external capability over the
+exact sealed opening authorization. The production review CLI requires every external policy, key, revocation,
+signature, namespace, principal, role, timestamp, verifier, and out-of-band pin input; the protected descriptor layer
+rejects the internally consistent repository capability when that external binding is absent. The signature must be
+created before the internal authorization, verified before descriptor access, and cannot be replayed across
+namespaces, roles, or subjects.
+
+The Stage A acquisition launcher now requires externally verified `data-owner` authority over the exact sealed
+source acquisition subject before any network use. That subject binds the packet, source identity/version/family,
+artifact names, hosts, byte cap, retrieval method and command, destination, purpose, and no-inspection restriction;
+missing or substituted authority rejects. The Stage A structural-opening builder and launcher require two distinct externally verified capabilities over an
+exact source-specific subject: a `data-owner` and an `independent-reviewer`. The subject binds the sealed packet,
+source identity/version, and permitted reads; plain prose and hard-coded names are rejected. Both external evidence
+digests enter the purpose decision and the independent reviewer's cryptographic attestation.
+
+Completed-review authentication now requires an externally verified `review-board-authority` signature over the
+sealed base report, participant role/identity bindings, four review attestations, both source assessments, opening
+evidence, decisions, blockers, and authentication cutoff. The stable signature binding enters the authenticated
+report, and the real confirmation bridge requires the same externally verified subject again before reconstructing
+that report. The confirmation bridge also requires a separate externally verified `confirmation-authority` signature
+over the exact authenticated report, source admission, purpose authorization, source identity, task, target map,
+global task manifest, frozen confirmation specification, prompt specification, and no-public-content boundary. Its
+stable evidence binding enters the sealed source manifest, and its verification must precede real artifact creation.
+Source admission now separately requires an externally verified `source-admission-authority` signature over the exact
+approved source record, artifact/rights/grouping/QA evidence, admission decision receipt/plan/payload, approval
+attestation, permitted purposes, reviewer, and review cutoff. The confirmation bridge revalidates that capability,
+requires a principal distinct from the review and confirmation authorities, binds its stable evidence into both the
+confirmation-authority subject and source manifest, and requires verification before real artifact creation.
+No real policy, key, pin, signature, time authority, or revocation feed has been supplied. Therefore the executable gates are presently unsatisfied,
+repository records still grant no external authority, and
+no protected opening or decision-bearing action is enabled by this implementation alone.
+
+## Required external inputs
+
+Before any future protected biomedical opening or decision-bearing admission, the execution controller must supply all
+of the following through a channel outside the repository and outside the record array being validated:
+
+1. An out-of-band pinned public-key fingerprint and the exact public verification key whose fingerprint matches it.
+2. A unique signer principal and role, selected before the protected subject exists.
+3. A detached signature over the exact canonical subject bytes and a fixed namespace separating acquisition,
+   protected opening, completed review, source admission, and confirmation authorization.
+4. A trusted-time statement or independently verifiable signing timestamp that precedes the protected action and is
+   within the signer's credential validity interval.
+5. A revocation snapshot, obtained independently of the repository, proving the key and credential were active at the
+   signing time.
+
+The public key, principal, role, namespace, time source, and revocation source must be bound by one externally
+administered policy. Supplying a new key beside its own signature is self-authorization and must reject.
+
+## Signed subjects
+
+The minimum signed subjects are:
+
+- **Stage A:** the exact acquisition/opening authorization, source identities and versions, artifact URLs and hashes,
+  permitted structural reads, attempt ceiling, destination root, and explicit prohibitions.
+- **BUSI-WHU opening:** the sealed opening authorization digest plus its complete artifact, credential, inventory,
+  selection, fingerprint, lock, and output-root bindings.
+- **Completed review:** the immutable base-report digest, every participant role and identity, all source-assessment
+  digests, the disposition, limitations, and authentication cutoff time.
+- **Source admission and confirmation:** the exact admitted-source portfolio, split roles, candidate revisions,
+  endpoints, thresholds, seeds, attempt policy, and confirmation-opening boundary.
+
+A signature for one namespace or subject cannot authorize another. Any changed byte requires a new externally signed
+subject; predecessor signatures remain immutable evidence and cannot be rewritten.
+
+## Verification order
+
+The production verifier must, before protected access:
+
+1. Load the public-key policy from its independently provisioned location and compare its fingerprint with the
+   out-of-band pin.
+2. Recompute the canonical subject bytes from the closed record rather than trusting a supplied subject digest.
+3. Verify the detached signature, signer principal, role, namespace, and timestamp with a reviewed cryptographic
+   verifier.
+4. Resolve the independent revocation snapshot and reject unknown, expired, revoked, duplicated, or ambiguous keys.
+5. Bind the verified signature evidence into the one-shot capability and reverify it at every later decision boundary.
+6. Persist the verifier identity, version, policy fingerprint, key fingerprint, subject digest, signature digest,
+   verification time, and outcome without storing private key material.
+
+There is no fallback to caller-provided names, digest-shaped strings, a repository-local key created in the same run,
+manual prose, or an unsigned `approved` field. Missing verification tools, policy, pin, key, signature, trusted time, or
+revocation state must fail before payload access and consume no authority.
+
+## Required negative tests before implementation can be enabled
+
+- attacker generates a new key and signs a self-created authorization;
+- valid signature is replayed under a different namespace, role, source, or subject;
+- record digest is correct but canonical subject bytes differ;
+- signature, policy, key, or revocation snapshot is replaced after validation;
+- signer is expired or revoked at signing time, or timestamp is absent/future/backdated;
+- one person occupies incompatible independent roles;
+- Stage A statement text is copied into a different packet;
+- BUSI-WHU review is internally consistent but lacks external signature evidence;
+- confirmation reconstructs the record chain but not the external verification chain;
+- verifier executable or policy bytes differ from their independently pinned identity.
+
+## Promotion boundary
+
+Until real external keys, roles, policies, signatures, timestamps, and revocation evidence are independently provided
+and their capabilities pass every bound production decision boundary, the
+historical Stage A and BUSI-WHU identity claims remain non-authoritative repository evidence. The protected BUSI-WHU
+opening/completed-review and Stage A acquisition/structural-opening implementations now fail before their governed
+action without their external capabilities,
+but no real capability exists. Existing records may support engineering traceability but cannot grant biomedical payload opening, source
+admission, model use, training, checkpoint promotion, release, upload, or submission authority.

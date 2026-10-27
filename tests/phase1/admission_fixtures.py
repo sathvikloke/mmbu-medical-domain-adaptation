@@ -26,9 +26,16 @@ def t(hhmmss):
 
 
 class AdmissionWorld:
-    def __init__(self, overrides=None, proposed=None):
+    def __init__(self, overrides=None, proposed=None, *, source_id=SOURCE_ID, version=VERSION, family=FAMILY,
+                 artifacts=None, artifact_roles=None, extra_admission_input_digests=()):
         self.overrides = overrides or {}
         self.proposed = sorted(proposed or PROPOSED)
+        self.source_id = source_id
+        self.version = version
+        self.family = family
+        self.artifacts = artifacts
+        self.artifact_roles = artifact_roles or {}
+        self.extra_admission_input_digests = list(extra_admission_input_digests)
         self.records = {}
         self.extra = []
         self.build()
@@ -111,7 +118,7 @@ class AdmissionWorld:
 
     # -- chain -----------------------------------------------------------
     def build(self):
-        artifacts = [
+        artifacts = self.artifacts or [
             {"logical_path": "syn/annotations.json", "bytes": 120, "sha256": d("annotations-bytes")},
             {"logical_path": "syn/images.tar", "bytes": 4096, "sha256": d("images-bytes")},
             {"logical_path": "syn/terms.txt", "bytes": 64, "sha256": d("terms-bytes")},
@@ -119,23 +126,25 @@ class AdmissionWorld:
         self.seal("registry_g0", self.registry(0, None, [], [], [], {}, {}, {}, t("07:59:00")))
         acquisition = {
             "schema_id": P + "acquisition_authorization", "schema_version": 1, "authorization_id": "acq-1",
-            "source_id": SOURCE_ID, "source_version": VERSION, "source_family": FAMILY,
+            "source_id": self.source_id, "source_version": self.version, "source_family": self.family,
             "canonical_locator_ids": ["syn-locator-1"], "identity_evidence_digests": [d("identity")],
-            "terms_digest": d("terms"), "allowed_artifact_names": ["annotations.json", "images.tar", "terms.txt"],
+            "terms_digest": d("terms"),
+            "allowed_artifact_names": sorted(row["logical_path"].rsplit("/", 1)[-1] for row in artifacts),
             "intended_purpose": "quarantine_inspection", "staging_destination": "/srv/syn-staging/syn-src",
             "retrieval_method_digest": d("method"), "retrieval_command_digest": d("command"),
-            "operator_id": "syn-operator", "network_host_allowlist": ["syn-host.invalid"], "maximum_bytes": 10000,
+            "operator_id": "syn-operator", "network_host_allowlist": ["syn-host.invalid"],
+            "maximum_bytes": max(10000, sum(row["bytes"] for row in artifacts)),
             "decision": "allowed", "inspection_prohibited": True, "authorized_at": t("08:01:00"),
             "expires_at": "2027-01-01T00:00:00Z", "supersedes_digest": None,
         }
         self.single("acquisition", acquisition, "acquisition_reviewer", ["quarantine_inspection"], "syn-acq-reviewer", t("08:00:30"))
         a = self.digest("acquisition")
         self.seal("registry_g1", self.registry(1, self.digest("registry_g0"), [a], [], [],
-                                               {f"{SOURCE_ID}|{VERSION}": a}, {}, {}, t("08:02:00")))
+                                               {f"{self.source_id}|{self.version}": a}, {}, {}, t("08:02:00")))
         self.seal("receipt", {
             "schema_id": P + "acquisition_execution_receipt", "schema_version": 1, "receipt_id": "acq-receipt-1",
             "acquisition_authorization_digest": a, "authorization_registry_digest": self.digest("registry_g1"),
-            "source_id": SOURCE_ID, "source_version": VERSION, "source_family": FAMILY,
+            "source_id": self.source_id, "source_version": self.version, "source_family": self.family,
             "executed_method_digest": d("method"), "executed_command_digest": d("command"), "operator_id": "syn-operator",
             "observed_hosts": ["syn-host.invalid"],
             "observed_artifacts": [{k: x[k] for k in ("logical_path", "bytes", "sha256")} for x in artifacts],
@@ -144,12 +153,14 @@ class AdmissionWorld:
         })
         self.seal("manifest", {
             "schema_id": P + "source_artifact_manifest", "schema_version": 1, "manifest_id": "manifest-1",
-            "source_id": SOURCE_ID, "source_version": VERSION, "source_family": FAMILY,
+            "source_id": self.source_id, "source_version": self.version, "source_family": self.family,
             "canonical_locator_ids": ["syn-locator-1"], "acquisition_authorization_digest": a,
             "acquisition_execution_receipt_digest": self.digest("receipt"),
             "artifacts": [{**x, "upstream_checksum": None, "media_type": "application/octet-stream",
-                           "role": {"syn/annotations.json": "annotation", "syn/images.tar": "archive",
-                                    "syn/terms.txt": "terms"}[x["logical_path"]]} for x in artifacts],
+                           "role": self.artifact_roles.get(x["logical_path"], {
+                               "syn/annotations.json": "annotation", "syn/images.tar": "archive",
+                               "syn/terms.txt": "terms",
+                           }.get(x["logical_path"], "archive"))} for x in artifacts],
             "total_bytes": sum(x["bytes"] for x in artifacts), "retriever_id": "syn-operator",
             "retrieved_at": t("08:04:00"), "retrieval_log_digest": d("retrieval-log"),
         })
@@ -173,8 +184,8 @@ class AdmissionWorld:
         qa_auth = self.digest("quarantine_authorization")
         self.seal("registry_g2", self.registry(2, self.digest("registry_g1"), [a],
                                                sorted([self.digest("source_candidate"), s1]), [qa_auth],
-                                               {f"{SOURCE_ID}|{VERSION}": a}, {SOURCE_ID: s1},
-                                               {f"{SOURCE_ID}|quarantine_inspection": qa_auth}, t("08:08:00")))
+                                               {f"{self.source_id}|{self.version}": a}, {self.source_id: s1},
+                                               {f"{self.source_id}|quarantine_inspection": qa_auth}, t("08:08:00")))
         self.seal("inventory_lock", self.lock("lock-inventory", "custody_inventory", None, sorted([m, s1]), m, [],
                                               t("08:09:00"), t("08:09:30")))
         il = self.digest("inventory_lock")
@@ -185,7 +196,7 @@ class AdmissionWorld:
                                                       [self.head(il, self.get("inventory_opening"))], t("08:09:45")))
         self.single("grouping", {
             "schema_id": P + "grouping_receipt", "schema_version": 1, "receipt_id": "grouping-1",
-            "source_artifact_manifest_digest": m, "source_family": FAMILY, "alias_family_ids": [],
+            "source_artifact_manifest_digest": m, "source_family": self.family, "alias_family_ids": [],
             "strongest_parent_namespace": "patient", "independence_claim": "patient", "parent_map_digest": d("parent-map"),
             "missing_parent_policy": "reject_record", "parent_count": 3, "record_count": 5,
             "duplicate_checks": [{"compared_manifest_digests": [m], "roles": self.proposed, "method_digest": d("dup-method"),
@@ -310,7 +321,7 @@ class AdmissionWorld:
             "created_at": t("08:31:00"),
         }, [("custodian", "custody_reviewer", self.proposed, "syn-custody-reviewer", "approved")], t("08:31:00"))
         inputs = sorted([s1, m, self.digest("rights"), self.digest("grouping"), self.digest("qa_receipt"),
-                         self.digest("custody")])
+                         self.digest("custody"), *self.extra_admission_input_digests])
         self.admission_decision(inputs)
         approved = self.source("approved", "external_reviewed", s1, self.proposed, t("08:38:00"), reviewed=True)
         self.single("source_approved", approved, "candidate_admission_reviewer", self.proposed, "syn-admission-reviewer",
@@ -336,15 +347,15 @@ class AdmissionWorld:
             "purpose_authorization_reviewer", ["engineering"], "syn-purpose-reviewer", t("08:40:00"))
         self.seal("registry_g3", self.registry(
             3, self.digest("registry_g2"), [a], sorted([self.digest("source_candidate"), s1, s2]),
-            sorted([qa_auth, self.digest("engineering_authorization")]), {f"{SOURCE_ID}|{VERSION}": a}, {SOURCE_ID: s2},
-            {f"{SOURCE_ID}|quarantine_inspection": qa_auth, f"{SOURCE_ID}|engineering": self.digest("engineering_authorization")},
+            sorted([qa_auth, self.digest("engineering_authorization")]), {f"{self.source_id}|{self.version}": a}, {self.source_id: s2},
+            {f"{self.source_id}|quarantine_inspection": qa_auth, f"{self.source_id}|engineering": self.digest("engineering_authorization")},
             t("08:41:00")))
 
     def admission_decision(self, inputs):
         plan = self.seal("admission_plan", {
             "schema_id": P + "decision_plan", "schema_version": 1, "plan_id": "admission-plan-1",
             "decision_kind": "candidate_admission", "purpose": "quarantine_inspection", "scope": "candidate-admission",
-            "subject_ids": [SOURCE_ID], "allowed_input_digests": inputs,
+            "subject_ids": [self.source_id], "allowed_input_digests": inputs,
             "forbidden_origin_classes": ["mmbu_derivative", "mmbu_official", "unknown"], "forbidden_root_digests": [],
             "decision_function_digest": d("admission-fn"), "command_digest": d("admission-command"),
             "source_state_digest": d("source-state"), "sandbox_policy_digest": d("sandbox"),
@@ -356,8 +367,8 @@ class AdmissionWorld:
         payload = self.seal("admission_payload", {
             "schema_id": P + "decision_payload", "schema_version": 1, "decision_id": "admission-decision-1",
             "plan_digest": plan["record_digest"], "decision_kind": "candidate_admission", "purpose": "quarantine_inspection",
-            "subject_ids": [SOURCE_ID], "selected_subject_ids": [SOURCE_ID],
-            "dispositions": [{"subject_id": SOURCE_ID, "status": "selected", "reason_code": "admission_rules_met"}],
+            "subject_ids": [self.source_id], "selected_subject_ids": [self.source_id],
+            "dispositions": [{"subject_id": self.source_id, "status": "selected", "reason_code": "admission_rules_met"}],
             "claim_digests": [self.digest("custody")], "rationale_digest": d("admission-rationale"),
             "created_at": t("08:35:00"),
         })
@@ -384,8 +395,8 @@ class AdmissionWorld:
 
     def source(self, status, origin, supersedes, allowed, created, reviewed=False):
         return {
-            "schema_id": P + "source", "schema_version": 1, "source_id": SOURCE_ID, "source_version": VERSION,
-            "source_family": FAMILY, "origin_class": origin, "status": status,
+            "schema_id": P + "source", "schema_version": 1, "source_id": self.source_id, "source_version": self.version,
+            "source_family": self.family, "origin_class": origin, "status": status,
             "artifact_manifest_digest": self.digest("manifest"), "proposed_purposes": list(self.proposed),
             "rights_receipt_digest": self.digest("rights") if reviewed else None,
             "grouping_receipt_digest": self.digest("grouping") if reviewed else None,
@@ -433,7 +444,7 @@ class AdmissionWorld:
                       "primary_estimand_id": "overall_critical_error", "comparison_ids": ["custody"],
                       "analysis_population_digest": population},
             "source_state_digest": d("source-state"), "input_artifact_digests": inputs, "qa_sampling_plan_digest": qa_plan,
-            "excluded_result_digests": [], "candidate_ids": [SOURCE_ID], "seed_ids": seeds or [],
+            "excluded_result_digests": [], "candidate_ids": [self.source_id], "seed_ids": seeds or [],
             "thresholds": thresholds or [], "groups": groups, "evaluator_digest": d("custody-evaluator"),
             "multiplicity_rule": multiplicity or {"family_id": "inventory", "alpha": 0.05, "method": "none",
                                                   "hypothesis_ids": ["inventory-complete"], "rule_digest": d("inv-rule")},
@@ -510,7 +521,7 @@ def release_world(overrides=None, extra_contributor=False):
                      "consuming_purposes": ["train"], "purpose_authorization_digests": [auth],
                      "lineage_root_digests": [d("engineering-root")]}
                     for source_id, digest, auth in sorted(
-                        [(SOURCE_ID, s2, world.digest("train_authorization"))]
+                        [(world.source_id, s2, world.digest("train_authorization"))]
                         + ([("syn-src-2", sources[1], authorizations[1])] if extra_contributor else []))]
     lineage = {"schema_id": P + "model_lineage", "schema_version": 1, "lineage_id": "syn-model-lineage",
                "checkpoint_digest": d("checkpoint"), "base_model_digest": d("base-model"),

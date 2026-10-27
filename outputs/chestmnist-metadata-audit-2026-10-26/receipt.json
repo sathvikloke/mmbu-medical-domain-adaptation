@@ -1,0 +1,101 @@
+{
+  "schema_id": "mmbu.phase1.chestmnist_mapping_audit",
+  "schema_version": 1,
+  "mapping_source": {
+    "file_name": "chestmnist_split_info.csv",
+    "google_drive_file_id": "1eY4En_i6XYWzwzXxI2JKDsFspW-ho__I",
+    "official_index_url": "https://github.com/MedMNIST/MedMNIST/issues/49"
+  },
+  "nih_official_metadata": {
+    "source_url": "https://nihcc.app.box.com/v/ChestXray-NIHCC",
+    "faq_bytes": 72223,
+    "faq_sha256": "674665256e6a14c8ebaa93648f438c2b4ca21205167839559bab3ecc89b6b83a",
+    "faq_direct_claims": [
+      "Dataset usage is unrestricted with original-site link, NIH Clinical Center acknowledgment, and CVPR 2017 citation.",
+      "Labels were mined from reports using NLP and are imperfect.",
+      "No finding is not equal to normal.",
+      "The NIH train/validation and test lists are patient-level disjoint."
+    ]
+  },
+  "mapping_bytes": 2836941,
+  "mapping_sha256": "3cfe66207037f1f99b1bf457f1f009b0cfc2346ea7a710505a23e02c8ff492e9",
+  "row_count": 112120,
+  "split_counts": {
+    "train": 78468,
+    "val": 11219,
+    "test": 22433
+  },
+  "patient_count": 30805,
+  "patient_counts_by_split": {
+    "train": 21528,
+    "val": 3093,
+    "test": 6188
+  },
+  "cross_split_patient_count": 3,
+  "cross_split_patient_ids": [
+    "00005681",
+    "00027864",
+    "00028591"
+  ],
+  "cross_split_patient_memberships": {
+    "00005681": [
+      "test",
+      "val"
+    ],
+    "00027864": [
+      "test",
+      "train",
+      "val"
+    ],
+    "00028591": [
+      "train",
+      "val"
+    ]
+  },
+  "official_split_patient_disjoint": false,
+  "development_rebuild_required": true,
+  "test_mapping_metadata_read": true,
+  "labels_opened": false,
+  "pixels_opened": false,
+  "test_labels_opened": false,
+  "test_images_opened": false,
+  "source_admitted": false,
+  "mmbu_public_content_used": false,
+  "official_nih_split_reconciliation": {
+    "schema_id": "mmbu.phase1.chestmnist_official_split_reconciliation",
+    "schema_version": 1,
+    "official_train_val_bytes": 1470907,
+    "official_train_val_sha256": "61fbe896321c1c1c8b75f3e4f3a08e4fef6486d95ef8a667c31d4d60dca6cb81",
+    "official_test_bytes": 435131,
+    "official_test_sha256": "38ca5ef7f756092946f57c1a59faca882ed589a1ab1f72590b45dc06c6d5e1cc",
+    "official_split_counts": {
+      "train_val": 86524,
+      "test": 25596
+    },
+    "official_patient_counts": {
+      "train_val": 28008,
+      "test": 2797
+    },
+    "official_split_patient_disjoint": true,
+    "mapping_universe_matches_official_lists": true,
+    "wrapper_by_official_split": {
+      "train": {
+        "official_train_val": 60549,
+        "official_test": 17919
+      },
+      "val": {
+        "official_train_val": 8754,
+        "official_test": 2465
+      },
+      "test": {
+        "official_train_val": 17221,
+        "official_test": 5212
+      }
+    },
+    "wrapper_roles_preserve_official_split": false,
+    "labels_opened": false,
+    "pixels_opened": false,
+    "source_admitted": false,
+    "mmbu_public_content_used": false
+  }
+}

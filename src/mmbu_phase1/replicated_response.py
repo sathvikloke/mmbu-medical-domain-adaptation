@@ -11,7 +11,7 @@ import random
 import re
 from typing import Any
 
-from mmbu_phase1 import canonical, rational
+from mmbu_phase1 import biomedical_lane1, canonical, evidence, rational
 from mmbu_phase1 import fields as f
 
 
@@ -308,7 +308,222 @@ def official_context_row(row: dict) -> dict:
     return result
 
 
+def grade_task_rows(rows: list[dict], base_predictions: list[dict], adapted_predictions: list[dict]) -> list[dict]:
+    """Convert aligned predictions into explicit paired binary task grades."""
+    f.require(len(rows) == len(base_predictions) == len(adapted_predictions), "response.aggregate.predictions",
+              "rows, base predictions, and adapted predictions must align one-to-one")
+    grades = []
+    for index, (row, base, adapted) in enumerate(zip(rows, base_predictions, adapted_predictions)):
+        path = f"response.aggregate.predictions[{index}]"
+        f.require(base.get("row_id") == adapted.get("row_id") == row.get("row_id"), f"{path}.row_id",
+                  "does not align")
+        grades.append({
+            "adapted_correct": int(
+                biomedical_lane1.normalize_answer(adapted.get("task"))
+                == biomedical_lane1.normalize_answer(row.get("task_target"))
+            ),
+            "base_correct": int(
+                biomedical_lane1.normalize_answer(base.get("task"))
+                == biomedical_lane1.normalize_answer(row.get("task_target"))
+            ),
+            "group_id": row["independent_unit_id"],
+            "record_id": row["row_id"],
+            "source_id": row["source_id"],
+        })
+    return grades
+
+
+def analyze_candidate(
+    rows: list[dict], base_predictions: list[dict], profile_predictions: dict[str, dict[str, list[dict]]],
+    *, iterations: int, bootstrap_seed: int, confidence: float,
+) -> dict:
+    """Replay the exploratory paired task intervals for one candidate."""
+    f.require(type(profile_predictions) is dict and set(profile_predictions) == {"dual", "task_only"},
+              "response.aggregate.profile_predictions", "must contain dual and task_only exactly")
+    profiles = {}
+    for profile in ("task_only", "dual"):
+        predictions_by_seed = profile_predictions[profile]
+        f.require(type(predictions_by_seed) is dict and bool(predictions_by_seed),
+                  f"response.aggregate.{profile}", "must contain at least one seed")
+        seed_rows = {
+            seed_id: grade_task_rows(rows, base_predictions, predictions)
+            for seed_id, predictions in predictions_by_seed.items()
+        }
+        profiles[profile] = paired_seed_mean_task_bootstrap(
+            seed_rows, iterations=iterations, bootstrap_seed=bootstrap_seed, confidence=confidence,
+        )
+    return {
+        "inference": "post_output_exploratory_fixed_development_population",
+        "profiles": profiles,
+        "promotion_eligible": False,
+    }
+
+
+def _portable_json(root: Path, relative: str) -> Any:
+    return canonical.loads((Path(root) / relative).read_bytes())
+
+
+def _validate_development_projection(value: Any, screen_id: str) -> list[dict]:
+    value = f.closed(value, "portable.population", (
+        "mmbu_public_content_used", "rows", "schema_id", "schema_version", "screen_id",
+        "source_payloads_included",
+    ))
+    f.literal(value["schema_id"], "portable.population.schema_id",
+              "mmbu.biomedical.replicated_response_development_projection")
+    f.literal(value["schema_version"], "portable.population.schema_version", 1)
+    f.literal(value["screen_id"], "portable.population.screen_id", screen_id)
+    f.literal(value["mmbu_public_content_used"], "portable.population.mmbu_public_content_used", False)
+    f.literal(value["source_payloads_included"], "portable.population.source_payloads_included", False)
+    rows = f.array(value["rows"], "portable.population.rows", nonempty=True)
+    f.literal(len(rows), "portable.population.rows.length", 256)
+    row_ids = []
+    unit_ids = []
+    counts: dict[str, int] = defaultdict(int)
+    for index, row in enumerate(rows):
+        path = f"portable.population.rows[{index}]"
+        f.closed(row, path, (
+            "context_target", "independent_unit_id", "requested_context_fields", "row_id", "source_id",
+            "task_target",
+        ))
+        for key in ("independent_unit_id", "row_id", "task_target"):
+            f.text(row[key], f"{path}.{key}")
+        f.require(row["source_id"] in _CONTEXT, f"{path}.source_id", "unsupported source")
+        expected_fields, _ = _CONTEXT[row["source_id"]]
+        f.literal(row["requested_context_fields"], f"{path}.requested_context_fields", expected_fields)
+        f.require(type(row["context_target"]) is dict, f"{path}.context_target", "must be an object")
+        row_ids.append(row["row_id"])
+        unit_ids.append(row["independent_unit_id"])
+        counts[row["source_id"]] += 1
+    f.require(len(set(row_ids)) == len(row_ids), "portable.population.rows", "row ids must be unique")
+    f.require(len(set(unit_ids)) == len(unit_ids), "portable.population.rows", "independent units must be unique")
+    f.literal(dict(sorted(counts.items())), "portable.population.source_counts",
+              {"busbra": 128, "pathmnist": 128})
+    return rows
+
+
+def verify_portable_evidence_bundle(root: Path, retention: dict) -> dict:
+    """Verify a portable response-screen bundle and replay every reported metric.
+
+    The bundle intentionally contains predictions and narrow target metadata only.
+    Source images, compiled portfolios, model weights, and adapter payloads are
+    forbidden even when a freshly sealed evidence manifest lists them.
+    """
+    root = Path(root)
+    evidence_manifest = evidence.verify_bundle_root(root, retention)
+    member_paths = {member["path"] for member in evidence_manifest["members"]}
+    forbidden_suffixes = (".bin", ".ckpt", ".npz", ".pt", ".pth", ".safetensors", ".zip")
+    for relative in member_paths:
+        f.require(not relative.lower().endswith(forbidden_suffixes), "portable.members",
+                  f"heavy or source payload {relative!r} is forbidden")
+
+    manifest_path = "config/frozen-manifest.json"
+    population_path = "population/development.json"
+    f.require({manifest_path, population_path}.issubset(member_paths), "portable.members",
+              "frozen manifest and development projection are required")
+    manifest_raw = (root / manifest_path).read_bytes()
+    manifest = validate_manifest(canonical.loads(manifest_raw))
+    manifest_sha256 = canonical.raw_digest(manifest_raw)
+    rows = _validate_development_projection(_portable_json(root, population_path), manifest["screen_id"])
+
+    expected_conditions = conditions(manifest)
+    portfolio_sha256 = None
+    candidate_predictions = {
+        candidate["candidate_id"]: {"base": None, "profiles": {"dual": {}, "task_only": {}}}
+        for candidate in manifest["candidates"]
+    }
+    for index, expected_condition in enumerate(expected_conditions):
+        result_path = f"results/condition-{index}/result.json"
+        reload_path = f"results/condition-{index}/reload-result.json"
+        f.require({result_path, reload_path}.issubset(member_paths), "portable.members",
+                  f"condition {index} result and reload result are required")
+        result = _portable_json(root, result_path)
+        reload = _portable_json(root, reload_path)
+        expected_candidate = candidate_by_id(manifest, expected_condition["candidate_id"])
+        f.literal(result.get("condition"), f"portable.condition[{index}].condition", expected_condition)
+        f.literal(result.get("candidate"), f"portable.condition[{index}].candidate", expected_candidate)
+        f.literal(result.get("status"), f"portable.condition[{index}].status", "passed")
+        f.literal(result.get("terminal_stage"), f"portable.condition[{index}].terminal_stage", "completed")
+        f.literal(result.get("manifest_sha256"), f"portable.condition[{index}].manifest_sha256", manifest_sha256)
+        f.digest(result.get("portfolio_sha256"), f"portable.condition[{index}].portfolio_sha256")
+        if portfolio_sha256 is None:
+            portfolio_sha256 = result["portfolio_sha256"]
+        else:
+            f.literal(result["portfolio_sha256"], f"portable.condition[{index}].portfolio_sha256",
+                      portfolio_sha256)
+        expected_updates = 0 if expected_condition["profile"] == "base" else 1024
+        f.literal(result.get("optimizer_updates"), f"portable.condition[{index}].optimizer_updates",
+                  expected_updates)
+        inventory = result.get("adapter_inventory")
+        f.require(type(inventory) is list, f"portable.condition[{index}].adapter_inventory", "must be an array")
+        f.require((not inventory) if expected_updates == 0 else bool(inventory),
+                  f"portable.condition[{index}].adapter_inventory", "does not match base/adapted condition")
+        for key in ("mmbu_public_content_used", "promotion_eligible", "source_admission_complete"):
+            f.literal(result.get(key), f"portable.condition[{index}].{key}", False)
+        f.literal(result.get("reload_prediction_match"),
+                  f"portable.condition[{index}].reload_prediction_match", True)
+
+        predictions = result.get("development_predictions")
+        f.require(type(predictions) is list, f"portable.condition[{index}].development_predictions",
+                  "must be an array")
+        replayed_metrics = biomedical_lane1.score_predictions(rows, predictions)
+        f.literal(result.get("development_metrics"), f"portable.condition[{index}].development_metrics",
+                  replayed_metrics)
+        f.literal(reload.get("schema_id"), f"portable.condition[{index}].reload.schema_id",
+                  "mmbu.biomedical.replicated_response_reload")
+        f.literal(reload.get("schema_version"), f"portable.condition[{index}].reload.schema_version", 1)
+        f.literal(reload.get("candidate_id"), f"portable.condition[{index}].reload.candidate_id",
+                  expected_condition["candidate_id"])
+        f.literal(reload.get("condition_id"), f"portable.condition[{index}].reload.condition_id",
+                  expected_condition["condition_id"])
+        f.literal(reload.get("network_disabled"), f"portable.condition[{index}].reload.network_disabled", True)
+        f.literal(reload.get("predictions"), f"portable.condition[{index}].reload.predictions", predictions)
+        f.literal(reload.get("metrics"), f"portable.condition[{index}].reload.metrics", replayed_metrics)
+
+        target = candidate_predictions[expected_condition["candidate_id"]]
+        if expected_condition["profile"] == "base":
+            target["base"] = predictions
+        else:
+            target["profiles"][expected_condition["profile"]][str(expected_condition["training_seed"])] = predictions
+
+    analysis_path = "analysis/post-output-bootstrap.json"
+    f.require(analysis_path in member_paths, "portable.members", "post-output analysis is required")
+    analysis = _portable_json(root, analysis_path)
+    f.require(type(analysis) is dict, "portable.analysis", "must be an object")
+    required_analysis_keys = {"bootstrap", "candidates", "inference", "promotion_eligible"}
+    f.require(required_analysis_keys.issubset(analysis), "portable.analysis", "is missing required fields")
+    f.require(set(analysis).issubset(required_analysis_keys | {"analysis_commit", "source_result_root"}),
+              "portable.analysis", "contains unknown fields")
+    f.literal(analysis["inference"], "portable.analysis.inference",
+              "post_output_exploratory_fixed_development_population")
+    f.literal(analysis["promotion_eligible"], "portable.analysis.promotion_eligible", False)
+    bootstrap = f.closed(analysis["bootstrap"], "portable.analysis.bootstrap", ("confidence", "iterations", "seed"))
+    f.integer(bootstrap["iterations"], "portable.analysis.bootstrap.iterations", minimum=1)
+    f.integer(bootstrap["seed"], "portable.analysis.bootstrap.seed", minimum=0)
+    f.require(type(bootstrap["confidence"]) in (int, float) and not isinstance(bootstrap["confidence"], bool)
+              and 0 < bootstrap["confidence"] < 1, "portable.analysis.bootstrap.confidence",
+              "must be between zero and one")
+    f.require(type(analysis["candidates"]) is dict, "portable.analysis.candidates", "must be an object")
+    f.literal(set(analysis["candidates"]), "portable.analysis.candidates.keys", set(candidate_predictions))
+    for candidate_id, stored in candidate_predictions.items():
+        f.require(stored["base"] is not None, f"portable.analysis.{candidate_id}.base", "is required")
+        replayed = analyze_candidate(
+            rows, stored["base"], stored["profiles"], iterations=bootstrap["iterations"],
+            bootstrap_seed=bootstrap["seed"], confidence=bootstrap["confidence"],
+        )
+        f.literal(analysis["candidates"][candidate_id], f"portable.analysis.candidates.{candidate_id}", replayed)
+
+    return {
+        "analysis_replayed": True,
+        "all_metrics_replayed": True,
+        "evidence_root_sha256": retention["root_sha256"],
+        "promotion_eligible": False,
+        "verified_conditions": len(expected_conditions),
+        "verified_development_rows": len(rows),
+    }
+
+
 __all__ = [
-    "candidate_by_id", "condition_by_index", "conditions", "load_manifest", "official_context_row",
-    "paired_seed_mean_task_bootstrap", "validate_manifest",
+    "analyze_candidate", "candidate_by_id", "condition_by_index", "conditions", "grade_task_rows", "load_manifest",
+    "official_context_row", "paired_seed_mean_task_bootstrap", "validate_manifest",
+    "verify_portable_evidence_bundle",
 ]

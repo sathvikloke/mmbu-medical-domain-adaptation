@@ -1,5 +1,11 @@
 # Public model repository audit: descriptive intelligence only
 
+> **Historical snapshot, superseded for current competitive intelligence.** This file preserves the October 23 v13
+> observation at revision `ecea8e0bb19c9f26c36f658d6acbf2323af3f73a`. The public repository later changed. Use
+> [`TRACK3_COMPETITIVE_INTELLIGENCE_2026-10-26.md`](TRACK3_COMPETITIVE_INTELLIGENCE_2026-10-26.md) for the
+> revision-pinned October 26 v15 observation and current threat interpretation. Neither snapshot has model-selection
+> or promotion authority.
+
 **Observed:** October 23, 2026  
 **Evidence class:** self-authored public model card and Hugging Face repository metadata; not official participation,
 leaderboard, evaluator, or independent-reproduction evidence  

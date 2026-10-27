@@ -1,0 +1,31 @@
+{
+  "schema_id": "mmbu.reviewer_outreach",
+  "schema_version": 1,
+  "sent_at": "2026-10-26T21:31:29Z",
+  "sender": "Aditya Raut <aditya.sraut09@gmail.com>",
+  "recipient": "Conor Lowry, MD <conor.lowry@uky.edu>",
+  "subject": "Brief ChestMNIST label-review question for an MMBU project",
+  "gmail_message_id": "1a17a2027a0fea00",
+  "gmail_thread_id": "1a17a2027a0fea00",
+  "rfc_message_id": "<CAFNOYD1jJWcdOLDKOu8FOM5NCY=Ye6wpPL8oMdFEbbpuUowS7Q@mail.gmail.com>",
+  "public_qualification_source": "https://medicine.uky.edu/users/cmlo233",
+  "public_qualification_observed": "Associate Professor of Radiology; Program Director, Cardiovascular and Thoracic Radiology Fellowship; fellowship training in thoracic radiology",
+  "request_scope": [
+    "review the proposed ChestMNIST positive-label quality protocol",
+    "consider a later small fixed sample if the protocol is reasonable",
+    "refer another thoracic radiologist if unavailable"
+  ],
+  "explicit_exclusions": [
+    "patient diagnosis",
+    "patient-care advice",
+    "private data access",
+    "source admission",
+    "model approval"
+  ],
+  "decision_projection": {
+    "reviewer_agreement_received": false,
+    "review_authority_granted": false,
+    "source_admitted": false
+  },
+  "handling_note": "A sent request is not reviewer acceptance, qualification adjudication, conflict clearance, review evidence, or source authority."
+}

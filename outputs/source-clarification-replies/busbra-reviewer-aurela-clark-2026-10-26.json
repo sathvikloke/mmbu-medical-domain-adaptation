@@ -1,0 +1,39 @@
+{
+  "schema_id": "mmbu.reviewer_outreach",
+  "schema_version": 1,
+  "sent_at": "2026-10-27T01:32:22Z",
+  "sender": "Aditya Raut <aditya.sraut09@gmail.com>",
+  "recipient": "Aurela Clark, MD <axhaf2@uky.edu>",
+  "subject": "Small breast-ultrasound dataset review for an MMBU project",
+  "gmail_message_id": "1a17afcad14e56a1",
+  "gmail_thread_id": "1a17afcad14e56a1",
+  "rfc_message_id": "<CAFNOYD2Mt39RHn2_oH22Wgv6uijdaLjHv4K3Sx661j0+-VdDuQ@mail.gmail.com>",
+  "qualification_source": "https://medicine.uky.edu/departments/radiology/users/axhaf2",
+  "qualification_claim": "University of Kentucky identifies Dr. Clark as Associate Professor of Radiology and Program Director of the Breast Radiology Fellowship.",
+  "source_id": "busbra",
+  "source_version": "1.0",
+  "review_population_records": 108,
+  "requested_scope": [
+    "image interpretability",
+    "image-mask match",
+    "mask usability and apparent completeness",
+    "overlay and cropping shortcut review"
+  ],
+  "excluded_scope": [
+    "diagnosis",
+    "patient-care advice",
+    "model approval",
+    "source admission",
+    "training authorization"
+  ],
+  "decision_projection": {
+    "reviewer_agreement_received": false,
+    "qualification_adjudicated": false,
+    "conflict_review_complete": false,
+    "review_opened": false,
+    "review_complete": false,
+    "source_admitted": false,
+    "training_authorized": false
+  },
+  "handling_note": "A sent request and public profile do not establish acceptance, authenticated qualification, independence, review evidence, source admission, or model-use authority."
+}

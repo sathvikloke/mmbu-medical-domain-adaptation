@@ -88,8 +88,8 @@ For native processors, use the separate environment and exact pins in [processor
 9. [Decisions](DECISIONS.md) and [experiment workflow](EXPERIMENT_WORKFLOW.md): identify what evidence permits your next action.
 10. [Release rehearsal](RELEASE_REHEARSAL.md): use the fail-closed runbook only after one candidate passes the frozen
     confirmation rule; it is not upload authorization.
-11. [BUSI-WHU confirmation readiness](BUSI_WHU_CONFIRMATION_READINESS_2026-10-25.md): review the frozen Qwen3.5-9B
-    Track 2 confirmation mechanics and every real-world gate that still blocks execution.
+11. [BUSI-WHU confirmation readiness](BUSI_WHU_CONFIRMATION_READINESS_2026-10-25.md): review the preserved provisional
+    mechanics, the withdrawn candidate identity, and every real-world gate that still blocks execution.
 12. [Contributing](../../CONTRIBUTING.md): open a scoped branch and request review.
 
 ## Choose a first contribution
@@ -101,7 +101,7 @@ Useful work can proceed in parallel:
 | Workstream | Concrete starting point | Completion evidence |
 | --- | --- | --- |
 | Contract | Reconcile the dated [organizer reply](ORGANIZER_CLARIFICATIONS.md) with the remaining protocol conflicts; retain the older [question draft](../../outputs/mmbu-precompute/docs/organizer-questions.md) only as historical evidence | Final context prompt, raw task-card bytes plus pinned harness/runtime, duplicate-case disposition, packaging rules, and fixtures |
-| Data | Complete the [BUS-BRA human review packet](BUSBRA_HUMAN_REVIEW_PACKET.md), then admit only the exact approved records/tasks/purposes; keep BUS-UCLM blocked pending its license/schema resolution | Named qualified reviewers, 244-record dispositions, provenance decision, and separate rights/purpose/release sign-off |
+| Data | For the fastest real-training gate, complete the [BUS-BRA train-only evidence sprint](BUSBRA_TRAIN_ONLY_EVIDENCE_SPRINT.md) and generic admission chain; retain the full [BUS-BRA human review packet](BUSBRA_HUMAN_REVIEW_PACKET.md) for adaptive-development/confirmation claims; keep BUS-UCLM blocked pending its license/schema resolution | Accountable visual-QA and rights/purpose evidence for training; qualified clinical review remains mandatory for decision-bearing use |
 | Compute | Use the current UTC MOCS runbook supplied with the Phase 1 work order; treat the historical [Einstein preflight](../../outputs/mmbu-precompute/docs/einstein-preflight.md) as obsolete context only | Hardware, allocation, runtime, quota, scheduler, and cost facts from the actual MOCS account |
 | Software | Reproduce a focused test or investigate a recorded counterexample | New command/output receipt and a reviewed regression fix |
 

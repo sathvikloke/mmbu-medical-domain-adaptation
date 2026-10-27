@@ -51,7 +51,8 @@
     "forbidden_substitutes": ["bus-uclm", "mmbu-public"],
     "minimum_independent_patients": 60,
     "role": "confirmation",
-    "source_id": "busi-whu-v3"
+    "source_id": "busi-whu",
+    "source_version": "3"
   },
   "statistics": {
     "bootstrap_draws": 10000,

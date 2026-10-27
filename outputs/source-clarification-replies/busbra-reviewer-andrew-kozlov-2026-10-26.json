@@ -1,0 +1,39 @@
+{
+  "schema_id": "mmbu.reviewer_outreach",
+  "schema_version": 1,
+  "sent_at": "2026-10-27T01:32:22Z",
+  "sender": "Aditya Raut <aditya.sraut09@gmail.com>",
+  "recipient": "Andrew Kozlov, MD <Andrew.Kozlov@utah.edu>",
+  "subject": "Small breast-ultrasound dataset review for an MMBU project",
+  "gmail_message_id": "1a17afcaf0b43d43",
+  "gmail_thread_id": "1a17afcaf0b43d43",
+  "rfc_message_id": "<CAFNOYD20yYxTyEvGp=AoWCjqfEV4FwoikFYeo-Dxb_raeu6bJw@mail.gmail.com>",
+  "qualification_source": "https://medicine.utah.edu/radiology/education/fellowships/breast-imaging",
+  "qualification_claim": "University of Utah identifies Dr. Kozlov as Women's Imaging Fellowship Program Director; the fellowship covers breast ultrasound and other breast-imaging methods.",
+  "source_id": "busbra",
+  "source_version": "1.0",
+  "review_population_records": 108,
+  "requested_scope": [
+    "image interpretability",
+    "image-mask match",
+    "mask usability and apparent completeness",
+    "overlay and cropping shortcut review"
+  ],
+  "excluded_scope": [
+    "diagnosis",
+    "patient-care advice",
+    "model approval",
+    "source admission",
+    "training authorization"
+  ],
+  "decision_projection": {
+    "reviewer_agreement_received": false,
+    "qualification_adjudicated": false,
+    "conflict_review_complete": false,
+    "review_opened": false,
+    "review_complete": false,
+    "source_admitted": false,
+    "training_authorized": false
+  },
+  "handling_note": "A sent request and public profile do not establish acceptance, authenticated qualification, independence, review evidence, source admission, or model-use authority."
+}

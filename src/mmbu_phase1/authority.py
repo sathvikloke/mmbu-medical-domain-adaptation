@@ -71,6 +71,18 @@ RUNTIME_EVIDENCE_BUNDLE_PATHS = {
     key: "authority/status-evidence/" + key.replace("_", "-") + ".json"
     for key in RUNTIME_EVIDENCE_REPOSITORY_PATHS
 }
+STATUS_SUCCESSOR_EVIDENCE_REPOSITORY_PATHS = {
+    "status_successor_predecessor": "outputs/status-authority-reconciliation/predecessor-current-status-2026-10-26.json",
+    "status_successor_report": "docs/team/BUSI_WHU_DECISION_INTEGRITY_REPAIR_2026-10-26.md",
+}
+STATUS_SUCCESSOR_EVIDENCE_SHA256 = {
+    "status_successor_predecessor": "053e0f72bca986e2e2afc0db65721f7bc28559f22fb39ab76e2d8dc2c6d6a4cd",
+    "status_successor_report": "677466ab445f40bdbbc168c3fdc9bf15f079d9e2668a3e6081c7c58f304c692c",
+}
+RUNTIME_EVIDENCE_BUNDLE_PATHS.update({
+    key: "authority/status-evidence/" + key.replace("_", "-") + Path(relative).suffix
+    for key, relative in STATUS_SUCCESSOR_EVIDENCE_REPOSITORY_PATHS.items()
+})
 RUNTIME_FACTS = {
     "runtime.b1_native_admission": {
         "value": "synthetic_engineering_only",
@@ -221,6 +233,12 @@ def runtime_status_evidence_bytes(root: Path, record: dict) -> dict[str, bytes]:
         f.require(canonical.raw_digest(data) == RUNTIME_EVIDENCE_SHA256[key], relative,
                   "bytes differ from the independently pinned status evidence")
         result[key] = data
+    if record.get("phase") == "phase1_returned_blocked":
+        for key, relative in STATUS_SUCCESSOR_EVIDENCE_REPOSITORY_PATHS.items():
+            data = paths.member_bytes(Path(root), relative, relative)
+            f.require(canonical.raw_digest(data) == STATUS_SUCCESSOR_EVIDENCE_SHA256[key], relative,
+                      "bytes differ from the independently pinned status-successor evidence")
+            result[key] = data
     return result
 
 
@@ -289,6 +307,31 @@ def validate_runtime_status_evidence(
                   "bootstrap authority is allowed only in the explicit generation-zero workflow")
         f.require(record["facts"] == _bootstrap_fact_rows(), "current_status.facts",
                   "predecessor-free authority must be the exact closed bootstrap state")
+        return
+    if record["phase"] == "phase1_returned_blocked":
+        predecessor_raw = store.artifact(
+            STATUS_SUCCESSOR_EVIDENCE_SHA256["status_successor_predecessor"],
+            "current_status.successor.predecessor",
+        )
+        try:
+            predecessor = canonical.loads_canonical(predecessor_raw)
+        except canonical.CanonicalJSONError as exc:
+            f.fail("current_status.successor.predecessor", f"is not canonical ({exc})")
+        status.validate_status_transition(predecessor, record)
+        repair = facts[status.REPAIR_FACT_ID]
+        evidence_scope = facts[status.EVIDENCE_SCOPE_FACT_ID]
+        f.require(
+            repair["evidence_digests"]
+            == [STATUS_SUCCESSOR_EVIDENCE_SHA256["status_successor_report"]]
+            == evidence_scope["evidence_digests"],
+            "current_status.successor.repair_evidence",
+            "must bind the independently pinned repair report",
+        )
+        store.artifact(
+            STATUS_SUCCESSOR_EVIDENCE_SHA256["status_successor_report"],
+            "current_status.successor.repair_report",
+        )
+        validate_runtime_status_evidence(predecessor, store)
         return
     f.require(record["record_digest"] == EXPECTED_CURRENT_STATUS_DIGEST, "current_status.record_digest",
               "must equal the independently pinned reconciled authority head")

@@ -21,7 +21,7 @@ import tempfile
 from typing import Any
 
 from mmbu_phase1 import (authority, canonical, claims as claim_rules, decisions, evidence, fields as f, lineage, paths,
-                         phase1a, prompt_contract, scope)
+                         phase1a, prompt_contract, scope, status)
 from mmbu_phase1.store import RecordStore
 
 COMMANDS = (
@@ -304,9 +304,22 @@ def validate(bundle_root: Path, retention_path: Path, repo: Path | None = None) 
     states = store.records("source_state")
     f.require(len(states) == 1, "bundle", "exactly one source-state record")
     source_state = evidence.validate_source_state(states[0])
+    current_status = canonical.loads_canonical(read("authority/current-status.json"))
     statuses = store.records("current_status")
-    f.require(len(statuses) == 1, "bundle", "exactly one current-status authority copy (no second overlay)")
-    authority.validate_runtime_status_evidence(statuses[0], store)
+    status_digests = {row["record_digest"] for row in statuses}
+    expected_status_digests = {current_status["record_digest"]}
+    if current_status["phase"] == "phase1_returned_blocked":
+        predecessor = next(
+            row for row in current_status["facts"]
+            if row["fact_id"] == status.PREDECESSOR_FACT_ID
+        )
+        expected_status_digests.add(predecessor["value"])
+    f.require(
+        len(statuses) == len(expected_status_digests)
+        and status_digests == expected_status_digests,
+        "bundle", "current-status records must be exactly the authority head and its bound predecessor",
+    )
+    authority.validate_runtime_status_evidence(current_status, store)
     if repo is not None:
         patch = read("source/canonical.patch") if "source/canonical.patch" in manifest_paths else None
         evidence.check_source_state(source_state, Path(repo), patch)

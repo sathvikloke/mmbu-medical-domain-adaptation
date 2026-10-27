@@ -145,6 +145,39 @@ class EvidenceDocumentationTests(unittest.TestCase):
             self.assertIn(marker, requirement)
         self.assertIn("EXTERNAL_TRUST_ROOT_REQUIREMENT.md", current)
 
+    def test_busbra_train_only_reviewer_outreach_is_retained_without_authority(self):
+        outreach = (REPO / "docs/team/SOURCE_CLARIFICATION_OUTREACH.md").read_text(
+            encoding="utf-8"
+        )
+        expected = {
+            "busbra-reviewer-aurela-clark-2026-10-26.json": (
+                "1a17afcad14e56a1",
+                "Aurela Clark, MD <axhaf2@uky.edu>",
+            ),
+            "busbra-reviewer-andrew-kozlov-2026-10-26.json": (
+                "1a17afcaf0b43d43",
+                "Andrew Kozlov, MD <Andrew.Kozlov@utah.edu>",
+            ),
+        }
+
+        for filename, (message_id, recipient) in expected.items():
+            receipt = json.loads(
+                (REPO / "outputs/source-clarification-replies" / filename).read_text(
+                    encoding="utf-8"
+                )
+            )
+            self.assertEqual(receipt["gmail_message_id"], message_id)
+            self.assertEqual(receipt["recipient"], recipient)
+            self.assertEqual(receipt["review_population_records"], 108)
+            self.assertFalse(receipt["decision_projection"]["reviewer_agreement_received"])
+            self.assertFalse(receipt["decision_projection"]["source_admitted"])
+            self.assertFalse(receipt["decision_projection"]["training_authorized"])
+
+        self.assertIn("Aurela Clark", outreach)
+        self.assertIn("Andrew Kozlov", outreach)
+        self.assertIn("108-record train-only", outreach)
+        self.assertIn("no agreement or review authority exists", outreach)
+
     def test_response_screen_is_portable_but_explicitly_non_promotional(self):
         report = (
             REPO / "docs/team/REPLICATED_RESPONSE_SCREEN_2026-10-25.md"
@@ -167,7 +200,7 @@ class EvidenceDocumentationTests(unittest.TestCase):
         )
 
         self.assertIn("passed **661 Phase 1 CPU tests**", report)
-        self.assertIn("| Current Phase 1 suite | **687 tests passed", report)
+        self.assertIn("| Current Phase 1 suite | **688 tests passed", report)
         self.assertIn("20,384 official NIH test images", report)
         self.assertIn("no public patch-to-slide/patient mapping", report)
         self.assertNotIn("| Phase 1 suite | **623 tests passed", report)

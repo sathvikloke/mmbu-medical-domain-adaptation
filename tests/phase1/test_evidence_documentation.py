@@ -167,7 +167,7 @@ class EvidenceDocumentationTests(unittest.TestCase):
         )
 
         self.assertIn("passed **661 Phase 1 CPU tests**", report)
-        self.assertIn("| Current Phase 1 suite | **661 tests passed", report)
+        self.assertIn("| Current Phase 1 suite | **687 tests passed", report)
         self.assertIn("20,384 official NIH test images", report)
         self.assertIn("no public patch-to-slide/patient mapping", report)
         self.assertNotIn("| Phase 1 suite | **623 tests passed", report)

@@ -26,10 +26,10 @@ is a review aid only and does not change any of those boundaries.
 | Train-only packet receipt digest | `7a54bfc6a3dac0f13b0a4633b47da0711b20d467706f041f8121bc71833e3937` |
 | Evidence tar SHA-256 | `06d5a69094deb6a673954649769e837127dde27db51678aa84a7b678619c364f` |
 | Validation record digest | `c85877377cfdc049d422881c74a45e070d3e4593e9a196eaf288d50369b7796b` |
-| Offline reviewer repository commit | `5fa1bd9f58b4ca0eabd619539c67b0bec2dac79c` |
-| Offline reviewer HTML bytes | `8010709` |
-| Offline reviewer HTML SHA-256 | `8a05bb6c6e101b92679bd927847baff80a1475c13b7799f98ad95acec506f270` |
-| Offline reviewer generation-receipt digest | `064075a8379d1b8c39fa16d2913f7cc17b67141fc5b8e15a6dc0c7e93fa2a623` |
+| Offline reviewer repository commit | `486243b26e98d5370339a282802f9c60ff32fc3d` |
+| Offline reviewer HTML bytes | `8011103` |
+| Offline reviewer HTML SHA-256 | `f5f7ee64fb4131ca687d4852c7e40a9a83f8c955ae0a8d709b7fa5ee8db3ef99` |
+| Offline reviewer generation-receipt digest | `cbf2d0ae6abf92959efc3b002c88e7668ef8f094cd4b6615214a952db3d71503` |
 
 ## Durable location
 
@@ -45,7 +45,7 @@ run roots and logs were preserved.
 The separate generated reviewer workspace and its generation receipt are stored at:
 
 ```text
-/storage/scr/npl015/mmbu-train-review-ui/2026-10-26-5fa1bd9
+/storage/scr/npl015/mmbu-train-review-ui/2026-10-26-486243b
 ```
 
 Both files are read-only and were published without replacing the packet or any earlier evidence.
@@ -61,10 +61,15 @@ Both files are read-only and were published without replacing the packet or any 
    unsafe archive member types and paths, rehashed every receipt-bound packet member, recomputed both receipt and
    manifest digests, confirmed the 244/108 record counts, and verified that every authority and MMBU-public-use flag
    remained false.
-4. CPU job `86233` reverified the train packet receipt and every member before generating the offline reviewer. It
-   completed with exit code `0`. A separate post-job check recomputed the HTML and canonical receipt digests, counted
-   exactly 108 records and 216 embedded PNG data URLs, found no `http://` or `https://` URL, and reconfirmed every
-   authority flag as false.
+4. CPU job `86233` produced the first offline reviewer and completed with exit code `0`. Cold code review then found
+   two integrity gaps: the generator did not recheck an asset digest when embedding after initial packet verification,
+   and a hand-edited draft could place reviewer identity fields inside an answer row. Its output and logs were
+   preserved unchanged and marked superseded; nothing was overwritten.
+5. Commit `486243b26e98d5370339a282802f9c60ff32fc3d` added descriptor-bound asset digest revalidation and global-only
+   reviewer identity, with two failing regression tests before the repair. CPU job `86235` regenerated the controlling
+   workspace in a new root and completed with exit code `0`. A separate post-job check recomputed the HTML and
+   canonical receipt digests, counted exactly 108 records and 216 embedded PNG data URLs, found no `http://` or
+   `https://` URL, and reconfirmed every authority flag as false.
 
 The passing validation record, not the Slurm state of build job `86223`, is the controlling evidence for the published
 artifact. The failed job state and cleanup error remain part of the provenance and must not be erased.

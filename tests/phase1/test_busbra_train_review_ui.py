@@ -12,6 +12,7 @@ import tempfile
 import unittest
 from unittest import mock
 
+import mmbu_phase1.busbra_train_review_ui as review_ui
 from mmbu_phase1.busbra_train_qa import VISUAL_FIELDS, build_train_qa_packet
 from mmbu_phase1.busbra_train_review_ui import build_review_ui
 
@@ -128,6 +129,23 @@ class BusbraTrainReviewUiTests(unittest.TestCase):
             build_review_ui(self.packet, self.receipt["receipt_digest"], self.output)
         self.assertFalse(self.output.exists())
 
+    def test_rechecks_asset_digest_during_embedding(self):
+        image = next(self.packet.glob("assets/*/image.png"))
+        real_verify = review_ui._verify_packet
+
+        def verify_then_mutate(packet_dir, expected_digest):
+            result = real_verify(packet_dir, expected_digest)
+            image.write_bytes(PNG + b"changed-after-verification")
+            return result
+
+        with mock.patch(
+            "mmbu_phase1.busbra_train_review_ui._verify_packet",
+            side_effect=verify_then_mutate,
+        ):
+            with self.assertRaisesRegex(ValueError, "changed after packet verification"):
+                build_review_ui(self.packet, self.receipt["receipt_digest"], self.output)
+        self.assertFalse(self.output.exists())
+
     def test_refuses_to_overwrite_existing_output(self):
         self.output.write_text("competitor", encoding="utf-8")
         with self.assertRaises(FileExistsError):
@@ -164,6 +182,21 @@ class BusbraTrainReviewUiTests(unittest.TestCase):
         self.assertIn("Excluded records may not retain training targets", payload)
         self.assertIn("Invalid closed-vocabulary value", payload)
         self.assertIn("Eligible records require usable image and modality evidence", payload)
+
+    def test_record_drafts_cannot_override_global_reviewer_identity(self):
+        build_review_ui(self.packet, self.receipt["receipt_digest"], self.output)
+        payload = self.output.read_text(encoding="utf-8")
+        bootstrap_text = re.search(
+            r'<script id="bootstrap" type="application/json">(.*?)</script>',
+            payload, flags=re.DOTALL,
+        ).group(1)
+        bootstrap = json.loads(bootstrap_text)
+
+        self.assertEqual(bootstrap["reviewFields"], list(VISUAL_FIELDS[8:]))
+        self.assertIn(
+            "...answers[record.record_id],reviewer_id:check.reviewer,reviewed_at:check.reviewedAt",
+            payload,
+        )
 
     @unittest.skipUnless(shutil.which("node"), "Node.js is optional")
     def test_embedded_javascript_is_syntactically_valid(self):

@@ -12,6 +12,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import stat
 import tempfile
 
 from .busbra_train_qa import VISUAL_FIELDS, _canonical_digest, _safe_relative
@@ -26,7 +27,7 @@ from .busbra_train_qa_validation import (
 
 
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
-REVIEW_FIELDS = VISUAL_FIELDS[6:]
+REVIEW_FIELDS = VISUAL_FIELDS[8:]
 
 
 def _safe_json(value: object) -> str:
@@ -36,18 +37,42 @@ def _safe_json(value: object) -> str:
     ).replace("&", "\\u0026").replace("<", "\\u003c").replace(">", "\\u003e")
 
 
-def _asset(packet_dir: Path, relative_value: object, bound_paths: set[str], label: str) -> str:
+def _asset(packet_dir: Path, relative_value: object, bound_members: dict[str, dict], label: str) -> str:
     relative = _safe_relative(relative_value, label)
     relative_text = relative.as_posix()
-    if relative_text not in bound_paths:
+    member = bound_members.get(relative_text)
+    if member is None:
         raise ValueError(f"{label} is not bound by the packet receipt")
     path = packet_dir.joinpath(*relative.parts)
     if path.is_symlink():
         raise ValueError(f"{label} may not be a symbolic link")
+    nofollow = getattr(os, "O_NOFOLLOW", None)
+    if nofollow is None:
+        raise OSError("this platform cannot securely open review assets")
     try:
-        payload = path.read_bytes()
+        descriptor = os.open(path, os.O_RDONLY | nofollow)
     except OSError as exc:
         raise ValueError(f"{label} is unreadable") from exc
+    try:
+        before = os.fstat(descriptor)
+        if not stat.S_ISREG(before.st_mode):
+            raise ValueError(f"{label} must be a regular file")
+        chunks = []
+        while True:
+            chunk = os.read(descriptor, 1024 * 1024)
+            if not chunk:
+                break
+            chunks.append(chunk)
+        after = os.fstat(descriptor)
+    finally:
+        os.close(descriptor)
+    payload = b"".join(chunks)
+    if (
+        before.st_dev != after.st_dev or before.st_ino != after.st_ino or
+        before.st_size != after.st_size or before.st_mtime_ns != after.st_mtime_ns or
+        len(payload) != member["bytes"] or hashlib.sha256(payload).hexdigest() != member["sha256"]
+    ):
+        raise ValueError(f"{label} changed after packet verification")
     if not payload.startswith(PNG_SIGNATURE):
         raise ValueError(f"{label} does not have a PNG signature")
     return "data:image/png;base64," + base64.b64encode(payload).decode("ascii")
@@ -57,8 +82,9 @@ def _bootstrap(packet_dir: Path, receipt: dict, manifest: dict) -> dict:
     members = receipt.get("members")
     if not isinstance(members, list):
         raise ValueError("packet receipt members are missing")
-    bound_paths = {
-        row.get("path") for row in members if isinstance(row, dict) and isinstance(row.get("path"), str)
+    bound_members = {
+        row["path"]: row for row in members
+        if isinstance(row, dict) and isinstance(row.get("path"), str)
     }
     records = manifest.get("records")
     if not isinstance(records, list):
@@ -93,10 +119,10 @@ def _bootstrap(packet_dir: Path, receipt: dict, manifest: dict) -> dict:
             "decoded_height": row.get("decoded_height"),
             "mask_derived_bbox_xywh": row.get("mask_derived_bbox_xywh"),
             "image_data_uri": _asset(
-                packet_dir, row["image_path"], bound_paths, f"record {record_id}.image_path",
+                packet_dir, row["image_path"], bound_members, f"record {record_id}.image_path",
             ),
             "mask_data_uri": _asset(
-                packet_dir, row["mask_path"], bound_paths, f"record {record_id}.mask_path",
+                packet_dir, row["mask_path"], bound_members, f"record {record_id}.mask_path",
             ),
         })
     return {
@@ -211,6 +237,7 @@ function validateRow(record,row) {{
   const invalid=Object.keys(vocab).filter(k=>!vocab[k].includes(row[k])); if(invalid.length) return "Invalid closed-vocabulary value: "+invalid.join(", ");
   const targets=row.permitted_training_targets||[];
   if(!Array.isArray(targets) || JSON.stringify(targets)!==JSON.stringify([...new Set(targets)].sort()) || targets.some(target=>!model.vocabularies.targets.includes(target))) return "Invalid or noncanonical training targets";
+  if(row.notes!==undefined && typeof row.notes!=="string") return "Notes must be text";
   if(row.final_disposition==="eligible" && !targets.length) return "Eligible records require at least one training target";
   if(row.final_disposition==="eligible" && (row.asset_match!=="yes" || row.image_interpretable!=="yes" || row.modality_body_part_supported!=="yes")) return "Eligible records require usable image and modality evidence";
   if(row.final_disposition==="exclude" && targets.length) return "Excluded records may not retain training targets";
@@ -227,6 +254,7 @@ function validateForExport() {{
 function draftObject() {{ return {{schema:model.draftSchema,packet_receipt_digest:model.receiptDigest,reviewer_id:byId("reviewer-id").value,reviewed_at:byId("reviewed-at").value,answers:model.records.map(r=>({{record_id:r.record_id,...answers[r.record_id]}})),review_complete:false,source_admission_authorized:false,training_ready:false,model_use_authorized:false}}; }}
 function validateDraft(draft) {{
   if(!draft || draft.schema!==model.draftSchema || draft.packet_receipt_digest!==model.receiptDigest || !Array.isArray(draft.answers)) throw new Error("Foreign or incomplete draft: schema or receipt mismatch");
+  const draftKeys=["schema","packet_receipt_digest","reviewer_id","reviewed_at","answers","review_complete","source_admission_authorized","training_ready","model_use_authorized"].sort(); if(JSON.stringify(Object.keys(draft).sort())!==JSON.stringify(draftKeys)) throw new Error("Foreign or incomplete draft: unknown top-level field");
   const expected=model.records.map(r=>r.record_id).sort(), actual=draft.answers.map(r=>r&&r.record_id).sort();
   if(JSON.stringify(expected)!==JSON.stringify(actual) || new Set(actual).size!==actual.length) throw new Error("Foreign or incomplete draft: record population mismatch");
   const allowed=new Set(["record_id",...model.reviewFields]); if(draft.answers.some(row=>!row || typeof row!=="object" || Object.keys(row).some(key=>!allowed.has(key)))) throw new Error("Foreign or incomplete draft: unknown answer field");
@@ -240,7 +268,7 @@ function download(name,type,payload) {{ const blob=new Blob([payload],{{type}}),
 function csvCell(value) {{ const text=String(value??""); return /[",\\r\\n]/.test(text) ? `"${{text.replaceAll('"','""')}}"` : text; }}
 function exportCsv() {{
   const check=validateForExport(); if(check.errors.length){{status(check.errors.join("\\n"));return;}}
-  const lines=[model.visualFields.map(csvCell).join(",")]; model.records.forEach(record=>{{ const row={{record_id:record.record_id,case_id:record.case_id,selection_role:record.selection_role,mandatory_reasons:record.mandatory_reasons.join("|"),image_path:record.image_path,mask_path:record.mask_path,reviewer_id:check.reviewer,reviewed_at:check.reviewedAt,...answers[record.record_id]}}; row.permitted_training_targets=(row.permitted_training_targets||[]).sort().join("|"); lines.push(model.visualFields.map(field=>csvCell(row[field])).join(",")); }}); download("visual-review-completed.csv","text/csv;charset=utf-8",lines.join("\\n")+"\\n"); status("Validated CSV export created. Run the separate Python validator before any downstream decision.",true);
+  const lines=[model.visualFields.map(csvCell).join(",")]; model.records.forEach(record=>{{ const row={{record_id:record.record_id,case_id:record.case_id,selection_role:record.selection_role,mandatory_reasons:record.mandatory_reasons.join("|"),image_path:record.image_path,mask_path:record.mask_path,...answers[record.record_id],reviewer_id:check.reviewer,reviewed_at:check.reviewedAt}}; row.permitted_training_targets=(row.permitted_training_targets||[]).sort().join("|"); lines.push(model.visualFields.map(field=>csvCell(row[field])).join(",")); }}); download("visual-review-completed.csv","text/csv;charset=utf-8",lines.join("\\n")+"\\n"); status("Validated CSV export created. Run the separate Python validator before any downstream decision.",true);
 }}
 byId("save-draft").addEventListener("click",()=>download("busbra-review-draft.json","application/json",JSON.stringify(draftObject(),null,2)+"\\n"));
 byId("load-draft").addEventListener("click",async()=>{{ try{{const file=byId("draft-file").files[0]; if(!file)throw new Error("Choose a JSON draft first"); applyDraft(JSON.parse(await file.text())); status("Draft loaded and receipt identity verified.",true);}}catch(error){{status(error.message);}} }});

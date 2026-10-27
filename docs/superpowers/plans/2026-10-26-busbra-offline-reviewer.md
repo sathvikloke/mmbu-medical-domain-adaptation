@@ -56,7 +56,7 @@
 - Consumes: Task 1 CLI and the independently validated real train packet receipt.
 - Produces: exact offline-generation instructions and a receipt for the real reviewer HTML artifact.
 
-- [ ] Add fail-closed generation/opening/export instructions and the authority boundary to both documents.
-- [ ] Extract the validated tar on node-local or local storage, generate the real HTML, verify its generation receipt and SHA-256, and publish it without overwriting prior evidence.
-- [ ] Run focused tests, the full suite, link verification, compilation, and `git diff --check`.
-- [ ] Commit and push the evidence/documentation update to PR #29.
+- [x] Add fail-closed generation/opening/export instructions and the authority boundary to both documents.
+- [x] Extract the validated tar on node-local or local storage, generate the real HTML, verify its generation receipt and SHA-256, and publish it without overwriting prior evidence.
+- [x] Run focused tests, the full suite, link verification, compilation, and `git diff --check`.
+- [x] Commit and push the evidence/documentation update to PR #29.

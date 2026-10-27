@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
 
+from mmbu_phase1 import canonical
 from mmbu_phase1.chestmnist_intake import (
     audit_mapping_bytes,
     compile_official_development_manifest,
@@ -19,6 +21,7 @@ from mmbu_phase1.chestmnist_intake import (
 
 REPO = Path(__file__).resolve().parents[2]
 RECEIPT = REPO / "outputs/chestmnist-metadata-audit-2026-10-26/receipt.json"
+DEVELOPMENT_EVIDENCE = REPO / "outputs/chestmnist-development-freeze-2026-10-26"
 
 
 def _mapping(rows: list[tuple[str, int, str]], header: str = "split,index,image_id") -> bytes:
@@ -391,6 +394,51 @@ class ChestMNISTEvidenceTests(unittest.TestCase):
                 "val": {"official_test": 2_465, "official_train_val": 8_754},
             },
         )
+
+    def test_real_development_freeze_is_portable_exact_and_non_admitting(self):
+        expected = {
+            "mapping-audit.json": "a30d1b2165c7b2207f07989f7759a3d21a2da2f5c3b91a7b2e5684ea46f85c19",
+            "patient-roles.csv": "a6c5eb102638c33fd6a88652394e36080e6cfb7ab70d2bd3952cbf0ea7e0613a",
+            "patient-role-freeze-receipt.json": "12c8158ce216c64882391e1502dbfa70ecde1397bc7c8d36706f314432fc8177",
+            "development-manifest.json": "eefd33a8fcdf8d22900efa1debeaeabd1be5b3296c770ced51e441a32d17343d",
+        }
+        portable = (DEVELOPMENT_EVIDENCE / "SHA256SUMS.portable").read_text().splitlines()
+        self.assertEqual(
+            portable,
+            [f"{digest}  {name}" for name, digest in expected.items()],
+        )
+        for name, digest in expected.items():
+            self.assertEqual(hashlib.sha256((DEVELOPMENT_EVIDENCE / name).read_bytes()).hexdigest(), digest)
+
+        roles_raw = (DEVELOPMENT_EVIDENCE / "patient-roles.csv").read_bytes()
+        receipt = json.loads((DEVELOPMENT_EVIDENCE / "patient-role-freeze-receipt.json").read_bytes())
+        manifest = json.loads((DEVELOPMENT_EVIDENCE / "development-manifest.json").read_bytes())
+        self.assertEqual(receipt["patient_roles_sha256"], hashlib.sha256(roles_raw).hexdigest())
+        self.assertEqual(receipt["record_digest"], canonical.record_digest(receipt))
+        self.assertEqual(manifest["record_digest"], canonical.record_digest(manifest))
+
+        role_rows = roles_raw.decode("utf-8").splitlines()
+        roles = dict(row.split(",", 1) for row in role_rows[1:])
+        self.assertEqual(len(roles), 28_008)
+        self.assertEqual(sum(role == "adaptive_development" for role in roles.values()), 2_801)
+        self.assertEqual(sum(role == "train" for role in roles.values()), 25_207)
+        records = manifest["records"]
+        self.assertEqual(len(records), 86_524)
+        self.assertEqual(len({row["image_id"] for row in records}), 86_524)
+        self.assertEqual(len({(row["wrapper_split"], row["wrapper_index"]) for row in records}), 86_524)
+        self.assertEqual({row["patient_id"] for row in records}, set(roles))
+        self.assertTrue(all(row["patient_id"] == row["image_id"][:8] for row in records))
+        self.assertTrue(all(row["role"] == roles[row["patient_id"]] for row in records))
+        self.assertEqual(manifest["role_image_counts"], {"adaptive_development": 8_738, "train": 77_786})
+        self.assertEqual(manifest["role_patient_counts"], {"adaptive_development": 2_801, "train": 25_207})
+        self.assertEqual(manifest["official_test_image_count_excluded"], 25_596)
+        self.assertEqual(manifest["official_test_patient_count_excluded"], 2_797)
+        self.assertTrue(manifest["official_test_excluded"])
+        for record in (receipt, manifest):
+            self.assertFalse(record["labels_opened"])
+            self.assertFalse(record["pixels_opened"])
+            self.assertFalse(record["source_admitted"])
+            self.assertFalse(record["mmbu_public_content_used"])
 
 
 if __name__ == "__main__":

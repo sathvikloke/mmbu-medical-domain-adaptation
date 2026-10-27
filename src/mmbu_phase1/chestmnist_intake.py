@@ -16,6 +16,13 @@ SCHEMA_ID = "mmbu.phase1.chestmnist_mapping_audit"
 SCHEMA_VERSION = 1
 SPLITS = ("train", "val", "test")
 IMAGE_ID = re.compile(r"[0-9]{8}_[0-9]{3}\Z")
+PATIENT_ROLE_DOMAIN = b"mmbu.phase1.chestmnist.patient_role.v1\0"
+PATIENT_ROLE_NAMESPACE = "mmbu-chestmnist-patient-split-v1"
+OFFICIAL_TRAIN_VAL_IMAGE_COUNT = 86_524
+OFFICIAL_TRAIN_VAL_PATIENT_COUNT = 28_008
+OFFICIAL_TEST_IMAGE_COUNT = 25_596
+OFFICIAL_TEST_PATIENT_COUNT = 2_797
+ADAPTIVE_DEVELOPMENT_PATIENT_COUNT = 2_801
 
 
 def _expected_counts(value: Mapping[str, int]) -> dict[str, int]:
@@ -216,6 +223,71 @@ def reconcile_official_split_bytes(mapping_raw: bytes, train_val_raw: bytes, tes
         "source_admitted": False,
         "mmbu_public_content_used": False,
     }
+
+
+def freeze_official_patient_roles(
+    train_val_raw: bytes,
+    test_raw: bytes,
+) -> tuple[bytes, dict]:
+    """Freeze a label-blind patient split inside the official NIH development population."""
+    official_train = _official_ids(train_val_raw, "official train/validation list")
+    official_test = _official_ids(test_raw, "official test list")
+    train_patients = {image_id[:8] for image_id in official_train}
+    test_patients = {image_id[:8] for image_id in official_test}
+    if train_patients & test_patients:
+        raise ValueError("official split lists are not patient-disjoint")
+    observed = (len(official_train), len(train_patients), len(official_test), len(test_patients))
+    expected = (
+        OFFICIAL_TRAIN_VAL_IMAGE_COUNT,
+        OFFICIAL_TRAIN_VAL_PATIENT_COUNT,
+        OFFICIAL_TEST_IMAGE_COUNT,
+        OFFICIAL_TEST_PATIENT_COUNT,
+    )
+    if observed != expected:
+        raise ValueError(f"official NIH population differs: expected {expected}, observed {observed}")
+
+    namespace_bytes = PATIENT_ROLE_NAMESPACE.encode("ascii")
+    ranked = sorted(
+        train_patients,
+        key=lambda patient_id: (
+            hashlib.sha256(
+                PATIENT_ROLE_DOMAIN + namespace_bytes + b"\0" + patient_id.encode("ascii")
+            ).digest(),
+            patient_id,
+        ),
+    )
+    adaptive_patients = set(ranked[:ADAPTIVE_DEVELOPMENT_PATIENT_COUNT])
+    rows = ["patient_id,role"]
+    for patient_id in sorted(train_patients):
+        role = "adaptive_development" if patient_id in adaptive_patients else "train"
+        rows.append(f"{patient_id},{role}")
+    roles_raw = ("\n".join(rows) + "\n").encode("utf-8")
+    receipt = canonical.seal({
+        "schema_id": "mmbu.phase1.chestmnist_patient_role_freeze",
+        "schema_version": 1,
+        "algorithm": "sha256-domain-namespace-patient-id-rank-v1",
+        "seed_namespace": PATIENT_ROLE_NAMESPACE,
+        "adaptive_development_patient_count": ADAPTIVE_DEVELOPMENT_PATIENT_COUNT,
+        "official_train_val_bytes": len(train_val_raw),
+        "official_train_val_sha256": hashlib.sha256(train_val_raw).hexdigest(),
+        "official_test_bytes": len(test_raw),
+        "official_test_sha256": hashlib.sha256(test_raw).hexdigest(),
+        "official_train_val_image_count": len(official_train),
+        "official_train_val_patient_count": len(train_patients),
+        "official_test_image_count_excluded": len(official_test),
+        "official_test_patient_count_excluded": len(test_patients),
+        "role_patient_counts": {
+            "adaptive_development": ADAPTIVE_DEVELOPMENT_PATIENT_COUNT,
+            "train": len(train_patients) - ADAPTIVE_DEVELOPMENT_PATIENT_COUNT,
+        },
+        "patient_roles_bytes": len(roles_raw),
+        "patient_roles_sha256": hashlib.sha256(roles_raw).hexdigest(),
+        "labels_opened": False,
+        "pixels_opened": False,
+        "source_admitted": False,
+        "mmbu_public_content_used": False,
+    })
+    return roles_raw, receipt
 
 
 def compile_official_development_manifest(
